@@ -49,8 +49,9 @@ Der Standard-Track `de-es` bildet das bisherige Verhalten 1:1 ab – **ohne Edit
 
 `data.locals.js` (reine Daten, hängt nur im Locals-Track an `SC.data` an):
 `es` = Frage, `en` = gelernte Antwort, `tip` = englische Aussprachehilfe für
-Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Sieben Themen-Gruppen
-(die Gruppe `loc-med` wird nur in der [Medellín-Edition](LOCALS-MEDELLIN.md) befüllt):
+Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Acht Themen-Gruppen
+(`loc-med` nur in der [Medellín-Edition](LOCALS-MEDELLIN.md) befüllt; `loc-cult` das
+Kultur-/Service-Modul für europäische & US-Gäste):
 
 | Gruppe | Kategorien |
 |---|---|
@@ -61,6 +62,7 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Sieben Themen-Gruppe
 | Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores, tiempos verbales, preposiciones, hacer preguntas, falsos amigos, pronunciación (minimalpaare), present perfect, artículos a/an/the, cantidades (much/many), verbos modales, phrasal verbs, comparar |
 | Vocabulario por temas (`loc-voc`) | números, colores, familia, cuerpo, comida y bebida, frutas y verduras, animales, ropa, casa, cocina, ciudad, transporte, días y meses, clima, verbos comunes, adjetivos, profesiones, tecnología, naturaleza, emociones, escuela, deportes, salud, oficina, dinero y compras, viaje, la hora, baño, herramientas, música, formas, materiales, aves, vida marina, insectos, postres y dulces, especias y hierbas, medidas, direcciones, palabras de pregunta, pronombres, países, nacionalidades, belleza y cuidado, limpieza del hogar, emergencias, **palabras esenciales (núcleo)**, **verbos esenciales** |
 | Vocabulario B2 / avanzado (`loc-b2`) | opinar y argumentar, acuerdo y desacuerdo, conectores avanzados, frecuencia y tiempo, emociones matizadas, personalidad, conceptos abstractos, colocaciones, mundo laboral, negocios y reuniones, finanzas, educación, phrasal verbs, verbos avanzados, adjetivos avanzados, sociedad y actualidad, medio ambiente, tecnología digital, salud y bienestar, viajes avanzado |
+| Huéspedes de Europa y EE. UU. (`loc-cult`) | estilo de vida europeo, estilo de vida americano, en la mesa: Europa, en la mesa: EE. UU., sin azúcar y zero, comida saludable, agua y aire acondicionado, ruido y música en el hostal |
 
 Die Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektion**
 (Einzelwörter statt Service-Sätze): 48 Themen-Kategorien. Darin auch das **núcleo**
@@ -82,7 +84,22 @@ diskursivem Vokabular (Meinung/Argumentation, Konnektoren, Kollokationen, phrasa
 verbs, Arbeit/Wirtschaft, Gesellschaft/Umwelt …). Jede Karte trägt `es`/`en`/`tip`
 plus einen vollen Beispielsatz-Kontext in `contextdata.locals.js`.
 
-Aktuell **139 Kategorien · 2972 Karten** (ein Schnellstart-Preset je Kategorie).
+Die Gruppe **Medellín (`loc-med`)** ist ein **stadtspezifisches Modul** (nur in der
+[Medellín-Edition](LOCALS-MEDELLIN.md) befüllt): acht Themen rund um Comuna 13, Metro/
+Metrocable, Umweltschutz, cultura paisa, comida paisa, Guatapé, nómadas/seguridad und die
+Feria de las Flores – jeweils als echter englischer Satz für Guides/Gastgeber:innen, das
+lokale „Warum" in der spanischen Frage + Kontext (`situación`/`consejo`).
+
+Die Gruppe **Huéspedes de Europa y EE. UU. (`loc-cult`)** ist ein **Kultur-/Service-Modul**:
+Sie vermittelt, wie europäische und US-amerikanische Gäste ticken – Lebensweise,
+Esskultur/Vorlieben und Verhaltensmuster – jeweils als echter englischer Service-Satz.
+Das kulturelle „Warum" trägt die spanische Frage plus der Kontext (`situación`/`consejo`)
+in `contextdata.locals.js`. Acht Kategorien decken u. a. die praktischen Muss-Themen ab:
+zuckerfreie/**zero**-Produkte, gesundes Essen (ballaststoff-/proteinreich, wenig
+Frittiertes), **kein Leitungswasser** (Flaschenwasser), **Klimaanlage** wegen der Hitze
+und dass **laute Musik im Hostal** viele Gäste stört.
+
+Aktuell **147 Kategorien · 3084 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
@@ -148,7 +165,7 @@ Im Locals-Track zeigt die App **nur** die Locals-Inhalte – die Reise-Inhalte b
 im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
 - `allCards()` liefert im Locals-Track nur Locals-Karten → Study/Ruta/Suche/Badges/
   Stats sind fokussiert.
-- Die Startseite zeigt nur die vier Locals-Kategorie-Gruppen.
+- Die Startseite zeigt nur die sieben Locals-Kategorie-Gruppen.
 - „Entdecken" zeigt die track-fähigen Features (Mi léxico, Diálogos, Banderas,
   ¿Y esto?, Definiciones, Frases, Vocabulario sin fin, **Supervivencia laboral**,
   **Precios al oído** auf Englisch, **El Cuerpo** und **Lista de compras** –

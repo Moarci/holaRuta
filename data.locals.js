@@ -169,6 +169,17 @@
     { id: "guatape-en",    label: "Guatapé y El Peñol",   labelEs: "Guatapé y El Peñol",   labelEn: "Guatapé & El Peñol",    icon: "🪨", grad: ["#1F7A8C", "#2F8E5B"], group: "loc-med" },
     { id: "nomadas-en",    label: "Nómadas y seguridad",  labelEs: "Nómadas y seguridad",  labelEn: "Nomads & safety",       icon: "💻", grad: ["#4C5FA8", "#2F6B70"], group: "loc-med" },
     { id: "eventos-med-en", label: "Feria y eventos",     labelEs: "Feria y eventos",      labelEn: "Festivals & events",    icon: "💐", grad: ["#C25A85", "#B97C24"], group: "loc-med" },
+
+    // --- Huéspedes de Europa y EE. UU. (loc-cult): estilo de vida, cultura de mesa
+    //     y las preferencias prácticas que más marcan la diferencia en el servicio. ---
+    { id: "estilo-eu",       label: "Estilo de vida europeo",  labelEs: "Estilo de vida europeo",  labelEn: "European lifestyle", icon: "🇪🇺", grad: ["#3E7CA8", "#4C5FA8"], group: "loc-cult" },
+    { id: "estilo-us",       label: "Estilo de vida americano", labelEs: "Estilo de vida americano", labelEn: "American lifestyle", icon: "🇺🇸", grad: ["#B5302A", "#3E7CA8"], group: "loc-cult" },
+    { id: "mesa-eu",         label: "En la mesa: Europa",       labelEs: "En la mesa: Europa",       labelEn: "At the table: Europe", icon: "🍷", grad: ["#7D4A8E", "#B97C24"], group: "loc-cult" },
+    { id: "mesa-us",         label: "En la mesa: EE. UU.",      labelEs: "En la mesa: EE. UU.",      labelEn: "At the table: US", icon: "🍔", grad: ["#CB5A2B", "#B97C24"], group: "loc-cult" },
+    { id: "sin-azucar-en",   label: "Sin azúcar y zero",        labelEs: "Sin azúcar y zero",        labelEn: "Sugar-free & zero", icon: "🥤", grad: ["#2F8E5B", "#3E8388"], group: "loc-cult" },
+    { id: "comida-sana-en",  label: "Comida saludable",         labelEs: "Comida saludable",         labelEn: "Healthy eating", icon: "🥗", grad: ["#3F7355", "#5A8E6E"], group: "loc-cult" },
+    { id: "agua-clima-en",   label: "Agua y aire acondicionado", labelEs: "Agua y aire acondicionado", labelEn: "Water & AC", icon: "💧", grad: ["#1F7A8C", "#3E8388"], group: "loc-cult" },
+    { id: "hostal-ruido-en", label: "Ruido y música en el hostal", labelEs: "Ruido y música en el hostal", labelEn: "Noise & music", icon: "🔇", grad: ["#7D4A8E", "#4C5FA8"], group: "loc-cult" },
   ];
 
   // lvl: 1=Einsteiger, 2=Mittel, 3=Fortgeschritten.
@@ -3491,7 +3502,137 @@
     {"id":"loc-eve15","cat":"eventos-med-en","lvl":3,"es":"¿Vale la pena subir a Santa Elena a ver los cultivos de flores?","en":"Absolutely. You can go up to Santa Elena, visit a silletero farm, and see how they grow the flowers and build the silletas.","tip":"AB-so-loot-lee. Yoo kan goh up to SAN-tah eh-LAY-nah, VIH-zit a farm, and see how day groh da FLOW-erz.","alt":["Absolutely. You can go up to Santa Elena, visit a silletero farm, and see how they grow the flowers and build the silletas.","Definitely. Head up to Santa Elena to tour a silletero farm and watch how they grow the flowers and assemble the silletas."]},
     {"id":"loc-eve16","cat":"eventos-med-en","lvl":3,"es":"¿Dónde termina el Desfile de Silleteros?","en":"The parade winds through the city and finishes near the stadium area, where the silleteros are judged and celebrated.","tip":"Da pah-RAYD wyndz throo da SIH-tee and FIH-nih-shez neer da STAY-dee-um AIR-ee-ah.","alt":["The parade winds through the city and finishes near the stadium area, where the silleteros are judged and celebrated.","The route goes through the city and ends around the stadium, where the silleteros get judged and celebrated."]},
   ];
-  CARDS = CARDS.concat(NEW_CARDS).concat(EXP_CARDS).concat(MED_CARDS);
+  // ===================================================================
+  // GRUPPE loc-cult · Huéspedes de Europa y EE. UU.
+  // Kulturmodule: europäische & amerikanische Lebensweise, Esskultur/
+  // Vorlieben und die praktischen Muss-Themen (zuckerfrei/zero, gesundes
+  // Essen, kein Leitungswasser, Klimaanlage, Lärm im Hostal). Jede Karte
+  // ist ein echter englischer Service-Satz; das kulturelle „Warum" trägt
+  // die spanische Frage + der Kontext in contextdata.locals.js.
+  // ===================================================================
+  var CULT_CARDS = [
+    // --- estilo-eu (Estilo de vida europeo) ---
+    { id: "loc-euv01", cat: "estilo-eu", lvl: 2, es: "Empezamos puntuales, a las nueve en punto.", en: "We'll start right on time, at nine sharp.", tip: "uil start rait on taim, at nain sharp" },
+    { id: "loc-euv02", cat: "estilo-eu", lvl: 1, es: "Puede pagar con tarjeta sin problema.", en: "You can pay by card, no problem.", tip: "yu can pei bai card, nou PRÓ-blem" },
+    { id: "loc-euv03", cat: "estilo-eu", lvl: 1, es: "También aceptamos efectivo si prefiere.", en: "We also take cash if you prefer.", tip: "ui OL-so teik cash if yu pri-FÉR" },
+    { id: "loc-euv04", cat: "estilo-eu", lvl: 2, es: "No hace falta propina, pero se agradece.", en: "A tip isn't required, but it's appreciated.", tip: "a tip Í-sent ri-KUÁI-erd, bot its a-PRÍ-shi-ei-ted" },
+    { id: "loc-euv05", cat: "estilo-eu", lvl: 2, es: "Le doy su espacio; cualquier cosa, me hace una seña.", en: "I'll give you some space — just wave if you need anything.", tip: "ail guiv yu som SPÉIS — yost weiv if yu nid É-ni-zing" },
+    { id: "loc-euv06", cat: "estilo-eu", lvl: 1, es: "El centro histórico se recorre fácil a pie.", en: "The old town is easy to explore on foot.", tip: "di ould taun is Í-si tu eks-PLÓR on fut" },
+    { id: "loc-euv07", cat: "estilo-eu", lvl: 1, es: "Hay transporte público muy cerca.", en: "There's public transport very close by.", tip: "ders PÁ-blic TRÁNS-port VÉ-ri clous bai" },
+    { id: "loc-euv08", cat: "estilo-eu", lvl: 2, es: "Aquí puede reciclar: vidrio, papel y plástico.", en: "You can recycle here: glass, paper, and plastic.", tip: "yu can ri-SÁI-cl jir: glas, PÉI-per, and PLÁS-tic" },
+    { id: "loc-euv09", cat: "estilo-eu", lvl: 1, es: "¿Prefiere que le hable en inglés?", en: "Would you prefer I speak English?", tip: "wud yu pri-FÉR ai spik ÍN-glish" },
+    { id: "loc-euv10", cat: "estilo-eu", lvl: 3, es: "Con gusto le explico, sin presionar la venta.", en: "I'm happy to explain, with no pressure to buy.", tip: "aim JÁ-pi tu eks-PLÉIN, wid nou PRÉ-sher tu bai" },
+    { id: "loc-euv11", cat: "estilo-eu", lvl: 1, es: "El desayuno es de siete a diez.", en: "Breakfast is from seven to ten.", tip: "BRÉK-fast is from SÉ-ven tu ten" },
+    { id: "loc-euv12", cat: "estilo-eu", lvl: 2, es: "Le confirmo la reserva por correo.", en: "I'll confirm your booking by email.", tip: "ail con-FÉRM yor BÚ-king bai Í-meil" },
+    { id: "loc-euv13", cat: "estilo-eu", lvl: 2, es: "Respetamos el horario de silencio por la noche.", en: "We keep quiet hours at night.", tip: "ui kip KUÁI-et áuers at nait" },
+    { id: "loc-euv14", cat: "estilo-eu", lvl: 2, es: "¿Necesita factura para sus gastos?", en: "Do you need a receipt for your expenses?", tip: "du yu nid a ri-SÍT for yor eks-PÉN-ses" },
+    // --- estilo-us (Estilo de vida americano) ---
+    { id: "loc-usv01", cat: "estilo-us", lvl: 1, es: "¡Hola! ¿Cómo va su día?", en: "Hi there! How's your day going?", tip: "jai der, jaus yor dei GÓU-ing" },
+    { id: "loc-usv02", cat: "estilo-us", lvl: 3, es: "La propina sugerida es del quince al veinte por ciento.", en: "A tip of fifteen to twenty percent is customary.", tip: "a tip of fif-TÍN tu TUÉN-ti per-SÉNT is CÓS-to-me-ri" },
+    { id: "loc-usv03", cat: "estilo-us", lvl: 1, es: "¿Le sirvo la bebida con mucho hielo?", en: "Would you like your drink with lots of ice?", tip: "wud yu laik yor drink wid lots of ais" },
+    { id: "loc-usv04", cat: "estilo-us", lvl: 1, es: "Puede pagar con tarjeta o con el teléfono.", en: "You can pay by card or with your phone.", tip: "yu can pei bai card or wid yor foun" },
+    { id: "loc-usv05", cat: "estilo-us", lvl: 2, es: "¿Le traigo otro, sin costo?", en: "Can I get you a free refill?", tip: "can ai guet yu a fri RÍ-fil" },
+    { id: "loc-usv06", cat: "estilo-us", lvl: 2, es: "¿Se lo empaco para llevar?", en: "Can I box that up to go for you?", tip: "can ai boks dat op tu góu for yu" },
+    { id: "loc-usv07", cat: "estilo-us", lvl: 2, es: "Puede llamarme por mi nombre, soy Ana.", en: "Feel free to call me by my first name — I'm Ana.", tip: "fil fri tu col mi bai mai ferst neim — aim Á-na" },
+    { id: "loc-usv08", cat: "estilo-us", lvl: 1, es: "¿Todo excelente por aquí?", en: "Is everything great here?", tip: "is É-vri-zing greit jir" },
+    { id: "loc-usv09", cat: "estilo-us", lvl: 2, es: "Las porciones son grandes; ¿desea compartir?", en: "The portions are large — would you like to share?", tip: "da PÓR-shons ar larch — wud yu laik tu sher" },
+    { id: "loc-usv10", cat: "estilo-us", lvl: 1, es: "¿Quiere agua helada para empezar?", en: "Would you like some ice water to start?", tip: "wud yu laik som ais WÓ-ter tu start" },
+    { id: "loc-usv11", cat: "estilo-us", lvl: 3, es: "Si algo no le gusta, con gusto se lo cambio.", en: "If anything's not right, I'm happy to replace it.", tip: "if É-ni-zings not rait, aim JÁ-pi tu ri-PLÉIS it" },
+    { id: "loc-usv12", cat: "estilo-us", lvl: 1, es: "¡Que tenga un gran día!", en: "Have a great day!", tip: "jav a greit dei" },
+    { id: "loc-usv13", cat: "estilo-us", lvl: 2, es: "Podemos agregar la propina a la tarjeta.", en: "We can add the tip to your card as well.", tip: "ui can ad da tip tu yor card as wel" },
+    { id: "loc-usv14", cat: "estilo-us", lvl: 2, es: "¿Le muestro el menú de aperitivos?", en: "Can I show you the appetizer menu?", tip: "can ai shou yu di Á-pe-tai-ser MÉ-niu" },
+    // --- mesa-eu (En la mesa: Europa) ---
+    { id: "loc-eum01", cat: "mesa-eu", lvl: 1, es: "¿Le sirvo un espresso pequeño?", en: "Would you like a small espresso?", tip: "wud yu laik a smol es-PRÉ-so" },
+    { id: "loc-eum02", cat: "mesa-eu", lvl: 1, es: "¿Agua con gas o sin gas?", en: "Still or sparkling water?", tip: "stil or SPÁR-kling WÓ-ter" },
+    { id: "loc-eum03", cat: "mesa-eu", lvl: 1, es: "Le traigo pan para la mesa.", en: "I'll bring some bread for the table.", tip: "ail bring som bred for da TÉI-bl" },
+    { id: "loc-eum04", cat: "mesa-eu", lvl: 1, es: "¿Desea ver la carta de vinos?", en: "Would you like to see the wine list?", tip: "wud yu laik tu si da UÁIN list" },
+    { id: "loc-eum05", cat: "mesa-eu", lvl: 2, es: "Sin prisa, disfrute su comida.", en: "No rush — enjoy your meal.", tip: "nou rosh — en-YÓI yor mil" },
+    { id: "loc-eum06", cat: "mesa-eu", lvl: 2, es: "Le traigo la cuenta solo cuando la pida.", en: "I'll bring the bill only when you ask.", tip: "ail bring da bil ÓN-li wen yu ask", alt: ["I'll bring the bill only when you ask.", "i'll bring the check only when you ask"] },
+    { id: "loc-eum07", cat: "mesa-eu", lvl: 1, es: "¿Poco hielo o sin hielo?", en: "A little ice or none at all?", tip: "a LÍ-tl ais or non at ol" },
+    { id: "loc-eum08", cat: "mesa-eu", lvl: 3, es: "Las porciones son moderadas, al estilo europeo.", en: "The portions are moderate, European style.", tip: "da PÓR-shons ar MÓ-de-ret, yu-ro-PÍ-an stail" },
+    { id: "loc-eum09", cat: "mesa-eu", lvl: 1, es: "¿Un café después del postre?", en: "Would you like a coffee after dessert?", tip: "wud yu laik a CÓ-fi Á-fter di-SÉRT" },
+    { id: "loc-eum10", cat: "mesa-eu", lvl: 2, es: "Tenemos tabla de quesos para terminar.", en: "We have a cheese board to finish.", tip: "ui jav a chis bord tu FÍ-nish" },
+    { id: "loc-eum11", cat: "mesa-eu", lvl: 3, es: "El menú del día incluye entrada y plato fuerte.", en: "The set lunch includes a starter and a main.", tip: "da set lonch in-CLÚDS a STÁR-ter and a mein" },
+    { id: "loc-eum12", cat: "mesa-eu", lvl: 2, es: "El pan y el aceite de oliva van por cuenta de la casa.", en: "The bread and olive oil are on the house.", tip: "da bred and Ó-liv oil ar on da jaus" },
+    { id: "loc-eum13", cat: "mesa-eu", lvl: 2, es: "¿Le abro el vino ahora?", en: "Shall I open the wine now?", tip: "shal ai Ó-pen da uain nau" },
+    { id: "loc-eum14", cat: "mesa-eu", lvl: 2, es: "El almuerzo se sirve a partir de la una.", en: "Lunch is served from one o'clock.", tip: "lonch is servd from uan o-CLÓK" },
+    // --- mesa-us (En la mesa: EE. UU.) ---
+    { id: "loc-usm01", cat: "mesa-us", lvl: 1, es: "Le traigo agua bien fría de entrada.", en: "I'll bring you some ice-cold water to start.", tip: "ail bring yu som ais-cóuld WÓ-ter tu start" },
+    { id: "loc-usm02", cat: "mesa-us", lvl: 1, es: "El refill de gaseosa es gratis.", en: "Refills on soda are free.", tip: "RÍ-fils on SÓU-da ar fri" },
+    { id: "loc-usm03", cat: "mesa-us", lvl: 2, es: "¿Le empaco lo que sobró?", en: "Can I pack up your leftovers?", tip: "can ai pak op yor LÉFT-ou-vers" },
+    { id: "loc-usm04", cat: "mesa-us", lvl: 1, es: "¿Quiere el aderezo aparte?", en: "Would you like the dressing on the side?", tip: "wud yu laik da DRÉ-sing on da said" },
+    { id: "loc-usm05", cat: "mesa-us", lvl: 2, es: "Puede cambiar la guarnición sin costo.", en: "You can swap the side for free.", tip: "yu can suóp da said for fri" },
+    { id: "loc-usm06", cat: "mesa-us", lvl: 2, es: "¿Empezamos con unos aperitivos para la mesa?", en: "Shall we start with some appetizers for the table?", tip: "shal ui start wid som Á-pe-tai-sers for da TÉI-bl" },
+    { id: "loc-usm07", cat: "mesa-us", lvl: 1, es: "La hamburguesa viene con papas a la francesa.", en: "The burger comes with fries.", tip: "da BÉR-guer coms wid frais" },
+    { id: "loc-usm08", cat: "mesa-us", lvl: 1, es: "¿Más café? Los rellenos van gratis.", en: "More coffee? Refills are free.", tip: "mor CÓ-fi, RÍ-fils ar fri" },
+    { id: "loc-usm09", cat: "mesa-us", lvl: 3, es: "Las porciones son generosas, alcanza para compartir.", en: "The portions are generous — plenty to share.", tip: "da PÓR-shons ar YÉ-ne-ros — PLÉN-ti tu sher" },
+    { id: "loc-usm10", cat: "mesa-us", lvl: 3, es: "¿Todo a su gusto? Puedo traer salsas extra.", en: "Everything to your liking? I can bring extra sauces.", tip: "É-vri-zing tu yor LÁI-king, ai can bring ÉKS-tra SÓ-ses" },
+    { id: "loc-usm11", cat: "mesa-us", lvl: 1, es: "Tenemos menú para niños.", en: "We have a kids' menu.", tip: "ui jav a kids MÉ-niu" },
+    { id: "loc-usm12", cat: "mesa-us", lvl: 2, es: "¿Le añado tocineta o aguacate?", en: "Would you like to add bacon or avocado?", tip: "wud yu laik tu ad BÉI-con or a-vo-CÁ-dou" },
+    { id: "loc-usm13", cat: "mesa-us", lvl: 2, es: "El postre es enorme, ideal para dos.", en: "The dessert is huge — great for two.", tip: "da di-SÉRT is jiuch — greit for tu" },
+    { id: "loc-usm14", cat: "mesa-us", lvl: 2, es: "¿Prefiere la carne término medio o bien cocida?", en: "Would you like your meat medium or well done?", tip: "wud yu laik yor mit MÍ-diom or wel don" },
+    // --- sin-azucar-en (Sin azúcar y zero) ---
+    { id: "loc-zer01", cat: "sin-azucar-en", lvl: 1, es: "¿Prefiere una bebida sin azúcar o zero?", en: "Would you like a sugar-free or zero drink?", tip: "wud yu laik a SHÚ-gar-fri or SÍ-ro drink" },
+    { id: "loc-zer02", cat: "sin-azucar-en", lvl: 1, es: "Tenemos gaseosa zero y light.", en: "We have zero and diet soda.", tip: "ui jav SÍ-ro and DÁI-et SÓU-da" },
+    { id: "loc-zer03", cat: "sin-azucar-en", lvl: 1, es: "El agua saborizada es sin azúcar.", en: "The flavored water is sugar-free.", tip: "da FLÉI-vord WÓ-ter is SHÚ-gar-fri" },
+    { id: "loc-zer04", cat: "sin-azucar-en", lvl: 2, es: "¿Se lo endulzo con edulcorante en vez de azúcar?", en: "Shall I sweeten it with sweetener instead of sugar?", tip: "shal ai SUÍ-ten it wid SUÍ-te-ner ins-TÉD of SHÚ-gar" },
+    { id: "loc-zer05", cat: "sin-azucar-en", lvl: 1, es: "El café se lo puedo servir sin azúcar.", en: "I can serve your coffee without sugar.", tip: "ai can serv yor CÓ-fi wid-ÁUT SHÚ-gar" },
+    { id: "loc-zer06", cat: "sin-azucar-en", lvl: 2, es: "Este postre es apto para diabéticos.", en: "This dessert is diabetic-friendly.", tip: "dis di-SÉRT is dai-a-BÉ-tic-FRÉND-li" },
+    { id: "loc-zer07", cat: "sin-azucar-en", lvl: 2, es: "Tenemos yogur natural sin azúcar añadida.", en: "We have plain yogurt with no added sugar.", tip: "ui jav plein YÓU-gurt wid nou Á-ded SHÚ-gar" },
+    { id: "loc-zer08", cat: "sin-azucar-en", lvl: 1, es: "¿Quiere el jugo natural, sin azúcar?", en: "Would you like the juice fresh, with no sugar?", tip: "wud yu laik da yus fresh, wid nou SHÚ-gar" },
+    { id: "loc-zer09", cat: "sin-azucar-en", lvl: 1, es: "La mermelada es sin azúcar.", en: "The jam is sugar-free.", tip: "da yam is SHÚ-gar-fri" },
+    { id: "loc-zer10", cat: "sin-azucar-en", lvl: 2, es: "Puedo prepararle un té helado sin endulzar.", en: "I can make you an unsweetened iced tea.", tip: "ai can meik yu an on-SUÍ-tend aist ti" },
+    { id: "loc-zer11", cat: "sin-azucar-en", lvl: 3, es: "El chocolate caliente lo hacemos con leche descremada y sin azúcar.", en: "We make the hot chocolate with skim milk and no sugar.", tip: "ui meik da jot CHÓK-let wid skim milk and nou SHÚ-gar" },
+    { id: "loc-zer12", cat: "sin-azucar-en", lvl: 2, es: "¿Prefiere fruta fresca en vez de un postre dulce?", en: "Would you prefer fresh fruit instead of a sweet dessert?", tip: "wud yu pri-FÉR fresh frut ins-TÉD of a suit di-SÉRT" },
+    { id: "loc-zer13", cat: "sin-azucar-en", lvl: 2, es: "Tenemos opciones bajas en azúcar en la carta.", en: "We have low-sugar options on the menu.", tip: "ui jav lóu-SHÚ-gar ÓP-shons on da MÉ-niu" },
+    { id: "loc-zer14", cat: "sin-azucar-en", lvl: 1, es: "El refresco zero no tiene calorías.", en: "The zero soda has no calories.", tip: "da SÍ-ro SÓU-da jas nou CÁ-lo-ris" },
+    // --- comida-sana-en (Comida saludable) ---
+    { id: "loc-san01", cat: "comida-sana-en", lvl: 2, es: "Este plato es alto en proteína y fibra.", en: "This dish is high in protein and fiber.", tip: "dis dish is jai in PRÓU-tin and FÁI-ber" },
+    { id: "loc-san02", cat: "comida-sana-en", lvl: 2, es: "Se lo preparo a la parrilla en vez de frito.", en: "I can make it grilled instead of fried.", tip: "ai can meik it grild ins-TÉD of fraid" },
+    { id: "loc-san03", cat: "comida-sana-en", lvl: 1, es: "Tenemos ensaladas frescas con pollo o atún.", en: "We have fresh salads with chicken or tuna.", tip: "ui jav fresh SÁ-lads wid CHÍ-ken or TÚ-na" },
+    { id: "loc-san04", cat: "comida-sana-en", lvl: 2, es: "El pan integral tiene más fibra.", en: "The whole-grain bread has more fiber.", tip: "da jóul-grein bred jas mor FÁI-ber" },
+    { id: "loc-san05", cat: "comida-sana-en", lvl: 1, es: "¿Prefiere el pollo al horno?", en: "Would you prefer the chicken baked?", tip: "wud yu pri-FÉR da CHÍ-ken beikt" },
+    { id: "loc-san06", cat: "comida-sana-en", lvl: 2, es: "Las verduras van al vapor, no fritas.", en: "The vegetables are steamed, not fried.", tip: "da VÉCH-ta-bls ar stimd, not fraid" },
+    { id: "loc-san07", cat: "comida-sana-en", lvl: 2, es: "Este bowl trae quinua, aguacate y legumbres.", en: "This bowl has quinoa, avocado, and beans.", tip: "dis boul jas KÍN-wa, a-vo-CÁ-dou, and bins" },
+    { id: "loc-san08", cat: "comida-sana-en", lvl: 2, es: "Puedo servirle la porción con más vegetales.", en: "I can serve your plate with extra vegetables.", tip: "ai can serv yor pleit wid ÉKS-tra VÉCH-ta-bls" },
+    { id: "loc-san09", cat: "comida-sana-en", lvl: 1, es: "El pescado a la plancha es muy liviano.", en: "The grilled fish is very light.", tip: "da grild fish is VÉ-ri lait" },
+    { id: "loc-san10", cat: "comida-sana-en", lvl: 1, es: "Tenemos avena y frutas para el desayuno.", en: "We have oatmeal and fruit for breakfast.", tip: "ui jav ÓUT-mil and frut for BRÉK-fast" },
+    { id: "loc-san11", cat: "comida-sana-en", lvl: 2, es: "¿Le cambio las papas fritas por ensalada?", en: "Shall I swap the fries for a salad?", tip: "shal ai suóp da frais for a SÁ-lad" },
+    { id: "loc-san12", cat: "comida-sana-en", lvl: 1, es: "Este plato es bajo en grasa.", en: "This dish is low in fat.", tip: "dis dish is lóu in fat" },
+    { id: "loc-san13", cat: "comida-sana-en", lvl: 3, es: "Los huevos se los preparo cocidos o revueltos, sin aceite.", en: "I can make the eggs boiled or scrambled, without oil.", tip: "ai can meik di egs boild or SCRÁM-bld, wid-ÁUT oil" },
+    { id: "loc-san14", cat: "comida-sana-en", lvl: 2, es: "Hay opciones vegetarianas y veganas.", en: "We have vegetarian and vegan options.", tip: "ui jav ve-che-TÉ-rian and VÍ-gan ÓP-shons" },
+    // --- agua-clima-en (Agua y aire acondicionado) ---
+    { id: "loc-agu01", cat: "agua-clima-en", lvl: 2, es: "El agua de la llave no es potable aquí.", en: "The tap water isn't safe to drink here.", tip: "da tap WÓ-ter Í-sent seif tu drink jir" },
+    { id: "loc-agu02", cat: "agua-clima-en", lvl: 1, es: "Le recomiendo agua embotellada.", en: "I'd recommend bottled water.", tip: "aid re-co-MÉND BÓ-tld WÓ-ter" },
+    { id: "loc-agu03", cat: "agua-clima-en", lvl: 1, es: "¿Le traigo una botella de agua fría?", en: "Can I bring you a cold bottle of water?", tip: "can ai bring yu a cóuld BÓ-tl of WÓ-ter" },
+    { id: "loc-agu04", cat: "agua-clima-en", lvl: 2, es: "Puede rellenar su botella con agua filtrada aquí.", en: "You can refill your bottle with filtered water here.", tip: "yu can ri-FÍL yor BÓ-tl wid FÍL-terd WÓ-ter jir" },
+    { id: "loc-agu05", cat: "agua-clima-en", lvl: 2, es: "Para el hielo usamos agua purificada.", en: "We use purified water for the ice.", tip: "ui ius PIÚ-ri-faid WÓ-ter for di ais" },
+    { id: "loc-agu06", cat: "agua-clima-en", lvl: 1, es: "La habitación tiene aire acondicionado.", en: "The room has air conditioning.", tip: "da rum jas er con-DÍ-sho-ning", alt: ["The room has air conditioning.", "the room has ac"] },
+    { id: "loc-agu07", cat: "agua-clima-en", lvl: 2, es: "El aire acondicionado se enciende con este control.", en: "You turn on the AC with this remote.", tip: "yu tern on di ei-SÍ wid dis ri-MÓUT" },
+    { id: "loc-agu08", cat: "agua-clima-en", lvl: 2, es: "Si hace mucho calor, baje la temperatura aquí.", en: "If it's too hot, lower the temperature here.", tip: "if its tu jot, LÓU-er da TÉM-pra-cher jir" },
+    { id: "loc-agu09", cat: "agua-clima-en", lvl: 1, es: "Hay un ventilador si lo prefiere.", en: "There's a fan if you prefer.", tip: "ders a fan if yu pri-FÉR" },
+    { id: "loc-agu10", cat: "agua-clima-en", lvl: 3, es: "Con este calor, le sugiero mantenerse hidratado.", en: "In this heat, I'd suggest staying hydrated.", tip: "in dis jit, aid so-YÉST STÉI-ing JÁI-drei-ted" },
+    { id: "loc-agu11", cat: "agua-clima-en", lvl: 2, es: "El agua embotellada del minibar está incluida.", en: "The bottled water in the minibar is included.", tip: "da BÓ-tld WÓ-ter in da MÍ-ni-bar is in-CLÚ-ded" },
+    { id: "loc-agu12", cat: "agua-clima-en", lvl: 3, es: "Por precaución, cepíllese los dientes con agua embotellada.", en: "As a precaution, brush your teeth with bottled water.", tip: "as a pri-CÓ-shon, brosh yor tiz wid BÓ-tld WÓ-ter" },
+    { id: "loc-agu13", cat: "agua-clima-en", lvl: 2, es: "El aire acondicionado funciona toda la noche.", en: "The air conditioning runs all night.", tip: "di er con-DÍ-sho-ning rons ol nait" },
+    { id: "loc-agu14", cat: "agua-clima-en", lvl: 2, es: "¿Quiere que enfríe la habitación antes de subir?", en: "Would you like me to cool the room before you go up?", tip: "wud yu laik mi tu cul da rum bi-FÓR yu góu op" },
+    // --- hostal-ruido-en (Ruido y música en el hostal) ---
+    { id: "loc-rui01", cat: "hostal-ruido-en", lvl: 1, es: "Después de las diez bajamos la música.", en: "We turn the music down after ten.", tip: "ui tern da MIÚ-sic daun Á-fter ten" },
+    { id: "loc-rui02", cat: "hostal-ruido-en", lvl: 2, es: "Tenemos horario de silencio desde las once.", en: "We have quiet hours from eleven.", tip: "ui jav KUÁI-et áuers from i-LÉ-ven" },
+    { id: "loc-rui03", cat: "hostal-ruido-en", lvl: 1, es: "Si quiere, le presto audífonos.", en: "If you like, I can lend you headphones.", tip: "if yu laik, ai can lend yu JÉD-founs" },
+    { id: "loc-rui04", cat: "hostal-ruido-en", lvl: 2, es: "La música alta molesta a los otros huéspedes.", en: "Loud music bothers the other guests.", tip: "laud MIÚ-sic BÓ-ders di Á-der guests" },
+    { id: "loc-rui05", cat: "hostal-ruido-en", lvl: 2, es: "El área de fiesta está lejos de las habitaciones.", en: "The party area is away from the rooms.", tip: "da PÁR-ti É-ria is a-UÉI from da rums" },
+    { id: "loc-rui06", cat: "hostal-ruido-en", lvl: 2, es: "¿Podría usar audífonos en el dormitorio compartido?", en: "Could you use headphones in the dorm?", tip: "cud yu ius JÉD-founs in da dorm" },
+    { id: "loc-rui07", cat: "hostal-ruido-en", lvl: 2, es: "Por la noche, mantengamos la voz baja.", en: "At night, let's keep our voices down.", tip: "at nait, lets kip aur VÓI-ses daun" },
+    { id: "loc-rui08", cat: "hostal-ruido-en", lvl: 3, es: "Las habitaciones tienen buen aislamiento de ruido.", en: "The rooms have good soundproofing.", tip: "da rums jav gud SÁUND-pru-fing" },
+    { id: "loc-rui09", cat: "hostal-ruido-en", lvl: 3, es: "El bar cierra a medianoche por respeto al descanso.", en: "The bar closes at midnight out of respect for quiet.", tip: "da bar CLÓU-ses at MÍD-nait aut of ris-PÉCT for KUÁI-et" },
+    { id: "loc-rui10", cat: "hostal-ruido-en", lvl: 3, es: "Si el ruido le molesta, lo cambio de habitación.", en: "If the noise bothers you, I can move you to another room.", tip: "if da nois BÓ-ders yu, ai can muv yu tu a-NÓ-der rum" },
+    { id: "loc-rui11", cat: "hostal-ruido-en", lvl: 2, es: "Tenemos una zona tranquila para leer o trabajar.", en: "We have a quiet zone for reading or working.", tip: "ui jav a KUÁI-et sóun for RÍ-ding or UÉR-king" },
+    { id: "loc-rui12", cat: "hostal-ruido-en", lvl: 1, es: "Le puedo dar tapones para los oídos.", en: "I can give you some earplugs.", tip: "ai can guiv yu som ÍR-plogs" },
+    { id: "loc-rui13", cat: "hostal-ruido-en", lvl: 2, es: "Avíseme si algún grupo hace mucho ruido.", en: "Let me know if any group gets too loud.", tip: "let mi nou if É-ni grup guets tu laud" },
+    { id: "loc-rui14", cat: "hostal-ruido-en", lvl: 2, es: "La música en la terraza es suave por la noche.", en: "The music on the terrace is soft at night.", tip: "da MIÚ-sic on da TÉ-ras is soft at nait" },
+  ];
+  CARDS = CARDS.concat(NEW_CARDS).concat(EXP_CARDS).concat(MED_CARDS).concat(CULT_CARDS);
 
   // Ein kuratiertes Schnellstart-Paket je Kategorie (analog data.js PRESETS).
   var PRESETS = CATEGORIES.map(function (c) {

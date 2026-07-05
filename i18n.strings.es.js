@@ -131,6 +131,7 @@
     // Themen-Gruppen (Locals)
     catGroupLocMed: "Medellín",
     catGroupLocHosp: "Turismo y hostelería",
+    catGroupLocCult: "Huéspedes de Europa y EE. UU.",
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",
     catGroupLocEsc: "Escuela y examen",
@@ -271,6 +272,8 @@
     pretripLocked: "bloqueada",
     // Diálogos (Rollenspiel: der Tourist spricht Englisch, der/die Lernende antwortet)
     subDialogos: "Atiende una conversación, turno a turno.",
+    // Roleplay del local (solo Locals-Track): huésped y personal por turnos.
+    subVenueRoleplay: "Huésped y personal practican por turnos, en un teléfono.",
     dlgUnavailable: "No hay diálogos disponibles ahora.",
     dlgNoSpeak: "Tu dispositivo no puede leer en voz alta; los diálogos igual funcionan (para leer).",
     dlgIntro: "Practica una conversación real turno a turno. La otra persona habla en inglés; tú respondes. Elige una situación.",

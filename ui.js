@@ -146,7 +146,7 @@
     { action: "open-endless", tracks: ["de-es", "es-en"],     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", sub: "Karteikarten am Stück – alle Themen gemischt, ohne Rundenende", grad: ["#2E6E86", "#7048E8"], group: "practice" },
     { action: "open-frases", tracks: ["de-es", "es-en"],      icon: "lc:blocks", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
     { action: "open-dialogos", tracks: ["de-es", "es-en"],    icon: "lc:message-circle", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
-    { action: "open-venue-roleplay", tracks: ["es-en"], icon: "lc:handshake", title: "Roleplay del local", sub: "Huésped y personal practican por turnos, en un teléfono", grad: ["#2F6B70", "#5A4FA8"], group: "play" },
+    { action: "open-venue-roleplay", tracks: ["es-en"], icon: "lc:handshake", title: "Roleplay del local", subKey: "discover.subVenueRoleplay", sub: "Zu zweit am Handy: Gast und Personal spielen abwechselnd", grad: ["#2F6B70", "#5A4FA8"], group: "play" },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
     { action: "open-precios",     tracks: ["de-es", "es-en"], icon: "lc:banknote", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
     { action: "open-cuerpo",      tracks: ["de-es", "es-en"], icon: "lc:person-standing", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
@@ -195,6 +195,7 @@
     // Medellín-Module zuerst (nur in der Medellín-Edition befüllt).
     { id: "loc-med",  titleKey: "home.catGroupLocMed" },
     { id: "loc-hosp", titleKey: "home.catGroupLocHosp" },
+    { id: "loc-cult", titleKey: "home.catGroupLocCult" },
     { id: "loc-dia",  titleKey: "home.catGroupLocDia" },
     { id: "loc-trab", titleKey: "home.catGroupLocTrab" },
     { id: "loc-esc",  titleKey: "home.catGroupLocEsc" },
