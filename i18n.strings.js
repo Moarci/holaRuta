@@ -804,6 +804,7 @@
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
+    szIntroLocals: "Die wichtigsten englischen Sätze fürs Arbeiten – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
     szAreas: "Bereiche",
     szShowTitle: "Groß anzeigen",
     szListen: "Anhören",
@@ -1314,6 +1315,7 @@
     bebNone: "No drinks for this country yet.",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
+    szIntroLocals: "The most important English phrases for work – instantly there and read aloud on tap. Tap a phrase to show it full-screen to show others.",
     szAreas: "Sections",
     szShowTitle: "Show large",
     szListen: "Listen",
