@@ -403,6 +403,12 @@ https://moarci.github.io/holaRuta/?edition=hostel
 
 Eine fest gebaute Edition (`--edition=…`) kann per URL **nicht** überschrieben werden.
 
+**Locals-Editionen (`track:"es-en"`, Einheimische lernen Englisch):** `ingles-pro` (Schule),
+`venue-en` (generisches Venue) und die stadtspezifische Variante **`medellin`** (Comuna 13,
+Metro/Metrocable, medio ambiente, cultura paisa, Guatapé, nómadas, Feria de las Flores) —
+`?edition=medellin` bzw. `node build.js --edition=medellin`. Siehe [LOCALS.md](LOCALS.md) und
+[LOCALS-MEDELLIN.md](LOCALS-MEDELLIN.md).
+
 > Logo/Name eines Partners nur mit dessen Freigabe verwenden; bis dahin neutral co-branded (Farbe + Textzusatz, ohne Logo). Auf GitHub Pages teilen sich Editionen derselben Origin den `localStorage` — echte Trennung erst bei eigenem Deploy/Domain.
 
 ---

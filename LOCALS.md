@@ -86,7 +86,7 @@ Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
 ### Kurspläne (8 Wochen × 5 Teile)
 
-`data.locals.js → PLANS` definiert **neun** strukturierte Lehrgänge (je **8 Wochen × 5 Teile
+`data.locals.js → PLANS` definiert **zehn** strukturierte Lehrgänge (je **8 Wochen × 5 Teile
 à 20 Karten = 800 Karten**), die die vorhandene `PRETRIP`-Etappen-Engine wiederverwenden;
 jeder Teil bündelt 20 Karten zu einer Etappe, die nächste Etappe öffnet sich nach Abschluss
 der aktuellen. Die thematischen Stichworte unten skizzieren den groben Verlauf je Kurs:
@@ -110,6 +110,11 @@ der aktuellen. Die thematischen Stichworte unten skizzieren den groben Verlauf j
   Familie/Gesundheit/Gefühle) → Comida y cocina → Casa y ciudad → Naturaleza y animales → Ropa,
   tiempo y viaje → Trabajo y estudio → Acciones y cualidades. Nutzt ausschließlich muttersprachlich
   freigegebene Karten (ohne den núcleo-Frequenzkern, der in `curso-esencial` steckt).
+- **Curso Medellín** (`curso-medellin`) – stadtspezifischer 8-Wochen-Lehrgang der
+  [Medellín-Variante](LOCALS-MEDELLIN.md): Bienvenida paisa → Metro/Metrocable → Comuna 13 &
+  tours → Comida & cultura paisa → Naturaleza & excursión (Guatapé) → Ciudad verde (medio
+  ambiente) → Nómadas & seguridad → Feria y eventos. Mischt die neuen `loc-med`-Module mit
+  wiederverwendeten Locals-Kategorien (20 kollisionsfreie Karten je Etappe).
 
 Über die Chip-Leiste in „Descubrir → Curso" umschaltbar (`pretripVM` filtert im Locals-
 Track auf `^curso`); im Reise-Track unverändert der bisherige Pre-Trip-Plan. Die Karten
@@ -122,12 +127,14 @@ laufen durch die normale (track-korrekte) Study-Engine.
 Der **NPC ist ein Tourist und spricht Englisch** (`turn.en`, wird per englischer TTS
 vorgelesen); Übersetzung & Handlungsanweisung stehen auf Spanisch (`turn.es`); der/die
 Lernende antwortet auf Englisch (MC oder frei getippt, `solEs`/`options[].es`/`accept`
-tragen die englische Musterantwort). Vierundzwanzig Szenarien: Restaurant, Recepción, Tour,
+tragen die englische Musterantwort). Achtundzwanzig Szenarien: Restaurant, Recepción, Tour,
 Taxi, Mercado, Queja, Playa, Entrevista de trabajo, Llamada de servicio, Farmacia,
 Check-out, Spa/Masaje, Lancha (Islas del Rosario), Banco, Peluquería sowie – aus dem
 Erweiterungspack – **Briefing de buceo, Check-in de vuelo, Daily standup (TI), Demo
 de ventas, En la consulta (clínica), Entrega del auto de alquiler, Llamada de reclamo
-(call-center), Antes de la caminata (senderismo) und Negociar en el mercado**.
+(call-center), Antes de la caminata (senderismo) und Negociar en el mercado** – dazu die
+vier **Medellín**-Szenarien (siehe [LOCALS-MEDELLIN.md](LOCALS-MEDELLIN.md)): **Tour por la
+Comuna 13, En el Metrocable, Excursión a Guatapé und Corredores verdes**.
 
 Die geteilte Engine (`features/dialogos-game.js`) wurde dafür track-fähig gemacht:
 gesprochene Zeile = Lernsprache, Übersetzung/Anweisung = Muttersprache (Reise-Track
