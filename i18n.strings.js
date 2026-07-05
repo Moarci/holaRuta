@@ -159,6 +159,7 @@
     catGroupLocMed: "Medellín",
     catGroupLocHosp: "Turismo y hostelería",
     catGroupLocCult: "Huéspedes de Europa y EE. UU.",
+    catGroupLocNino: "Chicos que venden",
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",
     catGroupLocEsc: "Escuela y examen",
@@ -417,6 +418,7 @@
     catGroupLocMed: "Medellín",
     catGroupLocHosp: "Tourism & hospitality",
     catGroupLocCult: "Guests from Europe & the US",
+    catGroupLocNino: "Kids who sell",
     catGroupLocDia: "Everyday",
     catGroupLocTrab: "Work & business",
     catGroupLocEsc: "School & exam",
@@ -797,6 +799,13 @@
     subComprasLocals: "Supermarkt, Kleidung, Apotheke – Einkaufen auf Englisch üben",
     // Nur Locals-Track: Rollenspiel Gast↔Personal an einem Gerät.
     subVenueRoleplay: "Zu zweit am Handy: Gast und Personal spielen abwechselnd",
+    subCarrito: "Verkaufs-Englisch für Kinder am Wagen: anbieten, Preise & Rollenspiel",
+    subJugar: "Zu zweit spielen & Englisch üben – lokal, ohne Konto",
+    subMedCiudad: "Die Stadt erklären: Comuna 13, Metro, Umwelt & Sicherheit – mit den Sätzen",
+    subMedPaisa: "Kultur, Essen, Feste & Guatapé auf Englisch teilen – mit den Sätzen",
+    medTips: "Tipps",
+    medPhrases: "Wichtige Sätze",
+    medWords: "Glossar",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -1309,6 +1318,13 @@
     subComprasLocals: "Supermarket, clothes, pharmacy – practise shopping in English",
     // Locals track only: role-play guest↔staff on one device.
     subVenueRoleplay: "Two on one phone: guest and staff take turns",
+    subCarrito: "Selling English for kids at the cart: offer, prices & roleplay",
+    subJugar: "Play in pairs & practise English — local, no account",
+    subMedCiudad: "Explain Medellín: Comuna 13, Metro, environment & safety — with the phrases",
+    subMedPaisa: "Share culture, food, festivals & Guatapé in English — with the phrases",
+    medTips: "Tips",
+    medPhrases: "Key phrases",
+    medWords: "Paisa glossary",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 

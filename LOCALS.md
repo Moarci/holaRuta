@@ -63,6 +63,7 @@ Kultur-/Service-Modul für europäische & US-Gäste):
 | Vocabulario por temas (`loc-voc`) | números, colores, familia, cuerpo, comida y bebida, frutas y verduras, animales, ropa, casa, cocina, ciudad, transporte, días y meses, clima, verbos comunes, adjetivos, profesiones, tecnología, naturaleza, emociones, escuela, deportes, salud, oficina, dinero y compras, viaje, la hora, baño, herramientas, música, formas, materiales, aves, vida marina, insectos, postres y dulces, especias y hierbas, medidas, direcciones, palabras de pregunta, pronombres, países, nacionalidades, belleza y cuidado, limpieza del hogar, emergencias, **palabras esenciales (núcleo)**, **verbos esenciales** |
 | Vocabulario B2 / avanzado (`loc-b2`) | opinar y argumentar, acuerdo y desacuerdo, conectores avanzados, frecuencia y tiempo, emociones matizadas, personalidad, conceptos abstractos, colocaciones, mundo laboral, negocios y reuniones, finanzas, educación, phrasal verbs, verbos avanzados, adjetivos avanzados, sociedad y actualidad, medio ambiente, tecnología digital, salud y bienestar, viajes avanzado |
 | Huéspedes de Europa y EE. UU. (`loc-cult`) | estilo de vida europeo, estilo de vida americano, en la mesa: Europa, en la mesa: EE. UU., sin azúcar y zero, comida saludable, agua y aire acondicionado, ruido y música en el hostal |
+| Chicos que venden (`loc-nino`) | el carrito y sus cosas, ofrecer y vender, precios y vuelto, saludar y despedir |
 
 Die Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektion**
 (Einzelwörter statt Service-Sätze): 48 Themen-Kategorien. Darin auch das **núcleo**
@@ -99,7 +100,15 @@ zuckerfreie/**zero**-Produkte, gesundes Essen (ballaststoff-/proteinreich, wenig
 Frittiertes), **kein Leitungswasser** (Flaschenwasser), **Klimaanlage** wegen der Hitze
 und dass **laute Musik im Hostal** viele Gäste stört.
 
-Aktuell **147 Kategorien · 3084 Karten** (ein Schnellstart-Preset je Kategorie).
+Die Gruppe **Chicos que venden (`loc-nino`)** ist ein **kindgerechtes Modul** (A0/A1)
+für Kinder, die in Medellín/Kolumbien/Südamerika am Wagen Zeitungen, Eis, Wasser,
+Süßes oder Souvenirs an Tourist:innen verkaufen: die Produkte, das Anbieten & Verkaufen,
+Preise & Wechselgeld und freundliches Begrüßen/Verabschieden — jeweils als echter,
+einfacher englischer Satz. Der zugehörige interaktive Screen (`features/carrito.js`)
+bündelt Sätze zum Vorlesen und ein „Vender a un turista"-Rollenspiel und trägt eine
+kurze Würde-/Sicherheitsnotiz (höflich sein, sicher bleiben, „nein" ist ok).
+
+Aktuell **151 Kategorien · 3124 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 

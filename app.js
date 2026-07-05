@@ -23,6 +23,8 @@
   const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
   const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
   const venueRoleplayGame = window.SC.venueRoleplayGame; // Feature-Modul (Zwei-Seiten-Venue-Rollenspiel), eager geladen
+  const carritoSheet = window.SC.carritoSheet; // Feature-Modul (El carrito, Kinder-Verkaufs-Englisch + Rollenspiel), eager geladen
+  const jugarIngles = window.SC.jugarIngles; // Feature-Modul (¡A jugar en inglés!, Kinder-Pass-and-play), eager geladen
   const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
   const cronologia = window.SC.cronologia; // Feature-Modul (Historia, Geschichts-Zeitstrahl), eager geladen
   const jergaSheet = window.SC.jergaSheet; // Feature-Modul (Jerga colombiana / Slang), eager geladen
@@ -31,6 +33,8 @@
   const saludSheet = window.SC.saludSheet; // Feature-Modul (Salud y energía), eager geladen
   const logisticaSheet = window.SC.logisticaSheet; // Feature-Modul (Logística de viaje), eager geladen
   const cafeSheet = window.SC.cafeSheet; // Feature-Modul (Café de la región), eager geladen
+  const medCiudadSheet = window.SC.medCiudadSheet; // Feature-Modul (Descubre Medellín – Stadt), eager geladen
+  const medPaisaSheet = window.SC.medPaisaSheet;   // Feature-Modul (Cultura y sabor paisa), eager geladen
   const juegosSheet = window.SC.juegosSheet; // Feature-Modul (Juegos de viaje), eager geladen
   const flirtSheet = window.SC.flirtSheet; // Feature-Modul (Coqueteo y romance; liest SC.flirt live)
   const fotosSheet = window.SC.fotosSheet; // Feature-Modul (Fotos y videos; liest SC.fotografia live)
@@ -61,6 +65,7 @@
   const bailar = window.SC.bailar || null;       // Bailar: Tanzen in LatAm (Schritt-Diagramme, optional)
   const musica = window.SC.musica || null;       // Música: Genres LatAm + Spotify/Apple-Deep-Links (optional)
   const cafe = window.SC.cafe || null;           // Café de la región: Kaffeeanbau & -kultur (optional)
+  const medellin = window.SC.medellin || null;   // Medellín-Discover-Module (ciudad/paisa), nur es-en (optional)
   const juegos = window.SC.juegos || null;       // Juegos de viaje: Hostel-Spiele + Sätze für den Tisch (optional)
   const banderas = window.SC.banderas || null;   // Banderas: Flaggen-Daten je Land (Quiz/Galería) + Info-Sheet (optional)
   const bebidas = window.SC.bebidas || null;     // Bebidas AM/PM: Tag-/Abendgetränk pro Land (optional)
@@ -243,6 +248,8 @@
     // ----- Einkaufszettel (interaktive Einkaufsliste) -----
     compras: { section: "super", open: null }, // aktuelle Rubrik + aufgeklapptes Item (Id|null)
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
+    carritoRP: null,         // El carrito – Verkaufs-Rollenspiel: { sceneId, turnIdx, result, correct, total }|null
+    jugar: null,             // ¡A jugar en inglés! – Pass-and-play: { gameId, turnIdx, awaitingPass }|null
     // ----- Trip-Ziel (Countdown + Tagesziel) -----
     tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
     tripRouteOpen: true,     // Route-Zeitleiste im Profil aufgeklappt? (Standard offen – Drag sichtbar)
@@ -2159,6 +2166,8 @@
     yesto: "yestoSetup", yestoDone: "yestoSetup",
     dialogos: "dialogosSetup", dialogosDone: "dialogosSetup",
     venueRoleplay: "venueRoleplaySetup", venueRoleplayDone: "venueRoleplaySetup",
+    carritoPlay: "carrito", carritoDone: "carrito",
+    jugarPlay: "jugar", jugarDone: "jugar",
     comprasQuiz: "compras", comprasQuizDone: "compras",
     editor: "home",
   };
@@ -2334,6 +2343,8 @@
       "bailar": () => bailarSheet.screen(),
       "musica": () => musicaSheet.screen(),
       "cafe": () => cafeSheet.screen(),
+      "medCiudad": () => medCiudadSheet.screen(),
+      "medPaisa": () => medPaisaSheet.screen(),
       "juegos": () => juegosSheet.screen(),
       "badges": () => ui.renderBadges(badgesVM()),
       "social": () => ui.renderSocial(socialVM()),
@@ -2380,6 +2391,12 @@
       "venueRoleplaySetup": () => venueRoleplayGame.setupScreen(),
       "venueRoleplay": () => venueRoleplayGame.playScreen(),
       "venueRoleplayDone": () => venueRoleplayGame.doneScreen(),
+      "carrito": () => carritoSheet.screen(),
+      "carritoPlay": () => carritoSheet.playScreen(),
+      "carritoDone": () => carritoSheet.doneScreen(),
+      "jugar": () => jugarIngles.setupScreen(),
+      "jugarPlay": () => jugarIngles.playScreen(),
+      "jugarDone": () => jugarIngles.doneScreen(),
       "compras": () => compras.listScreen(),
       "comprasQuiz": () => compras.quizScreen(),
       "comprasQuizDone": () => compras.doneScreen(),
@@ -6323,6 +6340,8 @@
     pageMod(fotografia, "lc:camera", "Fotos y videos", "discover.subFotos", "open-fotos");
     pageMod(flirt, "lc:heart", "Coqueteo y romance", "discover.subFlirt", "open-flirt");
     pageMod(cafe, "lc:coffee", "Café de la región", "discover.subCafe", "open-cafe");
+    pageMod(medellin && medellin.ciudad, "lc:cable-car", "Descubre Medellín", "discover.subMedCiudad", "open-med-ciudad");
+    pageMod(medellin && medellin.paisa, "lc:heart", "Cultura y sabor paisa", "discover.subMedPaisa", "open-med-paisa");
     pageMod(juegos, "lc:dices", "Juegos de viaje", "discover.subJuegos", "open-juegos");
 
     // Banderas: Info-Seite UND die Länderdaten (Name/Farben/Symbolik/Fakt je Land)
@@ -6515,6 +6534,16 @@
   function openCafe() {
     dismissBadgeToast();
     setState({ screen: "cafe" });
+  }
+
+  function openMedCiudad() {
+    dismissBadgeToast();
+    setState({ screen: "medCiudad" });
+  }
+
+  function openMedPaisa() {
+    dismissBadgeToast();
+    setState({ screen: "medPaisa" });
   }
 
   function openJuegos() {
@@ -7067,6 +7096,8 @@
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
     cafe:      { kicker: "Café de la región", icon: "☕", accent: ["#6F4A2E", "#B97C24"] },
+    "med-ciudad": { kicker: "Descubre Medellín", icon: "🚡", accent: ["#2F8E5B", "#1F6B44"] },
+    "med-paisa":  { kicker: "Cultura y sabor paisa", icon: "💐", accent: ["#B97C24", "#C2502E"] },
     juegos:    { kicker: "Juegos de viaje",   icon: "🎲", accent: ["#C44536", "#2E7D9A"] },
     banderas:  { kicker: "Banderas",          icon: "🚩", accent: ["#C0392B", "#2E6E86"] },
   };
@@ -7084,6 +7115,8 @@
               : cat === "flirt" ? (flirt && flirt.TOPICS)
               : cat === "bailar" ? (bailar && bailar.DANCES)
               : cat === "cafe" ? (cafe && cafe.TOPICS)
+              : cat === "med-ciudad" ? (medellin && medellin.ciudad && medellin.ciudad.TOPICS)
+              : cat === "med-paisa" ? (medellin && medellin.paisa && medellin.paisa.TOPICS)
               : cat === "juegos" ? (juegos && juegos.TOPICS)
               : cat === "banderas" ? (banderas && banderas.TOPICS)
               : null;
@@ -7166,8 +7199,12 @@
     bailar:        { icon: "💃", lc: "lc:footprints",      title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
     musica:        { icon: "🎵", lc: "lc:music",           title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
     cafe:          { icon: "☕", lc: "lc:coffee",          title: "Café de la región",    sub: "discover.subCafe",          accent: ["#6F4A2E", "#B97C24"] },
+    "med-ciudad":  { icon: "🚡", lc: "lc:cable-car",       title: "Descubre Medellín",    sub: "discover.subMedCiudad",     accent: ["#2F8E5B", "#1F6B44"] },
+    "med-paisa":   { icon: "💐", lc: "lc:heart",           title: "Cultura y sabor paisa", sub: "discover.subMedPaisa",     accent: ["#B97C24", "#C2502E"] },
     juegos:        { icon: "🎲", lc: "lc:dices",           title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
     banderas:      { icon: "🚩", lc: "lc:flag",            title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
+    carrito:       { icon: "🛒", lc: "lc:shopping-cart",   title: "El carrito",           sub: "discover.subCarrito",       accent: ["#E0743C", "#B97C24"] },
+    jugar:         { icon: "🎮", lc: "lc:dices",           title: "¡A jugar en inglés!",  sub: "discover.subJugar",         accent: ["#3F7355", "#2E6E86"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -7259,11 +7296,24 @@
         return cut((musicaSheet.vm().genres || []).map((g) => ({ mark: g.icon || "🎵", text: `${g.name} · ${g.origin}` })));
       case "cafe":
         return cut((cafeSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "☕", text: tp.title })));
+      case "med-ciudad":
+        return cut((medCiudadSheet.vm().topics || []).map((tp) => ({ mark: "📍", text: tp.title })));
+      case "med-paisa":
+        return cut((medPaisaSheet.vm().topics || []).map((tp) => ({ mark: "💐", text: tp.title })));
       case "juegos":
         return cut((juegosSheet.vm().topics || []).map((tp) => ({ mark: tp.icon || "🎲", text: tp.title })));
       case "banderas":
         // Visuelle Highlights: ein paar Flaggen mit Ländernamen (spanisch).
         return cut((banderas ? banderas.COUNTRIES : []).map((c) => ({ mark: c.flag || "🚩", text: c.es })));
+      case "carrito": {
+        const out = [];
+        (carritoSheet.vm().groups || []).forEach((g) => {
+          (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.cat.icon || "🛒", text: `${c.en} — ${c.es}` }));
+        });
+        return cut(out);
+      }
+      case "jugar":
+        return cut((jugarIngles.setupVM().games || []).map((g) => ({ mark: g.icon || "🎮", text: g.title })));
       default:
         return [];
     }
@@ -7421,6 +7471,8 @@
     "open-bailar": (el) => { openBailar(); },
     "open-musica": (el) => { openMusica(); },
     "open-cafe": (el) => { openCafe(); },
+    "open-med-ciudad": (el) => { openMedCiudad(); },
+    "open-med-paisa": (el) => { openMedPaisa(); },
     "open-juegos": (el) => { openJuegos(); },
     "set-stats-filter": (el) => { setStatsFilter(el.dataset.filter); },
     "reset-progress": (el) => { resetProgress(); },
@@ -7525,6 +7577,18 @@
     "venue-roleplay-next": (el) => { venueRoleplayGame.advance(); },
     "venue-roleplay-again": (el) => { venueRoleplayGame.again(); },
     "venue-roleplay-speak": (el) => { venueRoleplayGame.speakLine(); },
+    "open-carrito": (el) => { carritoSheet.open(); },
+    "carrito-start": (el) => { carritoSheet.start(el.dataset.id); },
+    "carrito-answer": (el) => { carritoSheet.answer(Number(el.dataset.idx)); },
+    "carrito-next": (el) => { carritoSheet.next(); },
+    "carrito-again": (el) => { carritoSheet.again(); },
+    "carrito-speak": (el) => { carritoSheet.speak(el.dataset.text); },
+    "open-jugar": (el) => { jugarIngles.open(); },
+    "jugar-start": (el) => { jugarIngles.start(el.dataset.id); },
+    "jugar-begin": (el) => { jugarIngles.begin(); },
+    "jugar-next": (el) => { jugarIngles.next(); },
+    "jugar-again": (el) => { jugarIngles.again(); },
+    "jugar-speak": (el) => { jugarIngles.speak(el.dataset.text); },
     "open-compras": (el) => { compras.open(); },
     "compras-section": (el) => { compras.section(el.dataset.id); },
     "compras-pick": (el) => { compras.pick(el.dataset.id); },
@@ -8074,7 +8138,11 @@
       bailar: openBailar,
       musica: openMusica,
       cafe: openCafe,
+      "med-ciudad": openMedCiudad,
+      "med-paisa": openMedPaisa,
       juegos: openJuegos,
+      carrito: () => carritoSheet.open(),
+      jugar: () => jugarIngles.open(),
       banderas: () => banderasGame.open(),
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
@@ -8221,6 +8289,8 @@
   if (compras) compras.init(featureCtx);
   if (dialogosGame) dialogosGame.init(featureCtx);
   if (venueRoleplayGame) venueRoleplayGame.init(featureCtx);
+  if (carritoSheet) carritoSheet.init(featureCtx);
+  if (jugarIngles) jugarIngles.init(featureCtx);
   if (etiqueta) etiqueta.init(featureCtx);
   if (cronologia) cronologia.init(featureCtx);
   if (jergaSheet) jergaSheet.init(featureCtx);
@@ -8229,6 +8299,8 @@
   if (saludSheet) saludSheet.init(featureCtx);
   if (logisticaSheet) logisticaSheet.init(featureCtx);
   if (cafeSheet) cafeSheet.init(featureCtx);
+  if (medCiudadSheet) medCiudadSheet.init(featureCtx);
+  if (medPaisaSheet) medPaisaSheet.init(featureCtx);
   if (juegosSheet) juegosSheet.init(featureCtx);
   if (flirtSheet) flirtSheet.init(featureCtx);
   if (fotosSheet) fotosSheet.init(featureCtx);

@@ -180,10 +180,61 @@
     { id: "comida-sana-en",  label: "Comida saludable",         labelEs: "Comida saludable",         labelEn: "Healthy eating", icon: "🥗", grad: ["#3F7355", "#5A8E6E"], group: "loc-cult" },
     { id: "agua-clima-en",   label: "Agua y aire acondicionado", labelEs: "Agua y aire acondicionado", labelEn: "Water & AC", icon: "💧", grad: ["#1F7A8C", "#3E8388"], group: "loc-cult" },
     { id: "hostal-ruido-en", label: "Ruido y música en el hostal", labelEs: "Ruido y música en el hostal", labelEn: "Noise & music", icon: "🔇", grad: ["#7D4A8E", "#4C5FA8"], group: "loc-cult" },
+    // --- Chicos que venden (Kinder, die am Wagen an Tourist:innen verkaufen) ---
+    // Kindgerechtes, respektvolles Verkaufs-Englisch (A0/A1). Gruppe loc-nino.
+    { id: "carrito",      label: "El carrito y sus cosas", labelEs: "El carrito y sus cosas", labelEn: "The cart & its things", icon: "🛒", grad: ["#E0743C", "#B97C24"], group: "loc-nino" },
+    { id: "vender-nino",  label: "Ofrecer y vender",       labelEs: "Ofrecer y vender",       labelEn: "Offering & selling",  icon: "🙋", grad: ["#3F7355", "#5A8E6E"], group: "loc-nino" },
+    { id: "precios-nino", label: "Precios y vuelto",       labelEs: "Precios y vuelto",       labelEn: "Prices & change",     icon: "💵", grad: ["#5E7D3A", "#B97C24"], group: "loc-nino" },
+    { id: "charla-nino",  label: "Saludar y despedir",     labelEs: "Saludar y despedir",     labelEn: "Hello & goodbye",     icon: "👋", grad: ["#E0743C", "#2E6E86"], group: "loc-nino" },
   ];
 
   // lvl: 1=Einsteiger, 2=Mittel, 3=Fortgeschritten.
   var CARDS = [
+    // ===== Chicos que venden (Gruppe loc-nino) =====
+    // --- carrito: El carrito y sus cosas (Produkte am Wagen) ---
+    { id: "loc-car01", cat: "carrito", lvl: 1, es: "el periódico", en: "the newspaper", tip: "de NIÚS-pei-per" },
+    { id: "loc-car02", cat: "carrito", lvl: 1, es: "el helado", en: "the ice cream", tip: "di áis crim" },
+    { id: "loc-car03", cat: "carrito", lvl: 1, es: "el agua", en: "the water", tip: "de UÓ-ter" },
+    { id: "loc-car04", cat: "carrito", lvl: 1, es: "los dulces", en: "the candy", tip: "de KÁN-di" },
+    { id: "loc-car05", cat: "carrito", lvl: 1, es: "las frutas", en: "the fruit", tip: "de frut" },
+    { id: "loc-car06", cat: "carrito", lvl: 1, es: "el jugo", en: "the juice", tip: "de yus" },
+    { id: "loc-car07", cat: "carrito", lvl: 1, es: "el recuerdo", en: "the souvenir", tip: "de su-ve-NÍR" },
+    { id: "loc-car08", cat: "carrito", lvl: 1, es: "las gafas de sol", en: "the sunglasses", tip: "de SÓN-gla-ses" },
+    { id: "loc-car09", cat: "carrito", lvl: 1, es: "las postales", en: "the postcards", tip: "de PÓUST-cards" },
+    { id: "loc-car10", cat: "carrito", lvl: 1, es: "las pulseras", en: "the bracelets", tip: "de BRÉIS-lets" },
+    // --- vender-nino: Ofrecer y vender ---
+    { id: "loc-vnn01", cat: "vender-nino", lvl: 1, es: "¿Quiere comprar?", en: "Would you like to buy?", tip: "wud yu láik tu bái" },
+    { id: "loc-vnn02", cat: "vender-nino", lvl: 1, es: "¿Le gustaría un helado?", en: "Would you like an ice cream?", tip: "wud yu láik an áis crim" },
+    { id: "loc-vnn03", cat: "vender-nino", lvl: 1, es: "Está muy fresco.", en: "It's very fresh.", tip: "its VÉ-ri fresh" },
+    { id: "loc-vnn04", cat: "vender-nino", lvl: 1, es: "Es delicioso.", en: "It's delicious.", tip: "its di-LÍ-shos" },
+    { id: "loc-vnn05", cat: "vender-nino", lvl: 1, es: "Dos por uno.", en: "Two for one.", tip: "tu for uán" },
+    { id: "loc-vnn06", cat: "vender-nino", lvl: 1, es: "¿Cuántos quiere?", en: "How many would you like?", tip: "jáo MÉ-ni wud yu láik" },
+    { id: "loc-vnn07", cat: "vender-nino", lvl: 1, es: "Mire, por favor.", en: "Have a look, please.", tip: "jav a luk plis" },
+    { id: "loc-vnn08", cat: "vender-nino", lvl: 1, es: "Aquí tiene.", en: "Here you go.", tip: "JÍR yu góu" },
+    { id: "loc-vnn09", cat: "vender-nino", lvl: 1, es: "Gracias por comprar.", en: "Thanks for buying.", tip: "zenks for BÁI-ing" },
+    { id: "loc-vnn10", cat: "vender-nino", lvl: 1, es: "¿Algo más?", en: "Anything else?", tip: "É-ni-zing els" },
+    // --- precios-nino: Precios y vuelto ---
+    { id: "loc-pnn01", cat: "precios-nino", lvl: 1, es: "Un dólar.", en: "One dollar.", tip: "uán DÓ-lar" },
+    { id: "loc-pnn02", cat: "precios-nino", lvl: 1, es: "Dos dólares.", en: "Two dollars.", tip: "tu DÓ-lars" },
+    { id: "loc-pnn03", cat: "precios-nino", lvl: 1, es: "Cinco mil pesos.", en: "Five thousand pesos.", tip: "fáiv ZÁU-send PÉI-sos" },
+    { id: "loc-pnn04", cat: "precios-nino", lvl: 1, es: "Cuesta un dólar.", en: "It costs one dollar.", tip: "it costs uán DÓ-lar" },
+    { id: "loc-pnn05", cat: "precios-nino", lvl: 1, es: "Aquí está su vuelto.", en: "Here is your change.", tip: "JÍR is yor chéinch" },
+    { id: "loc-pnn06", cat: "precios-nino", lvl: 1, es: "¿Tiene sencillo?", en: "Do you have small change?", tip: "du yu jav smol chéinch" },
+    { id: "loc-pnn07", cat: "precios-nino", lvl: 1, es: "No tengo vuelto.", en: "I have no change.", tip: "ái jav nóu chéinch" },
+    { id: "loc-pnn08", cat: "precios-nino", lvl: 1, es: "Es muy barato.", en: "It's very cheap.", tip: "its VÉ-ri chip" },
+    { id: "loc-pnn09", cat: "precios-nino", lvl: 1, es: "Le hago un descuento.", en: "I'll give you a discount.", tip: "áil guiv yu a DÍS-caunt" },
+    { id: "loc-pnn10", cat: "precios-nino", lvl: 1, es: "¿Efectivo o tarjeta?", en: "Cash or card?", tip: "cash or card" },
+    // --- charla-nino: Saludar y despedir ---
+    { id: "loc-chn01", cat: "charla-nino", lvl: 1, es: "¡Hola!", en: "Hello!", tip: "je-LÓU" },
+    { id: "loc-chn02", cat: "charla-nino", lvl: 1, es: "Buenos días.", en: "Good morning.", tip: "gud MÓR-ning" },
+    { id: "loc-chn03", cat: "charla-nino", lvl: 1, es: "¿De dónde es?", en: "Where are you from?", tip: "wér ar yu from" },
+    { id: "loc-chn04", cat: "charla-nino", lvl: 1, es: "¿Cómo se llama?", en: "What's your name?", tip: "wats yor néim" },
+    { id: "loc-chn05", cat: "charla-nino", lvl: 1, es: "Bienvenido.", en: "Welcome.", tip: "UÉL-com" },
+    { id: "loc-chn06", cat: "charla-nino", lvl: 1, es: "Que tenga un buen día.", en: "Have a nice day.", tip: "jav a náis déi" },
+    { id: "loc-chn07", cat: "charla-nino", lvl: 1, es: "Gracias, muy amable.", en: "Thank you, that's very kind.", tip: "zenk yu dats VÉ-ri káind" },
+    { id: "loc-chn08", cat: "charla-nino", lvl: 1, es: "Hasta luego.", en: "See you later.", tip: "si yu LÉI-ter" },
+    { id: "loc-chn09", cat: "charla-nino", lvl: 1, es: "Disfrute su viaje.", en: "Enjoy your trip.", tip: "en-YÓI yor trip" },
+    { id: "loc-chn10", cat: "charla-nino", lvl: 1, es: "Cuídese.", en: "Take care.", tip: "téik ker" },
     // ===== Tourismus & Hostelería =====
     // --- meseros (Kellner:innen / Service) ---
     { id: "loc-mes01", cat: "meseros", lvl: 1, es: "¿Están listos para ordenar?", en: "Are you ready to order?", tip: "ar yu RE-di tu OR-der" },
