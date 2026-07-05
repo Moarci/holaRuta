@@ -596,7 +596,57 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
   color: var(--ink); margin: 0 0 8px; text-wrap: balance;
 }
 .lp-hook__text { font-size: 1rem; line-height: 1.55; color: var(--muted); margin: 0; }
-@media (prefers-reduced-motion: reduce) { .lp-hook, .lp-hook__ico { transition: none; } }
+
+/* „Kostprobe": jeder Hook lässt sich aufklappen und zeigt einen echten Reise-
+   Satz auf Spanisch + Mini-Kontext. Macht die Behauptung der Kachel greifbar –
+   du liest sofort, was das Modul kann, statt es nur versprochen zu bekommen.
+   Der Satz erbt die Akzentfarbe der Kachel (--accent inline). */
+.lp-hook__peek {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 12px;
+  appearance: none; -webkit-appearance: none; font: inherit; cursor: pointer;
+  background: transparent; border: 0; padding: 4px 2px;
+  font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent, var(--brand)) 74%, var(--ink));
+  transition: color 0.16s ease, gap 0.16s ease;
+}
+.lp-hook__peek:hover { gap: 10px; color: color-mix(in srgb, var(--accent, var(--brand)) 92%, var(--ink)); }
+.lp-hook__peek-chev {
+  width: 7px; height: 7px; flex: none;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+  transition: transform 0.22s ease;
+}
+.lp-hook__peek[aria-expanded="true"] .lp-hook__peek-chev { transform: translateY(1px) rotate(-135deg); }
+.lp-hook__sample {
+  margin-top: 10px; padding: 13px 15px; border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--accent, var(--brand)) 9%, var(--card));
+  border: 1.5px solid color-mix(in srgb, var(--accent, var(--brand)) 26%, var(--line));
+  border-left: 3px solid var(--accent, var(--brand));
+  animation: lp-more-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lp-hook__es {
+  display: flex; align-items: baseline; gap: 9px; margin: 0 0 5px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 1.08rem; line-height: 1.3; color: var(--ink);
+}
+.lp-hook__es-txt { min-width: 0; }
+.lp-hook__say {
+  flex: none; appearance: none; -webkit-appearance: none; cursor: pointer;
+  width: 30px; height: 30px; border-radius: 9px; font-size: 0.95rem; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--accent, var(--brand)) 16%, var(--card));
+  border: 1.5px solid color-mix(in srgb, var(--accent, var(--brand)) 34%, transparent);
+  align-self: center; transition: transform 0.14s ease, background 0.14s ease;
+}
+.lp-hook__say:hover { transform: scale(1.08); background: color-mix(in srgb, var(--accent, var(--brand)) 26%, var(--card)); }
+.lp-hook__say:active { transform: scale(0.94); }
+.lp-hook__say.is-speaking { animation: lp-pulse 1.1s ease-out infinite; }
+.lp-hook__gloss { margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--muted); font-style: italic; }
+@media (prefers-reduced-motion: reduce) {
+  .lp-hook, .lp-hook__ico, .lp-hook__peek, .lp-hook__peek-chev, .lp-hook__say { transition: none; }
+  .lp-hook__sample { animation: none; }
+  .lp-hook__say.is-speaking { animation: none; }
+}
 @media (hover: none) { .lp-hook:hover { transform: none; } }
 
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
@@ -953,15 +1003,70 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
  * dunklen Footer: hell → warm → dunkel ergibt einen ruhigen Rhythmus und einen
  * letzten klaren Conversion-Push. */
 .lp-final {
+  position: relative; overflow: hidden;
   background: linear-gradient(135deg, var(--brand), var(--warn));
   color: var(--cream); text-align: center;
 }
+.lp-final .lp-wrap { position: relative; z-index: 1; }
+/* Weiche, langsam driftende Lichter über dem Terrakotta-Grund – der Abschluss
+   „lebt" leicht, ohne vom CTA abzulenken (reduced-motion friert das ein). */
+.lp-final__aura {
+  position: absolute; inset: -20% -10%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(38% 45% at 18% 20%, rgba(255, 240, 214, 0.28), transparent 70%),
+    radial-gradient(34% 40% at 84% 30%, rgba(255, 214, 170, 0.22), transparent 70%),
+    radial-gradient(46% 50% at 65% 92%, rgba(180, 60, 40, 0.30), transparent 72%);
+  animation: lp-final-drift 26s ease-in-out infinite alternate;
+}
+@keyframes lp-final-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(2.5%, -2.5%, 0) scale(1.12); }
+}
+.lp-final__eyebrow {
+  font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: rgba(251, 243, 228, 0.82);
+  margin: 0 0 var(--space-2);
+}
 .lp-final .lp-h2 { color: var(--cream); margin-inline: auto; max-width: 24ch; }
-.lp-final__sub { font-size: var(--fs-lead); color: rgba(251, 243, 228, 0.92); margin: 0 auto var(--space-5); max-width: 46ch; }
+/* Rotierender „Bereit für …" – wechselt echte Reise-Momente durch. */
+.lp-final__ticker {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.1rem, 2.4vw, 1.55rem); line-height: 1.25;
+  color: var(--cream); margin: 0 auto var(--space-3);
+  display: inline-flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0.4em;
+}
+.lp-final__ticker-lead { color: rgba(251, 243, 228, 0.72); }
+.lp-final__ticker-rot {
+  display: inline-block; min-height: 1.3em;
+  padding: 0 0 3px; border-bottom: 2px solid rgba(251, 243, 228, 0.45);
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+.lp-final__ticker-rot.is-swapping { opacity: 0; transform: translateY(6px); }
+.lp-final__sub { font-size: var(--fs-lead); color: rgba(251, 243, 228, 0.92); margin: 0 auto var(--space-4); max-width: 46ch; }
+/* Zahlen-Cluster: zählt beim Einscrollen hoch (data-count). Vier ruhige Belege
+   direkt über dem CTA statt einer nackten Fläche. */
+.lp-final__stats {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(18px, 5vw, 44px); margin: 0 auto var(--space-5); max-width: 40rem;
+}
+.lp-final__stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.lp-final__num {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(1.7rem, 4.5vw, 2.6rem); line-height: 1; color: var(--cream);
+  letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+}
+.lp-final__lbl {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(251, 243, 228, 0.78);
+}
 .lp-cta--onbrand {
   /* Weiße Fläche bleibt in beiden Themes -> feste dunkle Tinte (#A23E20 = 6.47:1
      auf Weiß, wie das App-Update-Banner). */
   background: #fff; color: #A23E20; border-color: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-final__aura { animation: none; }
+  .lp-final__ticker-rot { transition: none; }
 }
 
 /* ─────────────────────────── Footer ─────────────────────────── */
