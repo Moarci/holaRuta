@@ -129,6 +129,7 @@
     lexLast: function (p) { return "Último guardado: «" + p.es + "»"; },
     lexHint: "Tus palabras y frases guardadas, a mano",
     // Themen-Gruppen (Locals)
+    catGroupLocMed: "Medellín",
     catGroupLocHosp: "Turismo y hostelería",
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",

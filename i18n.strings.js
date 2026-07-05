@@ -156,6 +156,7 @@
     lexHint: "Deine gemerkten Wörter & Sätze – griffbereit",
     // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
     catGroupLocals: "Inglés para el trabajo",
+    catGroupLocMed: "Medellín",
     catGroupLocHosp: "Turismo y hostelería",
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",
@@ -412,6 +413,7 @@
     lexLast: (p) => `Last saved: “${p.es}”`,
     lexHint: "Your saved words & phrases – within reach",
     catGroupLocals: "English for work",
+    catGroupLocMed: "Medellín",
     catGroupLocHosp: "Tourism & hospitality",
     catGroupLocDia: "Everyday",
     catGroupLocTrab: "Work & business",

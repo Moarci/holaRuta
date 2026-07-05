@@ -61,6 +61,10 @@ const STRICT = false; // später true: alle Treffer werden zu harten Fehlern.
 const WHITELIST = new Set([
   // hier landen geprüfte Lehnwörter/Eigennamen (¿¡ñ) bzw. Marken (iPhone) –
   // wird beim Sign-off pro Kategorie gepflegt.
+  // Medellín (loc-med): Eigennamen/Speisen mit ñ bleiben korrekt so geschrieben.
+  "loc-cpais11|en|c", "loc-cpais11|context.egLearn|c",   // buñuelo
+  "loc-guat05|en|c", "loc-guat05|context.egLearn|c",     // La Piedra del Peñol
+  "loc-guat15|en|c", "loc-guat15|context.egLearn|c",     // El Peñol
 ]);
 
 // ============================ Regel (a) ============================

@@ -192,6 +192,8 @@
   // innerhalb einer Gruppe bleibt die Fälligkeits-Sortierung aus homeVM erhalten.
   const CATEGORY_GROUPS = [
     // Locals-Track: Englisch nach Lebensbereich (leer/ausgeblendet im Reise-Track).
+    // Medellín-Module zuerst (nur in der Medellín-Edition befüllt).
+    { id: "loc-med",  titleKey: "home.catGroupLocMed" },
     { id: "loc-hosp", titleKey: "home.catGroupLocHosp" },
     { id: "loc-dia",  titleKey: "home.catGroupLocDia" },
     { id: "loc-trab", titleKey: "home.catGroupLocTrab" },
