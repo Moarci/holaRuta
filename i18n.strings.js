@@ -785,8 +785,14 @@
     subBanderas: "Flaggen-Quiz: Land erraten – und Farben, Symbole & Geschichte gleich mitlernen",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
     subYesto: "Bild raten: 3-2-1 – wie heißt das auf Spanisch?",
-    // Locals-Track (Englisch lernen): nach „auf Englisch" fragen.
+    // Locals-Track (Englisch lernen): nach „auf Englisch" fragen bzw. Reise-Wortlaut
+    // („Reisetipp", „Reisebedarf") gegen den Arbeits-/Alltagsbezug tauschen.
     subYestoLocals: "Bild raten: 3-2-1 – wie heißt das auf Englisch?",
+    subSupervivenciaLocals: "Die wichtigsten Sätze fürs Arbeiten – sofort griffbereit",
+    subCuerpoLocals: "Körperteile antippen und das englische Wort lernen",
+    subComprasLocals: "Supermarkt, Kleidung, Apotheke – Einkaufen auf Englisch üben",
+    // Nur Locals-Track: Rollenspiel Gast↔Personal an einem Gerät.
+    subVenueRoleplay: "Zu zweit am Handy: Gast und Personal spielen abwechselnd",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -1281,8 +1287,14 @@
     subBanderas: "Flag quiz: guess the country – and learn the colours, symbols & history along the way",
     subBebidas: "What people drink morning and evening – country by country",
     subYesto: "Guess the picture: 3-2-1 – what's it called in Spanish?",
-    // Locals track (learning English): ask "in English".
+    // Locals track (learning English): ask "in English" and swap travel wording
+    // ("travel tip", "travel needs") for the work/everyday focus of this track.
     subYestoLocals: "Guess the picture: 3-2-1 – what's it called in English?",
+    subSupervivenciaLocals: "The most important phrases for work – right to hand",
+    subCuerpoLocals: "Tap body parts and learn the English word",
+    subComprasLocals: "Supermarket, clothes, pharmacy – practise shopping in English",
+    // Locals track only: role-play guest↔staff on one device.
+    subVenueRoleplay: "Two on one phone: guest and staff take turns",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 
