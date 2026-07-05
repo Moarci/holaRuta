@@ -130,6 +130,7 @@
     lexHint: "Tus palabras y frases guardadas, a mano",
     // Themen-Gruppen (Locals)
     catGroupLocHosp: "Turismo y hostelería",
+    catGroupLocCult: "Huéspedes de Europa y EE. UU.",
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",
     catGroupLocEsc: "Escuela y examen",

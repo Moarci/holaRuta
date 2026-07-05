@@ -157,6 +157,7 @@
     // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
     catGroupLocals: "Inglés para el trabajo",
     catGroupLocHosp: "Turismo y hostelería",
+    catGroupLocCult: "Huéspedes de Europa y EE. UU.",
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",
     catGroupLocEsc: "Escuela y examen",
@@ -413,6 +414,7 @@
     lexHint: "Your saved words & phrases – within reach",
     catGroupLocals: "English for work",
     catGroupLocHosp: "Tourism & hospitality",
+    catGroupLocCult: "Guests from Europe & the US",
     catGroupLocDia: "Everyday",
     catGroupLocTrab: "Work & business",
     catGroupLocEsc: "School & exam",

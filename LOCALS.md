@@ -59,6 +59,7 @@ Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
 | Escuela y examen (`loc-esc`) | gramática, en clase, números y fechas, conectores, tiempos verbales, preposiciones, hacer preguntas, falsos amigos, pronunciación (minimalpaare), present perfect, artículos a/an/the, cantidades (much/many), verbos modales, phrasal verbs, comparar |
 | Vocabulario por temas (`loc-voc`) | números, colores, familia, cuerpo, comida y bebida, frutas y verduras, animales, ropa, casa, cocina, ciudad, transporte, días y meses, clima, verbos comunes, adjetivos, profesiones, tecnología, naturaleza, emociones, escuela, deportes, salud, oficina, dinero y compras, viaje, la hora, baño, herramientas, música, formas, materiales, aves, vida marina, insectos, postres y dulces, especias y hierbas, medidas, direcciones, palabras de pregunta, pronombres, países, nacionalidades, belleza y cuidado, limpieza del hogar, emergencias, **palabras esenciales (núcleo)**, **verbos esenciales** |
 | Vocabulario B2 / avanzado (`loc-b2`) | opinar y argumentar, acuerdo y desacuerdo, conectores avanzados, frecuencia y tiempo, emociones matizadas, personalidad, conceptos abstractos, colocaciones, mundo laboral, negocios y reuniones, finanzas, educación, phrasal verbs, verbos avanzados, adjetivos avanzados, sociedad y actualidad, medio ambiente, tecnología digital, salud y bienestar, viajes avanzado |
+| Huéspedes de Europa y EE. UU. (`loc-cult`) | estilo de vida europeo, estilo de vida americano, en la mesa: Europa, en la mesa: EE. UU., sin azúcar y zero, comida saludable, agua y aire acondicionado, ruido y música en el hostal |
 
 Die Gruppe **Vocabulario por temas (`loc-voc`)** ist eine reine **Vokabel-Sektion**
 (Einzelwörter statt Service-Sätze): 48 Themen-Kategorien. Darin auch das **núcleo**
@@ -80,7 +81,16 @@ diskursivem Vokabular (Meinung/Argumentation, Konnektoren, Kollokationen, phrasa
 verbs, Arbeit/Wirtschaft, Gesellschaft/Umwelt …). Jede Karte trägt `es`/`en`/`tip`
 plus einen vollen Beispielsatz-Kontext in `contextdata.locals.js`.
 
-Aktuell **131 Kategorien · 2844 Karten** (ein Schnellstart-Preset je Kategorie).
+Die Gruppe **Huéspedes de Europa y EE. UU. (`loc-cult`)** ist ein **Kultur-/Service-Modul**:
+Sie vermittelt, wie europäische und US-amerikanische Gäste ticken – Lebensweise,
+Esskultur/Vorlieben und Verhaltensmuster – jeweils als echter englischer Service-Satz.
+Das kulturelle „Warum" trägt die spanische Frage plus der Kontext (`situación`/`consejo`)
+in `contextdata.locals.js`. Acht Kategorien decken u. a. die praktischen Muss-Themen ab:
+zuckerfreie/**zero**-Produkte, gesundes Essen (ballaststoff-/proteinreich, wenig
+Frittiertes), **kein Leitungswasser** (Flaschenwasser), **Klimaanlage** wegen der Hitze
+und dass **laute Musik im Hostal** viele Gäste stört.
+
+Aktuell **139 Kategorien · 2956 Karten** (ein Schnellstart-Preset je Kategorie).
 Bedarfs-Aufstellung & Bauplan des Ausbaus: siehe [LOCALS-EXPANSION.md](LOCALS-EXPANSION.md).
 Karten-Schema und Pflege wie in `data.js` (siehe [BAUPLAN.md](BAUPLAN.md)).
 
@@ -139,7 +149,7 @@ Im Locals-Track zeigt die App **nur** die Locals-Inhalte – die Reise-Inhalte b
 im Korpus (damit keine Reise-Code-Pfade brechen), sind aber unsichtbar:
 - `allCards()` liefert im Locals-Track nur Locals-Karten → Study/Ruta/Suche/Badges/
   Stats sind fokussiert.
-- Die Startseite zeigt nur die vier Locals-Kategorie-Gruppen.
+- Die Startseite zeigt nur die sieben Locals-Kategorie-Gruppen.
 - „Entdecken" zeigt die track-fähigen Features (Mi léxico, Diálogos, Banderas,
   ¿Y esto?, Definiciones, Frases, Vocabulario sin fin, **Supervivencia laboral**,
   **Precios al oído** auf Englisch, **El Cuerpo** und **Lista de compras** –

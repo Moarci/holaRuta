@@ -193,6 +193,7 @@
   const CATEGORY_GROUPS = [
     // Locals-Track: Englisch nach Lebensbereich (leer/ausgeblendet im Reise-Track).
     { id: "loc-hosp", titleKey: "home.catGroupLocHosp" },
+    { id: "loc-cult", titleKey: "home.catGroupLocCult" },
     { id: "loc-dia",  titleKey: "home.catGroupLocDia" },
     { id: "loc-trab", titleKey: "home.catGroupLocTrab" },
     { id: "loc-esc",  titleKey: "home.catGroupLocEsc" },
