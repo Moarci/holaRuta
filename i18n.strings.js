@@ -787,8 +787,14 @@
     subBanderas: "Flaggen-Quiz: Land erraten – und Farben, Symbole & Geschichte gleich mitlernen",
     subBebidas: "Was man morgens und abends trinkt – Land für Land",
     subYesto: "Bild raten: 3-2-1 – wie heißt das auf Spanisch?",
-    // Locals-Track (Englisch lernen): nach „auf Englisch" fragen.
+    // Locals-Track (Englisch lernen): nach „auf Englisch" fragen bzw. Reise-Wortlaut
+    // („Reisetipp", „Reisebedarf") gegen den Arbeits-/Alltagsbezug tauschen.
     subYestoLocals: "Bild raten: 3-2-1 – wie heißt das auf Englisch?",
+    subSupervivenciaLocals: "Die wichtigsten Sätze fürs Arbeiten – sofort griffbereit",
+    subCuerpoLocals: "Körperteile antippen und das englische Wort lernen",
+    subComprasLocals: "Supermarkt, Kleidung, Apotheke – Einkaufen auf Englisch üben",
+    // Nur Locals-Track: Rollenspiel Gast↔Personal an einem Gerät.
+    subVenueRoleplay: "Zu zweit am Handy: Gast und Personal spielen abwechselnd",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -800,6 +806,7 @@
 
     // Supervivencia
     szIntro: "Die wichtigsten Sätze für den Ernstfall – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
+    szIntroLocals: "Die wichtigsten englischen Sätze fürs Arbeiten – sofort da und auf Tipp vorgelesen. Satz antippen zeigt ihn bildschirmfüllend zum Herzeigen.",
     szAreas: "Bereiche",
     szShowTitle: "Groß anzeigen",
     szListen: "Anhören",
@@ -809,6 +816,7 @@
     // Precios al oído
     prcNoSpeech: "Dein Gerät kann keine Sprachausgabe – ohne sie gibt es nichts zu hören.",
     prcIntro: "Hör einen Preis auf Spanisch und tippe die Zahl. Wähle ein Land und wie groß die Beträge werden sollen – von Kleingeld bis zu echten kolumbianischen Millionenpreisen.",
+    prcIntroLocals: "Hör einen Preis auf Englisch und tippe die Zahl. Wähle die Währung und die Größe der Beträge – vom Trinkgeld in Dollar bis zu Preisen in Pesos.",
     prcCountryCurrency: "Land &amp; Währung",
     prcDifficulty: "Schwierigkeit",
     prcSample: (p) => `${p.flag} ${p.name}: Beträge bis <b>${p.max}</b> ${p.many}.`,
@@ -1107,12 +1115,14 @@
     quizCorrect: "¡Correcto! 🎉",
     quizNotExactly: "No exactamente.",
     quizSolution: (p) => `Richtig: <b lang="es">${p.es}</b> · ${p.de}`,
+    quizSolutionLocals: (p) => `Richtig: <b lang="en">${p.es}</b> · ${p.de}`,
     quizDefinicion: "Definición",
     quizQuestion: (p) => `Frage ${p.pos}/${p.total}`,
     quizAgain: "Nochmal üben",
 
     // Frases flexibles
     frasesIntro: "Wähle eine Reise-Situation und fülle die Lücke im Satzrahmen mit dem passenden Baustein – so baust du Sätze selbst, statt nur zu übersetzen.",
+    frasesIntroLocals: "Wähle eine Situation und füll die Lücke im Satzrahmen mit dem passenden Baustein – so baust du Sätze auf Englisch, statt nur zu übersetzen.",
     frasesBuild: "Bilde den Satz",
     frasesSentence: (p) => `Satz ${p.pos}/${p.total}`,
     frasesOther: "Anderes Thema",
@@ -1153,6 +1163,7 @@
 
     // El Cuerpo
     cuerpoIntro: "Der menschliche Körper auf Spanisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: Dann erscheinen Wort, Aussprache und der passende Reisesatz (oft die «Me duele …»-Formel für Arzt &amp; Apotheke).",
+    cuerpoIntroLocals: "Der menschliche Körper auf Englisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: dann erscheint das englische Wort und wird vorgelesen.",
     cuerpoSpeak: "Wort anhören",
     cuerpoComplete: (p) => `¡Cuerpo completo! 🎉 Alle ${p.total} erkundet`,
     cuerpoExplored: (p) => `Erkundet: ${p.n}/${p.total}`,
@@ -1160,6 +1171,7 @@
     cuerpoRotateRight: "Figur nach rechts drehen",
     cuerpoDragHint: "↔ ziehen zum Drehen",
     cuerpoHint: "👆 Tippe einen Punkt auf der Figur an – dann erscheinen das spanische Wort, die Aussprache und ein Reisetipp.",
+    cuerpoHintLocals: "👆 Tippe einen Punkt auf der Figur an – dann erscheint das englische Wort und wird vorgelesen.",
 
     // Conjugación
     cjPersons: "Die Personen",
@@ -1215,12 +1227,14 @@
     dlgUnavailable: "Gerade keine Dialoge verfügbar.",
     dlgNoSpeak: "Dein Gerät kann nicht vorlesen – die Gespräche funktionieren trotzdem (zum Mitlesen).",
     dlgIntro: "Spiel ein echtes Reisegespräch Zug für Zug durch. Die andere Person spricht – du antwortest. Wähle eine Situation.",
+    dlgIntroLocals: "Führe Zug für Zug ein echtes Gespräch. Die andere Person spricht Englisch; du antwortest. Wähle eine Situation.",
     dlgReplay: "🔊 Nochmal anhören",
     dlgTipShow: "💡 Tipp anzeigen",
     dlgPlaceholder: "Tippe deine Antwort …",
     dlgSay: "Sagen",
     dlgWellSaid: "✓ ¡Bien dicho!",
     dlgBetter: (p) => `Besser so: <b lang="es">${p.es}</b>`,
+    dlgBetterLocals: (p) => `Besser so: <b lang="en">${p.es}</b>`,
     dlgWhy: "Warum so?",
     dlgYou: (p) => `Du: „${p.given}“`,
     dlgStep: (p) => `Schritt ${p.step} von ${p.total}`,
@@ -1229,6 +1243,7 @@
 
     // Lista de compras
     comprasIntro: "Dein Reise-Einkaufszettel auf Spanisch. Wähle eine Rubrik und tippe ein Wort an – dann erscheinen Aussprache, ein Reisetipp und zwei fertige Fragen fürs Geschäft (ob sie es haben und wo man es findet), und alles wird vorgelesen. Über das Kästchen links hakst du ab, was du erledigt hast – und nimmst es bei Bedarf wieder zurück. Wenn du magst, prüf dich danach im kurzen Quiz.",
+    comprasIntroLocals: "Dein Einkaufszettel auf Englisch. Wähle eine Rubrik und tippe ein Wort an – dann erscheint das englische Wort mit zwei fertigen Fragen fürs Geschäft (ob sie es haben und wo man es findet), und alles wird vorgelesen. Über das Kästchen links hakst du ab, was schon da ist – und nimmst es bei Bedarf wieder zurück. Wenn du magst, prüf dich danach im kurzen Quiz.",
     comprasPickSection: "Rubrik wählen",
     comprasAsk: "Im Geschäft fragen",
     comprasSpeakWord: "Wort anhören",
@@ -1241,6 +1256,7 @@
     comprasQuiz: (p) => `🧩 Quiz: ${p.section}`,
     comprasNeed: "Du brauchst …",
     comprasSolution: (p) => `Richtig: <b lang="es">${p.es}</b>`,
+    comprasSolutionLocals: (p) => `Richtig: <b lang="en">${p.es}</b>`,
     comprasBackList: "Zurück zum Zettel",
   }, {
     quizProgress: "Quiz progress",
@@ -1283,8 +1299,14 @@
     subBanderas: "Flag quiz: guess the country – and learn the colours, symbols & history along the way",
     subBebidas: "What people drink morning and evening – country by country",
     subYesto: "Guess the picture: 3-2-1 – what's it called in Spanish?",
-    // Locals track (learning English): ask "in English".
+    // Locals track (learning English): ask "in English" and swap travel wording
+    // ("travel tip", "travel needs") for the work/everyday focus of this track.
     subYestoLocals: "Guess the picture: 3-2-1 – what's it called in English?",
+    subSupervivenciaLocals: "The most important phrases for work – right to hand",
+    subCuerpoLocals: "Tap body parts and learn the English word",
+    subComprasLocals: "Supermarket, clothes, pharmacy – practise shopping in English",
+    // Locals track only: role-play guest↔staff on one device.
+    subVenueRoleplay: "Two on one phone: guest and staff take turns",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 
@@ -1295,6 +1317,7 @@
     bebNone: "No drinks for this country yet.",
 
     szIntro: "The most important phrases for an emergency – instantly there and read aloud on tap. Tap a phrase to show it full-screen for showing others.",
+    szIntroLocals: "The most important English phrases for work – instantly there and read aloud on tap. Tap a phrase to show it full-screen to show others.",
     szAreas: "Sections",
     szShowTitle: "Show large",
     szListen: "Listen",
@@ -1303,6 +1326,7 @@
 
     prcNoSpeech: "Your device has no speech output – without it there's nothing to hear.",
     prcIntro: "Hear a price in Spanish and type the number. Pick a country and how big the amounts should get – from small change to real Colombian million-peso prices.",
+    prcIntroLocals: "Hear a price in English and type the number. Pick the currency and how big the amounts should get – from tips in dollars to prices in pesos.",
     prcCountryCurrency: "Country &amp; currency",
     prcDifficulty: "Difficulty",
     prcSample: (p) => `${p.flag} ${p.name}: amounts up to <b>${p.max}</b> ${p.many}.`,
@@ -1592,11 +1616,13 @@
     quizCorrect: "¡Correcto! 🎉",
     quizNotExactly: "No exactamente.",
     quizSolution: (p) => `Correct: <b lang="es">${p.es}</b> · ${p.de}`,
+    quizSolutionLocals: (p) => `Correct: <b lang="en">${p.es}</b> · ${p.de}`,
     quizDefinicion: "Definición",
     quizQuestion: (p) => `Question ${p.pos}/${p.total}`,
     quizAgain: "Practise again",
 
     frasesIntro: "Choose a travel situation and fill the gap in the sentence frame with the right building block – so you build sentences yourself instead of just translating.",
+    frasesIntroLocals: "Choose a situation and fill the gap in the sentence frame with the right building block – so you build sentences in English instead of just translating.",
     frasesBuild: "Build the sentence",
     frasesSentence: (p) => `Sentence ${p.pos}/${p.total}`,
     frasesOther: "Another topic",
@@ -1636,6 +1662,7 @@
     bnChecklistHint: "A few tricks that make every flag stick.",
 
     cuerpoIntro: "The human body in Spanish – as a rotatable 3D model. Drag the figure to rotate and tap a body part: then the word, pronunciation and matching travel phrase appear (often the «Me duele …» formula for the doctor &amp; pharmacy).",
+    cuerpoIntroLocals: "The human body in English – as a rotatable 3D model. Drag the figure to rotate and tap a body part: then the English word appears and is read aloud.",
     cuerpoSpeak: "Listen to the word",
     cuerpoComplete: (p) => `¡Cuerpo completo! 🎉 All ${p.total} explored`,
     cuerpoExplored: (p) => `Explored: ${p.n}/${p.total}`,
@@ -1643,6 +1670,7 @@
     cuerpoRotateRight: "Rotate figure right",
     cuerpoDragHint: "↔ drag to rotate",
     cuerpoHint: "👆 Tap a point on the figure – then the Spanish word, the pronunciation and a travel tip appear.",
+    cuerpoHintLocals: "👆 Tap a point on the figure – then the English word appears and is read aloud.",
 
     cjPersons: "The persons",
     cjRegularPatterns: "Regular: three patterns",
@@ -1695,12 +1723,14 @@
     dlgUnavailable: "No dialogues available right now.",
     dlgNoSpeak: "Your device can't read aloud – the conversations still work (for reading along).",
     dlgIntro: "Play through a real travel conversation turn by turn. The other person speaks – you reply. Choose a situation.",
+    dlgIntroLocals: "Play through a real conversation turn by turn. The other person speaks English; you reply. Choose a situation.",
     dlgReplay: "🔊 Listen again",
     dlgTipShow: "💡 Show tip",
     dlgPlaceholder: "Type your answer …",
     dlgSay: "Say",
     dlgWellSaid: "✓ ¡Bien dicho!",
     dlgBetter: (p) => `Better like this: <b lang="es">${p.es}</b>`,
+    dlgBetterLocals: (p) => `Better like this: <b lang="en">${p.es}</b>`,
     dlgWhy: "Why this?",
     dlgYou: (p) => `You: “${p.given}”`,
     dlgStep: (p) => `Step ${p.step} of ${p.total}`,
@@ -1708,6 +1738,7 @@
     dlgOther: "Another situation",
 
     comprasIntro: "Your travel shopping list in Spanish. Choose a category and tap a word – then the pronunciation, a travel tip and two ready-made questions for the shop appear (whether they have it and where to find it), all read aloud. Use the box on the left to tick off what you've done – and untick it if needed. If you like, test yourself afterwards in the short quiz.",
+    comprasIntroLocals: "Your shopping list in English. Choose a category and tap a word – then the English word appears with two ready-made questions for the shop (whether they have it and where to find it), all read aloud. Use the box on the left to tick off what you've got – and untick it if needed. If you like, test yourself afterwards in the short quiz.",
     comprasPickSection: "Choose a category",
     comprasAsk: "Ask in the shop",
     comprasSpeakWord: "Listen to the word",
@@ -1720,6 +1751,7 @@
     comprasQuiz: (p) => `🧩 Quiz: ${p.section}`,
     comprasNeed: "You need …",
     comprasSolution: (p) => `Correct: <b lang="es">${p.es}</b>`,
+    comprasSolutionLocals: (p) => `Correct: <b lang="en">${p.es}</b>`,
     comprasBackList: "Back to the list",
   });
 
