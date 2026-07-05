@@ -158,6 +158,7 @@
     catGroupLocals: "Inglés para el trabajo",
     catGroupLocHosp: "Turismo y hostelería",
     catGroupLocCult: "Huéspedes de Europa y EE. UU.",
+    catGroupLocNino: "Chicos que venden",
     catGroupLocDia: "Día a día",
     catGroupLocTrab: "Trabajo y negocios",
     catGroupLocEsc: "Escuela y examen",
@@ -415,6 +416,7 @@
     catGroupLocals: "English for work",
     catGroupLocHosp: "Tourism & hospitality",
     catGroupLocCult: "Guests from Europe & the US",
+    catGroupLocNino: "Kids who sell",
     catGroupLocDia: "Everyday",
     catGroupLocTrab: "Work & business",
     catGroupLocEsc: "School & exam",
@@ -795,6 +797,8 @@
     subComprasLocals: "Supermarkt, Kleidung, Apotheke – Einkaufen auf Englisch üben",
     // Nur Locals-Track: Rollenspiel Gast↔Personal an einem Gerät.
     subVenueRoleplay: "Zu zweit am Handy: Gast und Personal spielen abwechselnd",
+    subCarrito: "Verkaufs-Englisch für Kinder am Wagen: anbieten, Preise & Rollenspiel",
+    subJugar: "Zu zweit spielen & Englisch üben – lokal, ohne Konto",
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
@@ -1307,6 +1311,8 @@
     subComprasLocals: "Supermarket, clothes, pharmacy – practise shopping in English",
     // Locals track only: role-play guest↔staff on one device.
     subVenueRoleplay: "Two on one phone: guest and staff take turns",
+    subCarrito: "Selling English for kids at the cart: offer, prices & roleplay",
+    subJugar: "Play in pairs & practise English — local, no account",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
 

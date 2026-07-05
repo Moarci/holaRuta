@@ -23,6 +23,8 @@
   const compras = window.SC.compras; // Feature-Modul (Lista de compras, Einkaufsliste + Quiz), eager geladen
   const dialogosGame = window.SC.dialogosGame; // Feature-Modul (Diálogos, Gesprächs-Simulator), eager geladen
   const venueRoleplayGame = window.SC.venueRoleplayGame; // Feature-Modul (Zwei-Seiten-Venue-Rollenspiel), eager geladen
+  const carritoSheet = window.SC.carritoSheet; // Feature-Modul (El carrito, Kinder-Verkaufs-Englisch + Rollenspiel), eager geladen
+  const jugarIngles = window.SC.jugarIngles; // Feature-Modul (¡A jugar en inglés!, Kinder-Pass-and-play), eager geladen
   const etiqueta = window.SC.etiqueta; // Feature-Modul (Etiqueta de viaje / Reise-Knigge), eager geladen
   const cronologia = window.SC.cronologia; // Feature-Modul (Historia, Geschichts-Zeitstrahl), eager geladen
   const jergaSheet = window.SC.jergaSheet; // Feature-Modul (Jerga colombiana / Slang), eager geladen
@@ -243,6 +245,8 @@
     // ----- Einkaufszettel (interaktive Einkaufsliste) -----
     compras: { section: "super", open: null }, // aktuelle Rubrik + aufgeklapptes Item (Id|null)
     comprasQuiz: null,       // { section, queue:[itemId…], idx, total, options:[{es,correct}…], selected:idx|null, correct }
+    carritoRP: null,         // El carrito – Verkaufs-Rollenspiel: { sceneId, turnIdx, result, correct, total }|null
+    jugar: null,             // ¡A jugar en inglés! – Pass-and-play: { gameId, turnIdx, awaitingPass }|null
     // ----- Trip-Ziel (Countdown + Tagesziel) -----
     tripEdit: false,         // Trip-Ziel-Formular auf der Startseite aufgeklappt?
     tripRouteOpen: true,     // Route-Zeitleiste im Profil aufgeklappt? (Standard offen – Drag sichtbar)
@@ -2159,6 +2163,8 @@
     yesto: "yestoSetup", yestoDone: "yestoSetup",
     dialogos: "dialogosSetup", dialogosDone: "dialogosSetup",
     venueRoleplay: "venueRoleplaySetup", venueRoleplayDone: "venueRoleplaySetup",
+    carritoPlay: "carrito", carritoDone: "carrito",
+    jugarPlay: "jugar", jugarDone: "jugar",
     comprasQuiz: "compras", comprasQuizDone: "compras",
     editor: "home",
   };
@@ -2380,6 +2386,12 @@
       "venueRoleplaySetup": () => venueRoleplayGame.setupScreen(),
       "venueRoleplay": () => venueRoleplayGame.playScreen(),
       "venueRoleplayDone": () => venueRoleplayGame.doneScreen(),
+      "carrito": () => carritoSheet.screen(),
+      "carritoPlay": () => carritoSheet.playScreen(),
+      "carritoDone": () => carritoSheet.doneScreen(),
+      "jugar": () => jugarIngles.setupScreen(),
+      "jugarPlay": () => jugarIngles.playScreen(),
+      "jugarDone": () => jugarIngles.doneScreen(),
       "compras": () => compras.listScreen(),
       "comprasQuiz": () => compras.quizScreen(),
       "comprasQuizDone": () => compras.doneScreen(),
@@ -7168,6 +7180,8 @@
     cafe:          { icon: "☕", lc: "lc:coffee",          title: "Café de la región",    sub: "discover.subCafe",          accent: ["#6F4A2E", "#B97C24"] },
     juegos:        { icon: "🎲", lc: "lc:dices",           title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
     banderas:      { icon: "🚩", lc: "lc:flag",            title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
+    carrito:       { icon: "🛒", lc: "lc:shopping-cart",   title: "El carrito",           sub: "discover.subCarrito",       accent: ["#E0743C", "#B97C24"] },
+    jugar:         { icon: "🎮", lc: "lc:gamepad-2",       title: "¡A jugar en inglés!",  sub: "discover.subJugar",         accent: ["#3F7355", "#2E6E86"] },
   };
 
   // Bis zu n Lernkarten einer Kategorie als „es — de"-Zeilen (für Modul-Sharepics).
@@ -7264,6 +7278,15 @@
       case "banderas":
         // Visuelle Highlights: ein paar Flaggen mit Ländernamen (spanisch).
         return cut((banderas ? banderas.COUNTRIES : []).map((c) => ({ mark: c.flag || "🚩", text: c.es })));
+      case "carrito": {
+        const out = [];
+        (carritoSheet.vm().groups || []).forEach((g) => {
+          (g.cards || []).slice(0, 2).forEach((c) => out.push({ mark: g.cat.icon || "🛒", text: `${c.en} — ${c.es}` }));
+        });
+        return cut(out);
+      }
+      case "jugar":
+        return cut((jugarIngles.setupVM().games || []).map((g) => ({ mark: g.icon || "🎮", text: g.title })));
       default:
         return [];
     }
@@ -7525,6 +7548,18 @@
     "venue-roleplay-next": (el) => { venueRoleplayGame.advance(); },
     "venue-roleplay-again": (el) => { venueRoleplayGame.again(); },
     "venue-roleplay-speak": (el) => { venueRoleplayGame.speakLine(); },
+    "open-carrito": (el) => { carritoSheet.open(); },
+    "carrito-start": (el) => { carritoSheet.start(el.dataset.id); },
+    "carrito-answer": (el) => { carritoSheet.answer(Number(el.dataset.idx)); },
+    "carrito-next": (el) => { carritoSheet.next(); },
+    "carrito-again": (el) => { carritoSheet.again(); },
+    "carrito-speak": (el) => { carritoSheet.speak(el.dataset.text); },
+    "open-jugar": (el) => { jugarIngles.open(); },
+    "jugar-start": (el) => { jugarIngles.start(el.dataset.id); },
+    "jugar-begin": (el) => { jugarIngles.begin(); },
+    "jugar-next": (el) => { jugarIngles.next(); },
+    "jugar-again": (el) => { jugarIngles.again(); },
+    "jugar-speak": (el) => { jugarIngles.speak(el.dataset.text); },
     "open-compras": (el) => { compras.open(); },
     "compras-section": (el) => { compras.section(el.dataset.id); },
     "compras-pick": (el) => { compras.pick(el.dataset.id); },
@@ -8075,6 +8110,8 @@
       musica: openMusica,
       cafe: openCafe,
       juegos: openJuegos,
+      carrito: () => carritoSheet.open(),
+      jugar: () => jugarIngles.open(),
       banderas: () => banderasGame.open(),
       historia: () => openHistoria("sur"),
       "historia-centro": () => openHistoria("centro"),
@@ -8221,6 +8258,8 @@
   if (compras) compras.init(featureCtx);
   if (dialogosGame) dialogosGame.init(featureCtx);
   if (venueRoleplayGame) venueRoleplayGame.init(featureCtx);
+  if (carritoSheet) carritoSheet.init(featureCtx);
+  if (jugarIngles) jugarIngles.init(featureCtx);
   if (etiqueta) etiqueta.init(featureCtx);
   if (cronologia) cronologia.init(featureCtx);
   if (jergaSheet) jergaSheet.init(featureCtx);
