@@ -49,10 +49,12 @@ Der Standard-Track `de-es` bildet das bisherige Verhalten 1:1 ab – **ohne Edit
 
 `data.locals.js` (reine Daten, hängt nur im Locals-Track an `SC.data` an):
 `es` = Frage, `en` = gelernte Antwort, `tip` = englische Aussprachehilfe für
-Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Vier Themen-Gruppen:
+Spanisch-Sprecher; Kategorie-Labels in `labelEs`/`labelEn`. Sieben Themen-Gruppen
+(die Gruppe `loc-med` wird nur in der [Medellín-Edition](LOCALS-MEDELLIN.md) befüllt):
 
 | Gruppe | Kategorien |
 |---|---|
+| Medellín (`loc-med`) | Comuna 13, Metro y Metrocable, medio ambiente, cultura paisa, comida paisa, Guatapé y El Peñol, nómadas y seguridad, feria y eventos |
 | Turismo y hostelería (`loc-hosp`) | meseros, recepción, guías, taxi, ventas, bar, playa, quejas y disculpas, comida típica, limpieza/housekeeping, spa y masajes, lancha e islas, salida/check-out, buceo y snorkel, senderismo, aeropuerto, alquiler de autos, museo y entradas |
 | Día a día (`loc-dia`) | saludos, teléfono, direcciones, de compras, salud y farmacia, banco y dinero, transporte público, emergencias y seguridad, peluquería, alquiler y vivienda, el clima, domicilios, gimnasio, casa y servicios |
 | Trabajo y negocios (`loc-trab`) | entrevista, oficina, atención al cliente, reunión, reseñas y redes, hoja de vida (CV), negociar, call-center/BPO, inglés para TI, videollamadas, ventas y pitch, finanzas y facturas, logística y envíos, RR. HH./feedback, networking, personal de salud (médicos/enfermeras) |
