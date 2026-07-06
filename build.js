@@ -233,6 +233,7 @@ function buildDist() {
     "landing-schule.html",
     "landing-hostel.html",
     "landing-reiseanbieter.html",
+    "landing-locals.html",
     "landing-carousel.js",
     // Beleg-Material, das die B2B-Landings verlinken (+ deren Abhängigkeiten), damit die
     // Links auch in Produktion (dist/) auflösen statt 404 zu liefern.
