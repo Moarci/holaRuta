@@ -18,6 +18,7 @@ const PAGES = [
   "landing-hostel.html",
   "landing-schule.html",
   "landing-reiseanbieter.html",
+  "landing-locals.html",
 ];
 
 // icons.js nicht ausführen (Browser-Modul), sondern die PATHS-Literale lesen.

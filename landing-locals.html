@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#241510" />
+  <title>HolaRuta · Inglés – aprende el inglés que tu trabajo necesita</title>
+  <meta name="description" content="HolaRuta · Inglés: para meseros, recepción, guías, taxis y call-centers. Frases reales con audio, 10 cursos y 28 diálogos. Sin conexión, sin cuenta, gratis. Para negocios y escuelas también." />
+  <link rel="canonical" href="https://moarci.github.io/holaRuta/landing-locals.html" />
+
+  <!-- Bilingüe: enlaces de idioma compartibles (?lang=) para buscadores y enlaces directos. -->
+  <link rel="alternate" hreflang="es" href="https://moarci.github.io/holaRuta/landing-locals.html?lang=es" />
+  <link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/landing-locals.html?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/landing-locals.html" />
+
+  <!-- Vista previa social: usa el og-image.png de la marca ya generado. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="HolaRuta" />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:url" content="https://moarci.github.io/holaRuta/landing-locals.html" />
+  <meta property="og:title" content="HolaRuta · Inglés – el inglés que tu trabajo necesita" />
+  <meta property="og:description" content="Frases reales en inglés para meseros, recepción, guías, taxis y call-centers. Con audio, sin conexión, sin cuenta, gratis." />
+  <meta property="og:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="HolaRuta · Inglés – tarjeta de ejemplo: «¿Le traigo la cuenta?» → «Shall I bring you the bill?»" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HolaRuta · Inglés" />
+  <meta name="twitter:description" content="El inglés real de tu trabajo: hostelería, oficina, call-center y turismo. Con audio, sin conexión, gratis." />
+  <meta name="twitter:image" content="https://moarci.github.io/holaRuta/og-image.png" />
+  <meta name="twitter:image:alt" content="HolaRuta · Inglés – tarjeta de ejemplo: «¿Le traigo la cuenta?» → «Shall I bring you the bill?»" />
+
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/bricolage-grotesque-600-800-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/instrument-sans-400-700-latin.woff2" />
+
+  <!-- Tema lo antes posible (sin parpadeo claro), consistente con la app/landing. -->
+  <script>
+    (function () {
+      document.documentElement.classList.add("js");
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        var t = (s && (s.theme === "dark" || s.theme === "light")) ? s.theme
+          : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
+      } catch (e) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="landing.css" />
+  <!-- Acento de la edición neutral English at Work (venue-en, petróleo) para CTA-demo, chips y precios. -->
+  <style>:root { --accent: #2F6B70; }</style>
+  <!-- Carrusel de tarjetas de ejemplo compartido de las landings (flip, 🔊, 🧭, pills). -->
+  <script src="landing-carousel.js" defer></script>
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="no-referrer" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "HolaRuta · Inglés",
+    "description": "Inglés para el trabajo en América Latina: hostelería, oficina, call-center, escuela y turismo. Frases reales con audio, 10 cursos y 28 diálogos. Sin conexión, sin cuenta.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "url": "https://moarci.github.io/holaRuta/landing-locals.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Gratis para el uso personal; para negocios y escuelas, piloto sin costo y licencia a convenir." }
+  }
+  </script>
+</head>
+<body>
+  <a href="#hero" class="lp-skip" data-i18n="skip">Saltar al contenido</a>
+  <div class="lp-topstripe"></div>
+  <!-- Sprite de iconos para las fichas (reemplaza los emojis).
+       Geometría 1:1 desde icons.js (SC.icon, Lucide vendored) – mantener los cambios
+       allí; test/landing-icons.test.js vigila la equivalencia. Solo los símbolos
+       realmente usados en esta página (sin bytes muertos). -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+    <symbol id="lpi-graduation-cap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></symbol>
+    <symbol id="lpi-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></symbol>
+    <symbol id="lpi-message-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></symbol>
+    <symbol id="lpi-scroll" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17V5a2 2 0 0 0-2-2H4" /><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" /></symbol>
+    <symbol id="lpi-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></symbol>
+    <symbol id="lpi-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2" /><path d="M14 2v2" /><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" /><path d="M6 2v2" /></symbol>
+    <symbol id="lpi-banknote" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></symbol>
+    <symbol id="lpi-stethoscope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2v2" /><path d="M5 2v2" /><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" /><path d="M8 15a6 6 0 0 0 12 0v-3" /><circle cx="20" cy="10" r="2" /></symbol>
+    <symbol id="lpi-backpack" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" /><path d="M8 10h8" /><path d="M8 18h8" /><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6" /><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" /></symbol>
+    <symbol id="lpi-dices" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="12" height="12" x="2" y="10" rx="2" ry="2" /><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6" /><path d="M6 18h.01" /><path d="M10 14h.01" /><path d="M15 6h.01" /><path d="M18 9h.01" /></symbol>
+    <symbol id="lpi-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></symbol>
+    <symbol id="lpi-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" /><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" /><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" /><path d="M18 18a4 4 0 0 0 2-7.464" /><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" /><path d="M6 18a4 4 0 0 1-2-7.464" /><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" /></symbol>
+    <symbol id="lpi-candy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 7v10.9" /><path d="M14 6.1V17" /><path d="M16 7V3a1 1 0 0 1 1.707-.707 2.5 2.5 0 0 0 2.152.717 1 1 0 0 1 1.131 1.131 2.5 2.5 0 0 0 .717 2.152A1 1 0 0 1 21 8h-4" /><path d="M16.536 7.465a5 5 0 0 0-7.072 0l-2 2a5 5 0 0 0 0 7.07 5 5 0 0 0 7.072 0l2-2a5 5 0 0 0 0-7.07" /><path d="M8 17v4a1 1 0 0 1-1.707.707 2.5 2.5 0 0 0-2.152-.717 1 1 0 0 1-1.131-1.131 2.5 2.5 0 0 0-.717-2.152A1 1 0 0 1 3 16h4" /></symbol>
+  </defs></svg>
+
+
+  <!-- ─────────────── Header ─────────────── -->
+  <header class="lp-header" id="lpHeader">
+    <div class="lp-wrap lp-header__inner">
+      <a class="lp-logo" href="./" aria-label="HolaRuta">
+        <span class="lp-logo__mark" aria-hidden="true">
+          <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="lpLogoG" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#C2502E"/>
+                <stop offset="1" stop-color="#E9A23B"/>
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" fill="url(#lpLogoG)"/>
+            <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+            <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+          </svg>
+        </span>
+        <span class="lp-logo__name">Hola<span>Ruta</span></span>
+      </a>
+      <span class="lp-header__spacer"></span>
+      <div class="lp-header__tools">
+        <div class="lp-langtoggle" role="group" aria-label="Idioma / Language">
+          <button class="lp-langbtn" data-lang="es" aria-pressed="true">ES</button>
+          <button class="lp-langbtn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button class="lp-iconbtn" id="lpTheme" aria-label="Claro/oscuro" title="Claro/oscuro">🌙</button>
+        <a class="lp-cta lp-cta--sm lp-cta--accent lp-header__cta" href="./?edition=venue-en&start=onboarding" data-i18n="nav.demo">Abrir demo</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─────────────── Selector de público ─────────────── -->
+  <nav class="lp-audnav" aria-label="¿Para quién es HolaRuta?">
+    <div class="lp-wrap lp-audnav__inner">
+      <span class="lp-audnav__label" data-i18n="aud.label">¿Para quién?</span>
+      <a class="lp-audchip" href="landing-locals.html" aria-current="page" data-i18n="aud.staff">🧑‍🍳 Personal y trabajadores</a>
+      <a class="lp-audchip" href="#negocios" data-i18n="aud.venue">🛏️ Hostales y hoteles</a>
+      <a class="lp-audchip" href="#negocios" data-i18n="aud.school">🎓 Escuelas</a>
+      <a class="lp-audchip" href="./?edition=medellin&start=onboarding" data-i18n="aud.medellin">🏙️ Medellín</a>
+      <a class="lp-audchip" href="landing.html" data-i18n="aud.travel">🎒 Viajero: aprende español</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ─────────────── Hero ─────────────── -->
+    <section class="lp-hero" id="hero">
+      <div class="lp-hero__mesh" aria-hidden="true"></div>
+      <div class="lp-wrap lp-hero__grid">
+        <div class="lp-hero__copy">
+          <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">INGLÉS PARA TU TRABAJO</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Aprende el inglés que tu trabajo <span class="lp-hl">sí</span> necesita.</h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Para meseros, recepción, guías, taxistas y call-centers: frases reales, con audio, sin cuenta y sin conexión. 5 minutos al día.</p>
+          <div class="lp-hero__cta" data-reveal style="--i:3">
+            <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=venue-en&start=onboarding" data-i18n="hero.demo">Abrir demo →</a>
+            <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#negocios" data-i18n="hero.biz">Para tu negocio ↓</a>
+          </div>
+          <div class="lp-trust" data-reveal style="--i:4">
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="3124">3124</span>
+              <span class="lp-trust__label" data-i18n="trust.cards">tarjetas</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="10">10</span>
+              <span class="lp-trust__label" data-i18n="trust.courses">cursos</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num" data-count="28">28</span>
+              <span class="lp-trust__label" data-i18n="trust.dialogos">diálogos</span>
+            </div>
+            <div class="lp-trust__item">
+              <span class="lp-trust__num">A1–B2</span>
+              <span class="lp-trust__label" data-i18n="trust.levels">niveles</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjetas de ejemplo interactivas: pregunta en ESPAÑOL, respuesta en INGLÉS
+             (track es-en). Antípate para girar, 🔊 lee la respuesta en inglés (data-spk-lang),
+             🧭 abre el contexto. Las pills de escenario cambian la tarjeta. -->
+        <aside class="lp-cardcol" data-reveal style="--i:2">
+          <div class="lp-herophone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <picture>
+                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
+                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
+              </picture>
+            </div>
+          </div>
+          <span class="lp-herocard__brand" data-i18n="card.brand">HolaRuta · English at Work</span>
+          <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" data-i18n-aria="a11y.carousel" aria-label="Tarjetas de ejemplo">
+            <div class="lp-carousel__viewport">
+              <div class="lp-slide is-active">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Girar la tarjeta de ejemplo">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex1.cat">HOSTELERÍA</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A2 · Intermedio</span>
+                        <div class="face__word" lang="es">¿Le traigo la cuenta?</div>
+                        <span class="face__hint" data-i18n="card.hint">Toca para girar</span>
+                      </div>
+                      <div class="face face--back" style="--from:#2F6B70">
+                        <span class="face__cat" data-i18n="ex1.cat">HOSTELERÍA</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A2 · Intermedio</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Mostrar contexto" aria-expanded="false" aria-controls="lpctx1">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Shall I bring you the bill?" data-spk-lang="en-US" data-i18n-aria="card.speakLabel" aria-label="Escuchar la respuesta">🔊</button>
+                        <div class="face__word" lang="en">Shall I bring you the bill?</div>
+                        <div class="face__tip">🗣️ shal ái bring iu de bil</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx1" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 Cómo lo usas en el trabajo</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="en">Shall I bring you the bill?</p>
+                    <p class="context-panel__de" lang="es">¿Le traigo la cuenta?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situación</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxSit">En el restaurante, cuando el cliente termina de comer.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Consejo</div>
+                    <p class="context-panel__text" data-i18n="ex1.ctxNote">«Shall I…?» suena atento y profesional con un huésped.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Girar la tarjeta de ejemplo">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex2.cat">CALL-CENTER</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A2 · Intermedio</span>
+                        <div class="face__word" lang="es">¿Me confirma su número de cuenta, por favor?</div>
+                        <span class="face__hint" data-i18n="card.hint">Toca para girar</span>
+                      </div>
+                      <div class="face face--back" style="--from:#3F7355">
+                        <span class="face__cat" data-i18n="ex2.cat">CALL-CENTER</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A2 · Intermedio</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Mostrar contexto" aria-expanded="false" aria-controls="lpctx2">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="Can you confirm your account number, please?" data-spk-lang="en-US" data-i18n-aria="card.speakLabel" aria-label="Escuchar la respuesta">🔊</button>
+                        <div class="face__word" lang="en">Can you confirm your account number, please?</div>
+                        <div class="face__tip">🗣️ kan iu con-FÉRM ior a-KÁUNT NÁM-ber plis</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx2" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 Cómo lo usas en el trabajo</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="en">Can you confirm your account number, please?</p>
+                    <p class="context-panel__de" lang="es">¿Me confirma su número de cuenta, por favor?</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situación</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxSit">Al inicio de una llamada de soporte, al verificar al cliente.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Consejo</div>
+                    <p class="context-panel__text" data-i18n="ex2.ctxNote">Repite el dato para confirmar: «So that's…, right?».</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="a11y.card" aria-label="Girar la tarjeta de ejemplo">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex3.cat">MEDELLÍN</span>
+                        <span class="lvl-badge" data-i18n="card.lvl">A2 · Intermedio</span>
+                        <div class="face__word" lang="es">Estas escaleras cambiaron la Comuna 13.</div>
+                        <span class="face__hint" data-i18n="card.hint">Toca para girar</span>
+                      </div>
+                      <div class="face face--back" style="--from:#2F8E5B">
+                        <span class="face__cat" data-i18n="ex3.cat">MEDELLÍN</span>
+                        <span class="lvl-badge lvl-badge--on" data-i18n="card.lvl">A2 · Intermedio</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Mostrar contexto" aria-expanded="false" aria-controls="lpctx3">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="These escalators changed Comuna 13." data-spk-lang="en-US" data-i18n-aria="card.speakLabel" aria-label="Escuchar la respuesta">🔊</button>
+                        <div class="face__word" lang="en">These escalators changed Comuna 13.</div>
+                        <div class="face__tip">🗣️ dís ÉS-ka-léi-tors chéinshd co-MÚ-na thir-TÍN</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="context-panel lp-ctxpanel" id="lpctx3" hidden>
+                  <h3 class="context-panel__title" data-i18n="ctx.title">🧭 Cómo lo usas en el trabajo</h3>
+                  <div class="context-panel__line">
+                    <p class="context-panel__es" lang="en">These escalators changed Comuna 13.</p>
+                    <p class="context-panel__de" lang="es">Estas escaleras eléctricas cambiaron la Comuna 13.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.situation">Situación</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxSit">Guiando un grafitour por la Comuna 13, junto a las escaleras.</p>
+                  </div>
+                  <div class="context-panel__block">
+                    <div class="context-panel__label" data-i18n="ctx.note">Consejo</div>
+                    <p class="context-panel__text" data-i18n="ex3.ctxNote">Una frase que cuenta la historia de transformación del barrio.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lp-herocard__row" id="lpPills" role="group" data-i18n-aria="card.scenarios" aria-label="Escenarios">
+            <button type="button" class="lp-herocard__pill" aria-pressed="true" data-i18n="card.p1">Hostelería</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p2">Trabajo · BPO</button>
+            <button type="button" class="lp-herocard__pill" aria-pressed="false" data-i18n="card.p3">Medellín</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ─────────────── Para quién es ─────────────── -->
+    <section class="lp-section" id="para-ti">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="who.eyebrow">HECHO PARA TU DÍA</p>
+        <h2 class="lp-h2" data-reveal data-i18n="who.title">El inglés de tu turno, no el del libro.</h2>
+        <p class="lp-lead" data-reveal data-i18n="who.lead">Cada oficio tiene sus frases. HolaRuta las junta por trabajo, con audio y ejemplos reales — para que atiendas, vendas y expliques con confianza.</p>
+        <div class="lp-hooks">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#2F6B70">
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-coffee"/></svg></span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="who.1.k">Turismo y hostelería</span>
+              <h3 class="lp-hook__title" data-i18n="who.1.t">Meseros, recepción, bar y playa.</h3>
+              <p class="lp-hook__text" data-i18n="who.1.b">Atiende, recomienda y resuelve quejas en inglés. Check-in, la cuenta, el menú y las islas — con la cortesía justa.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-message-circle"/></svg></span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="who.2.k">Trabajo y call-center</span>
+              <h3 class="lp-hook__title" data-i18n="who.2.t">BPO, atención al cliente y TI.</h3>
+              <p class="lp-hook__text" data-i18n="who.2.b">Guiones de llamada, verificación, reuniones y videollamadas. El inglés que piden las empresas, listo para tu jornada.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#7D4A8E">
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-graduation-cap"/></svg></span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="who.3.k">Escuela y examen</span>
+              <h3 class="lp-hook__title" data-i18n="who.3.t">Gramática y pronunciación.</h3>
+              <p class="lp-hook__text" data-i18n="who.3.b">Tiempos verbales, artículos, phrasal verbs y pares mínimos. Practica lo que cae en el examen, a tu ritmo.</p>
+            </div>
+          </article>
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#2F8E5B">
+            <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
+            <div class="lp-hook__body">
+              <span class="lp-hook__kicker" data-i18n="who.4.k">Guías y Medellín</span>
+              <h3 class="lp-hook__title" data-i18n="who.4.t">Cuenta tu ciudad en inglés.</h3>
+              <p class="lp-hook__text" data-i18n="who.4.b">Comuna 13, Metrocable, Guatapé y cultura paisa. Frases de guía que dejan buenas reseñas y propina.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Cómo funciona ─────────────── -->
+    <section class="lp-section lp-section--wash" id="como">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="how.eyebrow">EN TRES PASOS</p>
+        <h2 class="lp-h2" data-reveal data-i18n="how.title">Sin instalar, sin tienda de apps, sin cuenta.</h2>
+        <div class="lp-how__grid">
+        <div class="lp-steps">
+          <article class="lp-step" data-reveal style="--i:0; --accent:#2F6B70" data-step="1">
+            <span class="lp-step__num" aria-hidden="true">1</span>
+            <div class="lp-step__main">
+              <span class="lp-step__kicker" data-i18n="how.s1.k">ABRE</span>
+              <h3 class="lp-step__title" data-i18n="how.s1.t">Escanea un QR o toca un enlace</h3>
+              <p class="lp-step__body" data-i18n="how.s1.b">Se abre en el navegador, incluso <b class="lp-step__hl">sin conexión</b>. Elige un curso o una categoría de tu oficio.</p>
+            </div>
+            <div class="lp-step__shot">
+              <img src="docs/landing/home.webp" width="390" height="844" loading="lazy" alt="Pantalla de inicio de HolaRuta con las áreas de aprendizaje" />
+            </div>
+          </article>
+          <article class="lp-step" data-reveal style="--i:1; --accent:#3F7355" data-step="2">
+            <span class="lp-step__num" aria-hidden="true">2</span>
+            <div class="lp-step__main">
+              <span class="lp-step__kicker" data-i18n="how.s2.k">PRACTICA</span>
+              <h3 class="lp-step__title" data-i18n="how.s2.t">5 minutos al día</h3>
+              <p class="lp-step__body" data-i18n="how.s2.b">Tarjeta, escritura o escucha. El <b class="lp-step__hl">audio en inglés</b> te corrige la pronunciación de a poco.</p>
+            </div>
+            <div class="lp-step__shot">
+              <img src="docs/landing/study.webp" width="390" height="844" loading="lazy" alt="Tarjeta girada con pronunciación y corrección" />
+            </div>
+          </article>
+          <article class="lp-step" data-reveal style="--i:2; --accent:#E9A23B" data-step="3">
+            <span class="lp-step__num" aria-hidden="true">3</span>
+            <div class="lp-step__main">
+              <span class="lp-step__kicker" data-i18n="how.s3.k">HABLA</span>
+              <h3 class="lp-step__title" data-i18n="how.s3.t">En tu turno</h3>
+              <p class="lp-step__body" data-i18n="how.s3.b">Los diálogos con un turista y los cursos llevan lo aprendido a tu <b class="lp-step__hl">trabajo real</b>.</p>
+            </div>
+            <div class="lp-step__shot">
+              <img src="docs/landing/stats.webp" width="390" height="844" loading="lazy" alt="Estadística con tasa de acierto y progreso" />
+            </div>
+          </article>
+        </div>
+
+          <div class="lp-phone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div>
+              <div class="lp-phone__stripe"></div>
+              <img class="lp-phone__img" id="lpPhoneImg" src="docs/landing/home.webp" width="390" height="844" loading="lazy" alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Todo lo que cubre ─────────────── -->
+    <section class="lp-section" id="temas">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="cover.eyebrow">LO QUE CUBRE</p>
+        <h2 class="lp-h2" data-reveal data-i18n="cover.title">151 categorías, 3124 tarjetas.</h2>
+        <p class="lp-lead" data-reveal data-i18n="cover.lead">No un capítulo, sino la vida laboral entera: del turno al examen. Cada tema está listo para practicar — pruébalo en la demo.</p>
+        <div class="lp-more">
+          <div class="lp-more__chips">
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#2F6B70; --i:0">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-coffee"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.1.n">Turismo y hostelería</span>
+                <span class="lp-morechip__desc" data-i18n="cover.1.d">Meseros, recepción, guías, taxi, bar, playa, quejas</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#E9A23B; --i:1">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-backpack"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.2.n">Día a día</span>
+                <span class="lp-morechip__desc" data-i18n="cover.2.d">Saludos, direcciones, compras, salud, banco, transporte</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#3F7355; --i:2">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-message-circle"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.3.n">Trabajo y negocios</span>
+                <span class="lp-morechip__desc" data-i18n="cover.3.d">Entrevista, oficina, reuniones, reseñas, hoja de vida</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#C2502E; --i:3">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-banknote"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.4.n">Call-center / BPO</span>
+                <span class="lp-morechip__desc" data-i18n="cover.4.d">Verificar, escuchar, poner en espera, resolver, cerrar</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#2F6B70; --i:0">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-target"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.5.n">Inglés para TI</span>
+                <span class="lp-morechip__desc" data-i18n="cover.5.d">Standup, tickets, code review, entregas y reportes</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#7D4A8E; --i:1">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-graduation-cap"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.6.n">Escuela y examen</span>
+                <span class="lp-morechip__desc" data-i18n="cover.6.d">Gramática, tiempos, preposiciones, phrasal verbs</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#E9A23B; --i:2">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-scroll"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.7.n">Vocabulario por temas</span>
+                <span class="lp-morechip__desc" data-i18n="cover.7.d">48 temas: números, comida, casa, ciudad, trabajo…</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#7D4A8E; --i:3">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-brain"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.8.n">Vocabulario B2 / avanzado</span>
+                <span class="lp-morechip__desc" data-i18n="cover.8.d">Opinar, argumentar, conectores y colocaciones</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#3F7355; --i:0">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-globe"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.9.n">Cultura de huéspedes</span>
+                <span class="lp-morechip__desc" data-i18n="cover.9.d">Cómo son los huéspedes de Europa y EE. UU.</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#2F8E5B; --i:1">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-compass"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.10.n">Medellín</span>
+                <span class="lp-morechip__desc" data-i18n="cover.10.d">Comuna 13, Metrocable, Guatapé, cultura paisa, Feria</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#C2502E; --i:2">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-dices"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.11.n">Diálogos</span>
+                <span class="lp-morechip__desc" data-i18n="cover.11.d">28 juegos de rol: el turista habla inglés, tú respondes</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#B5302A; --i:3">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-stethoscope"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.12.n">Personal de salud</span>
+                <span class="lp-morechip__desc" data-i18n="cover.12.d">Médicos y enfermeras: atender pacientes en inglés</span>
+              </span>
+            </div>
+            <div class="lp-morechip lp-morechip--static" data-reveal style="--accent:#E9A23B; --i:0">
+              <span class="lp-morechip__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-candy"/></svg></span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="cover.13.n">Chicos que venden</span>
+                <span class="lp-morechip__desc" data-i18n="cover.13.d">Módulo A0/A1: ofrecer, vender, precios y vuelto</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Cursos y diálogos ─────────────── -->
+    <section class="lp-section lp-section--band" id="cursos">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow" data-reveal data-i18n="cursos.eyebrow">CAMINO GUIADO</p>
+        <h2 class="lp-h2" data-reveal data-i18n="cursos.title">10 cursos y 28 diálogos, listos para tu turno.</h2>
+        <p class="lp-lead" data-reveal data-i18n="cursos.lead">Cada curso son 8 semanas × 5 partes. Empieza por el tuyo; el siguiente paso se abre al terminar el actual.</p>
+        <ul class="lp-trustbar" data-reveal>
+          <li data-i18n="cursos.1">🧑‍🍳 Inglés, día a día y turismo avanzado</li>
+          <li data-i18n="cursos.2">💼 Trabajo pro, call-center e inglés para TI</li>
+          <li data-i18n="cursos.3">⭐ Gramática, esencial (800 palabras), vocabulario y Medellín</li>
+        </ul>
+        <div class="lp-hero__cta" data-reveal style="justify-content:center">
+          <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=venue-en&start=onboarding" data-i18n="cursos.demo">Abrir demo →</a>
+          <a class="lp-cta lp-cta--lg lp-cta--ghost" href="./?edition=medellin&start=onboarding" data-i18n="cursos.med">Ver edición Medellín</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Para negocios y escuelas ─────────────── -->
+    <section class="lp-section" id="negocios">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="biz.eyebrow">PARA NEGOCIOS Y ESCUELAS</p>
+        <h2 class="lp-h2" data-reveal data-i18n="biz.title">Un QR en la pared y tu equipo aprende inglés.</h2>
+        <p class="lp-lead" data-reveal data-i18n="biz.lead">Sin cuentas, sin instalar, offline. El empleador paga; el personal practica en los tiempos muertos. Para escuelas hay tareas y modo profe.</p>
+        <div class="lp-pricing">
+          <article class="lp-pricecard" data-reveal style="--i:0">
+            <span class="lp-pricecard__tag" data-i18n="biz.p1.tag">Piloto</span>
+            <span class="lp-pricecard__price" data-i18n="biz.p1.price">0 $</span>
+            <p class="lp-pricecard__desc" data-i18n="biz.p1.desc">Prueba con tu equipo 4–6 semanas con un solo QR.</p>
+          </article>
+          <article class="lp-pricecard lp-pricecard--feat" data-reveal style="--i:1">
+            <span class="lp-pricecard__tag" data-i18n="biz.p2.tag">Venue · empleador</span>
+            <ul>
+              <li data-i18n="biz.p2.l1">Un QR para todo el personal (venue-en)</li>
+              <li data-i18n="biz.p2.l2">Hostales, hoteles, restaurantes y tours</li>
+              <li data-i18n="biz.p2.l3">Sin cuenta, offline, con tu marca</li>
+            </ul>
+            <a class="lp-cta lp-cta--sm lp-cta--accent" href="./?edition=venue-en&start=onboarding" data-i18n="biz.p2.cta">Probar venue →</a>
+          </article>
+          <article class="lp-pricecard" data-reveal style="--i:2">
+            <span class="lp-pricecard__tag" data-i18n="biz.p3.tag">Escuela</span>
+            <ul>
+              <li data-i18n="biz.p3.l1">Tarea y Modo profe (ingles-pro)</li>
+              <li data-i18n="biz.p3.l2">Academias como ECOS · Cartagena</li>
+              <li data-i18n="biz.p3.l3">Marca propia por enlace</li>
+            </ul>
+            <a class="lp-cta lp-cta--sm lp-cta--ghost" href="./?edition=ingles-pro&start=onboarding" data-i18n="biz.p3.cta">Ver escuela →</a>
+          </article>
+        </div>
+        <p class="lp-contact__note" data-reveal data-i18n="biz.note">¿Varias sedes o una ciudad entera (p. ej. Medellín)? Escríbenos para un plan a medida.</p>
+      </div>
+    </section>
+
+    <!-- ─────────────── FAQ ─────────────── -->
+    <section class="lp-section lp-section--wash" id="faq">
+      <div class="lp-wrap">
+        <div class="lp-rule lp-rule--center" data-reveal></div>
+        <h2 class="lp-h2" style="margin-inline:auto;text-align:center;max-width:24ch" data-reveal data-i18n="faq.title">Preguntas frecuentes</h2>
+        <div class="lp-faq">
+          <details data-reveal style="--i:0">
+            <summary data-i18n="faq.q1">¿Necesito cuenta o instalar algo?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a1">No. HolaRuta funciona como app web en el navegador, con soporte offline, sin tienda de apps y sin cuentas. El progreso queda en tu dispositivo.</div>
+          </details>
+          <details data-reveal style="--i:1">
+            <summary data-i18n="faq.q2">¿Funciona sin internet?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a2">Sí. Tras la primera carga, practica sin conexión — ideal para el bus, el turno o zonas con mala señal.</div>
+          </details>
+          <details data-reveal style="--i:2">
+            <summary data-i18n="faq.q3">¿Qué inglés se aprende?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a3">Inglés útil de trabajo (en-US), con audio y ejemplos reales de hostelería, oficina, call-center, escuela y turismo. La pregunta va en español; la respuesta que aprendes, en inglés.</div>
+          </details>
+          <details data-reveal style="--i:3">
+            <summary data-i18n="faq.q4">¿Cuánto cuesta?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a4">Para ti es gratis. Para negocios y escuelas, el piloto es sin costo y la licencia se acuerda según el tamaño del equipo.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────── Sin riesgo / confianza ─────────────── -->
+    <section class="lp-section lp-section--band" id="confianza">
+      <div class="lp-wrap">
+        <p class="lp-eyebrow" data-reveal data-i18n="proof.title">Empieza sin riesgo</p>
+        <ul class="lp-trustbar" data-reveal>
+          <li data-i18n="proof.1">🆓 Gratis para ti — sin cuenta, sin anuncios</li>
+          <li data-i18n="proof.2">🔒 Sin conexión, el progreso queda en tu equipo</li>
+          <li data-i18n="proof.3">⚡ Listo en 30 segundos con un enlace</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ─────────────── Contacto / CTA final ─────────────── -->
+    <section class="lp-section lp-contact" id="contacto">
+      <div class="lp-wrap">
+        <h2 class="lp-h2" data-reveal data-i18n="contact.title">Aprende el inglés de tu trabajo hoy.</h2>
+        <p class="lp-contact__sub" data-reveal data-i18n="contact.sub">Abre la demo y empieza en 30 segundos. ¿Tienes un negocio o una escuela? Escríbenos para un piloto sin costo.</p>
+        <div class="lp-contact__actions" data-reveal>
+          <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=venue-en&start=onboarding" data-i18n="contact.demo">Abrir demo →</a>
+          <a class="lp-cta lp-cta--lg lp-cta--ghost" href="mailto:hola@holaruta.app?subject=HolaRuta%20Locals%20%E2%80%93%20piloto" data-i18n="contact.mail">Solicitar piloto por email</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ─────────────── Footer ─────────────── -->
+  <footer class="lp-footer">
+    <div class="lp-footer__top"></div>
+    <div class="lp-wrap">
+      <div class="lp-footer__grid">
+        <div>
+          <a class="lp-logo" href="./" aria-label="HolaRuta">
+            <span class="lp-logo__mark" aria-hidden="true">
+              <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+                <rect width="512" height="512" fill="url(#lpLogoG)"/>
+                <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+                <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+              </svg>
+            </span>
+            <span class="lp-logo__name" style="color:var(--cream)">Hola<span>Ruta</span></span>
+          </a>
+          <p class="lp-footer__blurb" data-i18n="footer.blurb">Inglés para el trabajo en América Latina: hostelería, oficina, call-center, escuela y turismo. Con audio, sin conexión, sin cuenta.</p>
+        </div>
+        <div>
+          <h4 data-i18n="footer.audiences">¿Para quién?</h4>
+          <ul>
+            <li><a href="landing-locals.html" data-i18n="aud.staff">🧑‍🍳 Personal y trabajadores</a></li>
+            <li><a href="#negocios" data-i18n="aud.venue">🛏️ Hostales y hoteles</a></li>
+            <li><a href="#negocios" data-i18n="aud.school">🎓 Escuelas</a></li>
+            <li><a href="./?edition=medellin&start=onboarding" data-i18n="aud.medellin">🏙️ Medellín</a></li>
+            <li><a href="landing.html" data-i18n="aud.travel">🎒 Viajero: aprende español</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer.more">Más</h4>
+          <ul>
+            <li><a href="./?edition=venue-en&start=onboarding" data-i18n="footer.demo">Abrir demo</a></li>
+            <li><a href="./?edition=medellin&start=onboarding" data-i18n="footer.medellin">Edición Medellín</a></li>
+            <li><a href="mailto:hola@holaruta.app?subject=HolaRuta%20Locals%20%E2%80%93%20piloto" data-i18n="footer.contact">Contacto</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="lp-footer__credit">
+        <span>© <span id="lpYear">2026</span> HolaRuta</span>
+        <span data-i18n="footer.credit">Hecho con <span class="lp-footer__heart">♥</span> para Latinoamérica.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─────────────── Comportamiento: i18n · tema · año ─────────────── -->
+  <script>
+  (function () {
+    "use strict";
+
+    // Diccionario bilingüe (ES/EN). _title/_desc localizan <title> y meta description.
+    var I18N = {
+      es: {
+        "_title": "HolaRuta · Inglés – aprende el inglés que tu trabajo necesita",
+        "_desc": "HolaRuta · Inglés: para meseros, recepción, guías, taxis y call-centers. Frases reales con audio, 10 cursos y 28 diálogos. Sin conexión, sin cuenta, gratis. Para negocios y escuelas también.",
+        "skip": "Saltar al contenido", "nav.demo": "Abrir demo",
+        "aud.label": "¿Para quién?", "aud.staff": "🧑‍🍳 Personal y trabajadores", "aud.venue": "🛏️ Hostales y hoteles", "aud.school": "🎓 Escuelas", "aud.medellin": "🏙️ Medellín", "aud.travel": "🎒 Viajero: aprende español",
+        "hero.eyebrow": "INGLÉS PARA TU TRABAJO",
+        "hero.h1": "Aprende el inglés que tu trabajo <span class=\"lp-hl\">sí</span> necesita.",
+        "hero.sub": "Para meseros, recepción, guías, taxistas y call-centers: frases reales, con audio, sin cuenta y sin conexión. 5 minutos al día.",
+        "hero.demo": "Abrir demo →", "hero.biz": "Para tu negocio ↓",
+        "trust.cards": "tarjetas", "trust.courses": "cursos", "trust.dialogos": "diálogos", "trust.levels": "niveles",
+        "card.brand": "HolaRuta · English at Work",
+        "card.hint": "Toca para girar", "card.lvl": "A2 · Intermedio", "card.speakLabel": "Escuchar la respuesta",
+        "a11y.card": "Girar la tarjeta de ejemplo", "a11y.carousel": "Tarjetas de ejemplo", "card.scenarios": "Escenarios",
+        "card.p1": "Hostelería", "card.p2": "Trabajo · BPO", "card.p3": "Medellín",
+        "ctx.show": "Mostrar contexto", "ctx.title": "🧭 Cómo lo usas en el trabajo", "ctx.situation": "Situación", "ctx.note": "Consejo",
+        "ex1.cat": "HOSTELERÍA", "ex1.ctxSit": "En el restaurante, cuando el cliente termina de comer.", "ex1.ctxNote": "«Shall I…?» suena atento y profesional con un huésped.",
+        "ex2.cat": "CALL-CENTER", "ex2.ctxSit": "Al inicio de una llamada de soporte, al verificar al cliente.", "ex2.ctxNote": "Repite el dato para confirmar: «So that's…, right?».",
+        "ex3.cat": "MEDELLÍN", "ex3.ctxSit": "Guiando un grafitour por la Comuna 13, junto a las escaleras.", "ex3.ctxNote": "Una frase que cuenta la historia de transformación del barrio.",
+        "who.eyebrow": "HECHO PARA TU DÍA", "who.title": "El inglés de tu turno, no el del libro.",
+        "who.lead": "Cada oficio tiene sus frases. HolaRuta las junta por trabajo, con audio y ejemplos reales — para que atiendas, vendas y expliques con confianza.",
+        "who.1.k": "Turismo y hostelería", "who.1.t": "Meseros, recepción, bar y playa.", "who.1.b": "Atiende, recomienda y resuelve quejas en inglés. Check-in, la cuenta, el menú y las islas — con la cortesía justa.",
+        "who.2.k": "Trabajo y call-center", "who.2.t": "BPO, atención al cliente y TI.", "who.2.b": "Guiones de llamada, verificación, reuniones y videollamadas. El inglés que piden las empresas, listo para tu jornada.",
+        "who.3.k": "Escuela y examen", "who.3.t": "Gramática y pronunciación.", "who.3.b": "Tiempos verbales, artículos, phrasal verbs y pares mínimos. Practica lo que cae en el examen, a tu ritmo.",
+        "who.4.k": "Guías y Medellín", "who.4.t": "Cuenta tu ciudad en inglés.", "who.4.b": "Comuna 13, Metrocable, Guatapé y cultura paisa. Frases de guía que dejan buenas reseñas y propina.",
+        "how.eyebrow": "EN TRES PASOS", "how.title": "Sin instalar, sin tienda de apps, sin cuenta.",
+        "how.s1.k": "ABRE", "how.s1.t": "Escanea un QR o toca un enlace", "how.s1.b": "Se abre en el navegador, incluso <b class=\"lp-step__hl\">sin conexión</b>. Elige un curso o una categoría de tu oficio.",
+        "how.s2.k": "PRACTICA", "how.s2.t": "5 minutos al día", "how.s2.b": "Tarjeta, escritura o escucha. El <b class=\"lp-step__hl\">audio en inglés</b> te corrige la pronunciación de a poco.",
+        "how.s3.k": "HABLA", "how.s3.t": "En tu turno", "how.s3.b": "Los diálogos con un turista y los cursos llevan lo aprendido a tu <b class=\"lp-step__hl\">trabajo real</b>.",
+        "cover.eyebrow": "LO QUE CUBRE", "cover.title": "151 categorías, 3124 tarjetas.", "cover.lead": "No un capítulo, sino la vida laboral entera: del turno al examen. Cada tema está listo para practicar — pruébalo en la demo.",
+        "cover.1.n": "Turismo y hostelería", "cover.1.d": "Meseros, recepción, guías, taxi, bar, playa, quejas",
+        "cover.2.n": "Día a día", "cover.2.d": "Saludos, direcciones, compras, salud, banco, transporte",
+        "cover.3.n": "Trabajo y negocios", "cover.3.d": "Entrevista, oficina, reuniones, reseñas, hoja de vida",
+        "cover.4.n": "Call-center / BPO", "cover.4.d": "Verificar, escuchar, poner en espera, resolver, cerrar",
+        "cover.5.n": "Inglés para TI", "cover.5.d": "Standup, tickets, code review, entregas y reportes",
+        "cover.6.n": "Escuela y examen", "cover.6.d": "Gramática, tiempos, preposiciones, phrasal verbs",
+        "cover.7.n": "Vocabulario por temas", "cover.7.d": "48 temas: números, comida, casa, ciudad, trabajo…",
+        "cover.8.n": "Vocabulario B2 / avanzado", "cover.8.d": "Opinar, argumentar, conectores y colocaciones",
+        "cover.9.n": "Cultura de huéspedes", "cover.9.d": "Cómo son los huéspedes de Europa y EE. UU.",
+        "cover.10.n": "Medellín", "cover.10.d": "Comuna 13, Metrocable, Guatapé, cultura paisa, Feria",
+        "cover.11.n": "Diálogos", "cover.11.d": "28 juegos de rol: el turista habla inglés, tú respondes",
+        "cover.12.n": "Personal de salud", "cover.12.d": "Médicos y enfermeras: atender pacientes en inglés",
+        "cover.13.n": "Chicos que venden", "cover.13.d": "Módulo A0/A1: ofrecer, vender, precios y vuelto",
+        "cursos.eyebrow": "CAMINO GUIADO", "cursos.title": "10 cursos y 28 diálogos, listos para tu turno.", "cursos.lead": "Cada curso son 8 semanas × 5 partes. Empieza por el tuyo; el siguiente paso se abre al terminar el actual.",
+        "cursos.1": "🧑‍🍳 Inglés, día a día y turismo avanzado", "cursos.2": "💼 Trabajo pro, call-center e inglés para TI", "cursos.3": "⭐ Gramática, esencial (800 palabras), vocabulario y Medellín",
+        "cursos.demo": "Abrir demo →", "cursos.med": "Ver edición Medellín",
+        "biz.eyebrow": "PARA NEGOCIOS Y ESCUELAS", "biz.title": "Un QR en la pared y tu equipo aprende inglés.", "biz.lead": "Sin cuentas, sin instalar, offline. El empleador paga; el personal practica en los tiempos muertos. Para escuelas hay tareas y modo profe.",
+        "biz.p1.tag": "Piloto", "biz.p1.price": "0 $", "biz.p1.desc": "Prueba con tu equipo 4–6 semanas con un solo QR.",
+        "biz.p2.tag": "Venue · empleador", "biz.p2.l1": "Un QR para todo el personal (venue-en)", "biz.p2.l2": "Hostales, hoteles, restaurantes y tours", "biz.p2.l3": "Sin cuenta, offline, con tu marca", "biz.p2.cta": "Probar venue →",
+        "biz.p3.tag": "Escuela", "biz.p3.l1": "Tarea y Modo profe (ingles-pro)", "biz.p3.l2": "Academias como ECOS · Cartagena", "biz.p3.l3": "Marca propia por enlace", "biz.p3.cta": "Ver escuela →",
+        "biz.note": "¿Varias sedes o una ciudad entera (p. ej. Medellín)? Escríbenos para un plan a medida.",
+        "faq.title": "Preguntas frecuentes",
+        "faq.q1": "¿Necesito cuenta o instalar algo?", "faq.a1": "No. HolaRuta funciona como app web en el navegador, con soporte offline, sin tienda de apps y sin cuentas. El progreso queda en tu dispositivo.",
+        "faq.q2": "¿Funciona sin internet?", "faq.a2": "Sí. Tras la primera carga, practica sin conexión — ideal para el bus, el turno o zonas con mala señal.",
+        "faq.q3": "¿Qué inglés se aprende?", "faq.a3": "Inglés útil de trabajo (en-US), con audio y ejemplos reales de hostelería, oficina, call-center, escuela y turismo. La pregunta va en español; la respuesta que aprendes, en inglés.",
+        "faq.q4": "¿Cuánto cuesta?", "faq.a4": "Para ti es gratis. Para negocios y escuelas, el piloto es sin costo y la licencia se acuerda según el tamaño del equipo.",
+        "proof.title": "Empieza sin riesgo", "proof.1": "🆓 Gratis para ti — sin cuenta, sin anuncios", "proof.2": "🔒 Sin conexión, el progreso queda en tu equipo", "proof.3": "⚡ Listo en 30 segundos con un enlace",
+        "contact.title": "Aprende el inglés de tu trabajo hoy.", "contact.sub": "Abre la demo y empieza en 30 segundos. ¿Tienes un negocio o una escuela? Escríbenos para un piloto sin costo.",
+        "contact.demo": "Abrir demo →", "contact.mail": "Solicitar piloto por email",
+        "footer.blurb": "Inglés para el trabajo en América Latina: hostelería, oficina, call-center, escuela y turismo. Con audio, sin conexión, sin cuenta.",
+        "footer.audiences": "¿Para quién?", "footer.more": "Más", "footer.demo": "Abrir demo", "footer.medellin": "Edición Medellín", "footer.contact": "Contacto",
+        "footer.credit": "Hecho con <span class=\"lp-footer__heart\">♥</span> para Latinoamérica."
+      },
+      en: {
+        "_title": "HolaRuta · Inglés – learn the English your job needs",
+        "_desc": "HolaRuta · Inglés: for waiters, reception, guides, taxis and call centers. Real phrases with audio, 10 courses and 28 role-plays. Offline, no account, free. For businesses and schools too.",
+        "skip": "Skip to content", "nav.demo": "Open demo",
+        "aud.label": "Who is it for?", "aud.staff": "🧑‍🍳 Staff & workers", "aud.venue": "🛏️ Hostels & hotels", "aud.school": "🎓 Schools", "aud.medellin": "🏙️ Medellín", "aud.travel": "🎒 Traveler: learn Spanish",
+        "hero.eyebrow": "ENGLISH FOR YOUR JOB",
+        "hero.h1": "Learn the English your job <span class=\"lp-hl\">actually</span> needs.",
+        "hero.sub": "For waiters, reception, guides, taxi drivers and call centers: real phrases, with audio, no account and offline. 5 minutes a day.",
+        "hero.demo": "Open demo →", "hero.biz": "For your business ↓",
+        "trust.cards": "cards", "trust.courses": "courses", "trust.dialogos": "role-plays", "trust.levels": "levels",
+        "card.brand": "HolaRuta · English at Work",
+        "card.hint": "Tap to flip", "card.lvl": "A2 · Intermediate", "card.speakLabel": "Listen to the answer",
+        "a11y.card": "Flip the example card", "a11y.carousel": "Example cards", "card.scenarios": "Scenarios",
+        "card.p1": "Hospitality", "card.p2": "Work · BPO", "card.p3": "Medellín",
+        "ctx.show": "Show context", "ctx.title": "🧭 How to use it at work", "ctx.situation": "Situation", "ctx.note": "Tip",
+        "ex1.cat": "HOSPITALITY", "ex1.ctxSit": "In the restaurant, when the guest finishes eating.", "ex1.ctxNote": "“Shall I…?” sounds attentive and professional with a guest.",
+        "ex2.cat": "CALL CENTER", "ex2.ctxSit": "At the start of a support call, when verifying the customer.", "ex2.ctxNote": "Repeat the detail to confirm: “So that's…, right?”.",
+        "ex3.cat": "MEDELLÍN", "ex3.ctxSit": "Leading a graffiti tour in Comuna 13, next to the escalators.", "ex3.ctxNote": "A line that tells the neighborhood's transformation story.",
+        "who.eyebrow": "MADE FOR YOUR DAY", "who.title": "The English of your shift, not the textbook.",
+        "who.lead": "Every job has its phrases. HolaRuta groups them by trade, with audio and real examples — so you serve, sell and explain with confidence.",
+        "who.1.k": "Tourism & hospitality", "who.1.t": "Waiters, reception, bar and beach.", "who.1.b": "Serve, recommend and handle complaints in English. Check-in, the bill, the menu and the islands — with just the right courtesy.",
+        "who.2.k": "Work & call center", "who.2.t": "BPO, customer support and IT.", "who.2.b": "Call scripts, verification, meetings and video calls. The English companies ask for, ready for your day.",
+        "who.3.k": "School & exams", "who.3.t": "Grammar and pronunciation.", "who.3.b": "Tenses, articles, phrasal verbs and minimal pairs. Practice what shows up on the exam, at your own pace.",
+        "who.4.k": "Guides & Medellín", "who.4.t": "Tell your city in English.", "who.4.b": "Comuna 13, Metrocable, Guatapé and paisa culture. Guide phrases that earn good reviews and tips.",
+        "how.eyebrow": "IN THREE STEPS", "how.title": "No install, no app store, no account.",
+        "how.s1.k": "OPEN", "how.s1.t": "Scan a QR or tap a link", "how.s1.b": "It opens in the browser, even <b class=\"lp-step__hl\">offline</b>. Pick a course or a category for your trade.",
+        "how.s2.k": "PRACTICE", "how.s2.t": "5 minutes a day", "how.s2.b": "Flashcard, typing or listening. The <b class=\"lp-step__hl\">English audio</b> fixes your pronunciation little by little.",
+        "how.s3.k": "SPEAK", "how.s3.t": "On your shift", "how.s3.b": "Role-plays with a tourist and the courses take what you learned to your <b class=\"lp-step__hl\">real job</b>.",
+        "cover.eyebrow": "WHAT IT COVERS", "cover.title": "151 categories, 3124 cards.", "cover.lead": "Not one chapter, but the whole working life: from the shift to the exam. Every topic is ready to practice — try it in the demo.",
+        "cover.1.n": "Tourism & hospitality", "cover.1.d": "Waiters, reception, guides, taxi, bar, beach, complaints",
+        "cover.2.n": "Everyday life", "cover.2.d": "Greetings, directions, shopping, health, bank, transport",
+        "cover.3.n": "Work & business", "cover.3.d": "Interview, office, meetings, reviews, résumé",
+        "cover.4.n": "Call center / BPO", "cover.4.d": "Verify, listen, put on hold, resolve, close",
+        "cover.5.n": "English for IT", "cover.5.d": "Standup, tickets, code review, releases and reports",
+        "cover.6.n": "School & exams", "cover.6.d": "Grammar, tenses, prepositions, phrasal verbs",
+        "cover.7.n": "Vocabulary by topic", "cover.7.d": "48 topics: numbers, food, home, city, work…",
+        "cover.8.n": "B2 / advanced vocabulary", "cover.8.d": "Opinion, argument, connectors and collocations",
+        "cover.9.n": "Guest culture", "cover.9.d": "How guests from Europe and the US tick",
+        "cover.10.n": "Medellín", "cover.10.d": "Comuna 13, Metrocable, Guatapé, paisa culture, Feria",
+        "cover.11.n": "Role-plays", "cover.11.d": "28 role-plays: the tourist speaks English, you answer",
+        "cover.12.n": "Health staff", "cover.12.d": "Doctors and nurses: attend patients in English",
+        "cover.13.n": "Kids who sell", "cover.13.d": "A0/A1 module: offer, sell, prices and change",
+        "cursos.eyebrow": "GUIDED PATH", "cursos.title": "10 courses and 28 role-plays, ready for your shift.", "cursos.lead": "Each course is 8 weeks × 5 parts. Start with yours; the next step unlocks when you finish the current one.",
+        "cursos.1": "🧑‍🍳 English, everyday life and advanced tourism", "cursos.2": "💼 Work pro, call center and English for IT", "cursos.3": "⭐ Grammar, essential (800 words), vocabulary and Medellín",
+        "cursos.demo": "Open demo →", "cursos.med": "See Medellín edition",
+        "biz.eyebrow": "FOR BUSINESSES & SCHOOLS", "biz.title": "One QR on the wall and your team learns English.", "biz.lead": "No accounts, no install, offline. The employer pays; staff practice in the downtime. For schools there are tasks and a teacher mode.",
+        "biz.p1.tag": "Pilot", "biz.p1.price": "$0", "biz.p1.desc": "Test with your team for 4–6 weeks with a single QR.",
+        "biz.p2.tag": "Venue · employer", "biz.p2.l1": "One QR for all staff (venue-en)", "biz.p2.l2": "Hostels, hotels, restaurants and tours", "biz.p2.l3": "No account, offline, with your brand", "biz.p2.cta": "Try venue →",
+        "biz.p3.tag": "School", "biz.p3.l1": "Tasks and Teacher mode (ingles-pro)", "biz.p3.l2": "Academies like ECOS · Cartagena", "biz.p3.l3": "Your own brand via a link", "biz.p3.cta": "See school →",
+        "biz.note": "Several locations or a whole city (e.g. Medellín)? Write to us for a tailored plan.",
+        "faq.title": "Frequently asked questions",
+        "faq.q1": "Do I need an account or to install anything?", "faq.a1": "No. HolaRuta runs as a web app in the browser, offline-capable, with no app store and no accounts. Progress stays on your device.",
+        "faq.q2": "Does it work without internet?", "faq.a2": "Yes. After the first load, practice offline — perfect for the bus, your shift or areas with poor signal.",
+        "faq.q3": "What English do you learn?", "faq.a3": "Useful work English (en-US), with audio and real examples from hospitality, office, call center, school and tourism. The prompt is in Spanish; the answer you learn is in English.",
+        "faq.q4": "How much does it cost?", "faq.a4": "For you it's free. For businesses and schools, the pilot is free and the license is agreed based on team size.",
+        "proof.title": "Start risk-free", "proof.1": "🆓 Free for you — no account, no ads", "proof.2": "🔒 Offline, progress stays on your device", "proof.3": "⚡ Ready in 30 seconds with one link",
+        "contact.title": "Learn the English of your job today.", "contact.sub": "Open the demo and start in 30 seconds. Got a business or a school? Write to us for a free pilot.",
+        "contact.demo": "Open demo →", "contact.mail": "Request a pilot by email",
+        "footer.blurb": "English for work in Latin America: hospitality, office, call center, school and tourism. With audio, offline, no account.",
+        "footer.audiences": "Who is it for?", "footer.more": "More", "footer.demo": "Open demo", "footer.medellin": "Medellín edition", "footer.contact": "Contact",
+        "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America."
+      }
+    };
+
+    // Claves cuyo valor lleva markup inline seguro (sin entrada de usuario → sin riesgo).
+    var HTML_KEYS = { "hero.h1": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true, "footer.credit": true };
+    var LANG_KEY = "holaruta.landing.lang";
+
+    function setLang(lang) {
+      if (!I18N[lang]) lang = "es";
+      var dict = I18N[lang];
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute("data-lang", lang);
+      document.title = dict["_title"];
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta && dict["_desc"]) meta.setAttribute("content", dict["_desc"]);
+      var ogl = document.querySelector('meta[property="og:locale"]');
+      if (ogl) ogl.setAttribute("content", lang === "en" ? "en_US" : "es_ES");
+      var nodes = document.querySelectorAll("[data-i18n]");
+      for (var i = 0; i < nodes.length; i++) {
+        var key = nodes[i].getAttribute("data-i18n");
+        if (!(key in dict)) continue;
+        if (HTML_KEYS[key]) nodes[i].innerHTML = dict[key];
+        else nodes[i].textContent = dict[key];
+      }
+      // aria-labels (y title si lo hay) también se localizan – si no, el lector de
+      // pantalla en modo EN leería etiquetas en español.
+      var aria = document.querySelectorAll("[data-i18n-aria]");
+      for (var a = 0; a < aria.length; a++) {
+        var ak = aria[a].getAttribute("data-i18n-aria");
+        if (!(ak in dict)) continue;
+        aria[a].setAttribute("aria-label", dict[ak]);
+        if (aria[a].hasAttribute("title")) aria[a].setAttribute("title", dict[ak]);
+      }
+      var btns = document.querySelectorAll(".lp-langbtn");
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
+      }
+      try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    }
+
+    // Idioma inicial: ?lang= (enlace compartible) > recordado > navegador > es
+    var SUPPORTED = ["es", "en"];
+    var urlLang = null;
+    try { urlLang = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+    var saved = null;
+    try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
+    var browser = (navigator.language || "es").toLowerCase();
+    var browserLang = browser.indexOf("en") === 0 ? "en" : "es";
+    var initial = (urlLang && SUPPORTED.indexOf(urlLang) >= 0) ? urlLang
+      : (saved && SUPPORTED.indexOf(saved) >= 0) ? saved : browserLang;
+    setLang(initial);
+
+    document.querySelectorAll(".lp-langbtn").forEach(function (b) {
+      b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+    });
+
+    // Año en el footer
+    var y = document.getElementById("lpYear"); if (y) y.textContent = new Date().getFullYear();
+
+    // Cambio de tema (escribe en spanischcard.settings.v1 – consistente con app y landing)
+    var themeBtn = document.getElementById("lpTheme");
+    function syncThemeIcon() {
+      var dark = document.documentElement.dataset.theme === "dark";
+      if (themeBtn) themeBtn.textContent = dark ? "☀️" : "🌙";
+    }
+    syncThemeIcon();
+    if (themeBtn) themeBtn.addEventListener("click", function () {
+      var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute("content", next === "dark" ? "#0E0907" : "#241510");
+      syncThemeIcon();
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        s.theme = next;
+        localStorage.setItem("spanischcard.settings.v1", JSON.stringify(s));
+      } catch (e) {}
+    });
+
+    // Scroll-reveal (mejora progresiva) – sin JS todo queda visible.
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var reveal = document.querySelectorAll("[data-reveal]");
+    if (reduce || !("IntersectionObserver" in window)) {
+      reveal.forEach(function (el) { el.classList.add("is-in"); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+      }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
+      reveal.forEach(function (el) { io.observe(el); });
+    }
+
+    // Números que suben al aparecer (respeta reduced-motion).
+    var counters = document.querySelectorAll("[data-count]");
+    function countUp(el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (isNaN(target)) return;
+      var finalText = el.textContent;
+      if (reduce) { el.textContent = finalText; return; }
+      var dur = 900, t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var v = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        el.textContent = p < 1 ? String(v) : finalText;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (reduce || !("IntersectionObserver" in window)) {
+      counters.forEach(function (el) { countUp(el); });
+    } else {
+      var cio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+      }, { threshold: 0.5 });
+      counters.forEach(function (el) { cio.observe(el); });
+    }
+
+    // ── Phone de 3 pasos: el paso activo determina la imagen de la app ──
+    var phoneImg = document.getElementById("lpPhoneImg");
+    var shots = {
+      "1": "docs/landing/home.webp",
+      "2": "docs/landing/study.webp",
+      "3": "docs/landing/stats.webp"
+    };
+    var stepEls = document.querySelectorAll(".lp-step[data-step]");
+    function activateStep(el) {
+      if (!el) return;
+      stepEls.forEach(function (st) { st.classList.toggle("is-active", st === el); });
+      var s = el.getAttribute("data-step");
+      if (phoneImg && shots[s] && phoneImg.getAttribute("src") !== shots[s]) {
+        phoneImg.setAttribute("src", shots[s]);
+      }
+    }
+    if (stepEls.length) {
+      stepEls.forEach(function (el) {
+        el.addEventListener("pointerenter", function () { activateStep(el); });
+        el.addEventListener("focusin", function () { activateStep(el); });
+        el.addEventListener("click", function () { activateStep(el); });
+      });
+      var canHover = window.matchMedia &&
+        window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      if (!canHover && "IntersectionObserver" in window) {
+        var ioStep = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) activateStep(en.target);
+          });
+        }, { rootMargin: "-48% 0px -48% 0px", threshold: 0 });
+        stepEls.forEach(function (el) { ioStep.observe(el); });
+      }
+      activateStep(stepEls[0]);
+    }
+
+    // Sombra del header al hacer scroll (cosmético, como en la landing B2C).
+    var header = document.getElementById("lpHeader");
+    if (header) {
+      var onScroll = function () { header.classList.toggle("is-stuck", window.scrollY > 8); };
+      onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
+    }
+
+    // Anclas internas (skip-link #hero, CTA #negocios) con scroll suave, pero SIN
+    // dejar hash en la barra de direcciones – así el botón nativo de compartir no
+    // arrastra #negocios y el enlace compartido no cae en mitad de la página.
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        var id = a.getAttribute("href").slice(1);
+        if (!id) return;
+        var target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        try { target.focus({ preventScroll: true }); } catch (err) { try { target.focus(); } catch (e2) {} }
+        if (window.history && history.replaceState) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+      });
+    });
+  })();
+  </script>
+</body>
+</html>

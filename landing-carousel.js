@@ -133,7 +133,9 @@
         try {
           if (!("speechSynthesis" in window)) return;
           var u = new window.SpeechSynthesisUtterance(spk.getAttribute("data-spk") || "");
-          u.lang = "es-419"; u.rate = 0.95;
+          // Locals-Track (es-en): Antwort ist Englisch – per data-spk-lang die
+          // Vorlese-Locale überschreiben; Standard bleibt das Reise-Spanisch.
+          u.lang = spk.getAttribute("data-spk-lang") || "es-419"; u.rate = 0.95;
           window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
         } catch (err) {}
       });
