@@ -185,8 +185,8 @@
               <div class="lp-phone__notch"></div>
               <div class="lp-phone__stripe"></div>
               <picture>
-                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/home-hero.webp" />
-                <img class="lp-phone__img" src="docs/landing/home.png" width="390" height="844" loading="lazy" alt="" />
+                <source media="(min-width: 1040px)" type="image/webp" srcset="docs/landing/locals-home.webp" />
+                <img class="lp-phone__img" src="docs/landing/locals-home.webp" width="390" height="844" loading="lazy" alt="" />
               </picture>
             </div>
           </div>
@@ -375,7 +375,7 @@
               <p class="lp-step__body" data-i18n="how.s1.b">Se abre en el navegador, incluso <b class="lp-step__hl">sin conexión</b>. Elige un curso o una categoría de tu oficio.</p>
             </div>
             <div class="lp-step__shot">
-              <img src="docs/landing/home.webp" width="390" height="844" loading="lazy" alt="Pantalla de inicio de HolaRuta con las áreas de aprendizaje" />
+              <img src="docs/landing/locals-home.webp" width="390" height="844" loading="lazy" alt="Pantalla de inicio de HolaRuta · Inglés en español, con la ronda del día y el curso" />
             </div>
           </article>
           <article class="lp-step" data-reveal style="--i:1; --accent:#3F7355" data-step="2">
@@ -386,7 +386,7 @@
               <p class="lp-step__body" data-i18n="how.s2.b">Tarjeta, escritura o escucha. El <b class="lp-step__hl">audio en inglés</b> te corrige la pronunciación de a poco.</p>
             </div>
             <div class="lp-step__shot">
-              <img src="docs/landing/study.webp" width="390" height="844" loading="lazy" alt="Tarjeta girada con pronunciación y corrección" />
+              <img src="docs/landing/locals-study.webp" width="390" height="844" loading="lazy" alt="Tarjeta de estudio: la respuesta en inglés con ayuda de pronunciación y «¿Cómo fue?»" />
             </div>
           </article>
           <article class="lp-step" data-reveal style="--i:2; --accent:#E9A23B" data-step="3">
@@ -397,7 +397,7 @@
               <p class="lp-step__body" data-i18n="how.s3.b">Los diálogos con un turista y los cursos llevan lo aprendido a tu <b class="lp-step__hl">trabajo real</b>.</p>
             </div>
             <div class="lp-step__shot">
-              <img src="docs/landing/stats.webp" width="390" height="844" loading="lazy" alt="Estadística con tasa de acierto y progreso" />
+              <img src="docs/landing/locals-stats.webp" width="390" height="844" loading="lazy" alt="Tu progreso en español: tarjetas dominadas, en aprendizaje y nuevas" />
             </div>
           </article>
         </div>
@@ -406,7 +406,7 @@
             <div class="lp-phone__screen">
               <div class="lp-phone__notch"></div>
               <div class="lp-phone__stripe"></div>
-              <img class="lp-phone__img" id="lpPhoneImg" src="docs/landing/home.webp" width="390" height="844" loading="lazy" alt="" />
+              <img class="lp-phone__img" id="lpPhoneImg" src="docs/landing/locals-home.webp" width="390" height="844" loading="lazy" alt="" />
             </div>
           </div>
         </div>
@@ -529,7 +529,7 @@
           <li data-i18n="cursos.2">💼 Trabajo pro, call-center e inglés para TI</li>
           <li data-i18n="cursos.3">⭐ Gramática, esencial (800 palabras), vocabulario y Medellín</li>
         </ul>
-        <div class="lp-hero__cta" data-reveal style="justify-content:center">
+        <div class="lp-contact__actions" data-reveal style="margin-top: var(--space-5)">
           <a class="lp-cta lp-cta--lg lp-cta--accent" href="./?edition=venue-en&start=onboarding" data-i18n="cursos.demo">Abrir demo →</a>
           <a class="lp-cta lp-cta--lg lp-cta--ghost" href="./?edition=medellin&start=onboarding" data-i18n="cursos.med">Ver edición Medellín</a>
         </div>
@@ -917,9 +917,9 @@
     // ── Phone de 3 pasos: el paso activo determina la imagen de la app ──
     var phoneImg = document.getElementById("lpPhoneImg");
     var shots = {
-      "1": "docs/landing/home.webp",
-      "2": "docs/landing/study.webp",
-      "3": "docs/landing/stats.webp"
+      "1": "docs/landing/locals-home.webp",
+      "2": "docs/landing/locals-study.webp",
+      "3": "docs/landing/locals-stats.webp"
     };
     var stepEls = document.querySelectorAll(".lp-step[data-step]");
     function activateStep(el) {

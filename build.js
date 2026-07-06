@@ -228,6 +228,11 @@ function buildDist() {
     "docs/landing/study.webp",
     "docs/landing/stats.webp",
     "docs/landing/home-hero.webp",
+    // Spanische Locals-App-Screenshots (Home/Study/Stats) NUR für landing-locals.html
+    // – track es-en (Frage ES → Antwort EN), damit die Seite die echte Locals-UI zeigt.
+    "docs/landing/locals-home.webp",
+    "docs/landing/locals-study.webp",
+    "docs/landing/locals-stats.webp",
     // Zielgruppenspezifische B2B-Landings (DE/EN/ES) – teilen sich styles.css/
     // landing.css und das Beispielkarten-Karussell (landing-carousel.js).
     "landing-schule.html",
