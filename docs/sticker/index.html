@@ -39,7 +39,9 @@
 <main class="sheet">
   <div class="brand">🌶️ HolaRuta</div>
   <h1>Sticker-Konzepte</h1>
-  <p class="lead">Neun druckfertige Sticker-Designs in drei Serien: <strong>Laptop</strong> (Identität &amp; Community, ohne QR), <strong>Stadt</strong> (Guerilla-Marketing mit QR) und <strong>Hostel</strong> (QR + Call-to-Action, dort wo die Zielgruppe ist). Alle Motive nutzen die bestehende Markenwelt: Pin mit „¿?“, „¡HOLA!“-Passstempel, gestrichelte Route, Karteikarte, Terracotta→Amber. Jedes SVG ist einzeln als Druckdatei verlinkt.</p>
+  <!-- Edition-Sticker (hostel-qr-*.svg) werden aus gen-editions.js erzeugt: node docs/sticker/gen-editions.js -->
+
+  <p class="lead">Druckfertige Sticker-Designs in vier Serien: <strong>Laptop</strong> (Identität &amp; Community, ohne QR – inkl. Slang-Chip-Sammelserie), <strong>Stadt</strong> (Guerilla-Marketing mit QR), <strong>Hostel</strong> (QR + Call-to-Action) und <strong>Edition-Varianten</strong> (Co-Branding pro Partner). Alle Motive nutzen die bestehende Markenwelt: Pin mit „¿?“, „¡HOLA!“-Passstempel, gestrichelte Route, Karteikarte, Terracotta→Amber. Jedes SVG ist einzeln als Druckdatei verlinkt.</p>
 
   <h2>💻 Laptop-Serie <small style="font-weight:400;color:var(--muted)">— dekorativ, ohne QR</small></h2>
   <p>Für die Community und als Beilage/Giveaway: Der Laptop im Hostel-Common-Room ist eine Werbefläche, die um die Welt reist. Kein QR – ein Laptop-Sticker wird nicht gescannt, er wird erkannt.</p>
@@ -72,9 +74,33 @@
       <div class="preview"><object type="image/svg+xml" data="laptop-chevere.svg" style="width:220px"></object></div>
       <h3>Slang-Chip „¡Chévere!“</h3>
       <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Vinyl matt</p>
-      <p>LatAm-Slang ist Markenkern. Als Serie druckbar: <em>¡Chévere! · ¿Qué más? · Tranquilo · ¡Buen viaje!</em> – Sammel-Effekt inklusive.</p>
+      <p>LatAm-Slang ist Markenkern. Der Auftakt der Chip-Serie unten – jeder Chip in einer eigenen Palette-Farbe, zum Sammeln.</p>
       <p class="dl"><a href="laptop-chevere.svg" download>laptop-chevere.svg</a></p>
-      <div class="tags"><span class="tag">Serie möglich</span><span class="tag">LatAm-Slang</span></div>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">LatAm-Slang</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-quemas.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „¿Qué más?“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Teal (--easy)</p>
+      <p>Kolumbianischer Gruß („Was geht?“). Teal-Akzent aus der App-Palette.</p>
+      <p class="dl"><a href="laptop-quemas.svg" download>laptop-quemas.svg</a></p>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">🇨🇴</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-tranquilo.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „Tranquilo“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Grün (--ok)</p>
+      <p>Der Reise-Grundton: alles gut, kein Stress. Grün-Akzent aus der Palette.</p>
+      <p class="dl"><a href="laptop-tranquilo.svg" download>laptop-tranquilo.svg</a></p>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">Vibe</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-buenviaje.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „¡Buen viaje!“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Ochre (--warn)</p>
+      <p>Der Abschiedsgruß fürs nächste Ziel – schließt die Chip-Serie ab. Ochre-Akzent aus der Palette.</p>
+      <p class="dl"><a href="laptop-buenviaje.svg" download>laptop-buenviaje.svg</a></p>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">Abschied</span></div>
     </div>
     <div class="sticker wide">
       <div class="preview"><object type="image/svg+xml" data="laptop-bus.svg" style="width:420px"></object></div>
@@ -128,13 +154,51 @@
     </div>
   </div>
 
+  <h2>🤝 Edition-Varianten <small style="font-weight:400;color:var(--muted)">— Co-Branding pro Partner</small></h2>
+  <p>Derselbe Rezeptions-Sticker, aber in der Farbe und mit dem Namen einer Co-Branding-Edition – der QR führt direkt in die passende Edition (<code>?edition=…</code>), sodass die App gleich im Partner-Branding öffnet. Farben und Namen stammen aus <code>editions/registry.js</code> (Quelle der Wahrheit); die QR-Codes werden mit dem repo-eigenen Generator erzeugt. Neue Varianten: Zeile in <code>docs/sticker/gen-editions.js</code> ergänzen und <code>node docs/sticker/gen-editions.js</code> laufen lassen.</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-hostel.svg" style="width:210px"></object></div>
+      <h3>Hostel (White-Label)</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Hostel-Orange · QR → <code>?edition=hostel</code></p>
+      <p>Die generische Vorlage für jedes Hostel: hebt Modo hostal, Games und Diálogos hervor. Pro Haus Name/Farbe in der Registry anpassbar.</p>
+      <p class="dl"><a href="hostel-qr-hostel.svg" download>hostel-qr-hostel.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">White-Label</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-ecos.svg" style="width:210px"></object></div>
+      <h3>ECOS · Cartagena</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Karibik-Teal · QR → <code>?edition=ecos</code></p>
+      <p>Für die Sprachschule ECOS in Cartagena – Teal-Akzent, Startziel Cartagena.</p>
+      <p class="dl"><a href="hostel-qr-ecos.svg" download>hostel-qr-ecos.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Schule</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-weroad.svg" style="width:210px"></object></div>
+      <h3>WeRoad Colombia</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Koralle · QR → <code>?edition=weroad</code></p>
+      <p>Für den Reiseanbieter WeRoad – Koralle nahe dem Markenauftritt, Startziel Colombia.</p>
+      <p class="dl"><a href="hostel-qr-weroad.svg" download>hostel-qr-weroad.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Reiseanbieter</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-medellin.svg" style="width:210px"></object></div>
+      <h3>Medellín</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Paisa-Grün · QR → <code>?edition=medellin</code></p>
+      <p>Die Paisa-Edition – Grün als Akzent. Hinweis: reiner Locals-Track (Personal lernt Englisch), daher eher für Venue-Partner in Medellín.</p>
+      <p class="dl"><a href="hostel-qr-medellin.svg" download>hostel-qr-medellin.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Locals-Track</span></div>
+    </div>
+  </div>
+  <div class="tip"><strong>So entstehen die Edition-Sticker:</strong> Der Generator <code>docs/sticker/gen-editions.js</code> liest die Akzentfarben aus <code>editions/registry.js</code>, erzeugt mit <code>qr.js</code> einen echten QR auf die jeweilige <code>?edition=…</code>-URL und schreibt <code>hostel-qr-&lt;edition&gt;.svg</code>. Kein manuelles Nachzeichnen – Farbe und Ziel bleiben mit der App konsistent.</div>
+
   <h2>🖨️ Produktion &amp; Druckdaten</h2>
   <ul>
     <li><strong>Dateien:</strong> Alle SVGs sind in physischen Maßen angelegt (mm) und vektorbasiert – beliebig skalierbar.</li>
     <li><strong>Fonts:</strong> Bricolage Grotesque 800 (Display) und Instrument Sans (liegen im Repo unter <code>/fonts/</code>). Für Druckereien den Text vor Abgabe <strong>in Pfade konvertieren</strong> (z.&nbsp;B. Inkscape: <em>Pfad → Objekt in Pfad umwandeln</em>), sonst ersetzt die Druckerei die Schrift.</li>
     <li><strong>Beschnitt:</strong> 2–3 mm Zugabe um die Schnittkante; die Cream-/Randkonturen der Motive sind als Schnittkanten gedacht (Die-Cut bzw. Kiss-Cut).</li>
     <li><strong>Material:</strong> Stadt-Serie auf wetterfestem, UV-laminiertem Outdoor-Vinyl; Laptop/Hostel auf mattem Vinyl (matt spiegelt unter Hostel-Licht nicht). Passstempel wirkt am stärksten auf transparentem Vinyl.</li>
-    <li><strong>QR testen:</strong> Vor der Serienproduktion einen Proof drucken und den QR mit mehreren Handys aus 30–50 cm scannen. Ziel-URL: <code>moarci.github.io/holaRuta</code> (Pfaddaten aus <code>docs/anleitungen/qr-holaruta.svg</code>). Für Hostel-Partner kann der QR pro Edition ausgetauscht werden (z.&nbsp;B. <code>?edition=hostel</code>, QR mit <code>qr.js</code> generieren).</li>
+    <li><strong>QR testen:</strong> Vor der Serienproduktion einen Proof drucken und den QR mit mehreren Handys aus 30–50 cm scannen. Basis-URL: <code>moarci.github.io/holaRuta</code>. Die QR-Codes werden mit dem repo-eigenen Generator (<code>qr.js</code>, Fehlerkorrektur M) erzeugt; die Edition-Varianten kommen aus <code>docs/sticker/gen-editions.js</code> und zeigen auf <code>?edition=…</code>.</li>
     <li><strong>PDF dieser Seite:</strong> im Browser öffnen und <strong>Strg/Cmd&nbsp;+&nbsp;P → „Als PDF speichern“</strong>.</li>
   </ul>
 

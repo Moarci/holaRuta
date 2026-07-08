@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Sticker · Laptop · „Slang-Chip ¡Buen viaje!" (Serie)
+  Druckgröße: 70 × 28 mm · Pill-Konturschnitt · Vinyl matt.
+  Akzent: Ochre (Palette-Token „warn", #B97C24). Der Abschiedsgruß fürs nächste Ziel.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="70mm" height="28mm" viewBox="0 0 700 280">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+    </style>
+  </defs>
+  <rect x="10" y="10" width="680" height="260" rx="130" fill="#FBF3E4" stroke="#B97C24" stroke-width="13"/>
+  <text x="350" y="188" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="108" font-weight="800" fill="#B97C24" text-anchor="middle" letter-spacing="-2">¡Buen viaje!</text>
+</svg>
