@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Sticker · Laptop · „Bus-Spruch"
+  Druckgröße: 100 × 40 mm · abgerundetes Rechteck, Cream-Rand = Schnittkante.
+  Motto der Landingpage; Routenlinie aus docs/og/og-image.svg.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="100mm" height="40mm" viewBox="0 0 1000 400">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="984" height="384" rx="56" fill="#241510" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- Gestrichelte Bus-Route mit Stationen -->
+  <path d="M70 120 C 260 70, 480 150, 700 95 S 900 55, 925 70" fill="none" stroke="#E9A23B"
+        stroke-opacity="0.45" stroke-width="6" stroke-dasharray="3 22" stroke-linecap="round"/>
+  <circle cx="70" cy="120" r="8" fill="#E9A23B" fill-opacity="0.5"/>
+  <circle cx="430" cy="117" r="8" fill="#E9A23B" fill-opacity="0.5"/>
+  <circle cx="700" cy="95" r="8" fill="#E9A23B" fill-opacity="0.5"/>
+  <!-- Ziel-Pin (Form aus icon.svg) -->
+  <g transform="translate(897,37) scale(0.16)">
+    <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+    <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+          font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+  </g>
+  <text x="70" y="228" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="78" font-weight="800" fill="#FBF3E4" letter-spacing="-1">Sprich Spanisch,</text>
+  <text x="70" y="318" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="78" font-weight="800" fill="#FBF3E4" letter-spacing="-1">bevor der <tspan fill="#E9A23B">Bus</tspan> kommt.</text>
+  <text x="930" y="352" font-family="Instrument Sans, Segoe UI, Arial, sans-serif"
+        font-size="28" font-weight="700" fill="#F0996B" text-anchor="end">HolaRuta</text>
+</svg>

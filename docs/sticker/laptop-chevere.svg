@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Sticker · Laptop · „Slang-Chip ¡Chévere!"
+  Druckgröße: 70 × 28 mm · Pill-Konturschnitt.
+  Stil: Kategorie-Chips aus docs/og/og-image.svg — LatAm-Slang ist Markenkern.
+  Serie denkbar: ¡Chévere! · ¿Qué más? · Tranquilo · ¡Buen viaje!
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="70mm" height="28mm" viewBox="0 0 700 280">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+    </style>
+  </defs>
+  <rect x="10" y="10" width="680" height="260" rx="130" fill="#FBF3E4" stroke="#C2502E" stroke-width="13"/>
+  <text x="350" y="188" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="126" font-weight="800" fill="#A23E20" text-anchor="middle" letter-spacing="-2">¡Chévere!</text>
+</svg>

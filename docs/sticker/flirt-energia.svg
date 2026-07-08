@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Flirt & Nachtleben · „me encanta tu energía"
+  Der von der App empfohlene Opener (flirt.js: besser als „bist hübsch").
+  Druckgröße: 90 × 58 mm · abgerundetes Rechteck · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="58mm" viewBox="0 0 900 580">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="564" rx="48" fill="#241510" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- Funken/Energie-Vektor -->
+  <g transform="translate(742,150)" stroke="#E9A23B" stroke-width="12" stroke-linecap="round">
+    <line x1="0" y1="-70" x2="0" y2="-40"/>
+    <line x1="50" y1="-50" x2="30" y2="-28"/>
+    <line x1="70" y1="0" x2="40" y2="0"/>
+    <line x1="-50" y1="-50" x2="-30" y2="-28"/>
+    <line x1="-70" y1="0" x2="-40" y2="0"/>
+    <path d="M6 -22 L-16 8 H4 L-6 34 L20 0 H2 Z" fill="#E9A23B" stroke="none"/>
+  </g>
+  <text x="54" y="150" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#F0996B" letter-spacing="1">di esto, no „eres linda":</text>
+  <text x="50" y="290" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="104" font-weight="800" fill="#FBF3E4" letter-spacing="-3">Me encanta</text>
+  <text x="50" y="392" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="104" font-weight="800" fill="#E9A23B" letter-spacing="-3">tu energía.</text>
+  <text x="54" y="472" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="38" font-weight="700" fill="#FBF3E4" fill-opacity="0.9">„I love your energy." — funktioniert.</text>
+  <text x="846" y="522" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" fill="#FBF3E4" text-anchor="end">holaruta</text>
+</svg>

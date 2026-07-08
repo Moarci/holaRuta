@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Sticker · Laptop · „Wordmark-Pill"
+  Druckgröße: 90 × 32 mm · Konturschnitt entlang der Pill + 2 mm.
+  Für Druckereien: Text ggf. in Pfade konvertieren (Bricolage Grotesque 800).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="32mm" viewBox="0 0 900 320">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C2502E"/>
+      <stop offset="1" stop-color="#E9A23B"/>
+    </linearGradient>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+    </style>
+  </defs>
+  <rect x="10" y="10" width="880" height="300" rx="150" fill="#FBF3E4" stroke="url(#g)" stroke-width="14"/>
+  <text x="450" y="200" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="148" font-weight="800" letter-spacing="-3" text-anchor="middle"><tspan fill="#2D1B12">Hola</tspan><tspan fill="#C2502E">Ruta</tspan></text>
+  <!-- Gestrichelte Route (Motiv aus og-image.svg) -->
+  <path d="M250 246 C 340 232, 560 262, 650 240" fill="none" stroke="#E9A23B"
+        stroke-width="5" stroke-dasharray="2 15" stroke-linecap="round"/>
+  <circle cx="250" cy="246" r="7" fill="#E9A23B"/>
+  <circle cx="650" cy="240" r="7" fill="#C2502E"/>
+</svg>

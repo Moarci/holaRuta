@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Spanisch-Fail · „embarazada"
+  Laut & grafisch. Der universelle false-friend-Lacher.
+  Druckgröße: 90 × 55 mm · abgerundetes Rechteck · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln (Bricolage Grotesque 800 / Instrument Sans).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="55mm" viewBox="0 0 900 550">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="534" rx="48" fill="#B5302A" stroke="#FBF3E4" stroke-width="12"/>
+  <text x="54" y="150" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#FBF3E4" fill-opacity="0.85" letter-spacing="1">no digas nunca:</text>
+  <text x="50" y="270" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="128" font-weight="800" fill="#FBF3E4" letter-spacing="-3">embarazada</text>
+  <!-- falsch -->
+  <text x="54" y="360" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="40" font-weight="700" fill="#FBF3E4"><tspan fill="#F0996B">✗</tspan> no significa <tspan text-decoration="line-through" fill="#FBF3E4" fill-opacity="0.7">embarrassed</tspan></text>
+  <!-- richtig -->
+  <text x="54" y="430" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="46" font-weight="700" fill="#FBF3E4"><tspan fill="#E9A23B">✓</tspan> significa: <tspan font-family="Bricolage Grotesque" font-weight="800" fill="#E9A23B">PREGNANT.</tspan></text>
+  <text x="54" y="500" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="30" font-weight="700" fill="#FBF3E4" fill-opacity="0.8">aprende la diferencia →</text>
+  <text x="846" y="504" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" fill="#FBF3E4" text-anchor="end">holaruta</text>
+</svg>

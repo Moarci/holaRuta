@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Backpacker-Mood · „perdido/a. como siempre."
+  Druckgröße: 65 × 65 mm · abgerundetes Quadrat · Cream-Kontur = Schnittkante.
+  Pin-Motiv aus icon.svg als Mood-Badge. Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="65mm" height="65mm" viewBox="0 0 650 650">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="634" height="634" rx="48" fill="#C2502E" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- gestrichelte Irr-Route -->
+  <path d="M120 150 C 260 90, 300 240, 200 250 S 120 360, 300 340 S 520 300, 470 200" fill="none" stroke="#FBF3E4" stroke-opacity="0.5" stroke-width="6" stroke-dasharray="3 18" stroke-linecap="round"/>
+  <!-- Pin (Form aus icon.svg) -->
+  <g transform="translate(255,80) scale(0.28)">
+    <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+    <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">¿?</text>
+  </g>
+  <text x="325" y="430" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="112" font-weight="800" fill="#FBF3E4" text-anchor="middle" letter-spacing="-3">perdido.</text>
+  <text x="325" y="500" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="52" font-weight="800" fill="#241510" text-anchor="middle" letter-spacing="-1">como siempre.</text>
+  <text x="325" y="562" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#FBF3E4" fill-opacity="0.9" text-anchor="middle">estoy perdido/a · es-TOY per-DI-do</text>
+  <text x="325" y="608" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="26" font-weight="800" fill="#241510" fill-opacity="0.7" text-anchor="middle">holaruta</text>
+</svg>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Backpacker-Mood · „el guayabo" (der Kater / the hangover)
+  Druckgröße: 65 × 65 mm · abgerundetes Quadrat · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="65mm" height="65mm" viewBox="0 0 650 650">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="634" height="634" rx="48" fill="#241510" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- Kaffeetasse mit Dampf -->
+  <g transform="translate(325,150)" stroke="#3F7355" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-70 -10 h120 v46 a44 44 0 0 1 -44 44 h-32 a44 44 0 0 1 -44 -44 z"/>
+    <path d="M50 2 h20 a26 26 0 0 1 0 52 h-14"/>
+    <path d="M-34 -46 q10 -16 0 -32" stroke-opacity="0.8"/>
+    <path d="M2 -46 q10 -16 0 -32" stroke-opacity="0.8"/>
+    <path d="M38 -46 q10 -16 0 -32" stroke-opacity="0.8"/>
+  </g>
+  <text x="325" y="352" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#F0996B" text-anchor="middle" letter-spacing="1">esta mañana:</text>
+  <text x="325" y="462" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="122" font-weight="800" fill="#FBF3E4" text-anchor="middle" letter-spacing="-3">guayabo</text>
+  <text x="325" y="524" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="38" font-weight="700" fill="#E9A23B" text-anchor="middle">= der Kater · the hangover</text>
+  <text x="325" y="600" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800" fill="#FBF3E4" fill-opacity="0.75" text-anchor="middle">holaruta</text>
+</svg>

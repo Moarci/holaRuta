@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Sticker · Stadt · „Haltestelle" (quer)
+  Druckgröße: 90 × 50 mm · wetterfestes Vinyl (Outdoor).
+  Nur mit Erlaubnis bzw. auf freien/legalen Flächen anbringen (Sticker-Boards, eigene Aushänge).
+  QR → moarci.github.io/holaRuta (Pfaddaten aus docs/anleitungen/qr-holaruta.svg).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="50mm" viewBox="0 0 900 500">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C2502E"/>
+      <stop offset="1" stop-color="#E9A23B"/>
+    </linearGradient>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="484" rx="44" fill="url(#g)" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- Routenlinie -->
+  <path d="M60 92 C 200 55, 350 118, 530 72" fill="none" stroke="#FBF3E4" stroke-opacity="0.55"
+        stroke-width="5" stroke-dasharray="3 20" stroke-linecap="round"/>
+  <circle cx="60" cy="92" r="7" fill="#FBF3E4" fill-opacity="0.6"/>
+  <circle cx="300" cy="95" r="7" fill="#FBF3E4" fill-opacity="0.6"/>
+  <circle cx="530" cy="72" r="7" fill="#FBF3E4" fill-opacity="0.6"/>
+  <text x="56" y="192" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="64" font-weight="800" fill="#FBF3E4" letter-spacing="-1">Habla español</text>
+  <text x="56" y="262" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="64" font-weight="800" fill="#FBF3E4" letter-spacing="-1">antes de que</text>
+  <text x="56" y="332" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+        font-size="64" font-weight="800" fill="#241510" letter-spacing="-1">llegue el bus.</text>
+  <text x="56" y="400" font-family="Instrument Sans, Segoe UI, Arial, sans-serif"
+        font-size="30" font-weight="700" fill="#FBF3E4" fill-opacity="0.95">Gratis · offline · sin cuenta</text>
+  <rect x="590" y="105" width="280" height="280" rx="20" fill="#FFFFFF"/>
+  <g transform="translate(600,115) scale(7.8788)">
+    <path fill="#fff" d="M0 0h33v33h-33z"/><path class="qrline" stroke="#241510" d="M2 2.5h7m1 0h2m1 0h5m2 0h1m3 0h7m-29 1h1m5 0h1m1 0h2m2 0h4m2 0h3m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h2m5 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h4m1 0h4m1 0h2m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h3m1 0h2m1 0h1m2 0h3m1 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m2 0h1m1 0h4m1 0h1m5 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-20 1h3m2 0h1m5 0h1m-21 1h1m2 0h6m1 0h2m1 0h7m1 0h1m2 0h1m1 0h3m-29 1h1m1 0h1m1 0h2m1 0h3m1 0h1m2 0h1m1 0h4m3 0h2m1 0h2m-28 1h3m2 0h2m1 0h3m1 0h1m1 0h3m4 0h1m1 0h1m2 0h1m-27 1h1m3 0h2m8 0h2m1 0h1m2 0h2m1 0h3m2 0h1m-28 1h3m2 0h1m1 0h7m1 0h1m2 0h1m2 0h1m5 0h1m-28 1h1m9 0h1m3 0h1m1 0h2m3 0h7m-28 1h2m2 0h3m1 0h2m1 0h1m1 0h2m2 0h2m1 0h1m1 0h2m1 0h1m1 0h1m-27 1h4m1 0h1m5 0h2m1 0h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h1m-29 1h1m3 0h6m1 0h1m3 0h1m3 0h3m1 0h1m1 0h1m-26 1h3m6 0h2m1 0h1m2 0h1m2 0h3m3 0h1m1 0h2m-28 1h3m1 0h1m1 0h1m1 0h1m3 0h5m2 0h2m4 0h1m2 0h1m-29 1h2m1 0h1m3 0h2m4 0h1m2 0h1m2 0h1m2 0h2m1 0h2m-27 1h5m1 0h1m3 0h2m1 0h1m1 0h1m1 0h1m1 0h9m-20 1h2m1 0h1m1 0h1m1 0h1m1 0h4m3 0h2m-26 1h7m1 0h1m1 0h2m1 0h1m1 0h3m1 0h2m1 0h1m1 0h2m-26 1h1m5 0h1m1 0h1m1 0h1m1 0h2m3 0h4m3 0h1m-25 1h1m1 0h3m1 0h1m1 0h2m1 0h3m1 0h1m3 0h7m1 0h2m-29 1h1m1 0h3m1 0h1m1 0h1m1 0h1m3 0h3m1 0h1m1 0h2m6 0h1m-29 1h1m1 0h3m1 0h1m4 0h1m1 0h1m1 0h2m1 0h4m1 0h2m1 0h3m-29 1h1m5 0h1m2 0h1m3 0h1m1 0h2m4 0h6m1 0h1m-29 1h7m1 0h1m1 0h3m2 0h3m1 0h2m1 0h1"/>
+  </g>
+  <text x="730" y="432" font-family="Instrument Sans, Segoe UI, Arial, sans-serif"
+        font-size="23" font-weight="700" fill="#FBF3E4" text-anchor="middle">moarci.github.io/holaRuta</text>
+</svg>

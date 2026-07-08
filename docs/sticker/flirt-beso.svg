@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Flirt & Nachtleben · „¿está bien si te doy un beso?"
+  Consent-Zeile, wholesome-witzig. Quelle: flirt.js.
+  Druckgröße: 90 × 58 mm · abgerundetes Rechteck · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="58mm" viewBox="0 0 900 580">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C2502E"/>
+      <stop offset="1" stop-color="#E9A23B"/>
+    </linearGradient>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="564" rx="48" fill="url(#g)" stroke="#FBF3E4" stroke-width="12"/>
+  <text x="54" y="130" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#FBF3E4" fill-opacity="0.9" letter-spacing="1">la mejor frase de la noche:</text>
+  <text x="50" y="248" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="92" font-weight="800" fill="#FBF3E4" letter-spacing="-2">¿Está bien</text>
+  <text x="50" y="340" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="92" font-weight="800" fill="#241510" letter-spacing="-2">si te doy</text>
+  <text x="50" y="432" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="92" font-weight="800" fill="#FBF3E4" letter-spacing="-2">un beso?</text>
+  <!-- „el sí cuenta"-Tag -->
+  <g transform="rotate(-4 640 500)">
+    <rect x="472" y="470" width="336" height="60" rx="30" fill="#241510"/>
+    <text x="640" y="510" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#E9A23B" text-anchor="middle">el sí cuenta ✓</text>
+  </g>
+  <text x="54" y="512" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800" fill="#FBF3E4">holaruta</text>
+</svg>

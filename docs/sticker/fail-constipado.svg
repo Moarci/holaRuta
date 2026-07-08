@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Spanisch-Fail · „constipado"
+  Druckgröße: 90 × 55 mm · abgerundetes Rechteck · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="55mm" viewBox="0 0 900 550">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="534" rx="48" fill="#2F6B70" stroke="#FBF3E4" stroke-width="12"/>
+  <text x="54" y="150" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#FBF3E4" fill-opacity="0.85" letter-spacing="1">tranquilo, es solo:</text>
+  <text x="50" y="272" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="120" font-weight="800" fill="#FBF3E4" letter-spacing="-3">constipado</text>
+  <text x="54" y="362" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="40" font-weight="700" fill="#FBF3E4"><tspan fill="#E9A23B">✗</tspan> no es <tspan text-decoration="line-through" fill="#FBF3E4" fill-opacity="0.7">constipated</tspan></text>
+  <text x="54" y="432" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="46" font-weight="700" fill="#FBF3E4"><tspan fill="#E9A23B">✓</tspan> es: <tspan font-family="Bricolage Grotesque" font-weight="800" fill="#E9A23B">just a cold.</tspan></text>
+  <text x="54" y="500" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="30" font-weight="700" fill="#FBF3E4" fill-opacity="0.8">deja de confundirlas →</text>
+  <text x="846" y="504" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" fill="#FBF3E4" text-anchor="end">holaruta</text>
+</svg>

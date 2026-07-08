@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Sticker · Laptop · „Die-Cut Pin"
+  Druckgröße: 50 × 62 mm · Konturschnitt (Die-Cut) entlang der Cream-Kontur + 2 mm.
+  Für Druckereien: Text ggf. in Pfade konvertieren (Font: Bricolage Grotesque 800).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="50mm" height="62mm" viewBox="0 0 500 620">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C2502E"/>
+      <stop offset="1" stop-color="#E9A23B"/>
+    </linearGradient>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+    </style>
+  </defs>
+  <!-- Pin aus icon.svg, freigestellt: Gradient-Fläche, Cream-Kontur = Schnittkante -->
+  <g transform="translate(-147,-102) scale(1.55)">
+    <path d="M256 86
+             C326 86 382 142 382 212
+             C382 296 296 360 256 446
+             C216 360 130 296 130 212
+             C130 142 186 86 256 86 Z"
+          fill="url(#g)" stroke="#FBF3E4" stroke-width="16" stroke-linejoin="round" paint-order="stroke"/>
+    <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif"
+          font-size="118" font-weight="800" fill="#FBF3E4" text-anchor="middle">¿?</text>
+  </g>
+</svg>

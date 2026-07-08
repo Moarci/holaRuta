@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Flirt & Nachtleben · „déjame en paz, por favor"
+  Die selbstbewusste Grenze (Sassy-Gegenstück zu den Openern). Quelle: flirt.js.
+  Druckgröße: 90 × 55 mm · abgerundetes Rechteck · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="55mm" viewBox="0 0 900 550">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="534" rx="48" fill="#B5302A" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- Stopp-Hand-Vektor -->
+  <g transform="translate(726,150)" fill="none" stroke="#FBF3E4" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <circle r="98" stroke="#FBF3E4" stroke-opacity="0.35"/>
+    <path d="M-40 30 v-58 a13 13 0 0 1 26 0 v42 m0 -50 a13 13 0 0 1 26 0 v50 m0 -42 a13 13 0 0 1 26 0 v46 a52 52 0 0 1 -52 52 h-8 a44 44 0 0 1 -34 -20 l-18 -26 a13 13 0 0 1 22 -14 l10 12" fill="#B5302A"/>
+  </g>
+  <text x="54" y="150" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#FBF3E4" fill-opacity="0.9" letter-spacing="1">para cuando ya basta:</text>
+  <text x="50" y="290" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#FBF3E4" letter-spacing="-3">Déjame</text>
+  <text x="50" y="400" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#241510" letter-spacing="-3">en paz.</text>
+  <text x="54" y="478" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="38" font-weight="700" fill="#FBF3E4" fill-opacity="0.92">„Leave me alone, please." — klare Kante.</text>
+  <text x="846" y="512" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" fill="#FBF3E4" text-anchor="end">holaruta</text>
+</svg>

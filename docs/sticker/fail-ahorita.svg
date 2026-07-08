@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Spanisch-Fail / Insider · „ahorita"
+  Druckgröße: 90 × 55 mm · abgerundetes Rechteck · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="55mm" viewBox="0 0 900 550">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="534" rx="48" fill="#241510" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- Uhr-Vektor -->
+  <g transform="translate(712,150)">
+    <circle r="96" fill="none" stroke="#E9A23B" stroke-width="12"/>
+    <line x1="0" y1="0" x2="0" y2="-62" stroke="#E9A23B" stroke-width="12" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="46" y2="20" stroke="#E9A23B" stroke-width="12" stroke-linecap="round"/>
+    <circle r="9" fill="#E9A23B"/>
+  </g>
+  <text x="50" y="180" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="150" font-weight="800" fill="#FBF3E4" letter-spacing="-4">ahorita</text>
+  <text x="54" y="250" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="44" font-weight="700" fill="#F0996B">≠ ahora (jetzt)</text>
+  <text x="54" y="360" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="58" font-weight="800" fill="#E9A23B" letter-spacing="-1">heißt: „gleich".</text>
+  <text x="54" y="430" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="40" font-weight="700" fill="#FBF3E4">Kann alles zwischen 5 Min</text>
+  <text x="54" y="482" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="40" font-weight="700" fill="#FBF3E4">und nie bedeuten.</text>
+  <text x="846" y="510" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" fill="#FBF3E4" text-anchor="end">holaruta</text>
+</svg>

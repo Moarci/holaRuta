@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HolaRuta · Sticker-Konzepte (Laptop · Stadt · Hostel)</title>
+<link rel="stylesheet" href="../anleitungen/handout.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 16px 0 6px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  .sticker {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 16px; break-inside: avoid;
+  }
+  .sticker.wide { grid-column: 1 / -1; }
+  .preview {
+    display: grid; place-items: center; padding: 22px;
+    background:
+      repeating-conic-gradient(rgba(45,27,18,0.05) 0% 25%, transparent 0% 50%) 0 0 / 22px 22px,
+      #efe6d5;
+    border-radius: 10px; margin-bottom: 12px;
+  }
+  .preview object { max-width: 100%; pointer-events: none; }
+  .sticker h3 { margin: 0 0 2px; font-size: 1.06rem; }
+  .meta { font-size: 0.85rem; color: var(--muted); margin: 0 0 8px; }
+  .meta b { color: var(--brand-ink); }
+  .sticker p { font-size: 0.92rem; margin: 6px 0; }
+  .dl { font-size: 0.85rem; font-weight: 700; }
+  .tags { margin-top: 6px; }
+  .tag {
+    display: inline-block; font-size: 0.74rem; font-weight: 700; color: var(--brand-ink);
+    background: rgba(194,80,46,0.10); border: 1px solid rgba(194,80,46,0.25);
+    border-radius: 999px; padding: 2px 10px; margin: 2px 4px 0 0;
+  }
+</style>
+</head>
+<body>
+
+<main class="sheet">
+  <div class="brand">🌶️ HolaRuta</div>
+  <h1>Sticker-Konzepte</h1>
+  <!-- Edition-Sticker (hostel-qr-*.svg) werden aus gen-editions.js erzeugt: node docs/sticker/gen-editions.js -->
+
+  <p class="lead">Zwei Ebenen: die <strong>Hook-Serie „Sag was"</strong> führt mit einer Pointe – Witz, Schmerz oder Insider-Wissen, das man freiwillig auf den Laptop klebt. Darunter die <strong>Basics</strong> (Marke, QR, Co-Branding) für Rezeption, Stadt und Partner. Alle Motive nutzen die Markenwelt (Terracotta→Amber, Bricolage Grotesque) und sind einzeln als Druckdatei verlinkt.</p>
+
+  <h2>🔥 „Sag was“ – die Hook-Serie <small style="font-weight:400;color:var(--muted)">— laut &amp; grafisch, ohne QR</small></h2>
+  <p>Der Unterschied zu einem Logo-Sticker: Hier steht die <strong>Aussage</strong> vorn, die Marke ist nur die kleine Signatur unten. Riesen-Typo, ein Motiv, hoher Kontrast – gemacht, um auf einem Laptop im Common Room ein Gespräch zu starten. Texte kommen 1:1 aus den echten App-Inhalten (false friends, Slang, Flirt-Modul).</p>
+
+  <p style="margin:18px 0 0"><strong style="color:var(--brand-ink)">A · Spanisch-Fails</strong> <span style="color:var(--muted)">— der universelle Lacher: die klassischen Übersetzungsfallen.</span></p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="fail-embarazada.svg" style="width:300px"></object></div>
+      <h3>„embarazada“</h3>
+      <p class="meta"><b>90 × 55 mm</b> · Alarm-Rot · quer</p>
+      <p><em>Warum das zieht:</em> Der Fehler, vor dem sich jede/r fürchtet – „embarazada“ heißt <strong>schwanger</strong>, nicht „embarrassed“. Selbstironisch und extrem teilbar.</p>
+      <p class="dl"><a href="fail-embarazada.svg" download>fail-embarazada.svg</a></p>
+      <div class="tags"><span class="tag">Fail</span><span class="tag">Humor</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="fail-constipado.svg" style="width:300px"></object></div>
+      <h3>„constipado“</h3>
+      <p class="meta"><b>90 × 55 mm</b> · Teal · quer</p>
+      <p><em>Warum das zieht:</em> Der zweite Klassiker – <strong>nur erkältet</strong>, nicht „constipated“. Jeder Englisch-Sprecher ist da schon reingefallen.</p>
+      <p class="dl"><a href="fail-constipado.svg" download>fail-constipado.svg</a></p>
+      <div class="tags"><span class="tag">Fail</span><span class="tag">Humor</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="fail-ahorita.svg" style="width:300px"></object></div>
+      <h3>„ahorita“</h3>
+      <p class="meta"><b>90 × 55 mm</b> · dunkel + Uhr · quer</p>
+      <p><em>Warum das zieht:</em> Insider-Wissen zum Angeben – <strong>„ahorita“ heißt „gleich", nicht „jetzt"</strong>. Kann alles zwischen 5 Minuten und nie bedeuten.</p>
+      <p class="dl"><a href="fail-ahorita.svg" download>fail-ahorita.svg</a></p>
+      <div class="tags"><span class="tag">Fail</span><span class="tag">Insider</span></div>
+    </div>
+  </div>
+
+  <p style="margin:18px 0 0"><strong style="color:var(--brand-ink)">B · Backpacker-Mood</strong> <span style="color:var(--muted)">— Zustands-Badges: kleb deinen Gemütszustand auf den Laptop.</span></p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="mood-pelado.svg" style="width:210px"></object></div>
+      <h3>„pelado“ — blank</h3>
+      <p class="meta"><b>65 × 65 mm</b> · Ochre · quadratisch</p>
+      <p><em>Warum das zieht:</em> Der wahrste Backpacker-Zustand – <strong>„estoy pelado“ = broke af</strong>. Leerer Geldbeutel inklusive.</p>
+      <p class="dl"><a href="mood-pelado.svg" download>mood-pelado.svg</a></p>
+      <div class="tags"><span class="tag">Mood</span><span class="tag">relatable</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="mood-guayabo.svg" style="width:210px"></object></div>
+      <h3>„guayabo“ — der Kater</h3>
+      <p class="meta"><b>65 × 65 mm</b> · dunkel · quadratisch</p>
+      <p><em>Warum das zieht:</em> Hostel-Bett-Energie am Morgen danach – <strong>„el guayabo“ = the hangover</strong>. Kaffee als Rettung.</p>
+      <p class="dl"><a href="mood-guayabo.svg" download>mood-guayabo.svg</a></p>
+      <div class="tags"><span class="tag">Mood</span><span class="tag">Nachtleben</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="mood-perdido.svg" style="width:210px"></object></div>
+      <h3>„perdido. como siempre.“</h3>
+      <p class="meta"><b>65 × 65 mm</b> · Terracotta + Pin · quadratisch</p>
+      <p><em>Warum das zieht:</em> Macht aus dem Pin ein Mood-Badge – <strong>verloren, wie immer</strong>. Trägt nebenbei den echten Survival-Satz „estoy perdido/a“.</p>
+      <p class="dl"><a href="mood-perdido.svg" download>mood-perdido.svg</a></p>
+      <div class="tags"><span class="tag">Mood</span><span class="tag">Pin</span></div>
+    </div>
+  </div>
+
+  <p style="margin:18px 0 0"><strong style="color:var(--brand-ink)">C · Slang-Landkarte</strong> <span style="color:var(--muted)">— ein Wort, fünf Länder. Reise-Cred und Gesprächsstoff.</span></p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="mapa-cool.svg" style="width:300px"></object></div>
+      <h3>„cool“ en 5 países</h3>
+      <p class="meta"><b>90 × 60 mm</b> · dunkel · quer</p>
+      <p><em>Warum das zieht:</em> chévere (CO) · bacano (CO) · chido (MX) · copado (AR) · bacán (PE·CL). Länder-Codes statt Emoji-Flaggen – druck-sicher.</p>
+      <p class="dl"><a href="mapa-cool.svg" download>mapa-cool.svg</a></p>
+      <div class="tags"><span class="tag">Slang</span><span class="tag">Cred</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="mapa-parcero.svg" style="width:300px"></object></div>
+      <h3>„parcero“ / buddy</h3>
+      <p class="meta"><b>90 × 60 mm</b> · Cream (Hell-Variante) · quer</p>
+      <p><em>Warum das zieht:</em> parce (CO) · pana (VE) · güey (MX) · weón (CL) · boludo (AR). Die helle Variante als Kontrast in der Serie.</p>
+      <p class="dl"><a href="mapa-parcero.svg" download>mapa-parcero.svg</a></p>
+      <div class="tags"><span class="tag">Slang</span><span class="tag">Cred</span></div>
+    </div>
+  </div>
+
+  <p style="margin:18px 0 0"><strong style="color:var(--brand-ink)">D · Flirt &amp; Nachtleben</strong> <span style="color:var(--muted)">— frech-charmant für die Hostel-Crowd.</span></p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="flirt-beso.svg" style="width:300px"></object></div>
+      <h3>„¿Está bien si te doy un beso?“</h3>
+      <p class="meta"><b>90 × 58 mm</b> · Verlauf · quer</p>
+      <p><em>Warum das zieht:</em> Consent als Pointe – wholesome und witzig zugleich. „el sí cuenta ✓“. Genau der Ton, den das Flirt-Modul empfiehlt.</p>
+      <p class="dl"><a href="flirt-beso.svg" download>flirt-beso.svg</a></p>
+      <div class="tags"><span class="tag">Flirt</span><span class="tag">wholesome</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="flirt-energia.svg" style="width:300px"></object></div>
+      <h3>„Me encanta tu energía“</h3>
+      <p class="meta"><b>90 × 58 mm</b> · dunkel · quer</p>
+      <p><em>Warum das zieht:</em> Der von der App empfohlene Opener – <strong>nicht</strong> „du bist hübsch“. Funktioniert wirklich.</p>
+      <p class="dl"><a href="flirt-energia.svg" download>flirt-energia.svg</a></p>
+      <div class="tags"><span class="tag">Flirt</span><span class="tag">Opener</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="flirt-dejame.svg" style="width:300px"></object></div>
+      <h3>„Déjame en paz, por favor“</h3>
+      <p class="meta"><b>90 × 55 mm</b> · Rot · quer</p>
+      <p><em>Warum das zieht:</em> Das selbstbewusste Gegenstück – klare Kante, wenn's reicht. Empowernd und laut.</p>
+      <p class="dl"><a href="flirt-dejame.svg" download>flirt-dejame.svg</a></p>
+      <div class="tags"><span class="tag">Flirt</span><span class="tag">Grenze</span></div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:40px">🧩 Basics / Marke <small style="font-weight:400;color:var(--muted)">— Logo, QR &amp; Co-Branding</small></h2>
+  <p>Die ruhigeren, funktionalen Sticker: Markenzeichen fürs Wiedererkennen, QR-Karten für Stadt und Hostel, Edition-Varianten pro Partner.</p>
+
+  <h3 style="font-size:1.15rem;margin-top:24px">💻 Laptop-Serie <small style="font-weight:400;color:var(--muted)">— dekorativ, ohne QR</small></h3>
+  <p>Für die Community und als Beilage/Giveaway: Der Laptop im Hostel-Common-Room ist eine Werbefläche, die um die Welt reist. Kein QR – ein Laptop-Sticker wird nicht gescannt, er wird erkannt.</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-pin.svg" style="width:150px"></object></div>
+      <h3>Die-Cut Pin</h3>
+      <p class="meta"><b>50 × 62 mm</b> · Konturschnitt entlang der Pin-Form · Vinyl glänzend</p>
+      <p>Das App-Icon freigestellt: Gradient-Pin mit „¿?“ und Cream-Kontur als Schnittkante. Das Hero-Motiv der Serie – sofort als HolaRuta erkennbar.</p>
+      <p class="dl"><a href="laptop-pin.svg" download>laptop-pin.svg</a></p>
+      <div class="tags"><span class="tag">Hero-Motiv</span><span class="tag">Die-Cut</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-stamp.svg" style="width:160px"></object></div>
+      <h3>„¡HOLA!“-Passstempel</h3>
+      <p class="meta"><b>Ø 45 mm</b> · rund, leicht rotiert · am besten auf transparentem Vinyl</p>
+      <p>Der Passstempel aus dem Ruta-Pass, wie direkt aufs Gerät gestempelt. Passt zur Badge-Welt der App (Reisestempel sammeln).</p>
+      <p class="dl"><a href="laptop-stamp.svg" download>laptop-stamp.svg</a></p>
+      <div class="tags"><span class="tag">Ruta-Pass</span><span class="tag">transparent</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-wordmark.svg" style="width:260px"></object></div>
+      <h3>Wordmark-Pill</h3>
+      <p class="meta"><b>90 × 32 mm</b> · Pill-Konturschnitt · Vinyl matt</p>
+      <p>Die zweifarbige Wortmarke (Hola dunkel, Ruta terracotta) mit gestrichelter Mini-Route – das dezente Motiv für alle, die es cleaner mögen.</p>
+      <p class="dl"><a href="laptop-wordmark.svg" download>laptop-wordmark.svg</a></p>
+      <div class="tags"><span class="tag">clean</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-chevere.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „¡Chévere!“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Vinyl matt</p>
+      <p>LatAm-Slang ist Markenkern. Der Auftakt der Chip-Serie unten – jeder Chip in einer eigenen Palette-Farbe, zum Sammeln.</p>
+      <p class="dl"><a href="laptop-chevere.svg" download>laptop-chevere.svg</a></p>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">LatAm-Slang</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-quemas.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „¿Qué más?“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Teal (--easy)</p>
+      <p>Kolumbianischer Gruß („Was geht?“). Teal-Akzent aus der App-Palette.</p>
+      <p class="dl"><a href="laptop-quemas.svg" download>laptop-quemas.svg</a></p>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">🇨🇴</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-tranquilo.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „Tranquilo“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Grün (--ok)</p>
+      <p>Der Reise-Grundton: alles gut, kein Stress. Grün-Akzent aus der Palette.</p>
+      <p class="dl"><a href="laptop-tranquilo.svg" download>laptop-tranquilo.svg</a></p>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">Vibe</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-buenviaje.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „¡Buen viaje!“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Ochre (--warn)</p>
+      <p>Der Abschiedsgruß fürs nächste Ziel – schließt die Chip-Serie ab. Ochre-Akzent aus der Palette.</p>
+      <p class="dl"><a href="laptop-buenviaje.svg" download>laptop-buenviaje.svg</a></p>
+      <div class="tags"><span class="tag">Serie</span><span class="tag">Abschied</span></div>
+    </div>
+    <div class="sticker wide">
+      <div class="preview"><object type="image/svg+xml" data="laptop-bus.svg" style="width:420px"></object></div>
+      <h3>Bus-Spruch</h3>
+      <p class="meta"><b>100 × 40 mm</b> · abgerundetes Rechteck · Vinyl matt, dunkler Grund</p>
+      <p>Das Landing-Motto <em>„Sprich Spanisch, bevor der Bus kommt.“</em> mit Routenlinie und Ziel-Pin – erzählt die Produktidee in einem Satz und startet Gespräche im Common Room.</p>
+      <p class="dl"><a href="laptop-bus.svg" download>laptop-bus.svg</a></p>
+      <div class="tags"><span class="tag">Story-Sticker</span><span class="tag">Conversation Starter</span></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1.15rem;margin-top:24px">🏙️ Stadt-Serie <small style="font-weight:400;color:var(--muted)">— Guerilla, mit QR</small></h3>
+  <p>Klein, kontraststark, wetterfest. Zielorte: Sticker-Boards in Cafés, Sprachschul-Pinnwände, Coworking-Spaces, eigene Aushänge. <strong>Wichtig:</strong> nur mit Erlaubnis bzw. auf dafür vorgesehenen Flächen kleben – wildes Plakatieren schadet der Marke (und ist vielerorts verboten).</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="stadt-perdido.svg" style="width:200px"></object></div>
+      <h3>„¿Perdido?“ (rund)</h3>
+      <p class="meta"><b>Ø 60 mm</b> · wetterfestes Outdoor-Vinyl, UV-laminiert</p>
+      <p>Spricht den Moment an, in dem man die App braucht: verloren in einer fremden Stadt. Dunkler Grund für maximalen Kontrast draußen, QR groß genug für Scan aus ~40 cm.</p>
+      <p class="dl"><a href="stadt-perdido.svg" download>stadt-perdido.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Outdoor</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="stadt-bus.svg" style="width:280px"></object></div>
+      <h3>Haltestelle (quer)</h3>
+      <p class="meta"><b>90 × 50 mm</b> · wetterfestes Outdoor-Vinyl, UV-laminiert</p>
+      <p>Der Hero-Satz auf Spanisch – <em>„Habla español antes de que llegue el bus.“</em> – genau da, wo man auf den Bus wartet und Zeit zum Scannen hat.</p>
+      <p class="dl"><a href="stadt-bus.svg" download>stadt-bus.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Wartesituation</span></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1.15rem;margin-top:24px">🛏️ Hostel-Serie <small style="font-weight:400;color:var(--muted)">— QR + Call-to-Action</small></h3>
+  <p>Ergänzt die bestehenden <a href="../anleitungen/index.html">Hostel-Poster &amp; Flyer</a> um kleine Dauerkleber: Rezeptionstresen, Common-Room-Board, Spind-Innenseite, Tischecken, Bar. Zweisprachig gedacht (EN/ES), weil das Hostel-Publikum international ist.</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr.svg" style="width:230px"></object></div>
+      <h3>Rezeption / Pinnwand</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Vinyl matt · abgerundetes Quadrat</p>
+      <p>Die Visitenkarte der App als Sticker: Brand, Nutzenversprechen <em>„Survival Spanish for your trip“</em>, großer QR und die Trust-Zeile (offline · ohne Konto · kostenlos).</p>
+      <p class="dl"><a href="hostel-qr.svg" download>hostel-qr.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Rezeption</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-reto.svg" style="width:260px"></object></div>
+      <h3>„Reta a tu compañero“ (1 vs 1)</h3>
+      <p class="meta"><b>70 × 50 mm</b> · Vinyl matt · dunkler Grund</p>
+      <p>Bewirbt den Hostel-Modus (2-Spieler-Battles): zwei Karteikarten treten gegeneinander an. Passt zum Flyer <a href="../anleitungen/hostel-reto.html">„Reto del día“</a> – für Common Room, Küche und Bar.</p>
+      <p class="dl"><a href="hostel-reto.svg" download>hostel-reto.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Hostel-Modus</span></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1.15rem;margin-top:24px">🤝 Edition-Varianten <small style="font-weight:400;color:var(--muted)">— Co-Branding pro Partner</small></h3>
+  <p>Derselbe Rezeptions-Sticker, aber in der Farbe und mit dem Namen einer Co-Branding-Edition – der QR führt direkt in die passende Edition (<code>?edition=…</code>), sodass die App gleich im Partner-Branding öffnet. Farben und Namen stammen aus <code>editions/registry.js</code> (Quelle der Wahrheit); die QR-Codes werden mit dem repo-eigenen Generator erzeugt. Neue Varianten: Zeile in <code>docs/sticker/gen-editions.js</code> ergänzen und <code>node docs/sticker/gen-editions.js</code> laufen lassen.</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-hostel.svg" style="width:210px"></object></div>
+      <h3>Hostel (White-Label)</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Hostel-Orange · QR → <code>?edition=hostel</code></p>
+      <p>Die generische Vorlage für jedes Hostel: hebt Modo hostal, Games und Diálogos hervor. Pro Haus Name/Farbe in der Registry anpassbar.</p>
+      <p class="dl"><a href="hostel-qr-hostel.svg" download>hostel-qr-hostel.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">White-Label</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-ecos.svg" style="width:210px"></object></div>
+      <h3>ECOS · Cartagena</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Karibik-Teal · QR → <code>?edition=ecos</code></p>
+      <p>Für die Sprachschule ECOS in Cartagena – Teal-Akzent, Startziel Cartagena.</p>
+      <p class="dl"><a href="hostel-qr-ecos.svg" download>hostel-qr-ecos.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Schule</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-weroad.svg" style="width:210px"></object></div>
+      <h3>WeRoad Colombia</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Koralle · QR → <code>?edition=weroad</code></p>
+      <p>Für den Reiseanbieter WeRoad – Koralle nahe dem Markenauftritt, Startziel Colombia.</p>
+      <p class="dl"><a href="hostel-qr-weroad.svg" download>hostel-qr-weroad.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Reiseanbieter</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr-medellin.svg" style="width:210px"></object></div>
+      <h3>Medellín</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Paisa-Grün · QR → <code>?edition=medellin</code></p>
+      <p>Die Paisa-Edition – Grün als Akzent. Hinweis: reiner Locals-Track (Personal lernt Englisch), daher eher für Venue-Partner in Medellín.</p>
+      <p class="dl"><a href="hostel-qr-medellin.svg" download>hostel-qr-medellin.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Locals-Track</span></div>
+    </div>
+  </div>
+  <div class="tip"><strong>So entstehen die Edition-Sticker:</strong> Der Generator <code>docs/sticker/gen-editions.js</code> liest die Akzentfarben aus <code>editions/registry.js</code>, erzeugt mit <code>qr.js</code> einen echten QR auf die jeweilige <code>?edition=…</code>-URL und schreibt <code>hostel-qr-&lt;edition&gt;.svg</code>. Kein manuelles Nachzeichnen – Farbe und Ziel bleiben mit der App konsistent.</div>
+
+  <h2>🖨️ Produktion &amp; Druckdaten</h2>
+  <ul>
+    <li><strong>Dateien:</strong> Alle SVGs sind in physischen Maßen angelegt (mm) und vektorbasiert – beliebig skalierbar.</li>
+    <li><strong>Fonts:</strong> Bricolage Grotesque 800 (Display) und Instrument Sans (liegen im Repo unter <code>/fonts/</code>). Für Druckereien den Text vor Abgabe <strong>in Pfade konvertieren</strong> (z.&nbsp;B. Inkscape: <em>Pfad → Objekt in Pfad umwandeln</em>), sonst ersetzt die Druckerei die Schrift.</li>
+    <li><strong>Beschnitt:</strong> 2–3 mm Zugabe um die Schnittkante; die Cream-/Randkonturen der Motive sind als Schnittkanten gedacht (Die-Cut bzw. Kiss-Cut).</li>
+    <li><strong>Material:</strong> Stadt-Serie auf wetterfestem, UV-laminiertem Outdoor-Vinyl; Laptop/Hostel auf mattem Vinyl (matt spiegelt unter Hostel-Licht nicht). Passstempel wirkt am stärksten auf transparentem Vinyl.</li>
+    <li><strong>QR testen:</strong> Vor der Serienproduktion einen Proof drucken und den QR mit mehreren Handys aus 30–50 cm scannen. Basis-URL: <code>moarci.github.io/holaRuta</code>. Die QR-Codes werden mit dem repo-eigenen Generator (<code>qr.js</code>, Fehlerkorrektur M) erzeugt; die Edition-Varianten kommen aus <code>docs/sticker/gen-editions.js</code> und zeigen auf <code>?edition=…</code>.</li>
+    <li><strong>PDF dieser Seite:</strong> im Browser öffnen und <strong>Strg/Cmd&nbsp;+&nbsp;P → „Als PDF speichern“</strong>.</li>
+  </ul>
+
+  <p class="foot">moarci.github.io/holaRuta &nbsp;·&nbsp; Sticker-Konzepte · Stand: Juli 2026</p>
+</main>
+
+</body>
+</html>
