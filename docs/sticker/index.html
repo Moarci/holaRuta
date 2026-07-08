@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HolaRuta · Sticker-Konzepte (Laptop · Stadt · Hostel)</title>
+<link rel="stylesheet" href="../anleitungen/handout.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 16px 0 6px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  .sticker {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 16px; break-inside: avoid;
+  }
+  .sticker.wide { grid-column: 1 / -1; }
+  .preview {
+    display: grid; place-items: center; padding: 22px;
+    background:
+      repeating-conic-gradient(rgba(45,27,18,0.05) 0% 25%, transparent 0% 50%) 0 0 / 22px 22px,
+      #efe6d5;
+    border-radius: 10px; margin-bottom: 12px;
+  }
+  .preview object { max-width: 100%; pointer-events: none; }
+  .sticker h3 { margin: 0 0 2px; font-size: 1.06rem; }
+  .meta { font-size: 0.85rem; color: var(--muted); margin: 0 0 8px; }
+  .meta b { color: var(--brand-ink); }
+  .sticker p { font-size: 0.92rem; margin: 6px 0; }
+  .dl { font-size: 0.85rem; font-weight: 700; }
+  .tags { margin-top: 6px; }
+  .tag {
+    display: inline-block; font-size: 0.74rem; font-weight: 700; color: var(--brand-ink);
+    background: rgba(194,80,46,0.10); border: 1px solid rgba(194,80,46,0.25);
+    border-radius: 999px; padding: 2px 10px; margin: 2px 4px 0 0;
+  }
+</style>
+</head>
+<body>
+
+<main class="sheet">
+  <div class="brand">🌶️ HolaRuta</div>
+  <h1>Sticker-Konzepte</h1>
+  <p class="lead">Neun druckfertige Sticker-Designs in drei Serien: <strong>Laptop</strong> (Identität &amp; Community, ohne QR), <strong>Stadt</strong> (Guerilla-Marketing mit QR) und <strong>Hostel</strong> (QR + Call-to-Action, dort wo die Zielgruppe ist). Alle Motive nutzen die bestehende Markenwelt: Pin mit „¿?“, „¡HOLA!“-Passstempel, gestrichelte Route, Karteikarte, Terracotta→Amber. Jedes SVG ist einzeln als Druckdatei verlinkt.</p>
+
+  <h2>💻 Laptop-Serie <small style="font-weight:400;color:var(--muted)">— dekorativ, ohne QR</small></h2>
+  <p>Für die Community und als Beilage/Giveaway: Der Laptop im Hostel-Common-Room ist eine Werbefläche, die um die Welt reist. Kein QR – ein Laptop-Sticker wird nicht gescannt, er wird erkannt.</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-pin.svg" style="width:150px"></object></div>
+      <h3>Die-Cut Pin</h3>
+      <p class="meta"><b>50 × 62 mm</b> · Konturschnitt entlang der Pin-Form · Vinyl glänzend</p>
+      <p>Das App-Icon freigestellt: Gradient-Pin mit „¿?“ und Cream-Kontur als Schnittkante. Das Hero-Motiv der Serie – sofort als HolaRuta erkennbar.</p>
+      <p class="dl"><a href="laptop-pin.svg" download>laptop-pin.svg</a></p>
+      <div class="tags"><span class="tag">Hero-Motiv</span><span class="tag">Die-Cut</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-stamp.svg" style="width:160px"></object></div>
+      <h3>„¡HOLA!“-Passstempel</h3>
+      <p class="meta"><b>Ø 45 mm</b> · rund, leicht rotiert · am besten auf transparentem Vinyl</p>
+      <p>Der Passstempel aus dem Ruta-Pass, wie direkt aufs Gerät gestempelt. Passt zur Badge-Welt der App (Reisestempel sammeln).</p>
+      <p class="dl"><a href="laptop-stamp.svg" download>laptop-stamp.svg</a></p>
+      <div class="tags"><span class="tag">Ruta-Pass</span><span class="tag">transparent</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-wordmark.svg" style="width:260px"></object></div>
+      <h3>Wordmark-Pill</h3>
+      <p class="meta"><b>90 × 32 mm</b> · Pill-Konturschnitt · Vinyl matt</p>
+      <p>Die zweifarbige Wortmarke (Hola dunkel, Ruta terracotta) mit gestrichelter Mini-Route – das dezente Motiv für alle, die es cleaner mögen.</p>
+      <p class="dl"><a href="laptop-wordmark.svg" download>laptop-wordmark.svg</a></p>
+      <div class="tags"><span class="tag">clean</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="laptop-chevere.svg" style="width:220px"></object></div>
+      <h3>Slang-Chip „¡Chévere!“</h3>
+      <p class="meta"><b>70 × 28 mm</b> · Pill-Konturschnitt · Vinyl matt</p>
+      <p>LatAm-Slang ist Markenkern. Als Serie druckbar: <em>¡Chévere! · ¿Qué más? · Tranquilo · ¡Buen viaje!</em> – Sammel-Effekt inklusive.</p>
+      <p class="dl"><a href="laptop-chevere.svg" download>laptop-chevere.svg</a></p>
+      <div class="tags"><span class="tag">Serie möglich</span><span class="tag">LatAm-Slang</span></div>
+    </div>
+    <div class="sticker wide">
+      <div class="preview"><object type="image/svg+xml" data="laptop-bus.svg" style="width:420px"></object></div>
+      <h3>Bus-Spruch</h3>
+      <p class="meta"><b>100 × 40 mm</b> · abgerundetes Rechteck · Vinyl matt, dunkler Grund</p>
+      <p>Das Landing-Motto <em>„Sprich Spanisch, bevor der Bus kommt.“</em> mit Routenlinie und Ziel-Pin – erzählt die Produktidee in einem Satz und startet Gespräche im Common Room.</p>
+      <p class="dl"><a href="laptop-bus.svg" download>laptop-bus.svg</a></p>
+      <div class="tags"><span class="tag">Story-Sticker</span><span class="tag">Conversation Starter</span></div>
+    </div>
+  </div>
+
+  <h2>🏙️ Stadt-Serie <small style="font-weight:400;color:var(--muted)">— Guerilla, mit QR</small></h2>
+  <p>Klein, kontraststark, wetterfest. Zielorte: Sticker-Boards in Cafés, Sprachschul-Pinnwände, Coworking-Spaces, eigene Aushänge. <strong>Wichtig:</strong> nur mit Erlaubnis bzw. auf dafür vorgesehenen Flächen kleben – wildes Plakatieren schadet der Marke (und ist vielerorts verboten).</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="stadt-perdido.svg" style="width:200px"></object></div>
+      <h3>„¿Perdido?“ (rund)</h3>
+      <p class="meta"><b>Ø 60 mm</b> · wetterfestes Outdoor-Vinyl, UV-laminiert</p>
+      <p>Spricht den Moment an, in dem man die App braucht: verloren in einer fremden Stadt. Dunkler Grund für maximalen Kontrast draußen, QR groß genug für Scan aus ~40 cm.</p>
+      <p class="dl"><a href="stadt-perdido.svg" download>stadt-perdido.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Outdoor</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="stadt-bus.svg" style="width:280px"></object></div>
+      <h3>Haltestelle (quer)</h3>
+      <p class="meta"><b>90 × 50 mm</b> · wetterfestes Outdoor-Vinyl, UV-laminiert</p>
+      <p>Der Hero-Satz auf Spanisch – <em>„Habla español antes de que llegue el bus.“</em> – genau da, wo man auf den Bus wartet und Zeit zum Scannen hat.</p>
+      <p class="dl"><a href="stadt-bus.svg" download>stadt-bus.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Wartesituation</span></div>
+    </div>
+  </div>
+
+  <h2>🛏️ Hostel-Serie <small style="font-weight:400;color:var(--muted)">— QR + Call-to-Action</small></h2>
+  <p>Ergänzt die bestehenden <a href="../anleitungen/index.html">Hostel-Poster &amp; Flyer</a> um kleine Dauerkleber: Rezeptionstresen, Common-Room-Board, Spind-Innenseite, Tischecken, Bar. Zweisprachig gedacht (EN/ES), weil das Hostel-Publikum international ist.</p>
+  <div class="grid">
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-qr.svg" style="width:230px"></object></div>
+      <h3>Rezeption / Pinnwand</h3>
+      <p class="meta"><b>70 × 70 mm</b> · Vinyl matt · abgerundetes Quadrat</p>
+      <p>Die Visitenkarte der App als Sticker: Brand, Nutzenversprechen <em>„Survival Spanish for your trip“</em>, großer QR und die Trust-Zeile (offline · ohne Konto · kostenlos).</p>
+      <p class="dl"><a href="hostel-qr.svg" download>hostel-qr.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Rezeption</span></div>
+    </div>
+    <div class="sticker">
+      <div class="preview"><object type="image/svg+xml" data="hostel-reto.svg" style="width:260px"></object></div>
+      <h3>„Reta a tu compañero“ (1 vs 1)</h3>
+      <p class="meta"><b>70 × 50 mm</b> · Vinyl matt · dunkler Grund</p>
+      <p>Bewirbt den Hostel-Modus (2-Spieler-Battles): zwei Karteikarten treten gegeneinander an. Passt zum Flyer <a href="../anleitungen/hostel-reto.html">„Reto del día“</a> – für Common Room, Küche und Bar.</p>
+      <p class="dl"><a href="hostel-reto.svg" download>hostel-reto.svg</a></p>
+      <div class="tags"><span class="tag">QR</span><span class="tag">Hostel-Modus</span></div>
+    </div>
+  </div>
+
+  <h2>🖨️ Produktion &amp; Druckdaten</h2>
+  <ul>
+    <li><strong>Dateien:</strong> Alle SVGs sind in physischen Maßen angelegt (mm) und vektorbasiert – beliebig skalierbar.</li>
+    <li><strong>Fonts:</strong> Bricolage Grotesque 800 (Display) und Instrument Sans (liegen im Repo unter <code>/fonts/</code>). Für Druckereien den Text vor Abgabe <strong>in Pfade konvertieren</strong> (z.&nbsp;B. Inkscape: <em>Pfad → Objekt in Pfad umwandeln</em>), sonst ersetzt die Druckerei die Schrift.</li>
+    <li><strong>Beschnitt:</strong> 2–3 mm Zugabe um die Schnittkante; die Cream-/Randkonturen der Motive sind als Schnittkanten gedacht (Die-Cut bzw. Kiss-Cut).</li>
+    <li><strong>Material:</strong> Stadt-Serie auf wetterfestem, UV-laminiertem Outdoor-Vinyl; Laptop/Hostel auf mattem Vinyl (matt spiegelt unter Hostel-Licht nicht). Passstempel wirkt am stärksten auf transparentem Vinyl.</li>
+    <li><strong>QR testen:</strong> Vor der Serienproduktion einen Proof drucken und den QR mit mehreren Handys aus 30–50 cm scannen. Ziel-URL: <code>moarci.github.io/holaRuta</code> (Pfaddaten aus <code>docs/anleitungen/qr-holaruta.svg</code>). Für Hostel-Partner kann der QR pro Edition ausgetauscht werden (z.&nbsp;B. <code>?edition=hostel</code>, QR mit <code>qr.js</code> generieren).</li>
+    <li><strong>PDF dieser Seite:</strong> im Browser öffnen und <strong>Strg/Cmd&nbsp;+&nbsp;P → „Als PDF speichern“</strong>.</li>
+  </ul>
+
+  <p class="foot">moarci.github.io/holaRuta &nbsp;·&nbsp; Sticker-Konzepte · Stand: Juli 2026</p>
+</main>
+
+</body>
+</html>
