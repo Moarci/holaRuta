@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="Pana, das Empanada-Maskottchen">
+  <title>Pana - Empanada-Maskottchen (holaRuta)</title>
+  <desc>Flat-Sticker-Stil, Halbmond-Empanada, Gold #E9A23B, kakaobraune Outlines #241510, winziger Rucksack. Brand-Referenz fuer Character-Consistency.</desc>
+  <defs>
+    <pattern id="pana-dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="7" cy="7" r="3" fill="#C98A20" opacity="0.5"/>
+    </pattern>
+    <clipPath id="pana-clip">
+      <path d="M78 138 Q78 112 104 110 L216 110 Q242 112 242 138 C242 214 202 258 160 258 C118 258 78 214 78 138 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- feet -->
+  <g stroke="#241510" stroke-width="8" stroke-linejoin="round">
+    <ellipse cx="134" cy="268" rx="22" ry="14" fill="#241510"/>
+    <ellipse cx="186" cy="268" rx="22" ry="14" fill="#241510"/>
+  </g>
+
+  <!-- tiny backpack peeking behind the top -->
+  <g stroke="#241510" stroke-width="8" stroke-linejoin="round">
+    <path d="M152 74 q8 -12 16 0" fill="none" stroke-width="6"/>
+    <rect x="136" y="78" width="48" height="44" rx="13" fill="#2F6B70"/>
+    <rect x="150" y="96" width="20" height="18" rx="5" fill="#FBF3E4"/>
+  </g>
+
+  <!-- rubber-hose arms -->
+  <g fill="none" stroke="#241510" stroke-width="14" stroke-linecap="round">
+    <path d="M92 178 C 60 170 44 150 40 124"/>
+    <path d="M228 178 C 262 184 280 202 286 226"/>
+  </g>
+  <g stroke="#241510" stroke-width="8">
+    <circle cx="38" cy="118" r="15" fill="#E9A23B"/>
+    <circle cx="288" cy="232" r="15" fill="#E9A23B"/>
+  </g>
+
+  <!-- sticker keyline -->
+  <path d="M78 138 Q78 112 104 110 L216 110 Q242 112 242 138 C242 214 202 258 160 258 C118 258 78 214 78 138 Z"
+        fill="#FBF3E4" stroke="#FBF3E4" stroke-width="22" stroke-linejoin="round"/>
+
+  <!-- body -->
+  <path d="M78 138 Q78 112 104 110 L216 110 Q242 112 242 138 C242 214 202 258 160 258 C118 258 78 214 78 138 Z"
+        fill="#E9A23B" stroke="#241510" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M78 138 Q78 112 104 110 L216 110 Q242 112 242 138 C242 214 202 258 160 258 C118 258 78 214 78 138 Z"
+        fill="url(#pana-dots)" clip-path="url(#pana-clip)"/>
+
+  <!-- crimped fold ridge -->
+  <path d="M96 128 q11 -15 22 0 q11 -15 22 0 q11 -15 22 0 q11 -15 22 0"
+        fill="none" stroke="#241510" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- cheeks -->
+  <circle cx="112" cy="188" r="12" fill="#C2502E" opacity="0.55"/>
+  <circle cx="208" cy="188" r="12" fill="#C2502E" opacity="0.55"/>
+
+  <!-- eyes -->
+  <g stroke="#241510" stroke-width="7">
+    <circle cx="134" cy="166" r="20" fill="#FBF3E4"/>
+    <circle cx="186" cy="166" r="20" fill="#FBF3E4"/>
+  </g>
+  <circle cx="139" cy="169" r="9" fill="#241510"/>
+  <circle cx="191" cy="169" r="9" fill="#241510"/>
+  <circle cx="135" cy="164" r="3.2" fill="#FBF3E4"/>
+  <circle cx="187" cy="164" r="3.2" fill="#FBF3E4"/>
+
+  <!-- smile -->
+  <path d="M139 198 q21 18 42 0" fill="none" stroke="#241510" stroke-width="7" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="Repa, das Arepa-Maskottchen">
+  <title>Repa - Arepa-Maskottchen (holaRuta)</title>
+  <desc>Flat-Sticker-Stil, runde Arepa, Cream #FBF3E4, kakaobraune Outlines #241510, aufgeschnittenes Fuellungs-Band. Brand-Referenz fuer Character-Consistency.</desc>
+  <defs>
+    <pattern id="repa-dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="2.4" fill="#D9B98A" opacity="0.6"/>
+    </pattern>
+    <clipPath id="repa-clip">
+      <circle cx="160" cy="162" r="98"/>
+    </clipPath>
+  </defs>
+
+  <!-- feet -->
+  <g stroke="#241510" stroke-width="8" stroke-linejoin="round">
+    <ellipse cx="134" cy="276" rx="22" ry="14" fill="#241510"/>
+    <ellipse cx="186" cy="276" rx="22" ry="14" fill="#241510"/>
+  </g>
+
+  <!-- rubber-hose arms -->
+  <g fill="none" stroke="#241510" stroke-width="14" stroke-linecap="round">
+    <path d="M74 176 C 44 180 30 198 28 222"/>
+    <path d="M246 176 C 276 180 290 198 292 222"/>
+  </g>
+  <g stroke="#241510" stroke-width="8">
+    <circle cx="26" cy="228" r="15" fill="#FBF3E4"/>
+    <circle cx="294" cy="228" r="15" fill="#FBF3E4"/>
+  </g>
+
+  <!-- sticker keyline -->
+  <circle cx="160" cy="162" r="98" fill="#FBF3E4" stroke="#FBF3E4" stroke-width="22"/>
+
+  <!-- body -->
+  <circle cx="160" cy="162" r="98" fill="#FBF3E4" stroke="#241510" stroke-width="9"/>
+  <circle cx="160" cy="162" r="98" fill="url(#repa-dots)" clip-path="url(#repa-clip)"/>
+
+  <!-- split filling band -->
+  <g clip-path="url(#repa-clip)">
+    <path d="M50 202 q18 -16 36 0 t36 0 t36 0 t36 0 t36 0 t36 0 L 266 240 L 50 240 Z"
+          fill="#E9A23B" stroke="#241510" stroke-width="8" stroke-linejoin="round"/>
+    <circle cx="112" cy="220" r="7" fill="#C2502E"/>
+    <circle cx="166" cy="225" r="6" fill="#C2502E"/>
+    <circle cx="214" cy="219" r="7" fill="#C2502E"/>
+  </g>
+
+  <!-- cheeks -->
+  <circle cx="104" cy="162" r="12" fill="#C2502E" opacity="0.55"/>
+  <circle cx="216" cy="162" r="12" fill="#C2502E" opacity="0.55"/>
+
+  <!-- eyes -->
+  <g stroke="#241510" stroke-width="7">
+    <circle cx="132" cy="140" r="19" fill="#FBF3E4"/>
+    <circle cx="188" cy="140" r="19" fill="#FBF3E4"/>
+  </g>
+  <circle cx="137" cy="143" r="9" fill="#241510"/>
+  <circle cx="193" cy="143" r="9" fill="#241510"/>
+  <circle cx="133" cy="138" r="3.2" fill="#FBF3E4"/>
+  <circle cx="189" cy="138" r="3.2" fill="#FBF3E4"/>
+
+  <!-- smile -->
+  <path d="M143 168 q17 14 34 0" fill="none" stroke="#241510" stroke-width="7" stroke-linecap="round"/>
+</svg>
