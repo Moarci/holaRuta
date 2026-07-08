@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Backpacker-Mood · „estoy pelado" (blank / broke)
+  Druckgröße: 65 × 65 mm · abgerundetes Quadrat · Cream-Kontur = Schnittkante.
+  Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="65mm" height="65mm" viewBox="0 0 650 650">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="634" height="634" rx="48" fill="#B97C24" stroke="#FBF3E4" stroke-width="12"/>
+  <!-- leerer Geldbeutel -->
+  <g transform="translate(325,168)" stroke="#FBF3E4" stroke-width="13" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="-84" y="-46" width="168" height="112" rx="20"/>
+    <path d="M40 4 h48 v40 h-48 a20 20 0 0 1 0 -40 z" fill="#241510" fill-opacity="0.18"/>
+    <circle cx="56" cy="24" r="7" fill="#FBF3E4" stroke="none"/>
+  </g>
+  <text x="325" y="360" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#241510" fill-opacity="0.75" text-anchor="middle" letter-spacing="1">mood del viajero:</text>
+  <text x="325" y="470" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#241510" text-anchor="middle" letter-spacing="-3">pelado</text>
+  <text x="325" y="530" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="38" font-weight="700" fill="#FBF3E4" text-anchor="middle">= sin plata · broke af</text>
+  <text x="325" y="600" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800" fill="#241510" fill-opacity="0.7" text-anchor="middle">holaruta</text>
+</svg>

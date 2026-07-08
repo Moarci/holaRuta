@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HolaRuta Hook-Sticker · Slang-Landkarte · „cool en 5 países"
+  Ein Wort, fünf Länder. Länder-Codes statt Emoji-Flaggen (druck-sicher).
+  Druckgröße: 90 × 60 mm · abgerundetes Rechteck · Cream-Kontur = Schnittkante.
+  Quelle: jerga.js Regional-Tabelle. Für Druckereien: Text in Pfade wandeln.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="90mm" height="60mm" viewBox="0 0 900 600">
+  <defs>
+    <style>
+      @font-face{font-family:'Bricolage Grotesque';src:url('../../fonts/bricolage-grotesque-600-800-latin.woff2') format('woff2');font-weight:600 800;}
+      @font-face{font-family:'Instrument Sans';src:url('../../fonts/instrument-sans-400-700-latin.woff2') format('woff2');font-weight:400 700;}
+    </style>
+  </defs>
+  <rect x="8" y="8" width="884" height="584" rx="48" fill="#241510" stroke="#FBF3E4" stroke-width="12"/>
+  <text x="54" y="112" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#F0996B" letter-spacing="2">UNA PALABRA · 5 PAÍSES</text>
+  <text x="50" y="212" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="120" font-weight="800" fill="#E9A23B" letter-spacing="-2">cool =</text>
+  <!-- Slang-Zeilen mit Länder-Code-Chips -->
+  <g font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-weight="800">
+    <text x="54" y="308" font-size="52" fill="#FBF3E4">chévere</text>
+    <text x="54" y="376" font-size="52" fill="#FBF3E4">bacano</text>
+    <text x="54" y="444" font-size="52" fill="#FBF3E4">chido</text>
+    <text x="54" y="512" font-size="52" fill="#FBF3E4">copado</text>
+  </g>
+  <g font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-weight="700" font-size="26" fill="#241510">
+    <g><rect x="470" y="278" width="72" height="42" rx="21" fill="#E9A23B"/><text x="506" y="307" text-anchor="middle">CO</text></g>
+    <g><rect x="470" y="346" width="72" height="42" rx="21" fill="#E9A23B"/><text x="506" y="375" text-anchor="middle">CO</text></g>
+    <g><rect x="470" y="414" width="72" height="42" rx="21" fill="#E9A23B"/><text x="506" y="443" text-anchor="middle">MX</text></g>
+    <g><rect x="470" y="482" width="72" height="42" rx="21" fill="#E9A23B"/><text x="506" y="511" text-anchor="middle">AR</text></g>
+  </g>
+  <text x="600" y="500" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="44" font-weight="800" fill="#FBF3E4">bacán</text>
+  <g font-family="Instrument Sans" font-weight="700" font-size="24" fill="#241510"><rect x="600" y="516" width="118" height="40" rx="20" fill="#3F7355"/><text x="659" y="543" text-anchor="middle" fill="#FBF3E4">PE · CL</text></g>
+  <text x="846" y="118" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" fill="#FBF3E4" text-anchor="end">holaruta</text>
+</svg>
