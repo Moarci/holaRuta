@@ -4402,8 +4402,11 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  *      alles sanft auf die zentrierte 640px-Spalte zurück – nie kaputt.
  *   4. Die Reiter-Leiste wird vom mobilen Bottom-Tab-Balken zu einem
  *      schwebenden Dock mit nebeneinanderliegendem Icon + Text.
- *   5. Onboarding wird zur zentrierten Willkommens-Karte mit größerer Typo. */
-@media (min-width: 900px) {
+ *   5. Onboarding wird zur zentrierten Willkommens-Karte mit größerer Typo.
+ * Nur für Bildschirme ("screen and"): Im Querformat-Druck ist die Seitenbox
+ * ebenfalls ≥900px (A4 quer ≈ 1123px) – ohne Medientyp würden diese Regeln
+ * die Druckblätter (Modo Profe, Klassentabelle) auf 640px quetschen. */
+@media screen and (min-width: 900px) {
   :root { --maxw: 960px; }
 
   /* Rahmen: mehr Luft in Bar und Inhalt, etwas größere Wortmarke. */
@@ -4457,7 +4460,9 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
    * mittig über dem unteren Rand statt kantenbündiger Handy-Balken. */
   .tabbar {
     width: auto; max-width: none;
-    bottom: 18px;
+    /* Safe-Area behalten: auf Tablets ≥900px (installierte PWA) liegt unten der
+     * Home-Indicator – ohne den Zuschlag ragte das Dock in dessen Gestenzone. */
+    bottom: calc(18px + env(safe-area-inset-bottom));
     border: 1.5px solid var(--line-strong);
     border-radius: 999px;
     padding: 6px;
@@ -4499,9 +4504,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .face--back .face__word { font-size: 2.3rem; }
   .card-static { min-height: 260px; }
 
-  /* Modale Bögen (Kontext-Panel u. a.) und Toaster nicht über die ganze
-   * Fensterbreite laufen lassen – gleiche Logik wie die App-Spalte. */
   .pagehead__title { font-size: 1.5rem; }
+
+  /* Modale (Changelog/Update, Tagesziel) und der Badge-Toast sind über
+   * calc(var(--maxw) - 24px) dimensioniert – mit der auf 960px verbreiterten
+   * Spalte würden sie sonst zu ~936px breiten Bannern; als Dialog kompakt halten. */
+  .upd, .tgt-modal, .btoast { max-width: 560px; }
 }
 
 /* Desktop-Feinschliff: Hover-Reaktionen nur für echte Zeiger (Maus/Trackpad).
@@ -4515,18 +4523,24 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .ghostbtn:hover, .iconbtn:hover, .seg:not(.is-active):hover {
     background: color-mix(in srgb, var(--ink) 6%, var(--card));
   }
+  /* Rahmen-Aufhellung nur auf Elementen, die auch einen Rahmen HABEN – bei der
+   * Lernpfad-Karte sitzt er auf dem Wrapper .lpath-card, nicht auf dem Button. */
   .today__ruta:hover, .today__resume:hover, .searchbar:hover, .search-row:hover,
-  .navrow:hover, .trip--empty:hover, .lpath-card__main:hover {
+  .navrow:hover, .trip--empty:hover, .lpath-card:hover {
     border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
   }
-  .lvl:hover, .dashnav__chip:hover, .fmtchip:hover {
+  .lvl:hover, .dashnav__chip:hover {
     border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+    color: var(--ink);
+  }
+  /* Format-Chips sind rahmenlos – wie .seg über eine Flächen-Tönung reagieren. */
+  .fmtchip:not(.is-active):hover {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
     color: var(--ink);
   }
   .tab:hover { background: color-mix(in srgb, var(--brand) 8%, transparent); color: var(--ink); }
   .tab.is-active:hover { color: var(--brand-ink); }
-  .skipbtn:hover, .favline:hover { color: var(--ink); }
-  .searchfield__clear:hover, .updbar__close:hover { opacity: 1; }
+  .skipbtn:hover, .favline:hover, .searchfield__clear:hover { color: var(--ink); }
   .onboarding__dot:hover::before { opacity: 0.55; }
 }
 
