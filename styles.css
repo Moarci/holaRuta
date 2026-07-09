@@ -150,6 +150,12 @@ html, body, .appshell, .appbar { transition: background-color 0.3s ease, color 0
  * Kasten um den Titel aus. */
 .pagehead__title:focus, .pagehead__title:focus-visible { outline: none; }
 
+/* Gleiches Muster für den Screen-Container selbst: Screens ohne h2/Zurück-Knopf
+ * (z. B. Onboarding) bekommen als Fallback programmatisch den Fokus auf die
+ * <section class="screen"> – auch sie ist nicht interaktiv, ein Marken-Rahmen
+ * um den kompletten Inhalt sähe wie ein Darstellungsfehler aus. */
+.screen:focus, .screen:focus-visible { outline: none; }
+
 /* KEIN html,body{height:100%} setzen: Damit malte der Body seinen Hintergrund
  * nur eine Viewport-Höhe hoch – auf jeder langen Seite ohne eigene Flächen
  * (z. B. den Landing-Pages) schien darunter der dunkle --page-Canvas durch.
@@ -834,20 +840,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* ---------- STUDY ---------- */
 .study { gap: 14px; }
-/* Desktop: zwei Spalten (Karte + Smartphone-Mockup) */
-@media (min-width: 900px) {
-  .study { display: grid !important; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-  .study > .topbar { grid-column: 1 / -1; }
-  .study > .progress { grid-column: 1 / -1; }
-  .study > .flip { grid-column: 1; }
-  .study > .card-static { grid-column: 1; }
-  .study > .card-listen { grid-column: 1; }
-  .study > .controls { grid-column: 1; }
-  .study > .favline { grid-column: 1; }
-  .study > .skipbtn { grid-column: 1; }
-  .study > .sharepic-btn { grid-column: 1; }
-  .study > .typer { grid-column: 1; }
-}
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .iconbtn {
   width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
@@ -1112,66 +1104,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* 🧭 aktiv (Panel offen) */
 .cardbtn--ctx.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
 .cardbtn--ctx.is-on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
-
-/* Smartphone-Mockup für Desktop-Ansicht (rechte Spalte bei min-width: 900px).
-   Zeigt die aktuelle Lernkarte auf einem simulierten Smartphone-Screen. */
-.smartphone-mock {
-  display: none; /* nur auf Desktop sichtbar */
-}
-@media (min-width: 900px) {
-  .study > .smartphone-mock {
-    grid-column: 2; grid-row: 3 / -1; position: sticky; top: 20px;
-  }
-  .smartphone-mock {
-    display: block;
-    width: 320px; margin: 0 auto;
-    background: #000; border-radius: 40px; padding: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255,255,255,0.1);
-    position: relative;
-  }
-  .smartphone-mock::before {
-    content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    width: 150px; height: 25px; background: #000; border-radius: 0 0 20px 20px;
-    z-index: 10;
-  }
-  .smartphone-mock__screen {
-    width: 100%; height: 640px; border-radius: 32px; overflow: hidden;
-    background: var(--page); border: 1px solid rgba(0,0,0,0.2);
-    display: flex; flex-direction: column;
-  }
-  .smartphone-mock__statusbar {
-    height: 24px; padding: 0 12px; background: var(--card);
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 0.7rem; color: var(--muted);
-  }
-  .smartphone-mock__content {
-    flex: 1; overflow-y: auto; padding: 12px; display: flex; align-items: center;
-    justify-content: center;
-  }
-  .smartphone-mock__card {
-    width: 100%; max-width: 280px;
-    border-radius: 16px; padding: 30px 20px;
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; text-align: center;
-    background: var(--card); border: 1.5px solid var(--line);
-    box-shadow: var(--shadow-lg);
-    min-height: 300px;
-  }
-  .smartphone-mock__card.is-back {
-    background: var(--from, var(--brand));
-    color: var(--cream); border: none;
-  }
-  .smartphone-mock__card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em;
-    color: var(--faint); margin-bottom: 12px; text-transform: uppercase; }
-  .smartphone-mock__card.is-back .smartphone-mock__card-label {
-    color: rgba(251, 243, 228, 0.6);
-  }
-  .smartphone-mock__card-text { font-size: 1.3rem; font-weight: 800; line-height: 1.3;
-    overflow-wrap: anywhere; hyphens: auto; }
-  .smartphone-mock__card.is-back .smartphone-mock__card-text { font-family: var(--font-display); font-size: 1.5rem; }
-  .smartphone-mock__hint { font-size: 0.7rem; color: var(--faint); margin-top: 16px; }
-  .smartphone-mock__card.is-back .smartphone-mock__hint { color: rgba(251, 243, 228, 0.5); }
-}
 
 /* Statische Karte (Schreiben-Modus) */
 .card-static {
@@ -4455,6 +4387,162 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* Ziel des Sprunglinks (main#app) erhält per JS/Markup tabindex="-1" und damit
  * den Fokus; der ist nicht interaktiv, darum keinen sichtbaren Rahmen zeigen. */
 #app:focus { outline: none; }
+
+/* ===================== DESKTOP (≥ 900px) =====================
+ * Die App ist mobil-first als 460px-Spalte gebaut. Auf großen Bildschirmen soll
+ * sie aber nicht wie ein schmales Handy in der Mitte kleben, sondern ein echtes
+ * Desktop-Layout bekommen – bei erhaltener Design-Signatur (creme Spalte auf
+ * dunkelbraunem Rahmen). Prinzip:
+ *   1. Die App-Spalte wird breit (960px), Innenabstände wachsen mit.
+ *   2. JEDER Screen bleibt standardmäßig eine zentrierte, lesbare Spalte
+ *      (640px) – Formulare, Spiele, Lernkarte, Infoseiten strecken sich also
+ *      nicht auf volle Breite (Lesbarkeit/Klickwege).
+ *   3. Raster-Screens (Lernen-Kacheln, Entdecken-Features) nutzen per :has()
+ *      die volle Breite mit 4-spaltigen Rastern. Ohne :has()-Support fällt
+ *      alles sanft auf die zentrierte 640px-Spalte zurück – nie kaputt.
+ *   4. Die Reiter-Leiste wird vom mobilen Bottom-Tab-Balken zu einem
+ *      schwebenden Dock mit nebeneinanderliegendem Icon + Text.
+ *   5. Onboarding wird zur zentrierten Willkommens-Karte mit größerer Typo.
+ * Nur für Bildschirme ("screen and"): Im Querformat-Druck ist die Seitenbox
+ * ebenfalls ≥900px (A4 quer ≈ 1123px) – ohne Medientyp würden diese Regeln
+ * die Druckblätter (Modo Profe, Klassentabelle) auf 640px quetschen. */
+@media screen and (min-width: 900px) {
+  :root { --maxw: 960px; }
+
+  /* Rahmen: mehr Luft in Bar und Inhalt, etwas größere Wortmarke. */
+  .appbar { padding: calc(18px + env(safe-area-inset-top)) 44px 6px; gap: 12px; }
+  .appbar__logo { width: 42px; height: 42px; }
+  .appbar__name { font-size: 1.3rem; }
+  #app { padding: 10px 44px calc(40px + env(safe-area-inset-bottom)); }
+
+  /* Standard: jeder Screen als zentrierte Lese-Spalte. width:100% hält die
+   * Flex-Kinder (Karten, Formulare) trotz max-width auf voller Spaltenbreite. */
+  .screen { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; }
+
+  /* Raster-Screens (Lernen: .tiles / Entdecken: .featgroup) nutzen die volle
+   * Spalte. Der Start-, Profil- und Aufgaben-Reiter bleiben bewusst 640px –
+   * ein einzelner "Heute"-Feed über 880px wirkt zerdehnt statt aufgeräumt. */
+  .screen--tabbed:has(.tiles),
+  .screen--tabbed:has(.featgroup) { max-width: none; }
+
+  /* Start-Reiter als 2-spaltiges Cockpit: „Heute"-Karte samt Haupt-CTA links,
+   * Lernpfad/Reise/Léxico/Fortschritt rechts daneben statt endlos darunter.
+   * Multi-Column statt Grid, weil Zahl und Höhe der Gruppen je nach Zustand
+   * (Trip gesetzt? Presets? Favoriten?) stark variieren – die Spalten
+   * balancieren sich selbst. Jede Gruppe bleibt am Stück (break-inside);
+   * Kopfzeile, Suche und Widmung spannen über beide Spalten. */
+  .screen--tabbed:has(> .today) {
+    display: block;
+    max-width: none;
+    column-count: 2;
+    column-gap: 24px;
+  }
+  .screen--tabbed:has(> .today) > * { break-inside: avoid; margin: 0 0 18px; }
+  .screen--tabbed:has(> .today) > .pagehead,
+  .screen--tabbed:has(> .today) > .searchbar,
+  .screen--tabbed:has(> .today) > .dedication { column-span: all; }
+  .screen--tabbed:has(> .today) > .dedication { margin-bottom: 0; }
+
+  /* 4-spaltige Raster: bei 880px Inhaltsbreite entspricht jede Kachel fast
+   * exakt der mobilen 2-Spalten-Kachel (~200px) – gleiche Proportionen. */
+  .tiles { grid-template-columns: repeat(4, 1fr); }
+  .featgroup { grid-template-columns: repeat(4, 1fr); }
+
+  /* Klebrige Sprungmarken-Leiste blutet bis an den neuen, breiteren Rand. */
+  .dashnav { margin: 0 -44px; padding: 8px 44px; }
+
+  /* Stufen-/Wortart-Filter: die Chip-Reihen stehen im breiten Lernen-Reiter
+   * sonst als lange Einzelzeile – begrenzen bringt hier nichts, sie brechen
+   * ohnehin um; nur der Abstand zum Raster darf etwas wachsen. */
+  .topicgrp { scroll-margin-top: 72px; }
+
+  /* Reiter-Leiste als schwebendes Dock: Icon + Text nebeneinander, Pillenform,
+   * mittig über dem unteren Rand statt kantenbündiger Handy-Balken. */
+  .tabbar {
+    width: auto; max-width: none;
+    /* Safe-Area behalten: auf Tablets ≥900px (installierte PWA) liegt unten der
+     * Home-Indicator – ohne den Zuschlag ragte das Dock in dessen Gestenzone. */
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 6px;
+    gap: 4px;
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.26);
+  }
+  .tab {
+    flex-direction: row; gap: 9px;
+    min-height: 48px; padding: 8px 22px;
+    border-radius: 999px;
+  }
+  .tab__icon { font-size: 1.15rem; }
+  .tab__label { font-size: 0.88rem; }
+  .screen--tabbed { padding-bottom: 110px; } /* Platz fürs schwebende Dock */
+  .updbar { bottom: 104px; max-width: 560px; }
+
+  /* Onboarding: zentrierte Willkommens-Karte statt nacktem Formular oben links.
+   * Größere Typo (der Bildschirm ist weit weg), Panel im Karten-Look. */
+  .onboarding { min-height: min(74vh, 900px); }
+  .onboarding__inner {
+    max-width: 34rem;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 40px 44px 36px;
+    gap: 14px;
+  }
+  .onboarding__title { font-size: 1.9rem; }
+  .onboarding__intro { font-size: 1.02rem; line-height: 1.55; }
+  .onboarding--intro .onboarding__inner { gap: 20px; }
+  .onboarding__icon { font-size: 3.6rem; }
+  .onboarding__slide { min-height: 12rem; }
+
+  /* Lernkarte: mehr Fläche und größere Wörter – die Karte ist das Zentrum. */
+  .flip__inner { min-height: 340px; }
+  .face { padding: 56px 40px 34px; }
+  .face__word { font-size: 2.1rem; }
+  .face--back .face__word { font-size: 2.3rem; }
+  .card-static { min-height: 260px; }
+
+  .pagehead__title { font-size: 1.5rem; }
+
+  /* Modale (Changelog/Update, Tagesziel) und der Badge-Toast sind über
+   * calc(var(--maxw) - 24px) dimensioniert – mit der auf 960px verbreiterten
+   * Spalte würden sie sonst zu ~936px breiten Bannern; als Dialog kompakt halten. */
+  .upd, .tgt-modal, .btoast { max-width: 560px; }
+}
+
+/* Desktop-Feinschliff: Hover-Reaktionen nur für echte Zeiger (Maus/Trackpad).
+ * Auf Touch würde :hover nach dem Tap "kleben" (siehe .pl-option oben). Alle
+ * Kern-Interaktionen bekommen eine sichtbare Hover-Antwort – bisher reagierte
+ * fast alles nur auf :active (Tap), am Desktop wirkte die App dadurch tot. */
+@media (hover: hover) and (pointer: fine) {
+  .tile:hover, .feat:hover { transform: translateY(-2px); }
+  .feat:hover { filter: saturate(1.08) brightness(1.04); }
+  .cta:hover { filter: brightness(1.06); }
+  .ghostbtn:hover, .iconbtn:hover, .seg:not(.is-active):hover {
+    background: color-mix(in srgb, var(--ink) 6%, var(--card));
+  }
+  /* Rahmen-Aufhellung nur auf Elementen, die auch einen Rahmen HABEN – bei der
+   * Lernpfad-Karte sitzt er auf dem Wrapper .lpath-card, nicht auf dem Button. */
+  .today__ruta:hover, .today__resume:hover, .searchbar:hover, .search-row:hover,
+  .navrow:hover, .trip--empty:hover, .lpath-card:hover {
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+  }
+  .lvl:hover, .dashnav__chip:hover {
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+    color: var(--ink);
+  }
+  /* Format-Chips sind rahmenlos – wie .seg über eine Flächen-Tönung reagieren. */
+  .fmtchip:not(.is-active):hover {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    color: var(--ink);
+  }
+  .tab:hover { background: color-mix(in srgb, var(--brand) 8%, transparent); color: var(--ink); }
+  .tab.is-active:hover { color: var(--brand-ink); }
+  .skipbtn:hover, .favline:hover, .searchfield__clear:hover { color: var(--ink); }
+  .onboarding__dot:hover::before { opacity: 0.55; }
+}
 
 /* Globaler Bewegungs-Sicherheitsblock (Systemwunsch "reduzierte Bewegung").
  * Steht bewusst am Dateiende, damit er als letzter, alles abdeckender Fallback
