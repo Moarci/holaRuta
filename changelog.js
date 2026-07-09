@@ -27,6 +27,24 @@
   // NEUESTE zuerst. entries[0].version ist die aktuelle App-Version.
   const entries = [
     {
+      version: "1.125.0",
+      date: "2026-07-09",
+      title: "Neues Aufgaben-Studio für Lehrkräfte & Reiseleitung",
+      titleEn: "New task studio for teachers & tour leaders",
+      items: [
+        "🎓 „Aufgaben & Pakete erstellen“ ist jetzt ein eigener, geführter Bereich: In drei klaren Schritten (Inhalte wählen → Details → Teilen) stellst du Lernpakete zusammen – statt des bisherigen Formulars im Modo profe.",
+        "📚 Fertige Vorlagen und ein durchsuchbarer Katalog (Reisepläne, Starter-Sets, Themen) mit Kartenzahlen je Inhalt; die Auswahl-Leiste unten zeigt jederzeit, wie groß das Paket ist.",
+        "📲 Teilen ohne Umwege: großer QR-Code zum Scannen, Link kopieren, direkt per WhatsApp senden – der rohe Code bleibt als Notlösung. Bestehende Aufgaben-Links funktionieren unverändert.",
+        "❓ Eingebaute Anleitung mit Tipps für den Unterricht und die Reiseleitung: was Aufgaben sind, wie sie bei den Lernenden ankommen und wie du Fristen & Klassenübersicht nutzt.",
+      ],
+      itemsEn: [
+        "🎓 “Create tasks & packs” is now its own guided area: build learning packs in three clear steps (choose content → details → share) – replacing the old form inside teacher mode.",
+        "📚 Ready-made templates and a searchable catalogue (trip plans, starter sets, topics) with card counts per item; the selection bar at the bottom always shows how big the pack is.",
+        "📲 Sharing without detours: a large QR code to scan, copy the link, or send it via WhatsApp – the raw code stays available as a fallback. Existing task links keep working unchanged.",
+        "❓ Built-in guide with tips for the classroom and tour leaders: what tasks are, how they arrive for learners, and how to use due dates & the class overview.",
+      ],
+    },
+    {
       version: "1.124.0",
       date: "2026-07-04",
       title: "Entdecken für Englisch-Lernende + „Ruta del español“",

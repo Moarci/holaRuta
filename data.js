@@ -4892,7 +4892,7 @@
   //   pretrip  -> PRETRIP[].scope   (z. B. "colombia")
   //   preset   -> PRESETS[].id      (z. B. "prearrival-co")
   //   category -> CATEGORIES[].id   (z. B. "notfall")
-  // group ordnet die Bundles im Picker in Abschnitte (siehe i18n teacher.bg*):
+  // group ordnet die Bundles im Aufgaben-Studio in Abschnitte (siehe i18n composer.bg*):
   //   "destino"   Reiseziel-Komplett (Plan + Pre-Arrival + Essentials)
   //   "kurs"      Kurs-/Lehrplan-Blöcke (Progression über Wochen)
   //   "situation" Alltags-Situationen (szenarienbasiert)
