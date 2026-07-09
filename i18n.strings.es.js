@@ -637,6 +637,7 @@
     clear: "Vaciar",
     next: "Siguiente",
     needItems: "Primero elige al menos un contenido.",
+    genFailed: "No se pudo crear el código; inténtalo de nuevo.",
     tooMany: function (p) { return "Máximo " + p.n + " objetivos por paquete."; },
     customBundle: "Paquete propio",
     bgDestino: "🌎 Destino completo",

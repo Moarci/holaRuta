@@ -29,7 +29,9 @@
 
   let ctx = null; // vom Controller injizierte Dienste (init)
 
-  const MAX_ITEMS = 20; // muss store.MAX_BUNDLE_ITEMS spiegeln (Größen-Deckel je Paket)
+  // Größen-Deckel je Paket: direkt aus store (der beim Encodieren hart abschneidet),
+  // damit hier keine zweite Zahl gepflegt werden muss, die auseinanderlaufen kann.
+  const maxItems = () => (window.SC.store && window.SC.store.MAX_BUNDLE_ITEMS) || 20;
 
   // Ansichts-Zustand (transient, überlebt Re-Render, aber keinen Reload).
   const ui = {
@@ -51,20 +53,43 @@
   const itemKey = (it) => it.kind + ":" + it.scope;
   const keyToItem = (value) => { const p = String(value).split(":"); return { kind: p[0], scope: p.slice(1).join(":") }; };
 
-  // Umfang eines Ziels: Kartenzahl (+ Etappen bei Plänen). Einmal berechnet und
-  // gecacht – der Korpus ändert sich zur Laufzeit nicht.
+  // Karten-Ids eines Ziels (gecacht – der Korpus ändert sich zur Laufzeit nicht).
+  // Basis fürs deduplizierte Zählen: Ziele teilen sich oft Karten (ein Pre-Trip-
+  // Plan enthält z. B. sein Pre-Arrival-Paket komplett), darum zählt die reine
+  // Summe pro Ziel zu hoch – die Lernenden bekommen die Vereinigung, nicht die Summe.
+  let _idsCache = null;
+  function targetCardIds(value) {
+    if (!_idsCache) _idsCache = new Map();
+    if (_idsCache.has(value)) return _idsCache.get(value);
+    const it = keyToItem(value);
+    let ids;
+    if (it.kind === "pretrip") {
+      const plan = (ctx.data.PRETRIP || []).find((p) => p.scope === it.scope);
+      ids = plan ? (plan.days || []).reduce((a, d) => a.concat(d.cardIds || []), []) : [];
+    } else {
+      ids = ctx.taskCardsFor(it).map((c) => c.id);
+    }
+    _idsCache.set(value, ids);
+    return ids;
+  }
+  // Distinkte Karten über eine Menge von Ziel-Schlüsseln (Vereinigung, keine Dopplung).
+  function uniqueCardCount(keys) {
+    const set = new Set();
+    keys.forEach((k) => targetCardIds(k).forEach((id) => set.add(id)));
+    return set.size;
+  }
+  // Umfang eines EINZELNEN Ziels: distinkte Kartenzahl (+ Etappen bei Plänen). Gecacht.
   let _sizeCache = null;
   function targetSize(value) {
     if (!_sizeCache) _sizeCache = new Map();
     if (_sizeCache.has(value)) return _sizeCache.get(value);
     const it = keyToItem(value);
-    let size = { cards: 0, stages: 0 };
+    let stages = 0;
     if (it.kind === "pretrip") {
       const plan = (ctx.data.PRETRIP || []).find((p) => p.scope === it.scope);
-      if (plan) size = { cards: (plan.days || []).reduce((s, d) => s + (d.cardIds || []).length, 0), stages: (plan.days || []).length };
-    } else {
-      size = { cards: ctx.taskCardsFor(it).length, stages: 0 };
+      stages = plan ? (plan.days || []).length : 0;
     }
+    const size = { cards: uniqueCardCount([value]), stages };
     _sizeCache.set(value, size);
     return size;
   }
@@ -84,7 +109,7 @@
       return {
         id: b.id, icon: b.icon || "📦", group: b.group || "tema",
         label: ctx.natk(b, "label"), keys,
-        cards: keys.reduce((s, k) => s + targetSize(k).cards, 0),
+        cards: uniqueCardCount(keys),
       };
     });
   }
@@ -93,7 +118,7 @@
   // Gesamtumfang der Auswahl fürs Zähler-Band und die Zusammenfassung.
   function selectionStats() {
     const keys = selectedKeys();
-    return { n: keys.length, cards: keys.reduce((s, k) => s + targetSize(k).cards, 0) };
+    return { n: keys.length, cards: uniqueCardCount(keys) };
   }
   // Deckt sich die Auswahl EXAKT mit einer Vorlage? Dann trägt das Paket deren Namen.
   function matchedBundle() {
@@ -148,7 +173,10 @@
     n = Math.max(1, Math.min(3, Number(n) || 1));
     if (n >= 2 && !ctx.state.taskItems.length) { ctx.showNotice(t("composer.needItems")); return; }
     if (ui.step === 2) captureDraft(); // Titel/Frist mitnehmen (DOM ist die Wahrheit)
-    if (n === 3) generate();
+    // Vor Schritt 3 den Code bauen; scheitert das (Store fehlt / leerer Code),
+    // NICHT auf die Teilen-Ansicht wechseln – sonst stünde dort die irreführende
+    // „wähle erst Inhalte"-Meldung, obwohl ein Paket gewählt ist.
+    if (n === 3) { generate(); if (!ui.result) { ctx.showNotice(t("composer.genFailed")); return; } }
     ui.step = n;
     ctx.render();
     try { window.scrollTo(0, 0); } catch (e) { /* egal */ }
@@ -179,8 +207,9 @@
     if (!value) return;
     const items = ctx.state.taskItems;
     const idx = items.findIndex((x) => itemKey(x) === value);
+    const cap = maxItems();
     if (idx >= 0) ctx.state.taskItems = items.filter((_, i) => i !== idx);
-    else if (items.length >= MAX_ITEMS) { ctx.showNotice(t("composer.tooMany", { n: MAX_ITEMS })); return; }
+    else if (items.length >= cap) { ctx.showNotice(t("composer.tooMany", { n: cap })); return; }
     else ctx.state.taskItems = items.concat([keyToItem(value)]);
     ui.result = null; // Auswahl geändert -> alter Link gilt nicht mehr
     ctx.render();
@@ -197,14 +226,15 @@
     if (fullyIn) {
       ctx.state.taskItems = ctx.state.taskItems.filter((it) => b.keys.indexOf(itemKey(it)) < 0);
     } else {
+      const cap = maxItems();
       let capped = false;
       b.keys.forEach((k) => {
         if (keys.indexOf(k) >= 0) return;
-        if (ctx.state.taskItems.length >= MAX_ITEMS) { capped = true; return; }
+        if (ctx.state.taskItems.length >= cap) { capped = true; return; }
         keys.push(k);
         ctx.state.taskItems = ctx.state.taskItems.concat([keyToItem(k)]);
       });
-      if (capped) ctx.showNotice(t("composer.tooMany", { n: MAX_ITEMS }));
+      if (capped) ctx.showNotice(t("composer.tooMany", { n: cap }));
     }
     ui.result = null;
     ctx.render();
@@ -217,12 +247,15 @@
   }
 
   // Nach einem Re-Render aus der Trefferliste heraus den Fokus zurück ins
-  // Suchfeld legen (Auswahl per Tipp soll die laufende Suche nicht abbrechen).
-  let _searchHadFocus = false;
+  // Suchfeld legen: läuft eine Suche (Feld nicht leer), soll ein Treffer-Tipp die
+  // Eingabe nicht abbrechen. Bedingung an ui.search statt an den vorherigen Fokus –
+  // beim delegierten Klick trägt längst der Treffer-Button den Fokus, nicht das Feld.
   function restoreSearchFocus() {
-    if (!_searchHadFocus) return;
+    if (!ui.search) return;
     const el = document.getElementById("cmp-search");
-    if (el) { try { const v = el.value.length; el.focus(); el.setSelectionRange(v, v); } catch (e) { /* egal */ } }
+    if (el && document.activeElement !== el) {
+      try { const v = el.value.length; el.focus(); el.setSelectionRange(v, v); } catch (e) { /* egal */ }
+    }
   }
 
   // Titel/Frist aus dem DOM in den zentralen State spiegeln (überlebt Re-Render).
@@ -441,12 +474,11 @@
         <input id="cmp-search" class="cmp-search__input" type="search" autocomplete="off"
                placeholder="${esc(t("composer.searchPh"))}" value="${esc(ui.search)}" aria-label="${esc(t("composer.searchPh"))}">
       </div>
-      ${ui.search.trim() ? "" : `
       <div class="cmp-tabs" role="tablist" aria-label="${esc(t("composer.catalogLabel"))}">
         ${tabs.map((x) => `
-          <button type="button" class="cmp-tab${x.id === tab ? " is-active" : ""}" role="tab" aria-selected="${x.id === tab}"
+          <button type="button" class="cmp-tab${!ui.search && x.id === tab ? " is-active" : ""}" role="tab" aria-selected="${!ui.search && x.id === tab}"
                   data-action="composer-tab" data-tab="${esc(x.id)}">${renderIcon(x.icon)} ${esc(x.label)}</button>`).join("")}
-      </div>`}
+      </div>
       <div id="cmp-catalog" class="cmp-catalog">${catalogHtml()}</div>
       <div id="cmp-footbar" class="cmp-footbar">${footbarHtml()}</div>`;
   }
@@ -588,22 +620,21 @@
       ${ui.guide ? guideHtml() : ""}`;
   }
 
-  // Merken, ob die letzte Interaktion im Suchfeld war (für restoreSearchFocus).
-  function noteSearchFocus() {
-    const a = document.activeElement;
-    _searchHadFocus = !!(a && a.id === "cmp-search");
-  }
-
   window.SC.composer = {
     init(c) { ctx = c; },
     screen,
     open, back, next, goStep, setTab, toggleGroup, onSearch,
-    toggleTarget: (v) => { noteSearchFocus(); toggleTarget(v); },
-    toggleBundle: (id) => { noteSearchFocus(); toggleBundle(id); },
+    toggleTarget, toggleBundle,
     clearAll, restart, captureDraft,
     copyLink, copyCode, shareWhatsApp, shareNative,
     openGuide: () => toggleGuide(true),
     closeGuide: () => toggleGuide(false),
+    // Nur das Anleitung-Overlay schließen (für die Escape-Taste): true = war offen
+    // und wurde geschlossen. Anders als handleBack navigiert das NIE die Schritte.
+    closeGuideIfOpen() {
+      if (ctx.state.screen === "composer" && ui.guide) { ui.guide = false; ctx.render(); return true; }
+      return false;
+    },
     // Systemgeste „Zurück": true = hier behandelt (Schritt/Overlay), false = App-Navigation.
     handleBack() {
       if (ctx.state.screen !== "composer") return false;

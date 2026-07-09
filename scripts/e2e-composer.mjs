@@ -104,7 +104,9 @@ async function main() {
   const errs = [];
 
   try {
-    const ctx = await browser.newContext({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2 });
+    // Clipboard erlauben, damit der „Link kopieren"-Flash (flashButton) zuverlässig
+    // feuert – der Icon-Erhalt-Check unten prüft, dass das Flash das SVG nicht frisst.
+    const ctx = await browser.newContext({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, permissions: ["clipboard-read", "clipboard-write"] });
     const page = await ctx.newPage();
     page.on("pageerror", (e) => errs.push("pageerror: " + e.message));
     page.on("console", (m) => { if (m.type() === "error") errs.push("console: " + m.text()); });
@@ -128,6 +130,17 @@ async function main() {
     check("Katalog-Reiter vorhanden (Vorlagen/Pläne/Sets/Themen)", tabCount === 4, `tabs=${tabCount}`);
     check("„Weiter“ ohne Auswahl gesperrt", await page.$eval(".cmp-nextbtn", (b) => b.disabled));
     await page.screenshot({ path: path.join(SHOTS, "composer-step1.png"), fullPage: true });
+
+    // Dedup-Kartenzahl: „Komplett: Kolumbien" (Plan + Pre-Arrival + Notfall + Geld)
+    // teilt Karten – die Anzeige muss die VEREINIGUNG zeigen (69), nicht die Summe (90).
+    await page.fill("#cmp-search", "Kolumbien");
+    await page.waitForSelector('[data-action="composer-bundle"][data-bundle="komplett-colombia"]');
+    await page.click('[data-action="composer-bundle"][data-bundle="komplett-colombia"]');
+    const dedup = await page.$eval(".cmp-foot__count", (el) => el.textContent);
+    check("Kartenzahl dedupliziert (69 Karten, nicht 90)", /69 Karten/.test(dedup) && !/90/.test(dedup), dedup);
+    await page.click('[data-action="composer-clear"]');
+    await page.fill("#cmp-search", "");
+    check("Tab-Leiste bleibt bei Suche erhalten", (await page.$$eval(".cmp-tab", (t) => t.length)) === 4);
 
     // Vorlage „Restaurant & Essen gehen" antippen → 3 Ziele gewählt.
     await page.click('[data-action="composer-bundle"][data-bundle="restaurant"]');
@@ -171,14 +184,22 @@ async function main() {
       JSON.stringify(decoded));
     await page.screenshot({ path: path.join(SHOTS, "composer-step3.png"), fullPage: true });
 
-    // Anleitung öffnen/schließen.
+    // „Link kopieren": nach dem „Kopiert!"-Flash muss das Inline-Icon zurückkommen
+    // (flashButton sichert innerHTML, nicht textContent – sonst wäre das SVG weg).
+    check("Kopier-Knopf hat vor dem Klick sein Icon", !!(await page.$('[data-action="composer-copy-link"] svg')));
+    await page.click('[data-action="composer-copy-link"]');
+    await page.waitForTimeout(1800); // Flash dauert 1,6 s, dann wird innerHTML restauriert
+    check("Icon bleibt nach dem Kopier-Flash erhalten", !!(await page.$('[data-action="composer-copy-link"] svg')));
+
+    // Anleitung öffnen; mit Escape schließen (Barrierefreiheit, wie andere Overlays).
     await page.click('[data-action="composer-guide"]');
     await page.waitForSelector(".cmp-guide");
     const guideSecs = await page.$$eval(".cmp-guide__sec", (s) => s.length);
     check("Anleitung mit 5 Abschnitten (Lehrkraft/Reiseleitung)", guideSecs === 5, `secs=${guideSecs}`);
     await page.screenshot({ path: path.join(SHOTS, "composer-guide.png"), fullPage: true });
-    await page.click('.cmp-guide .tgt-modal__x');
-    check("Anleitung schließt wieder", !(await page.$(".cmp-guide")));
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(50);
+    check("Anleitung schließt mit Escape", !(await page.$(".cmp-guide")));
 
     // Schritt-Navigation: über die Schritt-Anzeige zurück zu Schritt 1.
     await page.click('[data-action="composer-step"][data-step="1"]');

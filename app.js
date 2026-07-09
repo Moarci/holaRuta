@@ -4092,18 +4092,20 @@
   }
 
   // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
-  // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
+  // Beschriftung & Klasse kurz tauschen und danach zurücksetzen. Gesichert wird das
+  // innerHTML (nicht textContent), damit Knöpfe MIT Inline-Icon (renderIcon-SVG) ihr
+  // Icon nach dem Flash zurückbekommen – textContent hätte das SVG-Kind dauerhaft entfernt.
   function flashButton(action, label) {
     const btn = root.querySelector('[data-action="' + action + '"]');
     if (!btn) return;
     if (btn.dataset.flashing === "1") return; // nicht stapeln
-    const prev = btn.textContent;
+    const prev = btn.innerHTML;
     btn.dataset.flashing = "1";
-    btn.textContent = "✓ " + label;
+    btn.textContent = "✓ " + label; // während des Flash nur Text (Icon kommt beim Restore zurück)
     btn.classList.add("btn-flash");
     setTimeout(function () {
       const b = root.querySelector('[data-action="' + action + '"]');
-      if (b) { b.textContent = prev; b.classList.remove("btn-flash"); delete b.dataset.flashing; }
+      if (b) { b.innerHTML = prev; b.classList.remove("btn-flash"); delete b.dataset.flashing; }
     }, 1600);
   }
 
@@ -7715,11 +7717,10 @@
       state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
-    // Aufgaben-Formular (Modo profe): Titel/Frist merken, damit ein Re-Render
-    // (z. B. nach „Code erzeugen“) sie nicht zurücksetzt. Das Ziel läuft über das
-    // Picker-Modal (data-action="pick-target"), nicht mehr über ein <select>.
-    if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
-    if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
+    // Aufgaben-Studio: Titel/Frist auch bei 'change' sichern. Manche Browser/WebViews
+    // feuern für den nativen Datums-Picker NUR 'change' (kein 'input') – ohne diesen
+    // Zweig ginge eine so gesetzte Frist bei einem Re-Render (z. B. Ziel entfernen) verloren.
+    if (state.screen === "composer" && e.target && (e.target.id === "cmp-title" || e.target.id === "cmp-due")) { composer.captureDraft(); return; }
     // Klassenname (Modo profe): nur merken (für Druck-Kopf/CSV) – KEIN Re-Render,
     // damit der Cursor beim Tippen nicht springt.
     if (e.target && e.target.id === "teacher-classname") { setClassName(e.target.value); return; }
@@ -7733,6 +7734,8 @@
   function onKeydown(e) {
     // Focus-Trap: ist ein modaler Dialog offen, Tab/Shift+Tab darin halten.
     if (trapModalTab(e)) return;
+    // Aufgaben-Studio: Anleitung-Overlay schließt mit Escape (wie jedes andere Overlay).
+    if (state.screen === "composer" && e.key === "Escape" && composer.closeGuideIfOpen()) { e.preventDefault(); return; }
     // Ziel-Picker-Modal (Modo profe / Aktivitätsblatt): Escape schließt.
     if (state.targetPicker && e.key === "Escape") {
       setState({ targetPicker: null });
