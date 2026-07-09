@@ -218,6 +218,83 @@
     startAuto();
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+  // ── Wisch-Leisten (Scroll-Snap) desktop-tauglich machen ───────────────────
+  // Neben dem Karten-Karussell hat die Landing noch horizontale Wisch-Leisten:
+  // die Modul-Chips (#lpMoreChips / .lp-more__chips) und – nur auf der B2C-Seite
+  // – den Beispielsatz-Streifen (.lp-moredetail__strip). Auf dem Handy wischt
+  // man sie; mit der Maus gibt es dafür keine offensichtliche Geste. Darum hier
+  // dieselben Vor/Zurück-Pfeile wie am Karussell: per CSS nur auf Zeiger-Geräten
+  // sichtbar (hover:hover + pointer:fine) und nur, wenn die Leiste überhaupt
+  // überläuft. Am jeweiligen Ende blendet der nicht mehr brauchbare Pfeil aus.
+  function initStrips() {
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var STRIP_LABELS = {
+      de: { prev: "Zurück", next: "Weiter" },
+      en: { prev: "Back", next: "Forward" },
+      es: { prev: "Atrás", next: "Adelante" }
+    };
+    function stripLang() {
+      var l = (document.documentElement.lang || "de").slice(0, 2).toLowerCase();
+      return STRIP_LABELS[l] ? l : "de";
+    }
+    var relabelers = [];
+    function attach(strip) {
+      if (!strip || strip.getAttribute("data-stripnav") === "on") return;
+      strip.setAttribute("data-stripnav", "on");
+      // Leiste in einen relativ positionierten Wrapper hängen, damit die Pfeile
+      // an ihren Kanten schweben können (die Leiste selbst scrollt ja).
+      var wrap = document.createElement("div");
+      wrap.className = "lp-strip-nav";
+      strip.parentNode.insertBefore(wrap, strip);
+      wrap.appendChild(strip);
+      function mk(dir) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lp-strip-nav__arrow lp-strip-nav__arrow--" + dir;
+        btn.innerHTML = '<span aria-hidden="true"></span>';
+        return btn;
+      }
+      var prev = mk("prev"), next = mk("next");
+      function label() {
+        var L = STRIP_LABELS[stripLang()];
+        prev.setAttribute("aria-label", L.prev); prev.title = L.prev;
+        next.setAttribute("aria-label", L.next); next.title = L.next;
+      }
+      label();
+      relabelers.push(label);
+      function step(dir) {
+        var by = Math.max(strip.clientWidth * 0.8, 120);
+        strip.scrollBy({ left: dir === "next" ? by : -by, behavior: reduce ? "auto" : "smooth" });
+      }
+      prev.addEventListener("click", function () { step("prev"); });
+      next.addEventListener("click", function () { step("next"); });
+      function update() {
+        var max = strip.scrollWidth - strip.clientWidth;
+        var x = strip.scrollLeft;
+        wrap.classList.toggle("is-scrollable", max > 4);
+        prev.disabled = x <= 1;
+        next.disabled = x >= max - 1;
+      }
+      strip.addEventListener("scroll", function () { window.requestAnimationFrame(update); }, { passive: true });
+      window.addEventListener("resize", update);
+      // Der Beispielsatz-Streifen wird erst beim Chip-Klick befüllt und ist bis
+      // dahin leer/versteckt – ein ResizeObserver hält die Pfeil-Zustände aktuell.
+      if (window.ResizeObserver) { try { new ResizeObserver(update).observe(strip); } catch (e) {} }
+      wrap.appendChild(prev);
+      wrap.appendChild(next);
+      update();
+    }
+    var targets = document.querySelectorAll(".lp-more__chips, .lp-moredetail__strip");
+    Array.prototype.forEach.call(targets, attach);
+    if (relabelers.length && window.MutationObserver) {
+      new MutationObserver(function () {
+        for (var i = 0; i < relabelers.length; i++) relabelers[i]();
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    }
+  }
+
+  function boot() { init(); initStrips(); }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 })();

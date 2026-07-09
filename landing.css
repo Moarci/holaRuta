@@ -506,6 +506,44 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
   .lp-carousel__arrow:hover, .lp-carousel__arrow:active { transform: translateY(-50%); }
 }
 
+/* Vor/Zurück-Pfeile für die horizontalen Wisch-Leisten (Modul-Chips + Beispiel-
+   satz-Streifen). Gleiche Optik wie die Karussell-Pfeile, nur an den Kanten der
+   scrollbaren Leiste (nicht einer Einzelkarte). Per JS wird die Leiste in
+   .lp-strip-nav gehüllt; .is-scrollable setzt das JS nur, wenn sie überläuft. */
+.lp-strip-nav { position: relative; }
+.lp-strip-nav__arrow {
+  display: none; position: absolute; top: 50%; z-index: 4;
+  width: 38px; height: 38px; transform: translateY(-50%);
+  align-items: center; justify-content: center; padding: 0;
+  border-radius: 999px; border: 1.5px solid var(--line);
+  background: var(--card); color: var(--ink); cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: opacity .16s ease, transform .16s ease, border-color .16s ease, background .16s ease;
+}
+.lp-strip-nav__arrow--prev { left: 4px; }
+.lp-strip-nav__arrow--next { right: 4px; }
+.lp-strip-nav__arrow > span {
+  display: block; width: 8px; height: 8px;
+  border-top: 2.5px solid currentColor; border-right: 2.5px solid currentColor;
+}
+.lp-strip-nav__arrow--prev > span { transform: rotate(-135deg); margin-left: 3px; }
+.lp-strip-nav__arrow--next > span { transform: rotate(45deg); margin-right: 3px; }
+.lp-strip-nav__arrow:hover {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 8%, var(--card));
+}
+.lp-strip-nav__arrow:active { transform: translateY(-50%) scale(0.96); }
+.lp-strip-nav__arrow:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* Am Anfang/Ende der Leiste den überflüssigen Pfeil ausblenden (bleibt im Layout). */
+.lp-strip-nav__arrow:disabled { opacity: 0; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) {
+  .lp-strip-nav.is-scrollable .lp-strip-nav__arrow { display: inline-flex; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-strip-nav__arrow { transition: opacity .16s ease; }
+  .lp-strip-nav__arrow:active { transform: translateY(-50%); }
+}
+
 /* ─────────────────────────── Features ─────────────────────────── */
 .lp-features__grid {
   display: grid; grid-template-columns: 1fr; gap: var(--space-3);
