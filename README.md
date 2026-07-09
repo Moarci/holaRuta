@@ -588,11 +588,14 @@ node --check *.js   # Syntax-Check aller Module
 node build.js       # Build muss fehlerfrei durchlaufen
 ```
 
-**Optionaler E2E-Check (Browser).** Der „Modo profe“ (Lehrer-Modus) wird mit Playwright in echtem Chromium gegen die laufende App geprüft — Edition laden, Schüler-Backups importieren, Niveau-Verteilung, Sortierung, CSV-Export (inkl. Akzent-Namen), Re-Import-Dedupe und das A4-Druck-Layout. Playwright ist **keine** Repo-Dependency; fehlt es, überspringt der Check sauber (Exit 0), sodass `npm test` dependency-frei bleibt. Der Webserver darin nutzt nur Node-Bordmittel.
+**Optionaler E2E-Check (Browser).** Die Blackbox-E2E-Suiten unter `scripts/e2e/suites/` treiben die echte App mit Playwright in echtem Chromium — Kern-Lernpfad (Flip/Type/Listen), Boot/CSP/Offline, „Modo profe“ (Import, Sortierung, CSV, A4-Druck) und Karten-Index-Caches. Der Aggregator `scripts/e2e/run.mjs` filtert nach Tier (P0–P3) und schreibt einen JSON-Report. Playwright ist **keine** Repo-Dependency; fehlt es, überspringt der Check sauber (Exit 0), sodass `npm test` dependency-frei bleibt. Der Webserver darin nutzt nur Node-Bordmittel.
 
 ```bash
 npm i -D playwright && npx playwright install chromium   # einmalig
-npm run e2e                                               # node scripts/e2e-modo-profe.mjs
+npm run e2e                                               # Smoke (Tier P0)
+npm run e2e:smoke                                         # = Tier P0
+npm run e2e:full                                          # Tier P0+P1+P2
+npm run e2e:profe                                         # nur Modo profe
 ```
 
 Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-end gegengeprüft: Home, Flip, Rating, Type-Matcher, Persistenz nach Reload, Editor, XSS-Probe, Statistik — **0 Konsolen-Errors**. Details in [AUDIT.md](AUDIT.md).
