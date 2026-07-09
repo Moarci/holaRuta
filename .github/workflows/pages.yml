@@ -146,6 +146,9 @@ jobs:
       - name: Modo-profe E2E
         run: npm run e2e
 
+      - name: Aufgaben-Studio E2E (Aufgaben & Pakete erstellen)
+        run: npm run e2e:composer
+
       - name: Install esbuild (gepinnt, dev-only — für dist/-Verifikation)
         run: npm install --no-save esbuild@0.28.1
 
