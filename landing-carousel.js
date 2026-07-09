@@ -146,6 +146,45 @@
       b.addEventListener("click", function () { navigate(n); });
     });
 
+    // Vor/Zurück-Pfeile für die DESKTOP-Version: der Wisch (Touch) ist auf dem
+    // Desktop nur eine unauffällige Maus-Drag-Geste; ein sichtbarer Button macht
+    // das Weiterblättern offensichtlich. CSS blendet die Pfeile nur auf Zeiger-
+    // Geräten (hover:hover + pointer:fine) ein – auf dem Handy bleibt der Wisch.
+    // Ein Pfeil-Klick verhält sich exakt wie Punkt/Pill/Wisch (navigate()).
+    var ARROW_LABELS = {
+      de: { prev: "Vorherige Karte", next: "Nächste Karte" },
+      en: { prev: "Previous card", next: "Next card" },
+      es: { prev: "Tarjeta anterior", next: "Tarjeta siguiente" }
+    };
+    function arrowLang() {
+      var l = (document.documentElement.lang || "de").slice(0, 2).toLowerCase();
+      return ARROW_LABELS[l] ? l : "de";
+    }
+    function makeArrow(dir) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "lp-carousel__arrow lp-carousel__arrow--" + dir;
+      btn.innerHTML = '<span aria-hidden="true"></span>';
+      btn.addEventListener("click", function () {
+        navigate(idx + (dir === "next" ? 1 : -1));
+      });
+      return btn;
+    }
+    var prevArrow = makeArrow("prev"), nextArrow = makeArrow("next");
+    function labelArrows() {
+      var L = ARROW_LABELS[arrowLang()];
+      prevArrow.setAttribute("aria-label", L.prev); prevArrow.title = L.prev;
+      nextArrow.setAttribute("aria-label", L.next); nextArrow.title = L.next;
+    }
+    labelArrows();
+    car.appendChild(prevArrow);
+    car.appendChild(nextArrow);
+    // Der Sprachumschalter der Seite setzt <html lang> – daran die Pfeil-Labels
+    // nachziehen, damit der Screenreader nicht in der falschen Sprache vorliest.
+    if (window.MutationObserver) {
+      new MutationObserver(labelArrows).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    }
+
     // Auto-Rotation pausieren bei Hover/Fokus – auf Karussell UND Navi-Zeile,
     // damit auch das Lesen/Ansteuern der Pills/Punkte nichts wegdreht.
     [car, navRow].forEach(function (zone) {
@@ -161,7 +200,7 @@
     // `swiped` -> der nachfolgende Klick dreht die Karte NICHT um.
     var dragX = null, dragY = null;
     car.addEventListener("pointerdown", function (e) {
-      if (e.target.closest(".cardbtn")) return; // auf Buttons keinen Wisch starten
+      if (e.target.closest(".cardbtn, .lp-carousel__arrow")) return; // auf Buttons keinen Wisch starten
       dragX = e.clientX; dragY = e.clientY; swiped = false;
     });
     window.addEventListener("pointerup", function (e) {

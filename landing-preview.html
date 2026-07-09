@@ -211,6 +211,12 @@ html, body, .appshell, .appbar { transition: background-color 0.3s ease, color 0
  * Kasten um den Titel aus. */
 .pagehead__title:focus, .pagehead__title:focus-visible { outline: none; }
 
+/* Gleiches Muster für den Screen-Container selbst: Screens ohne h2/Zurück-Knopf
+ * (z. B. Onboarding) bekommen als Fallback programmatisch den Fokus auf die
+ * <section class="screen"> – auch sie ist nicht interaktiv, ein Marken-Rahmen
+ * um den kompletten Inhalt sähe wie ein Darstellungsfehler aus. */
+.screen:focus, .screen:focus-visible { outline: none; }
+
 /* KEIN html,body{height:100%} setzen: Damit malte der Body seinen Hintergrund
  * nur eine Viewport-Höhe hoch – auf jeder langen Seite ohne eigene Flächen
  * (z. B. den Landing-Pages) schien darunter der dunkle --page-Canvas durch.
@@ -895,20 +901,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* ---------- STUDY ---------- */
 .study { gap: 14px; }
-/* Desktop: zwei Spalten (Karte + Smartphone-Mockup) */
-@media (min-width: 900px) {
-  .study { display: grid !important; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-  .study > .topbar { grid-column: 1 / -1; }
-  .study > .progress { grid-column: 1 / -1; }
-  .study > .flip { grid-column: 1; }
-  .study > .card-static { grid-column: 1; }
-  .study > .card-listen { grid-column: 1; }
-  .study > .controls { grid-column: 1; }
-  .study > .favline { grid-column: 1; }
-  .study > .skipbtn { grid-column: 1; }
-  .study > .sharepic-btn { grid-column: 1; }
-  .study > .typer { grid-column: 1; }
-}
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .iconbtn {
   width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
@@ -1173,66 +1165,6 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 /* 🧭 aktiv (Panel offen) */
 .cardbtn--ctx.is-open { background: var(--brand); border-color: var(--brand); color: var(--cream); }
 .cardbtn--ctx.is-on.is-open { background: rgba(36, 21, 16, 0.42); border-color: var(--cream); }
-
-/* Smartphone-Mockup für Desktop-Ansicht (rechte Spalte bei min-width: 900px).
-   Zeigt die aktuelle Lernkarte auf einem simulierten Smartphone-Screen. */
-.smartphone-mock {
-  display: none; /* nur auf Desktop sichtbar */
-}
-@media (min-width: 900px) {
-  .study > .smartphone-mock {
-    grid-column: 2; grid-row: 3 / -1; position: sticky; top: 20px;
-  }
-  .smartphone-mock {
-    display: block;
-    width: 320px; margin: 0 auto;
-    background: #000; border-radius: 40px; padding: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255,255,255,0.1);
-    position: relative;
-  }
-  .smartphone-mock::before {
-    content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    width: 150px; height: 25px; background: #000; border-radius: 0 0 20px 20px;
-    z-index: 10;
-  }
-  .smartphone-mock__screen {
-    width: 100%; height: 640px; border-radius: 32px; overflow: hidden;
-    background: var(--page); border: 1px solid rgba(0,0,0,0.2);
-    display: flex; flex-direction: column;
-  }
-  .smartphone-mock__statusbar {
-    height: 24px; padding: 0 12px; background: var(--card);
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 0.7rem; color: var(--muted);
-  }
-  .smartphone-mock__content {
-    flex: 1; overflow-y: auto; padding: 12px; display: flex; align-items: center;
-    justify-content: center;
-  }
-  .smartphone-mock__card {
-    width: 100%; max-width: 280px;
-    border-radius: 16px; padding: 30px 20px;
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; text-align: center;
-    background: var(--card); border: 1.5px solid var(--line);
-    box-shadow: var(--shadow-lg);
-    min-height: 300px;
-  }
-  .smartphone-mock__card.is-back {
-    background: var(--from, var(--brand));
-    color: var(--cream); border: none;
-  }
-  .smartphone-mock__card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em;
-    color: var(--faint); margin-bottom: 12px; text-transform: uppercase; }
-  .smartphone-mock__card.is-back .smartphone-mock__card-label {
-    color: rgba(251, 243, 228, 0.6);
-  }
-  .smartphone-mock__card-text { font-size: 1.3rem; font-weight: 800; line-height: 1.3;
-    overflow-wrap: anywhere; hyphens: auto; }
-  .smartphone-mock__card.is-back .smartphone-mock__card-text { font-family: var(--font-display); font-size: 1.5rem; }
-  .smartphone-mock__hint { font-size: 0.7rem; color: var(--faint); margin-top: 16px; }
-  .smartphone-mock__card.is-back .smartphone-mock__hint { color: rgba(251, 243, 228, 0.5); }
-}
 
 /* Statische Karte (Schreiben-Modus) */
 .card-static {
@@ -3909,6 +3841,19 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .vrp-done__score { font-size: 1.2rem; margin: 0 0 8px; }
 .vrp-perfect { color: var(--ok, #2F6B45); font-weight: 700; margin: 0 0 14px; }
 
+/* El carrito & ¡A jugar en inglés! (Kinder-Module, loc-nino) */
+.carrito-safe {
+  background: var(--card-2, rgba(0,0,0,0.04));
+  border-left: 4px solid var(--brand, #C2502E);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0 4px;
+}
+.rg-phrase__tip { color: var(--ink-soft); font-style: italic; }
+.jugar-say__lead { color: var(--ink-soft); font-size: 0.9rem; margin: 12px 0 2px; text-align: center; }
+.jugar-say { font-size: 1.4rem; font-weight: 800; color: var(--brand-ink); text-align: center; margin: 0 0 6px; line-height: 1.3; }
+.jugar-tip { color: var(--ink-soft); font-style: italic; text-align: center; margin: 0 0 10px; }
+
 /* Aufklappbarer Hintergrund zur Musterantwort (natives <details>). */
 .dlg-why { margin: -2px 0 8px; background: color-mix(in srgb, var(--brand) 8%, var(--surface));
   border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px); padding: 0 12px; }
@@ -4504,6 +4449,162 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
  * den Fokus; der ist nicht interaktiv, darum keinen sichtbaren Rahmen zeigen. */
 #app:focus { outline: none; }
 
+/* ===================== DESKTOP (≥ 900px) =====================
+ * Die App ist mobil-first als 460px-Spalte gebaut. Auf großen Bildschirmen soll
+ * sie aber nicht wie ein schmales Handy in der Mitte kleben, sondern ein echtes
+ * Desktop-Layout bekommen – bei erhaltener Design-Signatur (creme Spalte auf
+ * dunkelbraunem Rahmen). Prinzip:
+ *   1. Die App-Spalte wird breit (960px), Innenabstände wachsen mit.
+ *   2. JEDER Screen bleibt standardmäßig eine zentrierte, lesbare Spalte
+ *      (640px) – Formulare, Spiele, Lernkarte, Infoseiten strecken sich also
+ *      nicht auf volle Breite (Lesbarkeit/Klickwege).
+ *   3. Raster-Screens (Lernen-Kacheln, Entdecken-Features) nutzen per :has()
+ *      die volle Breite mit 4-spaltigen Rastern. Ohne :has()-Support fällt
+ *      alles sanft auf die zentrierte 640px-Spalte zurück – nie kaputt.
+ *   4. Die Reiter-Leiste wird vom mobilen Bottom-Tab-Balken zu einem
+ *      schwebenden Dock mit nebeneinanderliegendem Icon + Text.
+ *   5. Onboarding wird zur zentrierten Willkommens-Karte mit größerer Typo.
+ * Nur für Bildschirme ("screen and"): Im Querformat-Druck ist die Seitenbox
+ * ebenfalls ≥900px (A4 quer ≈ 1123px) – ohne Medientyp würden diese Regeln
+ * die Druckblätter (Modo Profe, Klassentabelle) auf 640px quetschen. */
+@media screen and (min-width: 900px) {
+  :root { --maxw: 960px; }
+
+  /* Rahmen: mehr Luft in Bar und Inhalt, etwas größere Wortmarke. */
+  .appbar { padding: calc(18px + env(safe-area-inset-top)) 44px 6px; gap: 12px; }
+  .appbar__logo { width: 42px; height: 42px; }
+  .appbar__name { font-size: 1.3rem; }
+  #app { padding: 10px 44px calc(40px + env(safe-area-inset-bottom)); }
+
+  /* Standard: jeder Screen als zentrierte Lese-Spalte. width:100% hält die
+   * Flex-Kinder (Karten, Formulare) trotz max-width auf voller Spaltenbreite. */
+  .screen { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; }
+
+  /* Raster-Screens (Lernen: .tiles / Entdecken: .featgroup) nutzen die volle
+   * Spalte. Der Start-, Profil- und Aufgaben-Reiter bleiben bewusst 640px –
+   * ein einzelner "Heute"-Feed über 880px wirkt zerdehnt statt aufgeräumt. */
+  .screen--tabbed:has(.tiles),
+  .screen--tabbed:has(.featgroup) { max-width: none; }
+
+  /* Start-Reiter als 2-spaltiges Cockpit: „Heute"-Karte samt Haupt-CTA links,
+   * Lernpfad/Reise/Léxico/Fortschritt rechts daneben statt endlos darunter.
+   * Multi-Column statt Grid, weil Zahl und Höhe der Gruppen je nach Zustand
+   * (Trip gesetzt? Presets? Favoriten?) stark variieren – die Spalten
+   * balancieren sich selbst. Jede Gruppe bleibt am Stück (break-inside);
+   * Kopfzeile, Suche und Widmung spannen über beide Spalten. */
+  .screen--tabbed:has(> .today) {
+    display: block;
+    max-width: none;
+    column-count: 2;
+    column-gap: 24px;
+  }
+  .screen--tabbed:has(> .today) > * { break-inside: avoid; margin: 0 0 18px; }
+  .screen--tabbed:has(> .today) > .pagehead,
+  .screen--tabbed:has(> .today) > .searchbar,
+  .screen--tabbed:has(> .today) > .dedication { column-span: all; }
+  .screen--tabbed:has(> .today) > .dedication { margin-bottom: 0; }
+
+  /* 4-spaltige Raster: bei 880px Inhaltsbreite entspricht jede Kachel fast
+   * exakt der mobilen 2-Spalten-Kachel (~200px) – gleiche Proportionen. */
+  .tiles { grid-template-columns: repeat(4, 1fr); }
+  .featgroup { grid-template-columns: repeat(4, 1fr); }
+
+  /* Klebrige Sprungmarken-Leiste blutet bis an den neuen, breiteren Rand. */
+  .dashnav { margin: 0 -44px; padding: 8px 44px; }
+
+  /* Stufen-/Wortart-Filter: die Chip-Reihen stehen im breiten Lernen-Reiter
+   * sonst als lange Einzelzeile – begrenzen bringt hier nichts, sie brechen
+   * ohnehin um; nur der Abstand zum Raster darf etwas wachsen. */
+  .topicgrp { scroll-margin-top: 72px; }
+
+  /* Reiter-Leiste als schwebendes Dock: Icon + Text nebeneinander, Pillenform,
+   * mittig über dem unteren Rand statt kantenbündiger Handy-Balken. */
+  .tabbar {
+    width: auto; max-width: none;
+    /* Safe-Area behalten: auf Tablets ≥900px (installierte PWA) liegt unten der
+     * Home-Indicator – ohne den Zuschlag ragte das Dock in dessen Gestenzone. */
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 6px;
+    gap: 4px;
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.26);
+  }
+  .tab {
+    flex-direction: row; gap: 9px;
+    min-height: 48px; padding: 8px 22px;
+    border-radius: 999px;
+  }
+  .tab__icon { font-size: 1.15rem; }
+  .tab__label { font-size: 0.88rem; }
+  .screen--tabbed { padding-bottom: 110px; } /* Platz fürs schwebende Dock */
+  .updbar { bottom: 104px; max-width: 560px; }
+
+  /* Onboarding: zentrierte Willkommens-Karte statt nacktem Formular oben links.
+   * Größere Typo (der Bildschirm ist weit weg), Panel im Karten-Look. */
+  .onboarding { min-height: min(74vh, 900px); }
+  .onboarding__inner {
+    max-width: 34rem;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 40px 44px 36px;
+    gap: 14px;
+  }
+  .onboarding__title { font-size: 1.9rem; }
+  .onboarding__intro { font-size: 1.02rem; line-height: 1.55; }
+  .onboarding--intro .onboarding__inner { gap: 20px; }
+  .onboarding__icon { font-size: 3.6rem; }
+  .onboarding__slide { min-height: 12rem; }
+
+  /* Lernkarte: mehr Fläche und größere Wörter – die Karte ist das Zentrum. */
+  .flip__inner { min-height: 340px; }
+  .face { padding: 56px 40px 34px; }
+  .face__word { font-size: 2.1rem; }
+  .face--back .face__word { font-size: 2.3rem; }
+  .card-static { min-height: 260px; }
+
+  .pagehead__title { font-size: 1.5rem; }
+
+  /* Modale (Changelog/Update, Tagesziel) und der Badge-Toast sind über
+   * calc(var(--maxw) - 24px) dimensioniert – mit der auf 960px verbreiterten
+   * Spalte würden sie sonst zu ~936px breiten Bannern; als Dialog kompakt halten. */
+  .upd, .tgt-modal, .btoast { max-width: 560px; }
+}
+
+/* Desktop-Feinschliff: Hover-Reaktionen nur für echte Zeiger (Maus/Trackpad).
+ * Auf Touch würde :hover nach dem Tap "kleben" (siehe .pl-option oben). Alle
+ * Kern-Interaktionen bekommen eine sichtbare Hover-Antwort – bisher reagierte
+ * fast alles nur auf :active (Tap), am Desktop wirkte die App dadurch tot. */
+@media (hover: hover) and (pointer: fine) {
+  .tile:hover, .feat:hover { transform: translateY(-2px); }
+  .feat:hover { filter: saturate(1.08) brightness(1.04); }
+  .cta:hover { filter: brightness(1.06); }
+  .ghostbtn:hover, .iconbtn:hover, .seg:not(.is-active):hover {
+    background: color-mix(in srgb, var(--ink) 6%, var(--card));
+  }
+  /* Rahmen-Aufhellung nur auf Elementen, die auch einen Rahmen HABEN – bei der
+   * Lernpfad-Karte sitzt er auf dem Wrapper .lpath-card, nicht auf dem Button. */
+  .today__ruta:hover, .today__resume:hover, .searchbar:hover, .search-row:hover,
+  .navrow:hover, .trip--empty:hover, .lpath-card:hover {
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+  }
+  .lvl:hover, .dashnav__chip:hover {
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+    color: var(--ink);
+  }
+  /* Format-Chips sind rahmenlos – wie .seg über eine Flächen-Tönung reagieren. */
+  .fmtchip:not(.is-active):hover {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    color: var(--ink);
+  }
+  .tab:hover { background: color-mix(in srgb, var(--brand) 8%, transparent); color: var(--ink); }
+  .tab.is-active:hover { color: var(--brand-ink); }
+  .skipbtn:hover, .favline:hover, .searchfield__clear:hover { color: var(--ink); }
+  .onboarding__dot:hover::before { opacity: 0.55; }
+}
+
 /* Globaler Bewegungs-Sicherheitsblock (Systemwunsch "reduzierte Bewegung").
  * Steht bewusst am Dateiende, damit er als letzter, alles abdeckender Fallback
  * sämtliche Animationen/Übergänge entschärft – ergänzt die gezielten Overrides
@@ -4989,6 +5090,42 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
 }
 .lp-dot.is-active::before { width: 22px; background: var(--brand); }
 
+/* Vor/Zurück-Pfeile (nur Desktop). Per JS ins Karussell injiziert; auf Touch-
+   Geräten bleibt der Wisch, deshalb erscheinen sie NUR auf Zeiger-Geräten
+   (Maus/Trackpad). Sie sitzen mittig an den Kartenkanten. */
+.lp-carousel__arrow {
+  display: none; position: absolute; top: 148px; z-index: 3;
+  width: 40px; height: 40px; transform: translateY(-50%);
+  align-items: center; justify-content: center; padding: 0;
+  border-radius: 999px; border: 1.5px solid var(--line);
+  background: var(--card); color: var(--ink); cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+.lp-carousel__arrow--prev { left: -18px; }
+.lp-carousel__arrow--next { right: -18px; }
+/* Chevron aus zwei Kanten – wie der Chevron der Modul-Chips. */
+.lp-carousel__arrow > span {
+  display: block; width: 9px; height: 9px;
+  border-top: 2.5px solid currentColor; border-right: 2.5px solid currentColor;
+}
+.lp-carousel__arrow--prev > span { transform: rotate(-135deg); margin-left: 3px; }
+.lp-carousel__arrow--next > span { transform: rotate(45deg); margin-right: 3px; }
+.lp-carousel__arrow:hover {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 8%, var(--card));
+  transform: translateY(-50%) scale(1.08);
+}
+.lp-carousel__arrow:active { transform: translateY(-50%) scale(0.96); }
+.lp-carousel__arrow:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .lp-carousel__arrow { display: inline-flex; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-carousel__arrow { transition: none; }
+  .lp-carousel__arrow:hover, .lp-carousel__arrow:active { transform: translateY(-50%); }
+}
+
 /* ─────────────────────────── Features ─────────────────────────── */
 .lp-features__grid {
   display: grid; grid-template-columns: 1fr; gap: var(--space-3);
@@ -5115,7 +5252,57 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
   color: var(--ink); margin: 0 0 8px; text-wrap: balance;
 }
 .lp-hook__text { font-size: 1rem; line-height: 1.55; color: var(--muted); margin: 0; }
-@media (prefers-reduced-motion: reduce) { .lp-hook, .lp-hook__ico { transition: none; } }
+
+/* „Kostprobe": jeder Hook lässt sich aufklappen und zeigt einen echten Reise-
+   Satz auf Spanisch + Mini-Kontext. Macht die Behauptung der Kachel greifbar –
+   du liest sofort, was das Modul kann, statt es nur versprochen zu bekommen.
+   Der Satz erbt die Akzentfarbe der Kachel (--accent inline). */
+.lp-hook__peek {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 12px;
+  appearance: none; -webkit-appearance: none; font: inherit; cursor: pointer;
+  background: transparent; border: 0; padding: 4px 2px;
+  font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent, var(--brand)) 74%, var(--ink));
+  transition: color 0.16s ease, gap 0.16s ease;
+}
+.lp-hook__peek:hover { gap: 10px; color: color-mix(in srgb, var(--accent, var(--brand)) 92%, var(--ink)); }
+.lp-hook__peek-chev {
+  width: 7px; height: 7px; flex: none;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+  transition: transform 0.22s ease;
+}
+.lp-hook__peek[aria-expanded="true"] .lp-hook__peek-chev { transform: translateY(1px) rotate(-135deg); }
+.lp-hook__sample {
+  margin-top: 10px; padding: 13px 15px; border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--accent, var(--brand)) 9%, var(--card));
+  border: 1.5px solid color-mix(in srgb, var(--accent, var(--brand)) 26%, var(--line));
+  border-left: 3px solid var(--accent, var(--brand));
+  animation: lp-more-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lp-hook__es {
+  display: flex; align-items: baseline; gap: 9px; margin: 0 0 5px;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 1.08rem; line-height: 1.3; color: var(--ink);
+}
+.lp-hook__es-txt { min-width: 0; }
+.lp-hook__say {
+  flex: none; appearance: none; -webkit-appearance: none; cursor: pointer;
+  width: 30px; height: 30px; border-radius: 9px; font-size: 0.95rem; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--accent, var(--brand)) 16%, var(--card));
+  border: 1.5px solid color-mix(in srgb, var(--accent, var(--brand)) 34%, transparent);
+  align-self: center; transition: transform 0.14s ease, background 0.14s ease;
+}
+.lp-hook__say:hover { transform: scale(1.08); background: color-mix(in srgb, var(--accent, var(--brand)) 26%, var(--card)); }
+.lp-hook__say:active { transform: scale(0.94); }
+.lp-hook__say.is-speaking { animation: lp-pulse 1.1s ease-out infinite; }
+.lp-hook__gloss { margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--muted); font-style: italic; }
+@media (prefers-reduced-motion: reduce) {
+  .lp-hook, .lp-hook__ico, .lp-hook__peek, .lp-hook__peek-chev, .lp-hook__say { transition: none; }
+  .lp-hook__sample { animation: none; }
+  .lp-hook__say.is-speaking { animation: none; }
+}
 @media (hover: none) { .lp-hook:hover { transform: none; } }
 
 /* Modul-Breiten-Strip („und vieles mehr") – macht die Tiefe der App greifbar,
@@ -5472,15 +5659,70 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
  * dunklen Footer: hell → warm → dunkel ergibt einen ruhigen Rhythmus und einen
  * letzten klaren Conversion-Push. */
 .lp-final {
+  position: relative; overflow: hidden;
   background: linear-gradient(135deg, var(--brand), var(--warn));
   color: var(--cream); text-align: center;
 }
+.lp-final .lp-wrap { position: relative; z-index: 1; }
+/* Weiche, langsam driftende Lichter über dem Terrakotta-Grund – der Abschluss
+   „lebt" leicht, ohne vom CTA abzulenken (reduced-motion friert das ein). */
+.lp-final__aura {
+  position: absolute; inset: -20% -10%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(38% 45% at 18% 20%, rgba(255, 240, 214, 0.28), transparent 70%),
+    radial-gradient(34% 40% at 84% 30%, rgba(255, 214, 170, 0.22), transparent 70%),
+    radial-gradient(46% 50% at 65% 92%, rgba(180, 60, 40, 0.30), transparent 72%);
+  animation: lp-final-drift 26s ease-in-out infinite alternate;
+}
+@keyframes lp-final-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(2.5%, -2.5%, 0) scale(1.12); }
+}
+.lp-final__eyebrow {
+  font-size: var(--fs-eyebrow); font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: rgba(251, 243, 228, 0.82);
+  margin: 0 0 var(--space-2);
+}
 .lp-final .lp-h2 { color: var(--cream); margin-inline: auto; max-width: 24ch; }
-.lp-final__sub { font-size: var(--fs-lead); color: rgba(251, 243, 228, 0.92); margin: 0 auto var(--space-5); max-width: 46ch; }
+/* Rotierender „Bereit für …" – wechselt echte Reise-Momente durch. */
+.lp-final__ticker {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.1rem, 2.4vw, 1.55rem); line-height: 1.25;
+  color: var(--cream); margin: 0 auto var(--space-3);
+  display: inline-flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0.4em;
+}
+.lp-final__ticker-lead { color: rgba(251, 243, 228, 0.72); }
+.lp-final__ticker-rot {
+  display: inline-block; min-height: 1.3em;
+  padding: 0 0 3px; border-bottom: 2px solid rgba(251, 243, 228, 0.45);
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+.lp-final__ticker-rot.is-swapping { opacity: 0; transform: translateY(6px); }
+.lp-final__sub { font-size: var(--fs-lead); color: rgba(251, 243, 228, 0.92); margin: 0 auto var(--space-4); max-width: 46ch; }
+/* Zahlen-Cluster: zählt beim Einscrollen hoch (data-count). Vier ruhige Belege
+   direkt über dem CTA statt einer nackten Fläche. */
+.lp-final__stats {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(18px, 5vw, 44px); margin: 0 auto var(--space-5); max-width: 40rem;
+}
+.lp-final__stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.lp-final__num {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(1.7rem, 4.5vw, 2.6rem); line-height: 1; color: var(--cream);
+  letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+}
+.lp-final__lbl {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(251, 243, 228, 0.78);
+}
 .lp-cta--onbrand {
   /* Weiße Fläche bleibt in beiden Themes -> feste dunkle Tinte (#A23E20 = 6.47:1
      auf Weiß, wie das App-Update-Banner). */
   background: #fff; color: #A23E20; border-color: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-final__aura { animation: none; }
+  .lp-final__ticker-rot { transition: none; }
 }
 
 /* ─────────────────────────── Footer ─────────────────────────── */
@@ -6279,52 +6521,118 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         <h2 class="lp-h2" data-reveal data-i18n="why.title">Du lernst nicht nur Spanisch. Du verstehst den Kontinent.</h2>
         <p class="lp-lead" data-reveal data-i18n="why.lead">Sprache ist nur der Anfang. HolaRuta gibt dir Geschichte, Kultur, Gespür und Anschluss — alles, was aus einer Reise deine Reise macht.</p>
         <div class="lp-hooks">
-          <article class="lp-hook" data-reveal style="--i:0; --accent:#E9A23B">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#E9A23B" data-hook="historia">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-scroll"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.historia.k">Historia</span>
               <h3 class="lp-hook__title" data-i18n="why.historia.t">Steh vor Machu Picchu — und versteh, was du siehst.</h3>
               <p class="lp-hook__text" data-i18n="why.historia.b">Inka, Kolonialzeit, Unabhängigkeit: die Geschichte des Kontinents in Häppchen, die hängenbleiben. Du läufst nicht an Ruinen vorbei — du liest sie.</p>
+              <button class="lp-hook__peek" type="button" aria-expanded="false">
+                <span class="lp-hook__peek-txt" data-i18n="why.taste">Kostprobe</span>
+                <span class="lp-hook__peek-chev" aria-hidden="true"></span>
+              </button>
+              <div class="lp-hook__sample" hidden>
+                <p class="lp-hook__es">
+                  <button class="lp-hook__say" type="button" data-i18n-aria="why.say" aria-label="Satz vorlesen">🔊</button>
+                  <span class="lp-hook__es-txt" data-i18n="why.historia.es">Los incas levantaron esto sin rueda ni hierro.</span>
+                </p>
+                <p class="lp-hook__gloss" data-i18n="why.historia.m">Ein Fakt, der jede Ruine zum Sprechen bringt.</p>
+              </div>
             </div>
           </article>
-          <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355">
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#3F7355" data-hook="culturas">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-globe"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.culturas.k">Países &amp; culturas</span>
               <h3 class="lp-hook__title" data-i18n="why.culturas.t">Jedes Land tickt anders. Wisse vorher, wie.</h3>
               <p class="lp-hook__text" data-i18n="why.culturas.b">Von Kolumbien bis Patagonien: Sitten, Geld, Eigenheiten und Tabus pro Land. Damit du dich überall bewegst, als wärst du schon mal da gewesen.</p>
+              <button class="lp-hook__peek" type="button" aria-expanded="false">
+                <span class="lp-hook__peek-txt" data-i18n="why.taste">Kostprobe</span>
+                <span class="lp-hook__peek-chev" aria-hidden="true"></span>
+              </button>
+              <div class="lp-hook__sample" hidden>
+                <p class="lp-hook__es">
+                  <button class="lp-hook__say" type="button" data-i18n-aria="why.say" aria-label="Satz vorlesen">🔊</button>
+                  <span class="lp-hook__es-txt" data-i18n="why.culturas.es">En Chile, «al tiro» quiere decir ahora mismo.</span>
+                </p>
+                <p class="lp-hook__gloss" data-i18n="why.culturas.m">Ein Wort — und du klingst wie von hier.</p>
+              </div>
             </div>
           </article>
-          <article class="lp-hook" data-reveal style="--i:0; --accent:#7D4A8E">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#7D4A8E" data-hook="respeto">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-heart"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.respeto.k">Buen viajero</span>
               <h3 class="lp-hook__title" data-i18n="why.respeto.t">Respekt öffnet Türen, die kein Reiseführer kennt.</h3>
               <p class="lp-hook__text" data-i18n="why.respeto.b">Wie du grüßt, dich bedankst, feilschst und dich benimmst — die kleinen Gesten entscheiden, ob du Gast bist oder bloß Tourist. Reise, ohne anzuecken.</p>
+              <button class="lp-hook__peek" type="button" aria-expanded="false">
+                <span class="lp-hook__peek-txt" data-i18n="why.taste">Kostprobe</span>
+                <span class="lp-hook__peek-chev" aria-hidden="true"></span>
+              </button>
+              <div class="lp-hook__sample" hidden>
+                <p class="lp-hook__es">
+                  <button class="lp-hook__say" type="button" data-i18n-aria="why.say" aria-label="Satz vorlesen">🔊</button>
+                  <span class="lp-hook__es-txt" data-i18n="why.respeto.es">¿Me regala la cuenta, porfa?</span>
+                </p>
+                <p class="lp-hook__gloss" data-i18n="why.respeto.m">So bittest du höflich — und wirst zum gern gesehenen Gast.</p>
+              </div>
             </div>
           </article>
-          <article class="lp-hook" data-reveal style="--i:1; --accent:#B5302A">
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#B5302A" data-hook="salud">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-stethoscope"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.salud.k">Salud</span>
               <h3 class="lp-hook__title" data-i18n="why.salud.t">Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.</h3>
               <p class="lp-hook__text" data-i18n="why.salud.b">Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.</p>
+              <button class="lp-hook__peek" type="button" aria-expanded="false">
+                <span class="lp-hook__peek-txt" data-i18n="why.taste">Kostprobe</span>
+                <span class="lp-hook__peek-chev" aria-hidden="true"></span>
+              </button>
+              <div class="lp-hook__sample" hidden>
+                <p class="lp-hook__es">
+                  <button class="lp-hook__say" type="button" data-i18n-aria="why.say" aria-label="Satz vorlesen">🔊</button>
+                  <span class="lp-hook__es-txt" data-i18n="why.salud.es">Me pegó el soroche, el mal de altura.</span>
+                </p>
+                <p class="lp-hook__gloss" data-i18n="why.salud.m">Der Satz, der auf 4000 Metern zählt.</p>
+              </div>
             </div>
           </article>
-          <article class="lp-hook" data-reveal style="--i:0; --accent:#2F6B70">
+          <article class="lp-hook" data-reveal style="--i:0; --accent:#2F6B70" data-hook="musica">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-music"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.musica.k">Música</span>
               <h3 class="lp-hook__title" data-i18n="why.musica.t">Der Song, den am Ende alle mitsingen.</h3>
               <p class="lp-hook__text" data-i18n="why.musica.b">Cumbia, Reggaetón, Folklore — die Lieder, die in jedem Bus und jeder Bar laufen. Kenn den Refrain, und du gehörst dazu statt nur daneben.</p>
+              <button class="lp-hook__peek" type="button" aria-expanded="false">
+                <span class="lp-hook__peek-txt" data-i18n="why.taste">Kostprobe</span>
+                <span class="lp-hook__peek-chev" aria-hidden="true"></span>
+              </button>
+              <div class="lp-hook__sample" hidden>
+                <p class="lp-hook__es">
+                  <button class="lp-hook__say" type="button" data-i18n-aria="why.say" aria-label="Satz vorlesen">🔊</button>
+                  <span class="lp-hook__es-txt" data-i18n="why.musica.es">Esta cumbia se la sabe todo el continente.</span>
+                </p>
+                <p class="lp-hook__gloss" data-i18n="why.musica.m">Kenn den Refrain — und du gehörst dazu.</p>
+              </div>
             </div>
           </article>
-          <article class="lp-hook" data-reveal style="--i:1; --accent:#C2502E">
+          <article class="lp-hook" data-reveal style="--i:1; --accent:#C2502E" data-hook="conexion">
             <span class="lp-hook__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-party-popper"/></svg></span>
             <div class="lp-hook__body">
               <span class="lp-hook__kicker" data-i18n="why.conexion.k">Conexión</span>
               <h3 class="lp-hook__title" data-i18n="why.conexion.t">Aus einem „Hola" wird die beste Nacht deiner Reise.</h3>
               <p class="lp-hook__text" data-i18n="why.conexion.b">Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.</p>
+              <button class="lp-hook__peek" type="button" aria-expanded="false">
+                <span class="lp-hook__peek-txt" data-i18n="why.taste">Kostprobe</span>
+                <span class="lp-hook__peek-chev" aria-hidden="true"></span>
+              </button>
+              <div class="lp-hook__sample" hidden>
+                <p class="lp-hook__es">
+                  <button class="lp-hook__say" type="button" data-i18n-aria="why.say" aria-label="Satz vorlesen">🔊</button>
+                  <span class="lp-hook__es-txt" data-i18n="why.conexion.es">¿Jugamos una? La primera la pago yo.</span>
+                </p>
+                <p class="lp-hook__gloss" data-i18n="why.conexion.m">Ein Satz — und aus Fremden werden Freunde.</p>
+              </div>
             </div>
           </article>
         </div>
@@ -6441,9 +6749,33 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
     </section>
     <!-- ─────────────── Abschluss-CTA ─────────────── -->
     <section class="lp-section lp-final" id="start">
+      <div class="lp-final__aura" aria-hidden="true"></div>
       <div class="lp-wrap">
+        <p class="lp-final__eyebrow" data-reveal data-i18n="final.eyebrow">GLEICH GEHT'S LOS</p>
         <h2 class="lp-h2" data-reveal data-i18n="final.title">Pack deinen Rucksack. Den Rest übernehmen wir.</h2>
+        <p class="lp-final__ticker" data-reveal>
+          <span class="lp-final__ticker-lead" data-i18n="final.ticker">Bereit für</span>
+          <span class="lp-final__ticker-rot" id="lpFinalRot"></span>
+        </p>
         <p class="lp-final__sub" data-reveal data-i18n="final.sub">2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.</p>
+        <div class="lp-final__stats" data-reveal>
+          <div class="lp-final__stat">
+            <span class="lp-final__num" data-count="2293">2293</span>
+            <span class="lp-final__lbl" data-i18n="trust.cards">Karten</span>
+          </div>
+          <div class="lp-final__stat">
+            <span class="lp-final__num" data-count="72">72</span>
+            <span class="lp-final__lbl" data-i18n="trust.areas">Bereiche</span>
+          </div>
+          <div class="lp-final__stat">
+            <span class="lp-final__num"><span data-count="30">30</span>&#8202;s</span>
+            <span class="lp-final__lbl" data-i18n="final.stat.ready">startklar</span>
+          </div>
+          <div class="lp-final__stat">
+            <span class="lp-final__num">0&#8239;€</span>
+            <span class="lp-final__lbl" data-i18n="final.stat.forever">für immer</span>
+          </div>
+        </div>
         <div data-reveal>
           <a class="lp-cta lp-cta--lg lp-cta--onbrand" href="./?start=onboarding" data-i18n="final.cta">Kostenlos starten →</a>
         </div>
@@ -6562,6 +6894,13 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "why.salud.k": "Salud", "why.salud.t": "Wenn der Körper auf 4000 Metern streikt, zählt jeder Satz.", "why.salud.b": "Höhenkrankheit, Magen, Apotheke, Arzt: die Sätze für den Fall, dass es ernst wird — und die Tipps, mit denen du gesund und fit weiterreist.",
         "why.musica.k": "Música", "why.musica.t": "Der Song, den am Ende alle mitsingen.", "why.musica.b": "Cumbia, Reggaetón, Folklore — die Lieder, die in jedem Bus und jeder Bar laufen. Kenn den Refrain, und du gehörst dazu statt nur daneben.",
         "why.conexion.k": "Conexión", "why.conexion.t": "Aus einem „Hola\" wird die beste Nacht deiner Reise.", "why.conexion.b": "Hostel-Spiele, Sprüche, Smalltalk: die Sätze, die aus Fremden am Tisch Freunde fürs Leben machen. Denn Reisen ist am Ende, wen du triffst.",
+        "why.taste": "Kostprobe", "why.say": "Satz vorlesen",
+        "why.historia.es": "Los incas levantaron esto sin rueda ni hierro.", "why.historia.m": "Ein Fakt, der jede Ruine zum Sprechen bringt.",
+        "why.culturas.es": "En Chile, «al tiro» quiere decir ahora mismo.", "why.culturas.m": "Ein Wort — und du klingst wie von hier.",
+        "why.respeto.es": "¿Me regala la cuenta, porfa?", "why.respeto.m": "So bittest du höflich — und wirst zum gern gesehenen Gast.",
+        "why.salud.es": "Me pegó el soroche, el mal de altura.", "why.salud.m": "Der Satz, der auf 4000 Metern zählt.",
+        "why.musica.es": "Esta cumbia se la sabe todo el continente.", "why.musica.m": "Kenn den Refrain — und du gehörst dazu.",
+        "why.conexion.es": "¿Jugamos una? La primera la pago yo.", "why.conexion.m": "Ein Satz — und aus Fremden werden Freunde.",
         "more.intro": "Und noch viel mehr an Bord", "more.modules": "Weitere Module — seitlich wischen",
         "more.spick.d": "Die Notfall-Sätze groß auf einen Blick", "more.country.d": "Sitten, Geld & Eigenheiten pro Land",
         "more.historia.d": "Südamerikas Geschichte zum Mitreden", "more.dialogos.d": "Ganze Gespräche Zug um Zug üben",
@@ -6591,8 +6930,11 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "footer.more": "Mehr", "footer.features": "Features", "footer.why": "Mehr als Sprache", "footer.how": "So funktioniert's", "footer.install": "Installieren",
         "footer.audiences": "Für Partner", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut.",
+        "final.eyebrow": "GLEICH GEHT'S LOS",
         "final.title": "Pack deinen Rucksack. Den Rest übernehmen wir.",
+        "final.ticker": "Bereit für",
         "final.sub": "2293 Karten, komplett offline, ohne Konto, kostenlos. In 30 Sekunden startklar.",
+        "final.stat.ready": "startklar", "final.stat.forever": "für immer",
         "final.cta": "Kostenlos starten →",
         "a11y.theme": "Hell/Dunkel umschalten", "a11y.card": "Beispielkarte umdrehen", "a11y.feat": "Karte umdrehen",
         "_title": "HolaRuta – Reise-Spanisch für Lateinamerika",
@@ -6645,6 +6987,13 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "why.salud.k": "Salud", "why.salud.t": "When your body gives out at 4,000 metres, every phrase counts.", "why.salud.b": "Altitude sickness, stomach, pharmacy, doctor: the lines for when it gets serious — and the tips that keep you healthy and moving.",
         "why.musica.k": "Música", "why.musica.t": "The song everyone ends up singing.", "why.musica.b": "Cumbia, reggaetón, folklore — the tracks playing in every bus and every bar. Know the chorus and you're part of it, not just next to it.",
         "why.conexion.k": "Conexión", "why.conexion.t": "One “Hola” turns into the best night of your trip.", "why.conexion.b": "Hostel games, one-liners, small talk: the phrases that turn strangers at the table into friends for life. Because travel is, in the end, who you meet.",
+        "why.taste": "Sample", "why.say": "Read aloud",
+        "why.historia.es": "Los incas levantaron esto sin rueda ni hierro.", "why.historia.m": "A fact that makes every ruin speak.",
+        "why.culturas.es": "En Chile, «al tiro» quiere decir ahora mismo.", "why.culturas.m": "One word — and you sound like a local.",
+        "why.respeto.es": "¿Me regala la cuenta, porfa?", "why.respeto.m": "The polite way to ask — and be a welcome guest.",
+        "why.salud.es": "Me pegó el soroche, el mal de altura.", "why.salud.m": "The sentence that counts at 4,000 metres.",
+        "why.musica.es": "Esta cumbia se la sabe todo el continente.", "why.musica.m": "Know the chorus — and you belong.",
+        "why.conexion.es": "¿Jugamos una? La primera la pago yo.", "why.conexion.m": "One line — and strangers become friends.",
         "more.intro": "And plenty more on board", "more.modules": "More modules — swipe sideways",
         "more.spick.d": "Your survival lines, big and tappable", "more.country.d": "Customs, money & quirks per country",
         "more.historia.d": "South America's story, made easy", "more.dialogos.d": "Whole conversations, turn by turn",
@@ -6674,8 +7023,11 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "footer.more": "More", "footer.features": "Features", "footer.why": "More than language", "footer.how": "How it works", "footer.install": "Install",
         "footer.audiences": "For partners", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators",
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America.",
+        "final.eyebrow": "ALMOST THERE",
         "final.title": "Pack your backpack. We'll handle the rest.",
+        "final.ticker": "Ready for",
         "final.sub": "2,293 cards, fully offline, no account, free. Ready to go in 30 seconds.",
+        "final.stat.ready": "to go", "final.stat.forever": "forever",
         "final.cta": "Start free →",
         "a11y.theme": "Toggle light/dark", "a11y.card": "Flip the example card", "a11y.feat": "Flip card",
         "_title": "HolaRuta – Travel Spanish for Latin America",
@@ -6728,6 +7080,13 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "why.salud.k": "Salud", "why.salud.t": "Cuando el cuerpo falla a 4000 metros, cada frase cuenta.", "why.salud.b": "Mal de altura, estómago, farmacia, médico: las frases para cuando la cosa se pone seria — y los consejos para seguir sano y en marcha.",
         "why.musica.k": "Música", "why.musica.t": "La canción que al final todos cantan.", "why.musica.b": "Cumbia, reguetón, folclor — las canciones que suenan en cada bus y cada bar. Aprende el coro y ya eres de la casa, no solo de paso.",
         "why.conexion.k": "Conexión", "why.conexion.t": "Un «Hola» se convierte en la mejor noche de tu viaje.", "why.conexion.b": "Juegos de hostal, frases sueltas, charla: las frases que convierten a desconocidos en la mesa en amigos para toda la vida. Porque viajar es, al final, a quién conoces.",
+        "why.taste": "Muestra", "why.say": "Escuchar la frase",
+        "why.historia.es": "Los incas levantaron esto sin rueda ni hierro.", "why.historia.m": "Un dato que hace hablar a cada ruina.",
+        "why.culturas.es": "En Chile, «al tiro» quiere decir ahora mismo.", "why.culturas.m": "Una palabra — y suenas de acá.",
+        "why.respeto.es": "¿Me regala la cuenta, porfa?", "why.respeto.m": "La forma amable de pedir — y caer bien.",
+        "why.salud.es": "Me pegó el soroche, el mal de altura.", "why.salud.m": "La frase que importa a 4000 metros.",
+        "why.musica.es": "Esta cumbia se la sabe todo el continente.", "why.musica.m": "Sábete el coro — y ya perteneces.",
+        "why.conexion.es": "¿Jugamos una? La primera la pago yo.", "why.conexion.m": "Una frase — y los desconocidos se hacen amigos.",
         "more.intro": "Y mucho más a bordo", "more.modules": "Más módulos — desliza de lado",
         "more.spick.d": "Tus frases de emergencia, grandes y de un vistazo", "more.country.d": "Costumbres, dinero y rarezas por país",
         "more.historia.d": "La historia de Sudamérica, fácil de seguir", "more.dialogos.d": "Conversaciones enteras, turno a turno",
@@ -6757,8 +7116,11 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "footer.more": "Más", "footer.features": "Funciones", "footer.why": "Más que idioma", "footer.how": "Cómo funciona", "footer.install": "Instalar",
         "footer.audiences": "Para partners", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
         "footer.credit": "Hecho con <span class=\"lp-footer__heart\">♥</span> para Latinoamérica.",
+        "final.eyebrow": "YA CASI",
         "final.title": "Haz la maleta. Del resto nos encargamos nosotros.",
+        "final.ticker": "Listo para",
         "final.sub": "2293 tarjetas, sin conexión, sin cuenta, gratis. Listo en 30 segundos.",
+        "final.stat.ready": "listo", "final.stat.forever": "para siempre",
         "final.cta": "Empezar gratis →",
         "a11y.theme": "Cambiar claro/oscuro", "a11y.card": "Girar la tarjeta de ejemplo", "a11y.feat": "Girar la tarjeta",
         "_title": "HolaRuta – Español de viaje para Latinoamérica",
@@ -7196,6 +7558,77 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
       document.querySelectorAll(".lp-langbtn").forEach(function (b) {
         b.addEventListener("click", function () { if (openMod) render(openMod); });
       });
+    })();
+
+    // ── „Mehr als Sprache": Kostprobe-Aufklapper + Vorlesen ──
+    // Jeder Hook lässt sich aufklappen und zeigt einen echten spanischen Reise-
+    // Satz. Der 🔊-Knopf liest ihn in lateinamerikanischem Spanisch vor.
+    (function () {
+      var speaking = null;
+      function speakES(text, btn) {
+        try {
+          if (!("speechSynthesis" in window)) return;
+          var u = new SpeechSynthesisUtterance(text);
+          u.lang = "es-419"; u.rate = 0.95;
+          speechSynthesis.cancel();
+          if (speaking) speaking.classList.remove("is-speaking");
+          btn.classList.add("is-speaking"); speaking = btn;
+          u.onend = u.onerror = function () {
+            btn.classList.remove("is-speaking");
+            if (speaking === btn) speaking = null;
+          };
+          speechSynthesis.speak(u);
+        } catch (e) {}
+      }
+      document.querySelectorAll(".lp-hook").forEach(function (hook) {
+        var peek = hook.querySelector(".lp-hook__peek");
+        var sample = hook.querySelector(".lp-hook__sample");
+        if (!peek || !sample) return;
+        peek.addEventListener("click", function () {
+          var open = peek.getAttribute("aria-expanded") === "true";
+          peek.setAttribute("aria-expanded", open ? "false" : "true");
+          if (open) { sample.setAttribute("hidden", ""); try { speechSynthesis.cancel(); } catch (e) {} }
+          else sample.removeAttribute("hidden");
+        });
+        var say = hook.querySelector(".lp-hook__say");
+        var txt = hook.querySelector(".lp-hook__es-txt");
+        if (say && txt) say.addEventListener("click", function (e) {
+          e.stopPropagation();
+          speakES(txt.textContent, say);
+        });
+      });
+    })();
+
+    // ── Abschluss-CTA: rotierender „Bereit für …"-Ticker ──
+    // Wechselt echte Reise-Momente durch; folgt der Sprachumschaltung.
+    (function () {
+      var rot = document.getElementById("lpFinalRot");
+      if (!rot) return;
+      var PHRASES = {
+        de: ["den Nachtbus ohne Netz.", "das Feilschen am Markt.", "die Grenze um Mitternacht.", "die beste Nacht im Hostel.", "4000 Meter über dem Meer."],
+        en: ["the night bus with no signal.", "haggling at the market.", "the border at midnight.", "the best night at the hostel.", "4,000 metres above sea level."],
+        es: ["el bus nocturno sin señal.", "el regateo en el mercado.", "la frontera a medianoche.", "la mejor noche del hostal.", "4000 metros sobre el mar."]
+      };
+      function list() {
+        var l = document.documentElement.getAttribute("data-lang");
+        return PHRASES[l] || PHRASES.de;
+      }
+      var idx = 0;
+      rot.textContent = list()[0];
+      // Sprachwechsel: aktuellen Eintrag sofort in der neuen Sprache zeigen.
+      document.querySelectorAll(".lp-langbtn").forEach(function (b) {
+        b.addEventListener("click", function () { rot.textContent = list()[idx % list().length]; });
+      });
+      if (reduce) return;                          // kein Auto-Rotieren bei reduced-motion
+      setInterval(function () {
+        rot.classList.add("is-swapping");
+        setTimeout(function () {
+          var arr = list();
+          idx = (idx + 1) % arr.length;
+          rot.textContent = arr[idx];
+          rot.classList.remove("is-swapping");
+        }, 340);
+      }, 2600);
     })();
 
     // ── Scroll-Reveal + animierte Counter (IntersectionObserver) ──
