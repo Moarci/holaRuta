@@ -143,12 +143,14 @@ export async function newPage(browser, {
   page.on("pageerror", (e) => errs.push("pageerror: " + e.message));
   page.on("console", (m) => { if (m.type() === "error") { const t = m.text(); errs.push("console: " + t); if (cspErr(t)) csp.push(t); } });
 
-  // localStorage-Seeds VOR dem ersten Skript setzen.
+  // localStorage-Seeds VOR dem ersten Skript setzen. Nur setzen, wenn der Key noch
+  // FEHLT — sonst würde der bei jedem Load (auch Reload!) laufende addInitScript die
+  // von der App persistierten Änderungen überschreiben und Persistenz-Checks brechen.
   const pairs = [];
   if (seedRaw) pairs.push(...seedRaw);
   else if (seed) pairs.push({ key: SETTINGS_KEY, value: settingsSeed(seed) });
   if (pairs.length) {
-    await page.addInitScript((ps) => { for (const p of ps) localStorage.setItem(p.key, p.value); }, pairs);
+    await page.addInitScript((ps) => { for (const p of ps) if (localStorage.getItem(p.key) == null) localStorage.setItem(p.key, p.value); }, pairs);
   }
   return { ctx, page, errs, csp };
 }
