@@ -19,7 +19,43 @@
   "use strict";
   var SC = window.SC || (window.SC = {});
 
+  // Stadtflagge Medellíns (offizielles ziviles Hoheitszeichen, Decreto 151/2002):
+  // zwei gleich große Querstreifen – WEISS oben, GRÜN unten – mit dem Wappen in der
+  // Mitte (torreón de oro auf blauem Feld). Dies ist eine bewusst VEREINFACHTE,
+  // eigene Nachzeichnung (keine kopierte Originalgrafik), inline als data:-URI, damit
+  // sie offline im PWA-Cache liegt und die CSP nicht bricht. Anders als die Partner-
+  // Demo-Wortmarken oben ist eine Stadtflagge gemeinfrei – daher hier fest gesetzt.
+  var MEDELLIN_FLAG = "data:image/svg+xml;utf8," + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 64' role='img' aria-label='Bandera de Medellín'>" +
+      "<clipPath id='mdeR'><rect x='1' y='1' width='94' height='62' rx='7'/></clipPath>" +
+      "<g clip-path='url(#mdeR)'>" +
+        "<rect x='0' y='0' width='96' height='32' fill='#ffffff'/>" +      // franja blanca (arriba)
+        "<rect x='0' y='32' width='96' height='32' fill='#2f8e5b'/>" +     // franja verde (abajo)
+      "</g>" +
+      "<rect x='1' y='1' width='94' height='62' rx='7' fill='none' stroke='#1f6b44' stroke-width='2'/>" +
+      "<path d='M36 17 H60 V33 Q60 44 48 50 Q36 44 36 33 Z' fill='#123f73' stroke='#0d2c52' stroke-width='1.5'/>" + // escudo (campo azul)
+      "<g fill='#e6b422'>" +                                              // torreón de oro
+        "<rect x='40' y='31' width='16' height='11'/>" +                  // muralla
+        "<rect x='42' y='25' width='4' height='7'/>" +                    // torreón izq.
+        "<rect x='50' y='25' width='4' height='7'/>" +                    // torreón der.
+        "<rect x='45' y='21' width='6' height='11'/>" +                   // torre central
+      "</g>" +
+      "<rect x='46' y='36' width='4' height='6' fill='#0d2c52'/>" +       // puerta
+      "<circle cx='48' cy='17' r='2.4' fill='#e6b422'/>" +               // alusión a la Virgen de la Candelaria
+    "</svg>"
+  );
+
   var EDITIONS = {
+    // Produktions-Edition für den Vercel-Launch. Schaltet die opt-in-Cloud (Sync,
+    // Social, Telemetrie) scharf – die konkreten apiBase/endpoint werden vom Anker
+    // editions/launch.js dynamisch auf die SAME-ORIGIN gesetzt (location.origin),
+    // damit Preview- UND Prod-Domain ohne Hardcoding funktionieren und die strenge
+    // CSP `connect-src 'self'` erfüllt bleibt. Registry-Eintrag = Quelle der Wahrheit.
+    launch: {
+      edition: "launch",
+      brandName: "HolaRuta",
+      appUrl: null, // Anker setzt location.origin
+    },
     ecos: {
       edition: "ecos",
       brandName: "HolaRuta · ECOS",
@@ -120,8 +156,8 @@
       edition: "medellin",
       brandName: "HolaRuta · Medellín",
       accent: { brand: "#2F8E5B", brandInk: "#1F6B44" },
-      partner: { name: "Medellín", url: null },
-      logo: null,
+      partner: { name: "Medellín", url: "https://www.medellin.gov.co/" }, // Backlink zur offiziellen Stadtseite (Bezug/Credit)
+      logo: MEDELLIN_FLAG, // Stadtflagge (weiß/grün + Wappen) – siehe MEDELLIN_FLAG oben
       defaultDestination: null,
       appUrl: "https://moarci.github.io/holaRuta/",
       track: "es-en",      // Paisas lernen Englisch (Frage = Spanisch, Antwort = Englisch)
