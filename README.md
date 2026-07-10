@@ -9,9 +9,10 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-806_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-857_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
+[![GEO](https://img.shields.io/badge/GEO-327_Seiten_%C2%B7_3_Sprachen-2F6B70?style=flat-square)](#-seo--geo)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
 Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Spanisch vor · Funktioniert ohne Netz
@@ -32,6 +33,7 @@ Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Span
 - [Architektur](#-architektur)
 - [Schnellstart](#-schnellstart)
 - [Single-File-Build](#-single-file-build)
+- [SEO & GEO](#-seo--geo)
 - [Datenmodell](#datenmodell)
 - [Spaced Repetition (SM-2)](#-spaced-repetition-sm-2)
 - [Ruta-Pass (Badges)](#️-ruta-pass-badges)
@@ -281,13 +283,17 @@ SpanischCard/
 │   ├── bailar.js        SC.bailarSheet  # Bailar (Tänze mit Schritt-Diagramm)
 │   └── musica.js        SC.musicaSheet  # Música (Genres + Spotify/Apple-Deep-Links)
 │
-├── build.js                     # Erzeugt die Einzeldatei HolaRuta.html
+├── build.js                     # Erzeugt die Einzeldatei HolaRuta.html + ruft scripts/geo/* im --dist-Build auf
 ├── swversion.js                 # Build-/Test-Werkzeug: Inhalts-Hash für den SW-Cache-Namen (kein SC-Modul)
 ├── service-worker.js            # Offline-Cache (Cache-first + App-Shell-Fallback)
 ├── manifest.webmanifest         # PWA-Manifest (Name, Icons, Theme)
 ├── icon.svg                     # App-Icon
 │
-├── test/                        # 799 Tests in 74 Dateien (node:test, keine Dependencies)
+├── scripts/geo/                 # GEO/SEO-Pipeline: generate.mjs/prerender.mjs/verify.mjs + content-model.mjs, pillar-content.mjs, locals-content.mjs (siehe "SEO & GEO")
+├── seo/geo-manifest.json        # Generiertes Seiten-Manifest (327 Seiten), eingecheckt für Review/Diff
+├── sitemap.xml · robots.txt · llms.txt  # Generierte GEO-Artefakte (aus dem Manifest, nie von Hand editieren)
+│
+├── test/                        # 855 Tests in 81 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -410,6 +416,37 @@ Metro/Metrocable, medio ambiente, cultura paisa, Guatapé, nómadas, Feria de la
 [LOCALS-MEDELLIN.md](LOCALS-MEDELLIN.md).
 
 > Logo/Name eines Partners nur mit dessen Freigabe verwenden; bis dahin neutral co-branded (Farbe + Textzusatz, ohne Logo). Auf GitHub Pages teilen sich Editionen derselben Origin den `localStorage` — echte Trennung erst bei eigenem Deploy/Domain.
+
+---
+
+## 🔍 SEO & GEO
+
+Die App selbst ist eine Client-SPA — für Crawler beim ersten Abruf eine leere Hülle. Damit die inhaltliche Substanz der App (Länderkunde, Karten, Reisesituationen) trotzdem für klassische Suchmaschinen **und** KI-Antwortsysteme (ChatGPT, Perplexity, Google AI Overviews, Claude) auffindbar ist, generiert eine eigene Build-Pipeline ([`scripts/geo/`](scripts/geo/)) **vollständig statisches, ohne JavaScript lesbares HTML** — direkt aus denselben Datenquellen wie die App (`data.js`, `countries.js`, `data.locals.js`), nie manuell gepflegt.
+
+**327 generierte Seiten in 3 Sprachen**, aufgeteilt in zwei Produkte/Tracks:
+
+| Track | Sprachen | Cluster | Seiten |
+|---|---|---|---|
+| **Reise** (Spanisch lernen) | DE, EN | 19 Länder-Guides, 24 Städte-Guides, 37 Situations-Guides (je aus echten Karten), 3 Hubs, 4 Marken-Pillar-Seiten | 174 |
+| **Locals** („HolaRuta · Inglés", Englisch fürs Arbeiten) | ES | 151 Kategorie-Guides + 1 Hub + 1 Pillar-Seite, aus `data.locals.js` | 153 |
+
+Jede Seite trägt:
+
+- **Echten, zitierbaren Inhalt** — Länder-Guides ziehen Geschichte/Sprache/Slang direkt aus `countries.js`; Situations-/Kategorie-Guides zeigen echte Karten als „Wie sagt man X?"-FAQ-Paare (das von KI-Answer-Engines bevorzugte Zitat-Format).
+- **schema.org-JSON-LD** (`Organization`, `WebSite`, `Article`, `LearningResource`, `HowTo`, `FAQPage`, `BreadcrumbList`, als `@graph` unter einem gemeinsamen `@context`) — inkl. `mentions`/`about`-Entitätsgraph, der die Marke und (bei Land/Stadt) das reale geografische Entity explizit verankert.
+- **AEO-Markennennung:** Jede einzelne FAQ-Antwort nennt „HolaRuta" namentlich — zitiert eine Answer-Engine nur die Antwort, reist die Marke automatisch mit.
+- **Korrekte Metadaten:** eindeutiges `<title>`/`<meta description>`, `canonical`, `hreflang` (reziprok innerhalb jeder Übersetzungsgruppe), Open Graph + Twitter Card.
+- **Interne Verlinkung:** Städte verlinken bidirektional zu ihrem Land, Situationen zu Geschwister-Kategorien, Pillar-Seiten untereinander.
+
+**Weitere generierte Artefakte:** [`sitemap.xml`](sitemap.xml) (alle Seiten + hreflang-Alternates), [`robots.txt`](robots.txt) (erlaubt ausdrücklich GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Bingbot u. a.), [`llms.txt`](llms.txt) (kategorisierter Seitenindex für KI-Crawler), [`seo/geo-manifest.json`](seo/geo-manifest.json) (das vollständige Seiten-Manifest als JSON — eingecheckt für Review/Diff, ohne Build lesbar).
+
+```bash
+node scripts/geo/generate.mjs    # Manifest + sitemap.xml/robots.txt/llms.txt schreiben
+node scripts/geo/prerender.mjs   # Manifest → statisches HTML in dist/<locale>/<slug>/
+node scripts/geo/verify.mjs      # CI-Gate: eindeutige Slugs/Canonicals, hreflang-Reziprozität, Mindest-Content
+```
+
+`node build.js --dist` ruft alle drei automatisch in der richtigen Reihenfolge auf — ein einziger Befehl erzeugt App **und** GEO-Seiten. `prerender`/`verify` lesen dabei das bereits von `generate` geschriebene `seo/geo-manifest.json` von der Platte, statt die App-Daten dreimal neu zu parsen.
 
 ---
 
@@ -576,8 +613,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 806
-#  ℹ pass 806
+#  ℹ tests 857
+#  ℹ pass 857
 #  ℹ fail 0
 ```
 
@@ -608,8 +645,9 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 51 (`SC.*`) |
-| Tests | 806 (alle grün) |
+| Tests | 857 (alle grün) |
 | Laufzeit-Dependencies | 0 |
+| GEO-Seiten | 327 (DE/EN/ES) — siehe [SEO & GEO](#-seo--geo) |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 
 **Audit-Ergebnis (Stand 2026-06-10):** Keine CRITICALs — kein Crash, kein exploitierbares XSS, keine falschen Übersetzungen. Schwerpunkte der Nacharbeit lagen in **Accessibility** und **PWA-Details**; die wichtigsten Fixes sind umgesetzt.

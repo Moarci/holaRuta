@@ -76,6 +76,49 @@
        Frame-Schutz ist auf diesem Hosting daher nicht erreichbar. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data: https://upload.wikimedia.org https://commons.wikimedia.org; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="referrer" content="no-referrer" />
+
+  <!-- Strukturierte Daten (schema.org): Organization + WebSite + SoftwareApplication.
+       KEIN Widerspruch zur strengen CSP oben (script-src 'self' ohne 'unsafe-inline'):
+       ein <script type="application/ld+json"> ist laut HTML-Spec kein ausführbares
+       Skript, sondern ein reiner Datenblock – Browser wenden script-src-CSP nur auf
+       ausführbaren JS-Code an, nicht auf JSON-LD. Werte hier synchron zu landing.html
+       halten. -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://moarci.github.io/holaRuta/#organization",
+      "name": "HolaRuta",
+      "url": "https://moarci.github.io/holaRuta/",
+      "email": "hola@holaruta.app",
+      "logo": "https://moarci.github.io/holaRuta/icon-512.png",
+      "sameAs": ["https://github.com/Moarci/holaRuta"]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://moarci.github.io/holaRuta/#website",
+      "name": "HolaRuta",
+      "url": "https://moarci.github.io/holaRuta/",
+      "inLanguage": "de_DE",
+      "publisher": { "@id": "https://moarci.github.io/holaRuta/#organization" }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://moarci.github.io/holaRuta/#app",
+      "name": "HolaRuta",
+      "description": "Reise-Spanisch für echte Situationen – Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk. Offline, kostenlos, ohne Konto.",
+      "url": "https://moarci.github.io/holaRuta/",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web, Android, iOS",
+      "inLanguage": "de_DE",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "publisher": { "@id": "https://moarci.github.io/holaRuta/#organization" }
+    }
+  ]
+  </script>
 </head>
 <body>
   <!-- Sprunglink: erstes fokussierbares Element. Für Tastatur-/Screenreader-Nutzer,

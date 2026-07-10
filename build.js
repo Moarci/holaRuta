@@ -18,6 +18,7 @@
 const fs = require("fs");
 const path = require("path");
 const { stampServiceWorker, readAssets } = require("./swversion.js");
+const { execFileSync } = require("child_process");
 
 const DIR = __dirname;
 const SOURCE = "index.html";
@@ -174,6 +175,11 @@ function buildDist() {
   fs.rmSync(DIST, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true });
 
+  // GEO-Manifest + sitemap.xml/robots.txt/llms.txt an der Repo-Wurzel neu
+  // schreiben, BEVOR irgendetwas aus ihnen gelesen wird (siehe die extra-
+  // Kopierschleife weiter unten).
+  generateGeo();
+
   const esbuild = tryLoadEsbuild();
   if (!esbuild) {
     console.warn("⚠ esbuild nicht verfügbar – dist/ wird ROH (unminifiziert) gebaut.");
@@ -248,18 +254,57 @@ function buildDist() {
     "docs/anleitungen/handout.js",
     "docs/anleitungen/qr-holaruta.svg",
     "docs/pitch/weroad-colombia.html",
-    // SEO: Sitemap + robots (von Landing/Suche referenziert, bewusst nicht im Precache).
+    // SEO/GEO: Sitemap + robots + llms.txt (von Landing/Suche/KI-Crawlern
+    // referenziert, bewusst nicht im Precache). Werden von generateGeo() (oben
+    // in buildDist()) VOR dieser Schleife frisch aus dem GEO-Manifest
+    // geschrieben – hier landet also immer der aktuelle Stand in dist/.
     "sitemap.xml",
     "robots.txt",
+    "llms.txt",
   ]) {
     const p = path.join(DIR, extra);
     if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }
   }
 
+  // GEO-Content-Seiten (Länder-/Städte-/Situationsguides) prerendern: erst JETZT,
+  // weil dist/ bereits index.html + Icons + Fonts enthält (die relativen
+  // Root-Prefix-Links der generierten Seiten, z. B. "../../icon.svg", zeigen
+  // sonst ins Leere). Danach das Verify-Gate – bricht der dist-Build ab, wenn
+  // eine Manifest-Seite nicht prerendert wurde oder Canonicals/hreflang
+  // inkonsistent sind (wirft, was der äußere try/catch unten fängt).
+  prerenderGeo(DIST);
+  verifyGeo(DIST);
+
   // SW-Hash über die MINIFIZIERTEN dist-Assets stempeln (dist/service-worker.js).
   const sw = stampServiceWorker(DIST);
 
   return { dir: DIST, minified, copied, minify: !!esbuild, swVersion: sw.version };
+}
+
+// ---------------------------------------------------------------------------
+// GEO/SEO-Pipeline (scripts/geo/*.mjs) – als Kindprozess aufgerufen, weil diese
+// Skripte ES-Module sind (build.js selbst ist CommonJS). Siehe scripts/geo/
+// für die Einzelschritte (Manifest bauen, Sitemap/robots/llms.txt schreiben,
+// pro Seite statisches HTML prerendern, Konsistenz verifizieren).
+// ---------------------------------------------------------------------------
+function runGeoScript(relScript, args) {
+  execFileSync(process.execPath, [path.join(DIR, relScript), ...args], { stdio: "inherit" });
+}
+
+// Manifest + sitemap.xml/robots.txt/llms.txt an der Repo-Wurzel neu schreiben –
+// MUSS vor der obigen extra-Kopierschleife laufen (die liest sitemap.xml/
+// robots.txt/llms.txt synchron von dort), deshalb Aufruf ganz am Anfang von
+// buildDist() (siehe unten).
+function generateGeo() {
+  runGeoScript("scripts/geo/generate.mjs", []);
+}
+
+function prerenderGeo(distDir) {
+  runGeoScript("scripts/geo/prerender.mjs", [`--dist=${distDir}`]);
+}
+
+function verifyGeo(distDir) {
+  runGeoScript("scripts/geo/verify.mjs", [`--dist=${distDir}`]);
 }
 
 if (DIST_MODE) {
