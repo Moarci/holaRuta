@@ -115,7 +115,6 @@ function aggregate(events, usage, opts) {
   var clientFirstOpen = new Map();     // clientId -> { ts, src } (früheste Quelle je Nutzer)
   // --- Investor-KPIs (alle mit ungeprüften Event-Daten geschlüsselt -> Map/Set) ---
   var eventsPerClient = new Map();     // clientId -> Events gesamt (Interaktionen/Person)
-  var wal7Rounds = 0;                  // abgeschlossene Lernrunden der letzten 7 Tage (NSM-Tiefe)
   var activatedClients = new Set();    // clientId mit >=1 session_complete bzw. activation (aktiviert)
   var featureStarts = new Map();       // feature -> Startanzahl (Start<->Abschluss-Quote)
   var shareEvents = 0;                 // Anzahl share-Events (Virality)
@@ -178,7 +177,6 @@ function aggregate(events, usage, opts) {
       case "session_complete":
         if (p.accuracy) inc(accuracyDist, String(p.accuracy));
         if (cid) { activatedClients.add(cid); addToSet(editionActivated, edi, cid); } // Aktivierung
-        if (day >= since7) wal7Rounds++;                                              // NSM-Tiefe (7 T)
         if (typeof p.secs === "number" && p.secs > 0) secsList.push(p.secs);          // exakte Time-on-Task
         break;
       case "feature_start": if (p.feature) inc(featureStarts, String(p.feature)); break;
@@ -342,6 +340,11 @@ function aggregate(events, usage, opts) {
   // (das ist die 30-min-sessionId-Spanne über das GANZE Fenster).
   var walCur = windowSet(0, 7, "session_complete").size;
   var walPrev = windowSet(7, 7, "session_complete").size;
+  // Runden der letzten 7 T – GENAU dasselbe Fenster wie walCur (strikte Ober-/Untergrenze
+  // über evAll), damit Zähler und Nenner von avgSessionsPerLearner deckungsgleich sind.
+  var wal7Lo = dayUTC(now - 6 * DAY_MS), wal7Hi = today;
+  var wal7Rounds = 0;
+  evAll.forEach(function (e) { if (isObj(e) && String(e.event || "") === "session_complete") { var d = String(e.day || ""); if (d >= wal7Lo && d <= wal7Hi) wal7Rounds++; } });
   var mau30 = activeSince(30); // MAU einmal berechnen (auch für Stickiness/nsm/return)
   var nsm = {
     wal: walCur, trend: trend(walCur, walPrev),
@@ -628,8 +631,8 @@ function toKpiCsv(stats) {
     ["Quick Ratio", g(i, "growth.quickRatio", 0)],
     ["K-Faktor", g(i, "virality.kFactor", 0)],
     ["Runden-Abschluss %", g(i, "rounds.completionPct", 0)],
-    ["Oe Interaktionen/Sitzung", g(i, "interactions.perSession.avg", 0)],
-    ["Oe Lernzeit/Runde s", g(i, "timeOnTask.avgSec", 0)],
+    ["Ø Interaktionen/Sitzung", g(i, "interactions.perSession.avg", 0)],
+    ["Ø Lernzeit/Runde s", g(i, "timeOnTask.avgSec", 0)],
     ["Bounce %", g(i, "quality.bouncePct", 0)],
     ["Fehler/Sitzung", g(i, "quality.errorsPerSession", 0)],
   ];

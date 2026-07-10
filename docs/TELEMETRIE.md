@@ -13,8 +13,10 @@
 HolaRuta sendet **standardmäßig nichts**. Erst wenn (1) eine Edition einen Endpunkt setzt
 (`SC.config.analytics = { enabled:true, endpoint:"…" }`) **und** (2) der Nutzer im Profil
 „Nutzungsstatistik teilen" auf **An** stellt, gehen zwei Dinge raus: ein **anonymer Tages-Snapshot**
-und ein **pseudonymer Interaktions-Event-Strom**. Beide enthalten **nur grobe Enums/Zahlen-Buckets** –
-**kein** Suchtext, **keine** Kartentexte/-IDs, **keine** Namen, **keine** Freitexte.
+und ein **pseudonymer Interaktions-Event-Strom**. Der Snapshot ist rein gebucketet; der Event-Strom
+trägt grobe Enums/Buckets **plus** einzelne **exakte, nicht-identifizierende Ganzzahlen** (Interaktions-
+zähler & Rundendauer, für die Investor-Analytik) – aber **kein** Suchtext, **keine** Kartentexte/-IDs,
+**keine** Namen, **keine** Freitexte, **keine** stabile Identität.
 
 ---
 
@@ -107,7 +109,10 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 - **Kein** Suchtext (`state.searchQuery`), **keine** Kartentexte oder **Karten-IDs**, **keine** eigenen Karten/Favoriten-Inhalte.
 - **Keine** Namen/E-Mails/PII; Fehler-Texte werden bereinigt (E-Mail → `@`, lange Ziffern → `#`) und auf 80 Zeichen gekappt.
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies, **keine** Drittanbieter-Tracker, **keine** Werbung.
-- **Keine** exakten Zähler – Mengen reisen nur als **grobe Buckets** (k-anonymity-freundlich).
+- **Snapshot:** keine exakten Zähler – Mengen reisen nur als **grobe Buckets** (k-anonymity-freundlich).
+  **Event-Strom:** zusätzlich **exakte Ganzzahlen** in `session_complete` (`answered_n`/`correct_n`/`xp_n`/`secs`)
+  für die Interaktions-Tiefe – bewusst feiner, aber weiterhin **ohne** PII/Freitext/Karteninhalt und mit
+  gedeckelter `secs` (≤ 1 h) gegen Fingerprinting.
 - Hochfrequente Lern-Aktionen (`flip`/`rate`/`skip`/`speak`) erzeugen **kein** generisches `action`-Event (Rauschen/Queue-Schutz).
 
 ---
@@ -231,7 +236,7 @@ loggt eintreffende Events nur im Terminal.
 
 ### ✅ Fertig (client-seitig vollständig, end-to-end lauffähig)
 - Opt-in-Snapshot + pseudonymer Event-Strom, Allowlist-Sanitizer, Ring-Queue, Batching/Beacon, Reset-Id.
-- Volle Instrumentierung (Screens, Aktionen, Sessions, Karten, Spiele, Suche, Onboarding, Fehler, Perf, PWA).
+- Volle Instrumentierung (Screens, Aktionen, Sessions, Karten, Spiele, Suche, Onboarding, Fehler, PWA; Startzeit in `app_open.load_ms`).
 - Collector mit Persistenz, `aggregate()`, Dashboard (Nutzer/Retention/Sessions/Content/Lernfortschritt/Zeit/Segmente/Monitoring), Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - 746 Unit-Tests grün; Doku hier + BACKEND.md + README.

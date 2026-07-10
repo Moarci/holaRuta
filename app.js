@@ -8375,7 +8375,7 @@
   setupAnalyticsEvents();
 
   // Interaktions-Tracking aufsetzen (opt-in, BACKEND.md §17.6): Kontext setzen,
-  // app_open/perf erfassen, Fehler-Monitoring einhängen und die Event-Queue
+  // app_open erfassen, Fehler-Monitoring einhängen und die Event-Queue
   // periodisch sowie beim Verstecken/Schließen (sendBeacon) flushen. Alles tut
   // NICHTS ohne konfigurierten Endpunkt UND Zustimmung (Prüfung im Modul).
   function setupAnalyticsEvents() {
@@ -8422,7 +8422,7 @@
       document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") A.flush({ beacon: true }); });
       window.addEventListener("pagehide", () => { A.flush({ beacon: true }); });
     } catch (e) { /* egal */ }
-    // Erster Flush kurz nach Start (schickt app_open/perf raus, sobald zugestimmt).
+    // Erster Flush kurz nach Start (schickt app_open raus, sobald zugestimmt).
     setTimeout(() => A.flush(), 3000);
   }
 

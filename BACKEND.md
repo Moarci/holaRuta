@@ -389,7 +389,8 @@ Nutzer-ID das Gerät.
 
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies.
 - **Keine** Verknüpfung mit Sync/Social-Konten (ohne Token, eigene pseudonyme `clientId`).
-- **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen nur Enums/Buckets (s. §17.6).
+- **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen Enums/Buckets plus einzelne
+  nicht-identifizierende Ganzzahlen (Interaktionszähler/Rundendauer), aber **keine** Inhalte (s. §17.6).
 
 ### 17.6 Interaktions-Events — „was machen sie genau?" (Vollausbau, opt-in)
 
