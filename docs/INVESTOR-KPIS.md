@@ -34,7 +34,7 @@ tatsächlichem Nutzerverhalten, nicht aus einer Schätzung.
 | **Datenquelle** | Event `session_complete` (feuert in `app.js:finishRound()`) |
 | **Sekundär** | Ø Lernrunden je Learner (`nsm.avgSessionsPerLearner`) — die **Tiefe** hinter der Breite |
 | **Trend** | Woche-über-Woche (`nsm.trend.deltaPct`), damit Wachstum sofort sichtbar ist |
-| **Ziel/Benchmark** | konsumenten-typisch: **WAL Woche-über-Woche +5–7 %** in der Wachstumsphase; Verhältnis **WAL/MAU ≥ 0,5** (die Hälfte der Monatsnutzer lernt wöchentlich) |
+| **Ziel/Benchmark** | konsumenten-typisch: **WAL Woche-über-Woche +5–7 %** in der Wachstumsphase; Verhältnis **WAL/MAU ≥ 0,5** (`nsm.walMauPct`, die Hälfte der Monatsnutzer lernt wöchentlich) |
 
 Cockpit: Kachel **★ North Star: WAL** mit Vorwochen-Pfeil.
 
@@ -121,6 +121,7 @@ Cockpit: Kachel **K-Faktor** + Panel **Virality**.
 | **Ø Sitzungsdauer** | ts-Spanne je `sessionId` | `sessions.avgDurationSec` | — |
 | **Ø Lernzeit / Runde** | exaktes `secs` je `session_complete` | `investor.timeOnTask` | — |
 | **Feature-Adoption** | je Modus jemals benutzt | `usage`-Snapshot | breit |
+| **Runden-Abschlussquote** | abgeschlossene / begonnene Lernrunden | `investor.rounds` (`session_complete` / `session_start`) | hoch = Nutzer ziehen Runden durch |
 | **Start↔Abschluss-Quote** je Lernspiel | `feature_complete` / `feature_start` | `investor.featureFunnel` | hoch = Spiele fesseln, kein Abbruch |
 
 Cockpit: Kacheln **Ø Interakt./Sitzung**, **Ø Lernzeit/Runde** + Panels **Interaktionen pro
@@ -209,7 +210,8 @@ analytics: { enabled: true, endpoint: "http://localhost:8789" }
 
 | Cockpit-Element | KPI | `aggregate()`-Feld |
 |---|---|---|
-| ★ North Star: WAL | Weekly Active Learners + Trend | `investor.nsm` |
+| ★ North Star: WAL | Weekly Active Learners + Trend + WAL/MAU | `investor.nsm` |
+| Runden-Abschluss | abgeschlossene / begonnene Runden | `investor.rounds` |
 | DAU / WAU / MAU | aktive Nutzer | `users.dauToday/wau/mau` |
 | Stickiness | Ø DAU / MAU | `users.stickinessPct` |
 | Aktivierungsrate + Funnel | aktiviert / neu | `investor.activation` |

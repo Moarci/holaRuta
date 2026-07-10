@@ -342,7 +342,17 @@ function aggregate(events, usage, opts) {
   // (das ist die 30-min-sessionId-Spanne über das GANZE Fenster).
   var walCur = windowSet(0, 7, "session_complete").size;
   var walPrev = windowSet(7, 7, "session_complete").size;
-  var nsm = { wal: walCur, trend: trend(walCur, walPrev), avgSessionsPerLearner: walCur ? Math.round((wal7Rounds / walCur) * 10) / 10 : 0 };
+  var mau30 = activeSince(30); // MAU einmal berechnen (auch für Stickiness/nsm/return)
+  var nsm = {
+    wal: walCur, trend: trend(walCur, walPrev),
+    avgSessionsPerLearner: walCur ? Math.round((wal7Rounds / walCur) * 10) / 10 : 0,
+    walMauPct: mau30 ? Math.round((walCur / mau30) * 100) : 0, // Anteil der Monatsnutzer, der WÖCHENTLICH lernt (Ziel >= 50%)
+  };
+
+  // --- Runden-Abschlussquote: begonnene vs. abgeschlossene Lernrunden (aus den Event-Zählern) ---
+  var roundsStarted = eventCounts.get("session_start") || 0;
+  var roundsCompleted = eventCounts.get("session_complete") || 0;
+  var rounds = { started: roundsStarted, completed: roundsCompleted, completionPct: roundsStarted ? Math.min(100, Math.round((roundsCompleted / roundsStarted) * 100)) : 0 };
 
   // --- Retention-Kohorten-Heatmap (Erst-Tag × Tag-N; nur eligible zählt) ---
   // Kohorten basieren auf dem LEBENSLANGEN Erst-Tag (clientFirstDayAll), beschränkt auf
@@ -499,8 +509,8 @@ function aggregate(events, usage, opts) {
       dauToday: dauMap.has(today) ? dauMap.get(today).size : 0,
       avgDau: avgDAU,
       wau: activeSince(7),
-      mau: activeSince(30),
-      stickinessPct: activeSince(30) ? Math.round((avgDAU / activeSince(30)) * 100) : 0,
+      mau: mau30,
+      stickinessPct: mau30 ? Math.round((avgDAU / mau30) * 100) : 0,
       newOpens: openNew,
       returningOpens: openReturning,
       dauSeries: dauSeries,
@@ -525,7 +535,8 @@ function aggregate(events, usage, opts) {
     },
     // ------- Investor-Cockpit: AARRR auf einen Blick -------
     investor: {
-      nsm: nsm,                    // North Star: Weekly Active Learners + Trend
+      nsm: nsm,                    // North Star: Weekly Active Learners + Trend + WAL/MAU
+      rounds: rounds,              // Runden-Abschlussquote (session_start -> session_complete)
       cohorts: cohorts,            // Retention-Heatmap (Erst-Tag × Tag-N)
       growth: growth,              // new/retained/resurrected/churned + Quick Ratio
       activation: activation,      // Aktivierungsrate + Funnel (neue Nutzer)

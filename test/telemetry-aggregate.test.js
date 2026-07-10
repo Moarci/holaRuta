@@ -293,4 +293,13 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
   assert.ok(school && school.users === 1 && school.activationPct === 100);
   // engagement.share stammt jetzt aus dem share-Event (content), nicht mehr aus dem action-Präfix.
   assert.deepEqual(s.engagement.share, [{ key: "stats", count: 1 }]);
+  // WAL/MAU: 2 Wochen-Learner / 3 Monatsnutzer (A,B,C alle im 30-T-Fenster) = 67 %.
+  assert.equal(inv.nsm.walMauPct, 67);
+  // Runden-Abschlussquote (separater Mini-Datensatz): 2 begonnene, 1 abgeschlossene Runde = 50 %.
+  const r = aggregate([
+    { event: "session_start", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0, props: {} },
+    { event: "session_start", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 1000, props: {} },
+    { event: "session_complete", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 2000, props: { secs: 60 } },
+  ], [], { now: NOW }).investor.rounds;
+  assert.deepEqual(r, { started: 2, completed: 1, completionPct: 50 });
 });
