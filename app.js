@@ -1131,6 +1131,7 @@
       streak: currentStreak(),
       everStudied: gamestats.lastStudyDate != null,
       xp: gamestats.xp || 0,           // XP-Stand vor der Runde (für die Level-Up-Szene)
+      startedAt: Date.now(),           // Rundenstart – für die exakte Sitzungsdauer (secs) im session_complete-Event
     };
     state.roundResult = null;          // wird von finishRound() am Rundenende gefüllt
     // Session-Start als Event – beginRound() ist der gemeinsame Einstieg ALLER
@@ -1191,13 +1192,24 @@
       levelAfter: levelFor(xpAfter),
       tripMilestone: tripMilestone, // {pct,dest}|null – Startklar-Meilenstein dieser Runde
     };
-    // Session-Abschluss als grobe Aggregat-Kennzahlen (keine Karten/Inhalte).
+    // Session-Abschluss: grobe Buckets (Abwärtskompatibilität) PLUS exakte Ints für die
+    // Investor-Interaktions-Tiefe pro Sitzung. „secs" = Dauer DIESER Runde, gegen
+    // Fingerprinting auf 1 h gedeckelt. Weiterhin keine Karten/Inhalte.
+    const secs = snap.startedAt ? Math.min(3600, Math.max(0, Math.round((Date.now() - snap.startedAt) / 1000))) : 0;
     trackEvent("session_complete", {
       answered: abucket(answered, [1, 5, 10, 20, 40]),
       accuracy: abucket(accuracy, [25, 50, 75, 90, 99]),
       xp: abucket(xpGained, [10, 30, 60, 120]),
       again: abucket(s.wrong, [1, 3, 6, 12]),
+      answered_n: answered,
+      correct_n: s.right,
+      xp_n: xpGained,
+      secs: secs,
     });
+    // Aktivierung: die allererste je abgeschlossene Lernrunde ist der „Aha"-Moment.
+    // snap.everStudied wurde in beginRound() VOR dem Runden-Update gelesen -> ist hier
+    // noch der Stand vor dieser Runde. Einmalig pro Nutzer, ohne extra Speicher.
+    if (!snap.everStudied && answered > 0) trackEvent("activation", { milestone: "first_session" });
   }
 
   // ----- Trip-Ziel (Countdown + Tagesziel) -----
@@ -7654,16 +7666,42 @@
 
     const handler = ACTIONS[action];
     if (handler) {
-      // Hochfrequente Lern-Aktionen NICHT als generisches „action"-Event doppeln –
-      // sie sind bereits über card_rated / die Session-Events abgedeckt und würden
-      // sonst die Event-Queue fluten.
-      if (!NOISY_ACTIONS[action]) trackEvent("action", actionProps(action, el));
+      // Teilen-Aktionen NICHT als generisches „action"-Event, sondern als dediziertes
+      // „share"-Event (Virality-Funnel) – sonst würde dieselbe Geste doppelt gezählt.
+      const shareContent = SHARE_ACTIONS[action];
+      if (shareContent) {
+        trackEvent("share", { content: shareContent });
+      } else if (!NOISY_ACTIONS[action]) {
+        // Hochfrequente Lern-Aktionen NICHT als generisches „action"-Event doppeln –
+        // sie sind bereits über card_rated / die Session-Events abgedeckt und würden
+        // sonst die Event-Queue fluten.
+        trackEvent("action", actionProps(action, el));
+      }
+      // Lernspiel-Rundenstart: feature_start (Gegenstück zu feature_complete) – additiv,
+      // ergibt zusammen die Start↔Abschluss-Quote je Spiel.
+      const feat = FEATURE_STARTS[action];
+      if (feat) trackEvent("feature_start", { feature: feat, mode: (el && el.dataset && el.dataset.mode) || undefined });
       handler(el);
     }
   }
 
   // Lern-Aktionen, die pro Karte mehrfach feuern und separat erfasst sind.
   const NOISY_ACTIONS = { flip: 1, rate: 1, skip: 1, speak: 1 };
+
+  // Teilen-Aktion -> „content"-Slug fürs share-Event (WAS wird geteilt, nie der Inhalt).
+  const SHARE_ACTIONS = {
+    "share-stats": "stats", "share-rank": "rank", "share-badge": "badge",
+    "share-placement": "placement", "share-assessment": "assessment", "share-card": "card",
+    "share-tips": "tips", "share-module": "module", "share-historia": "historia",
+    "share-hist-module": "histmodule", "share-country": "country",
+  };
+  // Lernspiel-Startaktion -> Feature-Slug (identisch zu FEATURE_COUNTERS/feature_complete,
+  // damit Start und Abschluss auf denselben Namen mappen -> saubere Abschlussquote).
+  const FEATURE_STARTS = {
+    "start-precios": "precios", "start-dialogos": "dialogos", "start-quiz": "definiciones",
+    "start-yesto": "yesto", "start-frases": "frases", "start-conjug": "conjug",
+    "start-battle": "battle",
+  };
 
   // Sichere, allowlist-basierte Props für ein „action"-Event. Bewusst NUR Enum-/
   // Kategorie-artige dataset-Felder (mode/dir/level/tab/scope) – NIE Freitext und

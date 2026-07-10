@@ -84,10 +84,13 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | **`screen_view`** | `screen`:slug · `tab`:slug | `app.js` · `render()` → `trackScreenView` | Ansicht gewechselt (nur bei echtem Wechsel; `tab` nur auf Home) |
 | **`action`** | `action`:slug · `mode` · `dir` · `level` · `tab` · `scope` | `app.js` · `onClick` (Aktions-Dispatch) | jeder Button-Klick mit `data-action`; **ausgenommen** die Hochfrequenz-Aktionen `flip`/`rate`/`skip`/`speak` (separat erfasst) |
 | **`session_start`** | `scope`:slug · `origin`:slug · `mode` · `cards`:Bucket`[5,10,20,40]` | `app.js` · `beginRound()` | Lernrunde gestartet – deckt **alle 6** Startpfade ab (Kategorie/Alles, Preset, Pre-Trip-Tag, Ruta del día, Favoriten, Einzelkarte). `scope` = `"all"`/Kategorie-Slug |
-| **`session_complete`** | `answered`:Bucket`[1,5,10,20,40]` · `accuracy`:Bucket`[25,50,75,90,99]` · `xp`:Bucket`[10,30,60,120]` · `again`:Bucket`[1,3,6,12]` | `app.js` · `finishRound()` | Lernrunde beendet (grobe Kennzahlen) |
+| **`session_complete`** | `answered`/`accuracy`/`xp`/`again`:Buckets · **`answered_n`/`correct_n`/`xp_n`/`secs`**:int | `app.js` · `finishRound()` | Lernrunde beendet. Buckets (grob) **plus** exakte Ints für die Investor-Interaktions-Tiefe pro Sitzung; `secs` = Dauer **dieser** Runde (auf 1 h gedeckelt) |
 | **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug | `app.js` · `rate()` | eine Karte bewertet – **nur** Bewertung/Modus/Stufe/**Kategorie**, **nie** Karten-Id/-Text |
+| **`feature_start`** | `feature`:slug · `mode`:slug | `app.js` · `onClick` (`FEATURE_STARTS`-Map bei `start-*`) | Lernspiel-Runde **gestartet** – Gegenstück zu `feature_complete` (ergibt die Abschlussquote). `feature` gleich benannt wie unten |
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
 | **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – **nur Länge & Trefferzahl**, **NIE** der Suchtext |
+| **`share`** | `content`:slug · `channel`:slug | `app.js` · `onClick` (`SHARE_ACTIONS`-Map bei `share-*`) | etwas geteilt (Virality-Funnel) – **nur** WAS (`content`: stats/card/tips/module …), **nie** Empfänger/Inhalt. Ersetzt das frühere generische `action`-Event für `share-*` |
+| **`activation`** | `milestone`:slug · `day_n`:int | `app.js` · `finishRound()` | Aktivierungs-„Aha" – heute `milestone:first_session` (allererste je abgeschlossene Runde) |
 | **`onboarding_step`** | `step`:`intro`/`profile`/`trip` · `n`:int | `app.js` · `beginOnboarding`/`onboardSlidesToProfile`/`advanceOnboardingProfile` | Onboarding-Schritt erreicht (Aktivierungs-Funnel). Greift nur mit Consent **während** des Onboardings (z. B. Editionen) |
 | **`onboarding_complete`** | – | `app.js` · `finishOnboarding` | Onboarding abgeschlossen |
 | **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen |
@@ -169,6 +172,7 @@ node build.js --edition=<id>
 
 | Bereich | Kennzahlen |
 |---|---|
+| **📈 Investor-Cockpit** (oben) | **North Star** (Weekly Active Learners + Trend), **DAU/WAU/MAU**, **Stickiness**, **Aktivierungsrate** + Funnel, **Retention-Kohorten-Heatmap** (Erst-Tag × Tag-N), **Growth Accounting** + **Quick Ratio**, **K-Faktor**/Virality, **Interaktionen pro Person/Sitzung/aktivem Tag**, **Ø Lernzeit/Runde**, **Start↔Abschluss je Lernspiel**, **B2B-KPIs je Edition**. Vollständige Definitionen: [`docs/INVESTOR-KPIS.md`](./INVESTOR-KPIS.md), Feld `investor` in `aggregate()` |
 | **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T, mit **Trend** vs. Vorwoche ▲/▼), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate**, **Stickiness** (Ø DAU/MAU); Balken „aktive Nutzer/Tag" |
 | **Akquise & Teilen** | **Akquise-Quelle** (`app_open.src`: task/onboarding-link/edition/direct), **Teilen**-Aktionen |
 | **Snapshot-Verteilungen** | **Feature-Adoption**, **Streak**, **Karten/Tag**, **Bewertungen gesamt** (Lebenszeit) |
@@ -251,11 +255,13 @@ loggt eintreffende Events nur im Terminal.
 - [ ] **Integrationstest** der Server-Routen (Token-401, `?days=`, `/api/stats.csv`, 400 bei kaputtem POST) — aktuell manuell verifiziert.
 - [ ] Optional Controller-Smoke, der belegt, dass die App-Hooks ohne Fehler feuern (DOM-Stub vorhanden).
 
-### 📈 TODO — Produkt-Metriken (nice-to-have)
-- [ ] Retention-**Kohorten über Zeit** (Heatmap Erst-Tag × Tag-N) statt nur D1/D7/D30-Gesamt.
-- [ ] **Trichter-Konversion** Onboarding→erste Session→wiederkehrend als ein Funnel.
+### 📈 Produkt-/Investor-Metriken
+- [x] Retention-**Kohorten über Zeit** (Heatmap Erst-Tag × Tag-N) — `investor.cohorts` + Dashboard-Heatmap.
+- [x] **Trichter-Konversion** neu→erste Session→wiederkehrend als ein Funnel — `investor.activation.funnel`.
+- [x] `feature_start` für Start↔Abschluss-Quote je Lernspiel — `investor.featureFunnel`.
+- [x] **North Star** (Weekly Active Learners), **Growth Accounting**/Quick Ratio, **K-Faktor**,
+      **Interaktionen pro Person/Sitzung/Tag**, **B2B-KPIs je Edition** — `investor`-Block; Konzept: `docs/INVESTOR-KPIS.md`.
 - [ ] **Alerting** bei Fehler-Spitzen je Version (Schwellenwert-Hinweis im Dashboard).
-- [ ] `feature_start` (heute nur `feature_complete`) für Start↔Abschluss-Quote je Lernspiel.
 
 ### 🧹 TODO — Housekeeping
 - [ ] Entscheiden, ob `mock-events-server.js` zugunsten von `telemetry-server.js` entfällt.

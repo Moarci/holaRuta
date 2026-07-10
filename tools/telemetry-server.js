@@ -83,6 +83,7 @@ function aggregate(events, usage, opts) {
   var ev = evAll.filter(function (e) { return isObj(e) && String(e.day || "") >= cutoff; });
   var us = usAll.filter(function (s) { return isObj(s) && String(s.day || "") >= cutoff; });
   var today = dayUTC(now);
+  var since7 = dayUTC(now - 6 * DAY_MS); // Untergrenze der letzten 7 Tage (inkl. heute)
 
   // --- Nutzer / DAU (Schlüssel = ungeprüfte Event-Daten -> Map/Set, keine Objekt-Writes) ---
   var clientsAll = new Map();          // clientId -> Set(Tage aktiv)
@@ -112,6 +113,19 @@ function aggregate(events, usage, opts) {
   var platformClients = new Map();     // platform -> Set(clientId)
   var acquisition = new Map();         // src -> distinkte Nutzer (nach erster Quelle)
   var clientFirstOpen = new Map();     // clientId -> { ts, src } (früheste Quelle je Nutzer)
+  // --- Investor-KPIs (alle mit ungeprüften Event-Daten geschlüsselt -> Map/Set) ---
+  var eventsPerClient = new Map();     // clientId -> Events gesamt (Interaktionen/Person)
+  var walDay = new Map();              // day -> Set(clientId) mit session_complete (NSM-Rohdaten)
+  var activatedClients = new Set();    // clientId mit >=1 session_complete (aktiviert)
+  var firstSessionClients = new Set(); // clientId mit activation:first_session
+  var featureStarts = new Map();       // feature -> Startanzahl (Start<->Abschluss-Quote)
+  var shareEvents = 0;                 // Anzahl share-Events (Virality)
+  var sharers = new Set();             // clientId, die geteilt haben
+  var shareContentCounts = new Map();  // content -> Anzahl (was wird geteilt)
+  var secsList = [];                   // exakte Rundendauern (session_complete.secs)
+  var editionSessions = new Map();     // edition -> Set(sessionId)
+  var editionActivated = new Map();    // edition -> Set(clientId mit session_complete)
+  var editionActive7 = new Map();      // edition -> Set(clientId) aktiv in letzten 7 Tagen
 
   ev.forEach(function (e) {
     var day = String(e.day || "");
@@ -122,13 +136,17 @@ function aggregate(events, usage, opts) {
     var p = isObj(e.props) ? e.props : {};
 
     inc(eventCounts, name);
+    if (cid) inc(eventsPerClient, cid); // Interaktionen pro Person
     if (e.appVersion) inc(appVersions, String(e.appVersion));
     if (e.locale) inc(locales, String(e.locale));
     if (e.track) inc(tracks, String(e.track));
+    var edi = String(e.edition || "none");
     if (cid) {
-      addToSet(editionClients, String(e.edition || "none"), cid);
+      addToSet(editionClients, edi, cid);
       addToSet(platformClients, String(e.platform || "other"), cid);
+      if (day >= since7) addToSet(editionActive7, edi, cid); // WAU je Edition
     }
+    if (sid) addToSet(editionSessions, edi, sid); // Sessions je Edition
     if (ts) { var dt = new Date(ts); hourCount[dt.getUTCHours()]++; weekdayCount[dt.getUTCDay()]++; }
 
     if (cid && day) addToSet(clientsAll, cid, day);
@@ -158,10 +176,21 @@ function aggregate(events, usage, opts) {
         if (p.cat) { var cat = String(p.cat); var cs = catStats.get(cat); if (!cs) { cs = { total: 0, again: 0 }; catStats.set(cat, cs); } cs.total++; if (p.rating === "again") cs.again++; }
         break;
       case "session_start": if (p.mode) inc(modeCount, String(p.mode)); break;
-      case "session_complete": if (p.accuracy) inc(accuracyDist, String(p.accuracy)); break;
+      case "session_complete":
+        if (p.accuracy) inc(accuracyDist, String(p.accuracy));
+        if (cid) { if (day) addToSet(walDay, day, cid); activatedClients.add(cid); addToSet(editionActivated, edi, cid); } // NSM/Aktivierung
+        if (typeof p.secs === "number" && p.secs > 0) secsList.push(p.secs); // exakte Time-on-Task
+        break;
+      case "feature_start": if (p.feature) inc(featureStarts, String(p.feature)); break;
       case "feature_complete":
         if (p.feature) { var ft = String(p.feature); var f = featureCompletes.get(ft); if (!f) { f = { count: 0, perfect: 0 }; featureCompletes.set(ft, f); } f.count++; if (p.perfect) f.perfect++; }
         break;
+      case "share":
+        shareEvents++;
+        if (cid) sharers.add(cid);
+        if (p.content) inc(shareContentCounts, String(p.content));
+        break;
+      case "activation": if (cid && p.milestone === "first_session") firstSessionClients.add(cid); break;
       case "search": searchTotal++; if (p.results === "0") searchZero++; break;
       case "onboarding_step": if (p.step && cid) addToSet(onboardSteps, String(p.step), cid); break;
       case "onboarding_complete": if (cid) onboardComplete.add(cid); break;
@@ -224,11 +253,6 @@ function aggregate(events, usage, opts) {
     if (s.tripDaily) inc(tripDailyDist, String(s.tripDaily));
   });
 
-  // --- Teilen-Aktivität (share-*) aus den Aktionen ---
-  var shareMap = new Map();
-  actionCounts.forEach(function (v, k) { if (k.indexOf("share") === 0) shareMap.set(k, v); });
-  var shareActions = topCounts(shareMap);
-
   // --- Trend vs. Vorperiode: aktive Nutzer der letzten 7 Tage vs. der 7 davor ---
   // Scannt ALLE Events (nicht die Fenster-gefilterten), da die Vorperiode sonst bei
   // kleinen Fenstern (z. B. days=7) herausfiele.
@@ -282,6 +306,157 @@ function aggregate(events, usage, opts) {
   // wiederkehrende „direct"-Starts die Kanäle verzerren).
   clientFirstOpen.forEach(function (fo) { inc(acquisition, fo.src); });
 
+  // ======================= INVESTOR-KPIs =======================
+  // Bewusst über ALLE Events (evAll), nicht das Fenster: der echte Erst-Kontakt/die
+  // erste Quelle liegen oft VOR dem Fenster; sonst würden Kohorten/K-Faktor verzerrt.
+  var clientFirstDayAll = new Map();   // clientId -> frühester Tag (lebenslang)
+  var clientFirstOpenAll = new Map();  // clientId -> { ts, src } (erste Quelle, lebenslang)
+  evAll.forEach(function (e) {
+    if (!isObj(e)) return;
+    var cid = String(e.clientId || ""); if (!cid) return;
+    var day = String(e.day || "");
+    if (day) { var fd = clientFirstDayAll.get(cid); if (!fd || day < fd) clientFirstDayAll.set(cid, day); }
+    if (String(e.event || "") === "app_open") {
+      var p2 = isObj(e.props) ? e.props : {};
+      if (p2.src) { var ts2 = num(e.ts); var fo = clientFirstOpenAll.get(cid); if (!fo || ts2 < fo.ts) clientFirstOpenAll.set(cid, { ts: ts2, src: String(p2.src) }); }
+    }
+  });
+  // Aktiv-/NSM-Mengen über einen frei wählbaren Rückblick (aus evAll, wie activeUsersWindow).
+  function windowSet(offset, len, onlyEvent) {
+    var hi = dayUTC(now - offset * DAY_MS), lo = dayUTC(now - (offset + len - 1) * DAY_MS);
+    var set = new Set();
+    evAll.forEach(function (e) {
+      if (!isObj(e)) return;
+      if (onlyEvent && String(e.event || "") !== onlyEvent) return;
+      var day = String(e.day || ""), cid = String(e.clientId || "");
+      if (cid && day >= lo && day <= hi) set.add(cid);
+    });
+    return set;
+  }
+
+  // --- North Star: Weekly Active Learners (session_complete in 7 T) + Trend ---
+  var walCur = windowSet(0, 7, "session_complete").size;
+  var walPrev = windowSet(7, 7, "session_complete").size;
+  var nsm = { wal: walCur, trend: trend(walCur, walPrev), avgSessionsPerLearner: walCur ? Math.round((sessions.size / walCur) * 10) / 10 : 0 };
+
+  // --- Retention-Kohorten-Heatmap (Erst-Tag × Tag-N; nur eligible zählt) ---
+  var COHORT_OFFSETS = [0, 1, 2, 3, 7, 14, 30]; // feste Zahl-Schlüssel -> Objekt unbedenklich
+  var cohortMap = new Map(); // firstDay -> { size, ret: {offset->count} }
+  clientFirstDay.forEach(function (first, c) {
+    var co = cohortMap.get(first);
+    if (!co) { co = { size: 0, ret: {} }; COHORT_OFFSETS.forEach(function (k) { co.ret[k] = 0; }); cohortMap.set(first, co); }
+    co.size++;
+    var ds = clientsAll.get(c);
+    COHORT_OFFSETS.forEach(function (k) { if (addDays(first, k) <= today && ds && ds.has(addDays(first, k))) co.ret[k]++; });
+  });
+  var cohorts = [];
+  cohortMap.forEach(function (co, first) {
+    cohorts.push({
+      cohort: first, size: co.size,
+      cells: COHORT_OFFSETS.map(function (k) {
+        var elig = addDays(first, k) <= today;
+        return { dayN: k, eligible: elig, retained: co.ret[k], pct: (elig && co.size) ? Math.round((co.ret[k] / co.size) * 100) : null };
+      }),
+    });
+  });
+  cohorts.sort(function (a, b) { return a.cohort < b.cohort ? 1 : -1; }); // neueste Kohorte zuerst
+  cohorts = cohorts.slice(0, 14);
+
+  // --- Growth Accounting: new / retained / resurrected / churned + Quick Ratio ---
+  var gCur = windowSet(0, 7), gPrev = windowSet(7, 7);
+  var gNew = 0, gRet = 0, gRes = 0, gChurn = 0;
+  gCur.forEach(function (c) {
+    var fd = clientFirstDayAll.get(c) || "";
+    if (fd && fd >= since7) gNew++;        // Erst-Kontakt in dieser Woche
+    else if (gPrev.has(c)) gRet++;         // war auch letzte Woche aktiv
+    else gRes++;                           // war früher da, letzte Woche weg -> reaktiviert
+  });
+  gPrev.forEach(function (c) { if (!gCur.has(c)) gChurn++; });
+  var growth = {
+    newUsers: gNew, retained: gRet, resurrected: gRes, churned: gChurn,
+    quickRatio: gChurn ? Math.round(((gNew + gRes) / gChurn) * 100) / 100 : (gNew + gRes), // kein Churn -> reine Zugänge
+  };
+
+  // --- Aktivierung: von den NEUEN Nutzern (Erst-Kontakt im Fenster) wie viele lernen? ---
+  var cohortNew = new Set();
+  clientFirstDayAll.forEach(function (fd, c) { if (fd >= cutoff) cohortNew.add(c); });
+  var actActivated = 0, actOnboard = 0, actReturning = 0;
+  cohortNew.forEach(function (c) {
+    if (activatedClients.has(c)) actActivated++;
+    if (onboardComplete.has(c)) actOnboard++;
+    var ds = clientsAll.get(c); if (ds && ds.size >= 2) actReturning++;
+  });
+  var activation = {
+    newUsers: cohortNew.size,
+    activated: actActivated,
+    ratePct: cohortNew.size ? Math.round((actActivated / cohortNew.size) * 100) : 0,
+    funnel: [
+      { step: "new", count: cohortNew.size },
+      { step: "onboarding_complete", count: actOnboard },
+      { step: "first_session", count: actActivated },
+      { step: "returning", count: actReturning },
+    ],
+  };
+
+  // --- Virality / K-Faktor (Erst-Quelle lebenslang -> keine Fenster-Verzerrung) ---
+  var SHARE_SRC = { "module-link": 1, "task": 1, "onboard-link": 1 }; // feste Schlüssel
+  var sharedInstalls = 0;
+  clientFirstOpenAll.forEach(function (fo) { if (fo && SHARE_SRC[fo.src] === 1) sharedInstalls++; });
+  var virality = {
+    sharers: sharers.size,
+    shares: shareEvents,
+    sharesPerUser: totalUsers ? Math.round((shareEvents / totalUsers) * 100) / 100 : 0,
+    sharedInstalls: sharedInstalls,
+    kFactor: totalUsers ? Math.round((sharedInstalls / totalUsers) * 100) / 100 : 0, // viraler Koeffizient
+    content: topCounts(shareContentCounts),
+  };
+
+  // --- Interaktionen pro Person / Sitzung / aktivem Tag ---
+  function histLabels(edges) { var l = [], lo = 1; for (var i = 0; i < edges.length; i++) { l.push(lo === edges[i] ? String(lo) : (lo + "-" + edges[i])); lo = edges[i] + 1; } l.push(lo + "+"); return l; }
+  function histBucket(v, edges) { if (v <= 0) return "0"; var lo = 1; for (var i = 0; i < edges.length; i++) { if (v <= edges[i]) return lo === edges[i] ? String(lo) : (lo + "-" + edges[i]); lo = edges[i] + 1; } return lo + "+"; }
+  function histogram(values, edges) { var m = new Map(); histLabels(edges).forEach(function (l) { m.set(l, 0); }); values.forEach(function (v) { inc(m, histBucket(v, edges)); }); var out = []; m.forEach(function (c, b) { out.push({ bucket: b, count: c }); }); return out; }
+  var sessionCounts = []; sessions.forEach(function (s) { sessionCounts.push(s.count); });
+  var userCounts = []; eventsPerClient.forEach(function (v) { userCounts.push(v); });
+  var activeUserDays = 0; clientsAll.forEach(function (ds) { activeUserDays += ds.size; });
+  var interactions = {
+    perSession: { avg: sessions.size ? Math.round((ev.length / sessions.size) * 10) / 10 : 0, median: median(sessionCounts), histogram: histogram(sessionCounts, [1, 3, 5, 10, 20]) },
+    perUser: { avg: totalUsers ? Math.round((ev.length / totalUsers) * 10) / 10 : 0, median: median(userCounts), histogram: histogram(userCounts, [1, 3, 10, 30, 100]) },
+    perActiveDay: { avg: activeUserDays ? Math.round((ev.length / activeUserDays) * 10) / 10 : 0, activeUserDays: activeUserDays },
+  };
+
+  // --- Präzise Time-on-Task (aus session_complete.secs) ---
+  var timeOnTask = {
+    avgSec: secsList.length ? Math.round(secsList.reduce(function (a, b) { return a + b; }, 0) / secsList.length) : 0,
+    medianSec: median(secsList),
+    rounds: secsList.length,
+  };
+
+  // --- Feature Start↔Abschluss-Quote je Lernspiel ---
+  var featKeys = new Set();
+  featureStarts.forEach(function (v, k) { featKeys.add(k); });
+  featureCompletes.forEach(function (v, k) { featKeys.add(k); });
+  var featureFunnel = [];
+  featKeys.forEach(function (k) {
+    var starts = featureStarts.get(k) || 0;
+    var comp = featureCompletes.has(k) ? featureCompletes.get(k).count : 0;
+    featureFunnel.push({ feature: k, starts: starts, completes: comp, completionPct: starts ? Math.min(100, Math.round((comp / starts) * 100)) : null });
+  });
+  featureFunnel.sort(function (a, b) { return b.starts - a.starts || b.completes - a.completes; });
+
+  // --- B2B: KPIs je Edition ---
+  var editionKPIs = [];
+  editionClients.forEach(function (set, edi) {
+    var users = set.size;
+    var act = editionActivated.has(edi) ? editionActivated.get(edi).size : 0;
+    editionKPIs.push({
+      edition: edi, users: users,
+      sessions: editionSessions.has(edi) ? editionSessions.get(edi).size : 0,
+      activated: act, activationPct: users ? Math.round((act / users) * 100) : 0,
+      wau: editionActive7.has(edi) ? editionActive7.get(edi).size : 0,
+    });
+  });
+  editionKPIs.sort(function (a, b) { return b.users - a.users; });
+
   return {
     generatedAt: now,
     windowDays: windowDays,
@@ -321,8 +496,20 @@ function aggregate(events, usage, opts) {
       events: topCounts(eventCounts),
       screens: topCounts(screenCounts, 12),
       actions: topCounts(actionCounts, 15),
-      share: shareActions,
+      share: topCounts(shareContentCounts), // aus dem dedizierten share-Event (content)
       acquisition: topCounts(acquisition),
+    },
+    // ------- Investor-Cockpit: AARRR auf einen Blick -------
+    investor: {
+      nsm: nsm,                    // North Star: Weekly Active Learners + Trend
+      cohorts: cohorts,            // Retention-Heatmap (Erst-Tag × Tag-N)
+      growth: growth,              // new/retained/resurrected/churned + Quick Ratio
+      activation: activation,      // Aktivierungsrate + Funnel (neue Nutzer)
+      virality: virality,          // Shares, Share-Installs, K-Faktor
+      interactions: interactions,  // Interaktionen pro Person/Sitzung/aktivem Tag
+      timeOnTask: timeOnTask,      // präzise Lern-Zeit je Runde (secs)
+      featureFunnel: featureFunnel,// Start↔Abschluss-Quote je Lernspiel
+      editions: editionKPIs,       // B2B: KPIs je Edition
     },
     learning: {
       ratings: ratingCounts,

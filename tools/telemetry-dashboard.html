@@ -43,6 +43,17 @@
   .ttip { fill:var(--ink); font-size:10px; }
   footer { color:var(--mut); font-size:12px; padding:0 24px 40px; max-width:1180px; margin:0 auto; }
   code { background:#0d0f14; padding:1px 5px; border-radius:4px; }
+  h2.sec { font-size:16px; margin:6px 0 14px; font-weight:700; }
+  h2.sec small { color:var(--mut); font-weight:400; }
+  hr.sec-sep { border:none; border-top:1px solid var(--line); margin:28px 0; }
+  table.kpitab { width:100%; border-collapse:collapse; font-size:13px; }
+  table.kpitab th, table.kpitab td { text-align:right; padding:5px 8px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+  table.kpitab th:first-child, table.kpitab td:first-child { text-align:left; }
+  table.kpitab th { color:var(--mut); font-weight:600; }
+  table.heat { width:100%; border-collapse:collapse; font-size:11px; }
+  table.heat th, table.heat td { padding:3px 5px; text-align:center; border:1px solid var(--bg); font-variant-numeric:tabular-nums; }
+  table.heat th { color:var(--mut); font-weight:600; }
+  table.heat td.lab { text-align:left; color:var(--mut); white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -116,9 +127,89 @@ function kpi(v, l, h, color, raw){
 }
 function arrow(delta){ delta=delta|0; if(delta>0) return '<span style="color:var(--good)">▲ '+delta+'%</span>'; if(delta<0) return '<span style="color:var(--bad)">▼ '+Math.abs(delta)+'%</span>'; return '<span style="color:var(--mut)">±0%</span>'; }
 
+// Retention-Kohorten-Heatmap (Erst-Tag × Tag-N). cohorts = [{cohort,size,cells:[{dayN,eligible,pct,retained}]}]
+function heatmap(cohorts){
+  if(!cohorts || !cohorts.length) return '<p class="empty">— keine Kohorten-Daten —</p>';
+  var offs = cohorts[0].cells.map(function(c){ return c.dayN; });
+  var head = '<tr><th class="lab">Kohorte (Erst-Tag)</th><th>Größe</th>'+offs.map(function(k){ return '<th>D'+k+'</th>'; }).join("")+'</tr>';
+  var rows = cohorts.map(function(co){
+    var cells = co.cells.map(function(c){
+      if(!c.eligible) return '<td style="color:var(--mut)">·</td>';
+      if(c.pct==null) return '<td>·</td>';
+      var bg = 'rgba(95,179,122,'+(0.10+(c.pct/100)*0.85).toFixed(2)+')'; // --good, Intensität = %
+      return '<td style="background:'+bg+'" title="'+c.retained+' / '+co.size+'">'+c.pct+'%</td>';
+    }).join("");
+    return '<tr><td class="lab">'+esc(co.cohort)+'</td><td>'+co.size+'</td>'+cells+'</tr>';
+  }).join("");
+  return '<div style="overflow-x:auto"><table class="heat">'+head+rows+'</table></div>';
+}
+
+// B2B: KPI-Tabelle je Edition. eds = [{edition,users,wau,sessions,activationPct}]
+function editionTable(eds){
+  if(!eds || !eds.length) return '<p class="empty">— keine Editionen —</p>';
+  var head = '<tr><th>Edition</th><th>Nutzer</th><th>WAU</th><th>Sessions</th><th>Aktiv.-%</th></tr>';
+  var rows = eds.map(function(e){
+    return '<tr><td>'+esc(e.edition)+'</td><td>'+e.users+'</td><td>'+e.wau+'</td><td>'+e.sessions+'</td><td>'+e.activationPct+'%</td></tr>';
+  }).join("");
+  return '<div style="overflow-x:auto"><table class="kpitab">'+head+rows+'</table></div>';
+}
+
 function render(s){
   var u=s.users, se=s.sessions, le=s.learning;
   var html = "";
+
+  // ===================== 📈 Investor-Cockpit (AARRR) =====================
+  if(s.investor){
+    var inv = s.investor;
+    function retPct(k){ var r=(u.retention||[]).filter(function(x){return x.day===k;})[0]; return r?r.pct:0; }
+    var stick = u.stickinessPct||0, kf = (inv.virality&&inv.virality.kFactor)||0, qr = (inv.growth&&inv.growth.quickRatio)||0;
+    html += '<h2 class="sec">📈 Investor-Cockpit <small>AARRR auf einen Blick — pro Person · Sitzung · Tag · Kohorte · Edition</small></h2>';
+    html += '<div class="kpis">'
+      + kpi((inv.nsm&&inv.nsm.wal)||0, "★ North Star: WAL", "Weekly Active Learners", "var(--brand)", " · Vorwoche "+arrow(((inv.nsm&&inv.nsm.trend)||{}).deltaPct))
+      + kpi(u.dauToday+" / "+u.wau+" / "+u.mau, "DAU / WAU / MAU", "aktive Nutzer")
+      + kpi(stick+" %", "Stickiness", "Ø DAU / MAU", stick>=20?"var(--good)":"var(--ink)")
+      + kpi((inv.activation&&inv.activation.ratePct||0)+" %", "Aktivierungsrate", (inv.activation&&inv.activation.activated||0)+" / "+(inv.activation&&inv.activation.newUsers||0)+" neue", "var(--good)")
+      + kpi(kf, "K-Faktor", (inv.virality&&inv.virality.sharedInstalls||0)+" Share-Installs", kf>=1?"var(--good)":"var(--ink)")
+      + kpi(qr, "Quick Ratio", "(neu+reakt.)/Churn", qr>=1?"var(--good)":"var(--bad)")
+      + kpi(retPct(1)+" / "+retPct(7)+" / "+retPct(30)+" %", "Retention D1/D7/D30", "% Tag-N zurück")
+      + kpi((inv.interactions&&inv.interactions.perSession.avg)||0, "Ø Interakt./Sitzung", "Median "+((inv.interactions&&inv.interactions.perSession.median)||0), "var(--accent)")
+      + kpi(fmtDur((inv.timeOnTask&&inv.timeOnTask.avgSec)||0), "Ø Lernzeit/Runde", ((inv.timeOnTask&&inv.timeOnTask.rounds)||0)+" Runden", "var(--good)")
+      + '</div>';
+
+    html += '<div class="panel"><h2>Retention-Kohorten <small>(Erst-Tag × Tag-N, % wieder aktiv — grob, UTC-Tagesgrenzen)</small></h2>'+heatmap(inv.cohorts)+'</div>';
+
+    html += '<div class="grid">';
+    html += '<div class="panel"><h2>Growth Accounting <small>(letzte 7 Tage vs. Vorwoche)</small></h2>'
+      + hbars([{label:"🆕 Neu",count:inv.growth.newUsers},{label:"🔁 Wiederkehrend",count:inv.growth.retained},{label:"💫 Reaktiviert",count:inv.growth.resurrected},{label:"👋 Abgewandert",count:inv.growth.churned}],{color:"var(--brand)"})
+      + '<div class="h" style="margin-top:8px">Quick Ratio <b>'+esc(qr)+'</b> <small>(&gt;1 = Wachstum)</small></div></div>';
+    html += '<div class="panel"><h2>Aktivierungs-Funnel <small>(neue Nutzer im Fenster)</small></h2>'
+      + hbars((inv.activation.funnel||[]).map(function(f){return {label:f.step,count:f.count};}),{color:"var(--good)"})+'</div>';
+    html += '</div>';
+
+    html += '<div class="grid">';
+    html += '<div class="panel"><h2>Virality / K-Faktor</h2>'
+      + hbars([{label:"Teilende Nutzer",count:inv.virality.sharers},{label:"Shares gesamt",count:inv.virality.shares},{label:"Share-Installs",count:inv.virality.sharedInstalls}],{color:"var(--good)"})
+      + '<div class="h" style="margin-top:8px">K-Faktor <b>'+esc(kf)+'</b> · Ø '+esc(inv.virality.sharesPerUser)+' Shares/Nutzer</div>'
+      + ((inv.virality.content&&inv.virality.content.length)? '<h2 style="margin-top:14px">Geteilte Inhalte</h2>'+hbars(inv.virality.content.map(function(c){return {label:c.key,count:c.count};})) : '')
+      + '</div>';
+    html += '<div class="panel"><h2>Interaktionen pro Sitzung</h2>'
+      + hbars((inv.interactions.perSession.histogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--accent)"})
+      + '<h2 style="margin-top:14px">Interaktionen pro Person</h2>'
+      + hbars((inv.interactions.perUser.histogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--brand)"})
+      + '<div class="h" style="margin-top:8px">Ø '+esc(inv.interactions.perActiveDay.avg)+' Interaktionen / aktivem Nutzer-Tag</div>'
+      + '</div>';
+    html += '</div>';
+
+    html += '<div class="grid">';
+    html += '<div class="panel"><h2>Lernspiel: Start → Abschluss <small>(Abschlussquote je Spiel)</small></h2>'
+      + ((inv.featureFunnel&&inv.featureFunnel.length)? hbars(inv.featureFunnel.map(function(f){return {label:f.feature+" · "+f.starts+"→"+f.completes, count:(f.completionPct==null?0:f.completionPct)};}),{color:"var(--warn)",fmt:function(d){return d.count+" %";}}) : '<p class="empty">— noch keine feature_start-Daten —</p>')+'</div>';
+    html += '<div class="panel"><h2>B2B: KPIs je Edition <small>(Umsatzkanal)</small></h2>'+editionTable(inv.editions)+'</div>';
+    html += '</div>';
+
+    html += '<hr class="sec-sep"/>';
+    html += '<h2 class="sec">🔎 Details</h2>';
+  }
+
   html += '<div class="kpis">'
     + kpi(u.total, "Nutzer (distinkt)", "im "+s.windowDays+"-Tage-Fenster", "var(--brand)")
     + kpi(u.dauToday, "Aktiv heute (DAU)", s.today)
@@ -151,7 +242,7 @@ function render(s){
   html += '<div class="grid">';
   html += '<div class="panel"><h2>Akquise-Quelle <small>(distinkte Nutzer nach erster Quelle)</small></h2>'
     + hbars(((s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})+'</div>';
-  html += '<div class="panel"><h2>Teilen <small>(share-Aktionen)</small></h2>'
+  html += '<div class="panel"><h2>Teilen <small>(geteilte Inhalte · share-Event)</small></h2>'
     + ((s.engagement.share&&s.engagement.share.length)? hbars(s.engagement.share.map(function(a){return {label:a.key,count:a.count};}),{color:"var(--good)"}) : '<p class="empty">— keine —</p>')+'</div>';
   html += '</div>';
 
