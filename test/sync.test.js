@@ -353,9 +353,9 @@ test("push: baseRev wird durchgereicht (Default 0, nicht verschluckt)", async ()
   assert.equal(bodies[0].payload.foo, 1);
 });
 
-test("push: lehnt zu große Payloads vorab ab (BACKEND.md §13, 256 KB) – kein Request", async () => {
+test("push: lehnt zu große Payloads vorab ab (2 MB, R1) – kein Request", async () => {
   let called = false;
-  const big = { blob: "x".repeat(300 * 1024) }; // > 256 KB als JSON
+  const big = { blob: "x".repeat(2 * 1024 * 1024 + 1024) }; // > 2 MB als JSON
   await withStubs(
     { request: () => { called = true; return Promise.resolve({ ok: true, body: {} }); } },
     {}, {},
@@ -364,23 +364,23 @@ test("push: lehnt zu große Payloads vorab ab (BACKEND.md §13, 256 KB) – kein
   assert.equal(called, false, "übergroßer Push erreicht das Netzwerk gar nicht");
 });
 
-test("push: normal große Payload geht durch (deutlich unter dem 256-KB-Limit)", async () => {
+test("push: Power-User-Payload geht durch (deutlich unter dem 2-MB-Limit)", async () => {
   let called = false;
-  // ~5 KB: liegt unter dem echten Limit (256*1024), aber ÜBER einer kaputten
-  // 256+1024-Grenze -> verriegelt, dass das Limit wirklich 256*1024 Bytes ist.
-  const ok = { blob: "x".repeat(5 * 1024) };
+  // ~300 KB: würde am alten 256-KB-Limit (R1) scheitern, unter 2 MB nun erlaubt –
+  // verriegelt, dass ein Power-User (viele Karten + placementHistory) syncen kann.
+  const ok = { blob: "x".repeat(300 * 1024) };
   await withStubs(
     { request: () => { called = true; return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
     {}, {},
     async () => { const r = await sync.push(ok, 0); assert.equal(r.ok, true); },
   );
-  assert.equal(called, true, "normale Payload wird gesendet");
+  assert.equal(called, true, "Power-User-Payload wird gesendet");
 });
 
-test("push: Payload exakt am Limit (256 KB) wird noch akzeptiert (Grenze ist exklusiv: >)", async () => {
+test("push: Payload exakt am Limit (2 MB) wird noch akzeptiert (Grenze ist exklusiv: >)", async () => {
   let called = false;
-  // JSON {"blob":"x…x"} = N + 11 Bytes (ASCII). N so, dass es GENAU 256*1024 Bytes sind.
-  const exact = { blob: "x".repeat(256 * 1024 - 11) };
+  // JSON {"blob":"x…x"} = N + 11 Bytes (ASCII). N so, dass es GENAU 2*1024*1024 Bytes sind.
+  const exact = { blob: "x".repeat(2 * 1024 * 1024 - 11) };
   await withStubs(
     { request: () => { called = true; return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
     {}, {},
@@ -551,4 +551,86 @@ test("syncNow: 409 mit rev 0 -> Retry-baseRev bleibt 0 (nicht 1)", async () => {
     {}, () => sync.syncNow(),
   );
   assert.equal(pushes[1].baseRev, 0, "rev 0 bleibt 0, nicht 1");
+});
+
+// ============================================================================
+// Gezielte Mutations-Killer (Engine-Gate No-Regression für sync.js). Jeder Test
+// unten tötet exakt einen sonst überlebenden Mutanten.
+// ============================================================================
+
+test("mergeProgress: mehr reps gewinnt AUCH bei riesigem due der schwächeren Karte (progressScore: * nicht +)", () => {
+  // Mutant sync.js progressScore `reps*1e15` -> `reps+1e15`: dann dominiert due die
+  // reps-Differenz und die Karte mit WENIGER Wiederholungen (aber großem due) gewänne.
+  const a = { c: { reps: 2, due: 0 } };
+  const b = { c: { reps: 1, due: 5e14 } };
+  assert.equal(sync.mergeProgress(a, b).c.reps, 2, "reps=2 gewinnt trotz kleinem due gegen reps=1 mit riesigem due");
+});
+
+test("mergeGamestats: boolean-Wert bleibt bei nicht-boolean Gegenwert erhalten (boolean-Zweig braucht &&, nicht ||)", () => {
+  // Mutant `typeof va==="boolean" && typeof vb==="boolean"` -> `||`: dann liefe
+  // out = va || vb auch, wenn nur EINER boolean ist -> false || 5 = 5 statt false.
+  const m = sync.mergeGamestats({ someFlag: false }, { someFlag: 5 });
+  assert.equal(m.someFlag, false, "va=false (boolean) bleibt, wird nicht durch vb=5 ersetzt");
+});
+
+test("mergeTasks: gleich lange Inhalte bei Id-Kollision -> erste Variante bleibt (strikt >, nicht >=)", () => {
+  // Mutant `length > length` -> `>=`: bei Gleichstand überschriebe die zweite die erste.
+  const m = sync.mergeTasks([{ code: "T", x: 1 }], [{ code: "T", y: 2 }]);
+  assert.equal(m.length, 1);
+  assert.equal(m[0].x, 1, "erste (x:1) bleibt bei gleicher JSON-Länge; nicht durch y:2 ersetzt");
+});
+
+test("logout: ruft den Server-Logout NUR bei enabled UND eingeloggt (Guard braucht &&, nicht ||)", async () => {
+  // Mutant `enabled() && loggedIn()` -> `||`: dann würde req() schon feuern, wenn nur
+  // eines zutrifft. Hier: enabled=true, aber NICHT eingeloggt -> kein Server-Call.
+  let called = false;
+  await withStubs(
+    { loggedIn: () => false, logout: () => {}, request: () => { called = true; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, {},
+    () => { sync.logout(); },
+  );
+  assert.equal(called, false, "nicht eingeloggt -> kein POST /v1/auth/logout");
+  // Positivfall: enabled UND eingeloggt -> genau ein Logout-Request an den richtigen Pfad.
+  let path = null;
+  await withStubs(
+    { loggedIn: () => true, logout: () => {}, request: (_b, m, p) => { path = m + " " + p; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, {},
+    () => { sync.logout(); },
+  );
+  assert.equal(path, "POST /v1/auth/logout", "eingeloggt -> Server-Logout ausgelöst");
+});
+
+test("syncNow: 409-Retry ohne rev in der zweiten Antwort -> rev 0 (Fallback ist 0, nicht 1)", async () => {
+  // Mutant `(pr2.body && pr2.body.rev) || 0` -> `|| 1`: dann käme fälschlich rev:1.
+  const GS = GAMESTATS;
+  const res = await withStubs(
+    {
+      loggedIn: () => true,
+      request: (() => {
+        let puts = 0;
+        return (_b, method, _p, body) => {
+          if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 3 } });
+          puts++;
+          // 1. PUT -> 409 mit Serverstand; 2. PUT (pr2) -> ok, aber OHNE rev.
+          if (puts === 1) return Promise.resolve({ ok: false, status: 409, body: { payload: { [GS]: { reviews: 2 } }, rev: 4 } });
+          return Promise.resolve({ ok: true, status: 200, body: {} });
+        };
+      })(),
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {},
+    () => sync.syncNow(),
+  );
+  assert.equal(res.rev, 0, "fehlender rev in der Retry-Antwort -> 0, nicht 1");
+});
+
+test("syncNow: lehnt ab, wenn eingeloggt fehlt (Guard braucht ||, nicht &&)", async () => {
+  // Mutant `!enabled() || !loggedIn()` -> `&&`: dann würde bei enabled=true &
+  // loggedIn=false NICHT abgelehnt und ein Sync gestartet. Muss aber ablehnen.
+  await withStubs(
+    { loggedIn: () => false, request: () => { throw new Error("darf nicht syncen"); } },
+    { exportData: () => ({ data: {} }), importData: () => {} },
+    {},
+    () => assert.rejects(() => sync.syncNow(), /not ready/),
+  );
 });

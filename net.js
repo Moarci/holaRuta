@@ -96,7 +96,13 @@
     return request(base, "POST", "/v1/auth/start", { email: String(email || "").trim() })
       .then(function (r) {
         if (r.ok && r.body && r.body.devToken) { setToken(r.body.devToken); return { account: r.body.account || { email: email } }; }
-        return { pending: true }; // echter Flow: auf Magic-Link/OTP warten
+        if (r.ok) return { pending: true }; // echter Flow: auf Magic-Link/OTP warten
+        // Echte Fehlerantwort (400 ungültige Mail, 429 Rate-Limit, 502 Mailversand)
+        // NICHT als pending verschlucken – sonst zeigt die UI „Mail prüfen", obwohl
+        // nie eine kommt. Ablehnen -> der Aufrufer (app.js) nimmt den Fehler-Pfad.
+        var err = new Error("login failed");
+        err.status = r.status;
+        throw err;
       });
   }
   function confirm(base, email, token) {

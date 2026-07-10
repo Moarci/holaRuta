@@ -18,7 +18,7 @@
  * neue Dateien in einer laufenden Sitzung (Mixed-Version-Load): das Aktivieren
  * ist immer an ein vollständiges Reload gekoppelt.
  */
-const CACHE_VERSION = "holaruta-d8beeda0b1b5"; // von build.js gestempelt – nicht von Hand ändern
+const CACHE_VERSION = "holaruta-03ffcbfa7683"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",
@@ -170,6 +170,16 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
+
+  // Backend-API (/v1/…, /api/…) NIE cachen und NIE über den Navigations-Fallback
+  // abfangen: die Cloud-Sync/Social/Telemetrie-Aufrufe müssen immer frisch ans Netz
+  // (sonst käme ein veralteter Sync-Stand aus dem Cache). Ohne respondWith() macht
+  // der Browser den normalen Netzwerk-Request (network-only).
+  {
+    let p = "";
+    try { p = new URL(req.url).pathname; } catch (e) { p = ""; }
+    if (p.indexOf("/v1/") === 0 || p.indexOf("/api/") === 0) return;
+  }
 
   event.respondWith(
     caches.match(req).then((cached) => {

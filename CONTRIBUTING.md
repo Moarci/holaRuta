@@ -26,6 +26,12 @@ und konfliktarm halten. (Solo-Projekt, aber die Disziplin zahlt sich aus.)
   - `service-worker.js` trägt die gestempelte `CACHE_VERSION`. Wenn du Assets
     änderst: `node build.js` ausführen und das aktualisierte
     `service-worker.js` **mitcommitten** (der `test`-Job prüft den Sync).
+  - `sitemap.xml`, `robots.txt`, `llms.txt` und `seo/geo-manifest.json` sind
+    Ausgaben der GEO/SEO-Pipeline ([`scripts/geo/`](scripts/geo/), siehe
+    README-Abschnitt „SEO & GEO") — nie von Hand editieren. Änderst du
+    `data.js`, `countries.js` oder `data.locals.js`, regeneriert
+    `node build.js --dist` sie automatisch; die aktualisierten Dateien
+    **mitcommitten**.
 
 ## Inhalte (Karten)
 

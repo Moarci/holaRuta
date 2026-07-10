@@ -6,7 +6,9 @@
  *
  * Abgesichert wird die Verdrahtung (die Laufzeit prüft scripts/e2e/suites/p0-boot-verify.mjs:
  * Theme wirkt, Splash blendet aus, keine CSP-Verstöße in der Konsole):
- *   1. index.html enthält KEIN Inline-Skript mehr – alle <script> tragen src.
+ *   1. index.html enthält KEIN Inline-Skript mehr – alle <script> tragen src,
+ *      außer reinen Datenblöcken (type="application/ld+json" für strukturierte
+ *      Daten; laut HTML-Spec kein ausführbares Skript, daher CSP-unabhängig).
  *      Nur so darf script-src 'self' (ohne 'unsafe-inline') gesetzt sein.
  *   2. Die CSP-Meta erzwingt script-src 'self' ohne 'unsafe-inline'.
  *   3. boot.js ist parser-blockend (ohne defer) VOR dem Stylesheet verdrahtet –
@@ -24,13 +26,20 @@ const { readAssets } = require("../swversion.js");
 const SRC = path.join(__dirname, "..");
 const read = (f) => fs.readFileSync(path.join(SRC, f), "utf8");
 
-test("CSP: index.html enthält kein Inline-Skript (alle <script> mit src)", () => {
+test("CSP: index.html enthält kein Inline-Skript (alle <script> mit src, außer reine Datenblöcke)", () => {
   const html = read("index.html");
   // Inline-<script> = ein Öffnungs-Tag OHNE src=. Bewusst per String-Scan
   // (indexOf, case-insensitiv über eine Kleinschreib-Kopie) statt eines
   // HTML-Tag-Filter-Regex: ein solcher Regex triggert js/bad-tag-filter (CodeQL)
   // und übersieht z. B. <SCRIPT> in Großschreibung. An jedem „<script" bis zum
   // nächsten „>" schauen, ob das Öffnungs-Tag ein src-Attribut trägt.
+  //
+  // Ausnahme: <script type="application/ld+json"> (strukturierte Daten). Laut
+  // HTML-Spec ist das KEIN "script element", das ausgeführt wird, sondern ein
+  // reiner Datenblock – Browser wenden script-src-CSP nicht darauf an (siehe
+  // MDN/CSP3 §script-src, "script elements ... which are not blocked by the
+  // policy" schließt Nicht-JS-Typen aus). script-src 'self' ohne
+  // 'unsafe-inline' bleibt dadurch unverändert wirksam gegen echten Inline-JS.
   const hay = html.toLowerCase();
   const inline = [];
   for (let i = hay.indexOf("<script"); i !== -1; i = hay.indexOf("<script", i + 7)) {
@@ -40,7 +49,9 @@ test("CSP: index.html enthält kein Inline-Skript (alle <script> mit src)", () =
     if (after && !/[\s>/]/.test(after)) continue;
     const gt = hay.indexOf(">", i);
     const openTag = hay.slice(i, gt === -1 ? hay.length : gt);
-    if (!/\bsrc\s*=/.test(openTag)) inline.push(html.slice(i, i + 40));
+    if (/\bsrc\s*=/.test(openTag)) continue;
+    if (/type\s*=\s*["']application\/ld\+json["']/.test(openTag)) continue;
+    inline.push(html.slice(i, i + 40));
   }
   assert.equal(inline.length, 0,
     `index.html enthält ${inline.length} Inline-<script> – unter script-src 'self' geblockt (nach boot.js auslagern):\n${inline.join("\n")}`);

@@ -6634,8 +6634,14 @@
     email = email.trim();
     if (!email) return;
     sync.login(email).then(() => {
-      if (sync.loggedIn()) run();             // Mock: direkt eingeloggt
-      else showNotice(t("profile.cloudCheckMail")); // echter Flow: Magic-Link/OTP
+      if (sync.loggedIn()) { run(); return; }  // Mock: direkt eingeloggt
+      // Echter Flow: Nutzer hat einen Bestätigungscode per E-Mail bekommen (Supabase
+      // OTP). Code eingeben -> confirm -> sync. Leer lassen = später bestätigen.
+      let code = "";
+      try { code = window.prompt(t("profile.cloudCodePrompt")) || ""; } catch (e) { code = ""; }
+      code = code.trim();
+      if (!code) { showNotice(t("profile.cloudCheckMail")); return; }
+      sync.confirm(email, code).then(() => run()).catch(() => showNotice(t("profile.cloudFailed")));
     }).catch(() => showNotice(t("profile.cloudFailed")));
   }
 
@@ -6704,8 +6710,13 @@
     email = email.trim();
     if (!email) return;
     social.login(email).then(() => {
-      if (social.loggedIn()) { refreshSocial(); render(); }  // Mock: direkt eingeloggt
-      else showNotice(t("social.loginCheckMail"));           // echter Flow: Magic-Link/OTP
+      if (social.loggedIn()) { refreshSocial(); render(); return; }  // Mock: direkt eingeloggt
+      // Echter Flow: Bestätigungscode aus der E-Mail (geteilter Login mit Cloud-Sync).
+      let code = "";
+      try { code = window.prompt(t("profile.cloudCodePrompt")) || ""; } catch (e) { code = ""; }
+      code = code.trim();
+      if (!code) { showNotice(t("social.loginCheckMail")); return; }
+      social.confirm(email, code).then(() => { refreshSocial(); render(); }).catch(() => showNotice(t("social.loginFailed")));
     }).catch(() => showNotice(t("social.loginFailed")));
   }
 
