@@ -80,13 +80,12 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | Event | `props` | Wo erfasst (Datei · Funktion) | Bedeutung |
 |---|---|---|---|
 | **`app_open`** | `returning`:bool · `load_ms`:Bucket`[200,500,1000,3000]` · `src`:slug | `app.js` · `setupAnalyticsEvents` (Boot) | App geöffnet; `returning` = es gab schon mal einen Lerntag; `src` = Akquise-Quelle (`task`/`onboard-link`/`module-link`/`edition`/`direct`) aus den Start-URL-Parametern (nur Enum, **nie** die URL) |
-| **`perf`** | `load_ms`:Bucket`[200,500,1000,3000]` | `app.js` · `setupAnalyticsEvents` (Boot) | grobe Startzeit (`performance.now`) |
 | **`screen_view`** | `screen`:slug · `tab`:slug | `app.js` · `render()` → `trackScreenView` | Ansicht gewechselt (nur bei echtem Wechsel; `tab` nur auf Home) |
 | **`action`** | `action`:slug · `mode` · `dir` · `level` · `tab` · `scope` | `app.js` · `onClick` (Aktions-Dispatch) | jeder Button-Klick mit `data-action`; **ausgenommen** die Hochfrequenz-Aktionen `flip`/`rate`/`skip`/`speak` (separat erfasst) |
 | **`session_start`** | `scope`:slug · `origin`:slug · `mode` · `cards`:Bucket`[5,10,20,40]` | `app.js` · `beginRound()` | Lernrunde gestartet – deckt **alle 6** Startpfade ab (Kategorie/Alles, Preset, Pre-Trip-Tag, Ruta del día, Favoriten, Einzelkarte). `scope` = `"all"`/Kategorie-Slug |
 | **`session_complete`** | `answered`/`accuracy`/`xp`/`again`:Buckets · **`answered_n`/`correct_n`/`xp_n`/`secs`**:int | `app.js` · `finishRound()` | Lernrunde beendet. Buckets (grob) **plus** exakte Ints für die Investor-Interaktions-Tiefe pro Sitzung; `secs` = Dauer **dieser** Runde (auf 1 h gedeckelt) |
 | **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug | `app.js` · `rate()` | eine Karte bewertet – **nur** Bewertung/Modus/Stufe/**Kategorie**, **nie** Karten-Id/-Text |
-| **`feature_start`** | `feature`:slug · `mode`:slug | `app.js` · `onClick` (`FEATURE_STARTS`-Map bei `start-*`) | Lernspiel-Runde **gestartet** – Gegenstück zu `feature_complete` (ergibt die Abschlussquote). `feature` gleich benannt wie unten |
+| **`feature_start`** | `feature`:slug · `mode`:slug | `app.js` · `onClick` (`FEATURE_STARTS`-Map bei `start-*`); **Battle** zentral in `startBattle()` (deckt alle Einstiegspfade ab) | Lernspiel-Runde **gestartet** – Gegenstück zu `feature_complete` (ergibt die Abschlussquote). `feature` gleich benannt wie unten |
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
 | **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – **nur Länge & Trefferzahl**, **NIE** der Suchtext |
 | **`share`** | `content`:slug | `app.js` · `onClick` (`SHARE_ACTIONS`-Map bei `share-*`) | etwas geteilt (Virality-Funnel) – **nur** WAS (`content`: stats/card/tips/module …), **nie** Empfänger/Inhalt. Ersetzt das frühere generische `action`-Event für `share-*` |
@@ -261,8 +260,8 @@ loggt eintreffende Events nur im Terminal.
 - [x] `feature_start` für Start↔Abschluss-Quote je Lernspiel — `investor.featureFunnel`.
 - [x] **North Star** (Weekly Active Learners), **Growth Accounting**/Quick Ratio, **K-Faktor**,
       **Interaktionen pro Person/Sitzung/Tag**, **B2B-KPIs je Edition** — `investor`-Block; Konzept: `docs/INVESTOR-KPIS.md`.
-- [ ] **Alerting** bei Fehler-Spitzen je Version (Schwellenwert-Hinweis im Dashboard).
+- [x] **Alerting** bei Fehler-Spitzen je Version — `investor.alerts` (Fehlerquote je App-Version ab Schwelle) + roter Banner im Dashboard.
 
 ### 🧹 TODO — Housekeeping
 - [ ] Entscheiden, ob `mock-events-server.js` zugunsten von `telemetry-server.js` entfällt.
-- [ ] `perf` und `app_open.load_ms` sind redundant — ggf. `perf` streichen.
+- [x] `perf` (redundant zu `app_open.load_ms`) entfernt — Startzeit reist weiter in `app_open.load_ms`.

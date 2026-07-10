@@ -311,4 +311,14 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
   assert.match(csv, /^kpi,wert\n/);
   assert.match(csv, /\nNorth Star WAL,2\n/);
   assert.match(csv, /\nBounce %,67\n/);
+  // Ohne Fehler kein Alarm.
+  assert.deepEqual(inv.alerts, []);
+  // Regressions-Alarm: Version mit >=20 Events und >=5% Fehlerquote wird gemeldet.
+  const withErrs = [];
+  for (let k = 0; k < 18; k++) withErrs.push({ event: "screen_view", day: TODAY, clientId: "E", sessionId: "e", ts: T0, appVersion: "9.9.9", props: { screen: "home" } });
+  withErrs.push({ event: "error", day: TODAY, clientId: "E", sessionId: "e", ts: T0, appVersion: "9.9.9", props: { type: "error", msg: "x" } });
+  withErrs.push({ event: "error", day: TODAY, clientId: "E", sessionId: "e", ts: T0, appVersion: "9.9.9", props: { type: "error", msg: "y" } });
+  const al = aggregate(withErrs, [], { now: NOW }).investor.alerts;
+  assert.equal(al.length, 1);
+  assert.deepEqual(al[0], { version: "9.9.9", errors: 2, events: 20, ratePct: 10 });
 });

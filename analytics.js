@@ -232,7 +232,6 @@
   // bereits als Bucket-STRING (Aufrufer nutzt SC.analytics.bucket).
   var EVENTS = {
     app_open:         { returning: "bool", load_ms: "bucket", src: "slug" },
-    perf:             { load_ms: "bucket" },
     screen_view:      { screen: "slug", tab: "slug" },
     action:           { action: "slug", mode: "slug", dir: "slug", level: "slug", tab: "slug", scope: "slug" },
     session_start:    { scope: "slug", origin: "slug", mode: "slug", cards: "bucket" },

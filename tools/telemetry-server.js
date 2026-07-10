@@ -499,6 +499,20 @@ function aggregate(events, usage, opts) {
     bouncePct: totalUsers ? Math.round((activeDaysHist["1"] / totalUsers) * 100) : 0,             // nur 1 Tag aktiv
   };
 
+  // --- Regressions-Alarm: Fehlerquote JE App-Version (ab Mindestvolumen) ---
+  // errorsByVersion = Fehler-Events je Version, appVersions = ALLE Events je Version.
+  // Eine hohe Fehlerquote in einer Version deutet auf eine Regression in genau diesem Release.
+  var ALERT_MIN_EVENTS = 20; // erst ab genug Volumen aussagekräftig
+  var ALERT_ERR_PCT = 5;     // ab dieser Fehlerquote -> Alarm
+  var alerts = [];
+  errorsByVersion.forEach(function (errs, ver) {
+    var evs = appVersions.get(ver) || 0;
+    if (evs < ALERT_MIN_EVENTS) return;
+    var pct = Math.round((errs / evs) * 100);
+    if (pct >= ALERT_ERR_PCT) alerts.push({ version: ver, errors: errs, events: evs, ratePct: pct });
+  });
+  alerts.sort(function (a, b) { return b.ratePct - a.ratePct || b.errors - a.errors; });
+
   return {
     generatedAt: now,
     windowDays: windowDays,
@@ -546,6 +560,7 @@ function aggregate(events, usage, opts) {
       nsm: nsm,                    // North Star: Weekly Active Learners + Trend + WAL/MAU
       rounds: rounds,              // Runden-Abschlussquote (session_start -> session_complete)
       quality: quality,            // Stabilität (Fehler/Sitzung) + Bounce (nur 1 Tag aktiv)
+      alerts: alerts,              // Regressions-Alarm: hohe Fehlerquote je App-Version
       cohorts: cohorts,            // Retention-Heatmap (Erst-Tag × Tag-N)
       growth: growth,              // new/retained/resurrected/churned + Quick Ratio
       activation: activation,      // Aktivierungsrate + Funnel (neue Nutzer)

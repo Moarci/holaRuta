@@ -224,5 +224,6 @@ analytics: { enabled: true, endpoint: "http://localhost:8789" }
 | Interaktionen / Sitzung · Person · Tag | Engagement-Tiefe | `investor.interactions` |
 | Ø Lernzeit / Runde | Time-on-Task | `investor.timeOnTask` |
 | Bounce / Stabilität | 1-Tag-Nutzer % · Fehler/Sitzung | `investor.quality` |
+| Regressions-Alarm | Fehlerquote je App-Version über Schwelle | `investor.alerts` |
 | Start → Abschluss je Spiel | Abschlussquote | `investor.featureFunnel` |
 | B2B: KPIs je Edition | Umsatzkanal | `investor.editions` |

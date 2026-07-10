@@ -5600,6 +5600,10 @@
     dismissBadgeToast();
     const pool = data.BATTLES.filter((b) => sceneId === "all" || b.scene === sceneId);
     if (!pool.length) return;
+    // feature_start ZENTRAL hier (nicht über die Aktions-Map), damit JEDER Battle-Start
+    // – regulär (start-battle) wie Coordinator-Runde und künftige Pfade – genau ein
+    // feature_start:battle feuert, passend zum feature_complete:battle beim Abschluss.
+    trackEvent("feature_start", { feature: "battle" });
     const poolIds = pool.map((b) => b.id);
     // Gerade Rundenzahl, damit beide Spieler gleich oft dran sind (A,B,A,B…).
     // lengthOverride erlaubt einen Direktstart ohne Setup (Coordinator-Runde),
@@ -7700,9 +7704,8 @@
   const FEATURE_STARTS = {
     "start-precios": "precios", "start-dialogos": "dialogos", "start-quiz": "definiciones",
     "start-yesto": "yesto", "start-frases": "frases", "start-conjug": "conjug",
-    // Beide Battle-Startpfade -> "battle", damit feature_complete:battle nie ohne
-    // passendes feature_start bleibt (sonst wäre die Abschlussquote verzerrt/100%).
-    "start-battle": "battle", "coordinator-round": "battle",
+    // battle NICHT hier: feature_start:battle feuert zentral in startBattle() – deckt
+    // alle Einstiegspfade (start-battle, coordinator-round, künftige) ab, ohne Doppelzählung.
   };
 
   // Sichere, allowlist-basierte Props für ein „action"-Event. Bewusst NUR Enum-/
@@ -8399,7 +8402,6 @@
     let loadMs = 0;
     try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }
     trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc() });
-    trackEvent("perf", { load_ms: abucket(loadMs, [200, 500, 1000, 3000]) });
 
     // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.
     try {

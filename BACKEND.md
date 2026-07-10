@@ -415,7 +415,7 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
 - **Lokale Pufferung & Batching:** Ring-Queue (≤ 200 Events) im `localStorage`; Versand gebündelt
   (≤ 50/Batch) periodisch und beim Verstecken/Schließen via `navigator.sendBeacon` (zuverlässig).
 
-**17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `perf` · `screen_view` · `action` ·
+**17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `screen_view` · `action` ·
 `session_start` · `session_complete` · `card_rated` · `feature_start` · `feature_complete` ·
 `search` · `share` · `activation` · `onboarding_step` · `onboarding_complete` · `error` ·
 `consent_change` · `pwa_installed`. Bewusst
