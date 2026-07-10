@@ -267,10 +267,13 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
   // Growth Accounting: C war letzte Woche aktiv, diese nicht -> 1 abgewandert.
   assert.equal(inv.growth.churned, 1);
   assert.equal(inv.growth.newUsers, 2);
-  // Virality: 1 Sharer; 2 Share-Installs (A=module-link, B=task); K = 2/3.
+  // Virality: 1 Sharer; 2 im Fenster aktive Share-Installs (A=module-link, B=task).
   assert.equal(inv.virality.sharers, 1);
   assert.equal(inv.virality.sharedInstalls, 2);
-  assert.equal(inv.virality.kFactor, Math.round((2 / 3) * 100) / 100);
+  // K-Faktor (7-T-Periode): virale Neuzugänge letzte 7 T (A,B) / aktive Basis Vorwoche (C) = 2/1.
+  assert.equal(inv.virality.viralNew7, 2);
+  assert.equal(inv.virality.base7, 1);
+  assert.equal(inv.virality.kFactor, 2);
   // Interaktionen pro Person: Histogramm summiert auf die Nutzerzahl.
   const perUserTotal = inv.interactions.perUser.histogram.reduce((a, b) => a + b.count, 0);
   assert.equal(perUserTotal, s.totals.users);

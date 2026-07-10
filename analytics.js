@@ -250,10 +250,12 @@
     feature_complete: { feature: "slug", perfect: "bool" },
     search:           { qlen: "bucket", results: "bucket" },
     // Virality-Funnel: content = WAS geteilt wird (stats/card/tips/module …),
-    // channel = grober Weg (native/download), NIE der Empfänger/Inhalt.
-    share:            { content: "slug", channel: "slug" },
-    // Aktivierungs-„Aha": milestone (z.B. first_session), day_n = Tage seit Erst-Open.
-    activation:       { milestone: "slug", day_n: "int" },
+    // NIE der Empfänger/Inhalt. (channel kann später ergänzt werden, wenn der
+    // Client den Wel-Weg kennt – bewusst NICHT gelistet, solange nicht gesendet.)
+    share:            { content: "slug" },
+    // Aktivierungs-„Aha": milestone (z.B. first_session). (day_n bewusst NICHT
+    // gelistet, solange der Client keine „Tage seit Erst-Open" mitsendet.)
+    activation:       { milestone: "slug" },
     onboarding_step:  { step: "slug", n: "int" },
     onboarding_complete: {},
     error:            { type: "slug", msg: "text", src: "text", line: "int" },

@@ -169,7 +169,7 @@ function render(s){
       + kpi(u.dauToday+" / "+u.wau+" / "+u.mau, "DAU / WAU / MAU", "aktive Nutzer")
       + kpi(stick+" %", "Stickiness", "Ø DAU / MAU", stick>=20?"var(--good)":"var(--ink)")
       + kpi((inv.activation&&inv.activation.ratePct||0)+" %", "Aktivierungsrate", (inv.activation&&inv.activation.activated||0)+" / "+(inv.activation&&inv.activation.newUsers||0)+" neue", "var(--good)")
-      + kpi(kf, "K-Faktor", (inv.virality&&inv.virality.sharedInstalls||0)+" Share-Installs", kf>=1?"var(--good)":"var(--ink)")
+      + kpi(kf, "K-Faktor", "viral 7T: "+((inv.virality&&inv.virality.viralNew7)||0)+" / Basis "+((inv.virality&&inv.virality.base7)||0), kf>=1?"var(--good)":"var(--ink)")
       + kpi(qr, "Quick Ratio", "(neu+reakt.)/Churn", qr>=1?"var(--good)":"var(--bad)")
       + kpi(retPct(1)+" / "+retPct(7)+" / "+retPct(30)+" %", "Retention D1/D7/D30", "% Tag-N zurück")
       + kpi((inv.interactions&&inv.interactions.perSession.avg)||0, "Ø Interakt./Sitzung", "Median "+((inv.interactions&&inv.interactions.perSession.median)||0), "var(--accent)")
@@ -188,8 +188,8 @@ function render(s){
 
     html += '<div class="grid">';
     html += '<div class="panel"><h2>Virality / K-Faktor</h2>'
-      + hbars([{label:"Teilende Nutzer",count:inv.virality.sharers},{label:"Shares gesamt",count:inv.virality.shares},{label:"Share-Installs",count:inv.virality.sharedInstalls}],{color:"var(--good)"})
-      + '<div class="h" style="margin-top:8px">K-Faktor <b>'+esc(kf)+'</b> · Ø '+esc(inv.virality.sharesPerUser)+' Shares/Nutzer</div>'
+      + hbars([{label:"Teilende Nutzer",count:inv.virality.sharers},{label:"Shares gesamt",count:inv.virality.shares},{label:"Share-Installs (Fenster)",count:inv.virality.sharedInstalls}],{color:"var(--good)"})
+      + '<div class="h" style="margin-top:8px">K-Faktor <b>'+esc(kf)+'</b> = '+esc(inv.virality.viralNew7)+' virale Neuzugänge (7T) / '+esc(inv.virality.base7)+' Basis Vorwoche · Ø '+esc(inv.virality.sharesPerUser)+' Shares/Nutzer</div>'
       + ((inv.virality.content&&inv.virality.content.length)? '<h2 style="margin-top:14px">Geteilte Inhalte</h2>'+hbars(inv.virality.content.map(function(c){return {label:c.key,count:c.count};})) : '')
       + '</div>';
     html += '<div class="panel"><h2>Interaktionen pro Sitzung</h2>'

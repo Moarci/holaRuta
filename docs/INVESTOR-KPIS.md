@@ -102,10 +102,10 @@ Cockpit: Panel **B2B: KPIs je Edition** (Tabelle).
 
 | KPI | Formel | Quelle | Ziel |
 |---|---|---|---|
-| Teilende Nutzer / Shares | distinkte Sharer, Shares gesamt | `share`-Event (`content`/`channel`) | steigend |
+| Teilende Nutzer / Shares | distinkte Sharer, Shares gesamt | `share`-Event (`content`) | steigend |
 | Shares je Nutzer | Shares / Nutzer | `investor.virality.sharesPerUser` | — |
-| **Share-Installs** | im Fenster aktive Nutzer, deren **erste Quelle** (lebenslang bestimmt) ein Teil-Link ist | `app_open.src ∈ {module-link, task, onboard-link}` | wächst |
-| **K-Faktor** (viraler Koeffizient) | Share-Installs / Nutzer (**gleiche Fenster-Population**) | `investor.virality.kFactor` | **> 0,5** stark viral-unterstützt; **> 1** = selbsttragendes Wachstum |
+| **Share-Installs** (Fenster) | im Fenster aktive Nutzer, deren **erste Quelle** (lebenslang bestimmt) ein Teil-Link ist | `investor.virality.sharedInstalls` | wächst |
+| **K-Faktor** (viraler Koeffizient, 7-T-Periode) | virale Neuzugänge der letzten 7 T / aktive Basis der Vorwoche | `investor.virality.kFactor` = `viralNew7 / base7` | **> 0,5** stark viral-unterstützt; **> 1** = selbsttragendes Wachstum |
 
 Cockpit: Kachel **K-Faktor** + Panel **Virality**.
 
@@ -215,7 +215,7 @@ analytics: { enabled: true, endpoint: "http://localhost:8789" }
 | Aktivierungsrate + Funnel | aktiviert / neu | `investor.activation` |
 | Retention-Kohorten (Heatmap) | Erst-Tag × Tag-N | `investor.cohorts` |
 | Growth Accounting + Quick Ratio | neu/wiederk./reakt./abgew. | `investor.growth` |
-| K-Faktor / Virality | Share-Installs / Nutzer | `investor.virality` |
+| K-Faktor / Virality | virale Neuzugänge 7T / Basis Vorwoche | `investor.virality` |
 | Interaktionen / Sitzung · Person · Tag | Engagement-Tiefe | `investor.interactions` |
 | Ø Lernzeit / Runde | Time-on-Task | `investor.timeOnTask` |
 | Start → Abschluss je Spiel | Abschlussquote | `investor.featureFunnel` |

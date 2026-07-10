@@ -7700,7 +7700,9 @@
   const FEATURE_STARTS = {
     "start-precios": "precios", "start-dialogos": "dialogos", "start-quiz": "definiciones",
     "start-yesto": "yesto", "start-frases": "frases", "start-conjug": "conjug",
-    "start-battle": "battle",
+    // Beide Battle-Startpfade -> "battle", damit feature_complete:battle nie ohne
+    // passendes feature_start bleibt (sonst wäre die Abschlussquote verzerrt/100%).
+    "start-battle": "battle", "coordinator-round": "battle",
   };
 
   // Sichere, allowlist-basierte Props für ein „action"-Event. Bewusst NUR Enum-/

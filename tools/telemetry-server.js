@@ -115,9 +115,8 @@ function aggregate(events, usage, opts) {
   var clientFirstOpen = new Map();     // clientId -> { ts, src } (früheste Quelle je Nutzer)
   // --- Investor-KPIs (alle mit ungeprüften Event-Daten geschlüsselt -> Map/Set) ---
   var eventsPerClient = new Map();     // clientId -> Events gesamt (Interaktionen/Person)
-  var walDay = new Map();              // day -> Set(clientId) mit session_complete (NSM-Rohdaten)
-  var activatedClients = new Set();    // clientId mit >=1 session_complete (aktiviert)
-  var firstSessionClients = new Set(); // clientId mit activation:first_session
+  var wal7Rounds = 0;                  // abgeschlossene Lernrunden der letzten 7 Tage (NSM-Tiefe)
+  var activatedClients = new Set();    // clientId mit >=1 session_complete bzw. activation (aktiviert)
   var featureStarts = new Map();       // feature -> Startanzahl (Start<->Abschluss-Quote)
   var shareEvents = 0;                 // Anzahl share-Events (Virality)
   var sharers = new Set();             // clientId, die geteilt haben
@@ -178,8 +177,9 @@ function aggregate(events, usage, opts) {
       case "session_start": if (p.mode) inc(modeCount, String(p.mode)); break;
       case "session_complete":
         if (p.accuracy) inc(accuracyDist, String(p.accuracy));
-        if (cid) { if (day) addToSet(walDay, day, cid); activatedClients.add(cid); addToSet(editionActivated, edi, cid); } // NSM/Aktivierung
-        if (typeof p.secs === "number" && p.secs > 0) secsList.push(p.secs); // exakte Time-on-Task
+        if (cid) { activatedClients.add(cid); addToSet(editionActivated, edi, cid); } // Aktivierung
+        if (day >= since7) wal7Rounds++;                                              // NSM-Tiefe (7 T)
+        if (typeof p.secs === "number" && p.secs > 0) secsList.push(p.secs);          // exakte Time-on-Task
         break;
       case "feature_start": if (p.feature) inc(featureStarts, String(p.feature)); break;
       case "feature_complete":
@@ -190,7 +190,9 @@ function aggregate(events, usage, opts) {
         if (cid) sharers.add(cid);
         if (p.content) inc(shareContentCounts, String(p.content));
         break;
-      case "activation": if (cid && p.milestone === "first_session") firstSessionClients.add(cid); break;
+      // Aktivierungs-„Aha": bestätigt die Aktivierung (auch falls das session_complete
+      // außerhalb des Fensters lag). Fixe Schlüssel -> Set unbedenklich.
+      case "activation": if (cid && p.milestone === "first_session") activatedClients.add(cid); break;
       case "search": searchTotal++; if (p.results === "0") searchZero++; break;
       case "onboarding_step": if (p.step && cid) addToSet(onboardSteps, String(p.step), cid); break;
       case "onboarding_complete": if (cid) onboardComplete.add(cid); break;
@@ -335,19 +337,28 @@ function aggregate(events, usage, opts) {
   }
 
   // --- North Star: Weekly Active Learners (session_complete in 7 T) + Trend ---
+  // avgSessionsPerLearner MUSS fenster-konsistent sein: abgeschlossene Runden der
+  // letzten 7 T (wal7Rounds) / Learner der letzten 7 T (walCur) – nicht sessions.size
+  // (das ist die 30-min-sessionId-Spanne über das GANZE Fenster).
   var walCur = windowSet(0, 7, "session_complete").size;
   var walPrev = windowSet(7, 7, "session_complete").size;
-  var nsm = { wal: walCur, trend: trend(walCur, walPrev), avgSessionsPerLearner: walCur ? Math.round((sessions.size / walCur) * 10) / 10 : 0 };
+  var nsm = { wal: walCur, trend: trend(walCur, walPrev), avgSessionsPerLearner: walCur ? Math.round((wal7Rounds / walCur) * 10) / 10 : 0 };
 
   // --- Retention-Kohorten-Heatmap (Erst-Tag × Tag-N; nur eligible zählt) ---
-  var COHORT_OFFSETS = [0, 1, 2, 3, 7, 14, 30]; // feste Zahl-Schlüssel -> Objekt unbedenklich
+  // Kohorten basieren auf dem LEBENSLANGEN Erst-Tag (clientFirstDayAll), beschränkt auf
+  // Nutzer mit Erst-Kontakt IM Fenster (first >= cutoff) – konsistent mit Growth/Aktivierung.
+  // Für diese echten Neu-Nutzer liegt die gesamte Historie im Fenster, daher ist die
+  // Retention aus clientsAll (Fenster-Tage) exakt. Offsets, die im Fenster nie eligible
+  // werden können, werden weggelassen (sonst dauerhaft leere Spalte).
+  var COHORT_OFFSETS = [0, 1, 2, 3, 7, 14, 30].filter(function (k) { return k <= windowDays - 1; }); // feste Zahl-Schlüssel
   var cohortMap = new Map(); // firstDay -> { size, ret: {offset->count} }
-  clientFirstDay.forEach(function (first, c) {
+  clientsAll.forEach(function (ds, c) {
+    var first = clientFirstDayAll.get(c);
+    if (!first || first < cutoff) return; // nur echte Neu-Kohorten (Erst-Kontakt im Fenster)
     var co = cohortMap.get(first);
     if (!co) { co = { size: 0, ret: {} }; COHORT_OFFSETS.forEach(function (k) { co.ret[k] = 0; }); cohortMap.set(first, co); }
     co.size++;
-    var ds = clientsAll.get(c);
-    COHORT_OFFSETS.forEach(function (k) { if (addDays(first, k) <= today && ds && ds.has(addDays(first, k))) co.ret[k]++; });
+    COHORT_OFFSETS.forEach(function (k) { var target = addDays(first, k); if (target <= today && ds.has(target)) co.ret[k]++; });
   });
   var cohorts = [];
   cohortMap.forEach(function (co, first) {
@@ -399,19 +410,28 @@ function aggregate(events, usage, opts) {
   };
 
   // --- Virality / K-Faktor ---
-  // Erst-Quelle wird LEBENSLANG bestimmt (clientFirstOpenAll, keine Fenster-Verzerrung der
-  // Attribution), die GEZÄHLTE Population ist aber – wie der Nenner totalUsers – auf die im
-  // Fenster aktiven Nutzer (clientsAll) beschränkt. Sonst würde der Zähler (lebenslange
-  // Share-Installs) gegen einen Fenster-Nenner geteilt und K könnte unsinnig > 1 werden.
+  // Erst-Quelle LEBENSLANG bestimmt (clientFirstOpenAll, keine Attributions-Verzerrung
+  // durch das Fenster). sharedInstalls = im Fenster aktive Nutzer mit Share-Herkunft
+  // (informativ). Der ECHTE virale Koeffizient (kann > 1) ist periodenbasiert:
+  //   kFactor = neue Share-Nutzer der letzten 7 T / aktive Basis der Vorwoche.
+  // Ein Same-Period-Verhältnis (Zähler ⊆ Nenner) wäre strukturell auf ≤ 1 gedeckelt und
+  // könnte selbsttragendes Wachstum (K > 1) nie ausdrücken.
   var SHARE_SRC = { "module-link": 1, "task": 1, "onboard-link": 1 }; // feste Schlüssel
-  var sharedInstalls = 0;
-  clientFirstOpenAll.forEach(function (fo, cid) { if (fo && SHARE_SRC[fo.src] === 1 && clientsAll.has(cid)) sharedInstalls++; });
+  var sharedInstalls = 0, viralNew7 = 0;
+  clientFirstOpenAll.forEach(function (fo, cid) {
+    if (!fo || SHARE_SRC[fo.src] !== 1) return;
+    if (clientsAll.has(cid)) sharedInstalls++;
+    var fd = clientFirstDayAll.get(cid); if (fd && fd >= since7) viralNew7++; // Share-Neuzugang der letzten 7 T
+  });
+  var base7 = windowSet(7, 7).size; // aktive Basis der Vorwoche (die „geteilt" haben könnte)
   var virality = {
     sharers: sharers.size,
     shares: shareEvents,
     sharesPerUser: totalUsers ? Math.round((shareEvents / totalUsers) * 100) / 100 : 0,
     sharedInstalls: sharedInstalls,
-    kFactor: totalUsers ? Math.round((sharedInstalls / totalUsers) * 100) / 100 : 0, // viraler Koeffizient
+    viralNew7: viralNew7,
+    base7: base7,
+    kFactor: base7 ? Math.round((viralNew7 / base7) * 100) / 100 : viralNew7, // viraler Koeffizient (7-T-Periode)
     content: topCounts(shareContentCounts),
   };
 
