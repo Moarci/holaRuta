@@ -4,7 +4,7 @@
  *
  * Fährt die echte App in einem sauberen Handy-Viewport an und nimmt drei Screens
  * auf -> docs/landing/{home,study,stats}.png. Navigations-Muster & Selektoren
- * stammen aus scripts/e2e-study.mjs (bewährt) und ui.js.
+ * stammen aus scripts/e2e/suites/p0-core-study.mjs (bewährt) und ui.js.
  *
  * Voraussetzungen (dev-only, wie die übrigen e2e-Skripte – Playwright ist KEINE
  * Repo-Dependency):
@@ -40,7 +40,7 @@ async function newPhone(browser) {
   return ctx;
 }
 
-// Wartet, bis der Boot-Splash weg ist (Muster aus e2e-verify.mjs).
+// Wartet, bis der Boot-Splash weg ist (Muster aus p0-boot-verify.mjs).
 async function bootGone(page) {
   await page.waitForFunction(() => {
     const b = document.getElementById("boot");

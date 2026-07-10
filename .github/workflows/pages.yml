@@ -106,7 +106,7 @@ jobs:
   # Browser-E2E (Playwright): prüft den „Modo profe" (Lehrer-Modus) gegen die
   # LAUFENDE App in echtem Chromium – Schüler-Import, Niveau-Verteilung,
   # Sortierung, CSV-Export (inkl. Akzent-Namen), Re-Import-Dedupe und das
-  # A4-Druck-Layout (keine geklippten Spalten). Skript: scripts/e2e-modo-profe.mjs.
+  # A4-Druck-Layout (keine geklippten Spalten). Suite: scripts/e2e/suites/p1-modo-profe.mjs.
   #
   # Bewusst KEIN Deploy-Blocker: `deploy` hängt nur am schnellen, browserlosen
   # `test`-Job; dieser e2e-Job ist ein zusätzliches PR-/Push-Signal (browser-
@@ -144,7 +144,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Modo-profe E2E
-        run: npm run e2e
+        run: npm run e2e:profe
 
       - name: Aufgaben-Studio E2E (Aufgaben & Pakete erstellen)
         run: npm run e2e:composer

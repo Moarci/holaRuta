@@ -5,7 +5,7 @@
  * Aufruf:  node --test
  *
  * Abgesichert wird die Verdrahtung, nicht die Laufzeit (die prüft
- * scripts/e2e-verify.mjs im echten Browser):
+ * scripts/e2e/suites/p0-boot-verify.mjs im echten Browser):
  *   1. index.html lädt die drei Korpus-Dateien NICHT mehr statisch – nur noch
  *      der Loader-Tag (ohne defer) steht zwischen data.js und context.js.
  *   2. registry.js/config.js laufen ohne defer (der Loader braucht SC.track

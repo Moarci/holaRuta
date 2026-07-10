@@ -265,7 +265,7 @@ max(score, demonstriert) → IRT-ähnlich. Reliabilitäts-Flags informieren ohne
 validiert; Schüler scannen QR → lokale `TASKS_KEY`-Liste → Fortschrittsbalken.
 
 **Export/Druck (`stats.js:203-224`):** CSV RFC-4180-nah mit BOM (Excel-ñ-fest); Print-CSS auf A4.
-E2E `scripts/e2e-modo-profe.mjs` deckt den Flow ab.
+E2E `scripts/e2e/suites/p1-modo-profe.mjs` deckt den Flow ab.
 
 **Kritik:** Klassenliste nicht persistent (Reload = neu importieren); kein Live-Update;
 keine UI-Virtualisierung (>500 Schüler → DOM-Lag); kein Import-Größenlimit; CEFR-Mismatch

@@ -4,7 +4,7 @@
  *
  * Aufruf:  node --test
  *
- * Abgesichert wird die Verdrahtung (die Laufzeit prüft scripts/e2e-verify.mjs:
+ * Abgesichert wird die Verdrahtung (die Laufzeit prüft scripts/e2e/suites/p0-boot-verify.mjs:
  * Theme wirkt, Splash blendet aus, keine CSP-Verstöße in der Konsole):
  *   1. index.html enthält KEIN Inline-Skript mehr – alle <script> tragen src.
  *      Nur so darf script-src 'self' (ohne 'unsafe-inline') gesetzt sein.
