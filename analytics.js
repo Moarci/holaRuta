@@ -232,14 +232,29 @@
   // bereits als Bucket-STRING (Aufrufer nutzt SC.analytics.bucket).
   var EVENTS = {
     app_open:         { returning: "bool", load_ms: "bucket", src: "slug" },
-    perf:             { load_ms: "bucket" },
     screen_view:      { screen: "slug", tab: "slug" },
     action:           { action: "slug", mode: "slug", dir: "slug", level: "slug", tab: "slug", scope: "slug" },
     session_start:    { scope: "slug", origin: "slug", mode: "slug", cards: "bucket" },
-    session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int" },
+    // Runden-Kennzahlen: die groben Buckets (answered/accuracy/xp/again) bleiben für
+    // Abwärtskompatibilität; die *_n/secs-Ints geben Investor-Analytics die EXAKTE
+    // Interaktions-Tiefe PRO SITZUNG (opt-in, pseudonym – weiterhin KEIN Freitext,
+    // KEINE Karten-IDs/-Inhalte). „secs" = Dauer DIESER Lernrunde (nicht die 30-min-
+    // sessionId-Spanne) und wird aufrufer-seitig gegen Fingerprinting gedeckelt.
+    session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int",
+                        answered_n: "int", correct_n: "int", xp_n: "int", secs: "int" },
     card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
+    // Start↔Abschluss je Lernspiel: feature_start am Rundenstart, feature_complete am
+    // Rundenende – zusammen ergeben sie die Abschlussquote (Funnel je Spiel).
+    feature_start:    { feature: "slug", mode: "slug" },
     feature_complete: { feature: "slug", perfect: "bool" },
     search:           { qlen: "bucket", results: "bucket" },
+    // Virality-Funnel: content = WAS geteilt wird (stats/card/tips/module …),
+    // NIE der Empfänger/Inhalt. (channel kann später ergänzt werden, wenn der
+    // Client den Wel-Weg kennt – bewusst NICHT gelistet, solange nicht gesendet.)
+    share:            { content: "slug" },
+    // Aktivierungs-„Aha": milestone (z.B. first_session). (day_n bewusst NICHT
+    // gelistet, solange der Client keine „Tage seit Erst-Open" mitsendet.)
+    activation:       { milestone: "slug" },
     onboarding_step:  { step: "slug", n: "int" },
     onboarding_complete: {},
     error:            { type: "slug", msg: "text", src: "text", line: "int" },

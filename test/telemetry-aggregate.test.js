@@ -9,7 +9,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("path");
-const { aggregate, dayUTC, durationBucket } = require(path.join(__dirname, "..", "tools", "telemetry-server.js"));
+const { aggregate, dayUTC, durationBucket, toKpiCsv } = require(path.join(__dirname, "..", "tools", "telemetry-server.js"));
 
 const NOW = Date.UTC(2026, 5, 30, 12, 0, 0); // 2026-06-30
 const TODAY = "2026-06-30";
@@ -179,8 +179,9 @@ test("aggregate: Akquise, Teilen, Snapshot-Streak/Reviews, WAU-Trend", () => {
   const mk = (event, props, day, cid) => E.push({ v: 1, seq: q++, event, props, day, ts: T0, clientId: cid, sessionId: "s" + q });
   mk("app_open", { src: "task" }, TODAY, "A");
   mk("app_open", { src: "direct" }, TODAY, "B");
-  mk("action", { action: "share-stats" }, TODAY, "A");
-  mk("action", { action: "share-card" }, TODAY, "A");
+  // Teilen läuft jetzt über das dedizierte share-Event (content), nicht mehr über action:share-*.
+  mk("share", { content: "stats" }, TODAY, "A");
+  mk("share", { content: "card" }, TODAY, "A");
   mk("action", { action: "open-search" }, TODAY, "A");
   mk("app_open", {}, dayUTC(NOW - 10 * 86400000), "C"); // C nur in der Vorwoche aktiv
   const U = [{ day: TODAY, streak: "4-7", reviews: "51-200" }, { day: TODAY, streak: "4-7", reviews: "11-50" }];
@@ -188,8 +189,8 @@ test("aggregate: Akquise, Teilen, Snapshot-Streak/Reviews, WAU-Trend", () => {
   const acq = {}; s.engagement.acquisition.forEach((a) => { acq[a.key] = a.count; });
   assert.equal(acq.task, 1); assert.equal(acq.direct, 1);
   const sh = s.engagement.share.map((x) => x.key);
-  assert.ok(sh.indexOf("share-stats") >= 0 && sh.indexOf("share-card") >= 0);
-  assert.ok(sh.indexOf("open-search") < 0, "nur share-*");
+  assert.ok(sh.indexOf("stats") >= 0 && sh.indexOf("card") >= 0);
+  assert.ok(sh.indexOf("open-search") < 0, "nur geteilte Inhalte (share-Event)");
   const streak = {}; s.meta.snapshotStreak.forEach((x) => { streak[x.key] = x.count; });
   assert.equal(streak["4-7"], 2);
   assert.equal(s.meta.snapshotReviews.length, 2);
@@ -226,4 +227,98 @@ test("aggregate: Mastery & Trip aus Snapshots", () => {
   assert.equal(m["26-50"], 1);
   assert.equal(s.trip.snapshots, 2);
   assert.equal(s.trip.withGoalPct, 50);
+});
+
+// ===== Investor-Cockpit (investor-Block) ================================
+function investorFixture() {
+  var DAY = 86400000;
+  var D = function (o) { return dayUTC(NOW - o * DAY); };
+  var t = function (o, sec) { return Date.UTC(2026, 5, 30, 10, 0, 0) - o * DAY + (sec || 0) * 1000; };
+  return [
+    // A: Erst-Kontakt vor 6 Tagen via module-link, zwei Lernrunden (6d, 1d) -> WAL, aktiviert, wiederkehrend
+    { event: "app_open", day: D(6), clientId: "A", sessionId: "a6", ts: t(6), props: { returning: false, src: "module-link" } },
+    { event: "session_complete", day: D(6), clientId: "A", sessionId: "a6", ts: t(6, 300), props: { answered_n: 12, correct_n: 9, xp_n: 60, secs: 300, accuracy: "75-90" } },
+    { event: "activation", day: D(6), clientId: "A", sessionId: "a6", ts: t(6, 301), props: { milestone: "first_session" } },
+    { event: "feature_start", day: D(6), clientId: "A", sessionId: "a6", ts: t(6, 10), props: { feature: "precios" } },
+    { event: "feature_complete", day: D(6), clientId: "A", sessionId: "a6", ts: t(6, 200), props: { feature: "precios", perfect: true } },
+    { event: "share", day: D(5), clientId: "A", sessionId: "a5", ts: t(5), props: { content: "stats" } },
+    { event: "session_complete", day: D(1), clientId: "A", sessionId: "a1", ts: t(1, 180), props: { answered_n: 8, correct_n: 6, xp_n: 30, secs: 180 } },
+    // B: heute neu via task, Onboarding fertig, eine Lernrunde, Edition "school"
+    { event: "app_open", day: D(0), clientId: "B", sessionId: "b0", ts: t(0), edition: "school", props: { returning: false, src: "task" } },
+    { event: "onboarding_complete", day: D(0), clientId: "B", sessionId: "b0", ts: t(0, 5), edition: "school", props: {} },
+    { event: "session_complete", day: D(0), clientId: "B", sessionId: "b0", ts: t(0, 120), edition: "school", props: { answered_n: 5, correct_n: 5, xp_n: 20, secs: 120 } },
+    { event: "feature_start", day: D(0), clientId: "B", sessionId: "b0", ts: t(0, 3), edition: "school", props: { feature: "dialogos" } },
+    // C: nur vor 10 Tagen aktiv -> in dieser Woche abgewandert (churned), Vorwochen-WAL
+    { event: "app_open", day: D(10), clientId: "C", sessionId: "c10", ts: t(10), props: { returning: false, src: "direct" } },
+    { event: "session_complete", day: D(10), clientId: "C", sessionId: "c10", ts: t(10, 60), props: { answered_n: 3, correct_n: 1, xp_n: 10, secs: 60 } },
+  ];
+}
+
+test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interaktionen, Kohorten, Editionen", () => {
+  const s = aggregate(investorFixture(), [], { now: NOW, windowDays: 30 });
+  const inv = s.investor;
+  // North Star: A+B mit session_complete in letzten 7 T (C ist 10 T alt) -> WAL 2; Vorwoche nur C.
+  assert.equal(inv.nsm.wal, 2);
+  assert.equal(inv.nsm.trend.prev, 1);
+  // Aktivierung: 3 neue Nutzer (Erst-Kontakt im 30-T-Fenster), alle mit Lernrunde -> 100 %.
+  assert.equal(inv.activation.newUsers, 3);
+  assert.equal(inv.activation.activated, 3);
+  assert.equal(inv.activation.ratePct, 100);
+  // Growth Accounting: C war letzte Woche aktiv, diese nicht -> 1 abgewandert.
+  assert.equal(inv.growth.churned, 1);
+  assert.equal(inv.growth.newUsers, 2);
+  // Virality: 1 Sharer; 2 im Fenster aktive Share-Installs (A=module-link, B=task).
+  assert.equal(inv.virality.sharers, 1);
+  assert.equal(inv.virality.sharedInstalls, 2);
+  // K-Faktor (7-T-Periode): virale Neuzugänge letzte 7 T (A,B) / aktive Basis Vorwoche (C) = 2/1.
+  assert.equal(inv.virality.viralNew7, 2);
+  assert.equal(inv.virality.base7, 1);
+  assert.equal(inv.virality.kFactor, 2);
+  // Interaktionen pro Person: Histogramm summiert auf die Nutzerzahl.
+  const perUserTotal = inv.interactions.perUser.histogram.reduce((a, b) => a + b.count, 0);
+  assert.equal(perUserTotal, s.totals.users);
+  // Time-on-Task: exakte secs gemittelt (300,180,120,60 -> Ø 165, Median 150, 4 Runden).
+  assert.equal(inv.timeOnTask.rounds, 4);
+  assert.equal(inv.timeOnTask.avgSec, 165);
+  assert.equal(inv.timeOnTask.medianSec, 150);
+  // Start->Abschluss: precios 1 Start / 1 Abschluss = 100 %.
+  const precios = inv.featureFunnel.filter((f) => f.feature === "precios")[0];
+  assert.ok(precios && precios.completionPct === 100);
+  // Kohorten-Heatmap: der Anker (Tag-0) ist immer 100 %.
+  assert.ok(inv.cohorts.length >= 1);
+  const anchor = inv.cohorts[0].cells.filter((c) => c.dayN === 0)[0];
+  assert.equal(anchor.pct, 100);
+  // B2B: Edition "school" mit 1 Nutzer, 100 % aktiviert.
+  const school = inv.editions.filter((e) => e.edition === "school")[0];
+  assert.ok(school && school.users === 1 && school.activationPct === 100);
+  // engagement.share stammt jetzt aus dem share-Event (content), nicht mehr aus dem action-Präfix.
+  assert.deepEqual(s.engagement.share, [{ key: "stats", count: 1 }]);
+  // WAL/MAU: 2 Wochen-Learner / 3 Monatsnutzer (A,B,C alle im 30-T-Fenster) = 67 %.
+  assert.equal(inv.nsm.walMauPct, 67);
+  // Runden-Abschlussquote (separater Mini-Datensatz): 2 begonnene, 1 abgeschlossene Runde = 50 %.
+  const r = aggregate([
+    { event: "session_start", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0, props: {} },
+    { event: "session_start", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 1000, props: {} },
+    { event: "session_complete", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 2000, props: { secs: 60 } },
+  ], [], { now: NOW }).investor.rounds;
+  assert.deepEqual(r, { started: 2, completed: 1, completionPct: 50 });
+  // Qualität: keine Fehler im Fixture -> 0/Sitzung; Bounce = 2 von 3 Nutzern nur 1 Tag aktiv (B,C) = 67 %.
+  assert.equal(inv.quality.errors, 0);
+  assert.equal(inv.quality.errorsPerSession, 0);
+  assert.equal(inv.quality.bouncePct, 67);
+  // KPI-CSV-Export: Kopfzeile + einzelne Kennzahlen (Data-Room/Pitch-Deck).
+  const csv = toKpiCsv(s);
+  assert.match(csv, /^kpi,wert\n/);
+  assert.match(csv, /\nNorth Star WAL,2\n/);
+  assert.match(csv, /\nBounce %,67\n/);
+  // Ohne Fehler kein Alarm.
+  assert.deepEqual(inv.alerts, []);
+  // Regressions-Alarm: Version mit >=20 Events und >=5% Fehlerquote wird gemeldet.
+  const withErrs = [];
+  for (let k = 0; k < 18; k++) withErrs.push({ event: "screen_view", day: TODAY, clientId: "E", sessionId: "e", ts: T0, appVersion: "9.9.9", props: { screen: "home" } });
+  withErrs.push({ event: "error", day: TODAY, clientId: "E", sessionId: "e", ts: T0, appVersion: "9.9.9", props: { type: "error", msg: "x" } });
+  withErrs.push({ event: "error", day: TODAY, clientId: "E", sessionId: "e", ts: T0, appVersion: "9.9.9", props: { type: "error", msg: "y" } });
+  const al = aggregate(withErrs, [], { now: NOW }).investor.alerts;
+  assert.equal(al.length, 1);
+  assert.deepEqual(al[0], { version: "9.9.9", errors: 2, events: 20, ratePct: 10 });
 });

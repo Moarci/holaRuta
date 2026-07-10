@@ -4,12 +4,12 @@
 
 **Dein Reise-Spanisch für echte Situationen — Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld, Notfall und Smalltalk.**
 
-**v1.124.0** — 2293 Karten · 73 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Wortart-Filter** (nur Einzelwörter oder auch Wendungen & Sätze) · **Deutsch/Englisch umschaltbar** · **Arbeitsblätter** (druckfertig auf A4 oder **am Handy ausfüllbar** mit Selbstkontrolle) · **Mi léxico** (Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon, mit Stern direkt beim Lernen, auf Karten & im Spickzettel, plus eigenem Homescreen-Shortcut) · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Música** (Genres LatAms mit Spotify- & Apple-Music-Deep-Links) · **Café de la región** (Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch, bestellen & Bohnen kaufen — mit spanischem Lesetraining) · **Juegos de viaje** (Hostel-Spiele: UNO, Truco, Dudo, Dominó & Co. — mit den Sätzen für den Tisch) · **Banderas** (Landesflaggen spielerisch lernen: Quiz, Galería & Wissen zu Flaggen — LatAm, España & die großen Reiseziele der Welt) · **Fotos & Videos** (bessere Reisebilder) · **Bailar** (Tanzen in LatAm: animierte Schritt-Diagramme, Rhythmus & Tutorial-Videos) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Jerga colombiana** (Slang verstehen & mitreden: parce, chévere, una luca) · **Conoce tus derechos** (ruhig & sicher bei Kontrolle/Festnahme: Anwalt, Botschaft, nichts unterschreiben) · **Viaja responsable** (leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · **Vocabulario sin fin** (Karteikarten endlos über alle Themen, ohne Rundenende) · Karten überspringen · Ruta del día · **Trip-Ziel** (Reise-Prognose „voraussichtlich X % gemeistert bis zur Abreise“, Pace-Check & Tagesplan, Startklar-Meilensteine) · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · **¿Y esto?** (Bild raten mit 3-2-1-Countdown) · Spaced Repetition · Offline · Null Dependencies
+**v1.125.0** — 2293 Karten · 73 Bereiche · 3 Lernmodi (Karteikarte · Schreiben · **Hören**) · **Wortart-Filter** (nur Einzelwörter oder auch Wendungen & Sätze) · **Deutsch/Englisch umschaltbar** · **Arbeitsblätter** (druckfertig auf A4 oder **am Handy ausfüllbar** mit Selbstkontrolle) · **Mi léxico** (Wörter & Sätze zu Favoriten machen – dein eigenes Lexikon, mit Stern direkt beim Lernen, auf Karten & im Spickzettel, plus eigenem Homescreen-Shortcut) · **HolaRuta-Check** (reisepraktischer Einstufungstest mit „weiß ich nicht“ & Niveau-Profil) · **Suche** (Karten, Übungen & Informationen) · **Diálogos** (Gesprächs-Simulationen) · **Música** (Genres LatAms mit Spotify- & Apple-Music-Deep-Links) · **Café de la región** (Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch, bestellen & Bohnen kaufen — mit spanischem Lesetraining) · **Juegos de viaje** (Hostel-Spiele: UNO, Truco, Dudo, Dominó & Co. — mit den Sätzen für den Tisch) · **Banderas** (Landesflaggen spielerisch lernen: Quiz, Galería & Wissen zu Flaggen — LatAm, España & die großen Reiseziele der Welt) · **Fotos & Videos** (bessere Reisebilder) · **Bailar** (Tanzen in LatAm: animierte Schritt-Diagramme, Rhythmus & Tutorial-Videos) · **Bebidas AM/PM** (Tag-/Abendgetränk je Land) · **Historia de Sudamérica** (interaktiver Zeitstrahl: Inka, Conquista, Bolívar & heute — mit **spanischem Lesetraining** in jedem Text, antippbaren Vokabeln, **Vokabel-Quiz**, Schwierigkeits-Score & Sharepic) · **Historia de Centroamérica** (eigener Zeitstrahl: Maya, Morazán, Bürgerkriege & heute — mit demselben Lesetraining, Quiz & Sharepic) · **Modul & Ergebnis teilen** (Deep-Link öffnet Modul/Test direkt) · **Spickzettel mit Großanzeige** · Regatear (gut verhandeln) · **Logística de viaje** (SIM, Geld, Gepäck & Tracker) · **Salud y energía** (gesund & fit unterwegs) · **Jerga colombiana** (Slang verstehen & mitreden: parce, chévere, una luca) · **Conoce tus derechos** (ruhig & sicher bei Kontrolle/Festnahme: Anwalt, Botschaft, nichts unterschreiben) · **Viaja responsable** (leichter Fußabdruck: kein Müll, lokal kaufen, kein Plastik) · **Coqueteo y romance** (flirten & daten mit Respekt) · Gegenteile (Contrarios) · Konjugieren (Conjugación) & Zeiten (Tiempos) mit Erklärseite · Einkaufszettel · El Cuerpo · **Precios al oído** (generative Preise in 7 Währungen, bis zu Millionenbeträgen) · Frases flexibles (49 Sätze in 7 Themen) · **Vocabulario sin fin** (Karteikarten endlos über alle Themen, ohne Rundenende) · Karten überspringen · Ruta del día · **Trip-Ziel** (Reise-Prognose „voraussichtlich X % gemeistert bis zur Abreise“, Pace-Check & Tagesplan, Startklar-Meilensteine) · Pre-Trip-Plan · Pre-Arrival-Pakete · Hostel Mode · Coordinator-Schnellstart · Modo profe (Lehrer-Übersicht) · **Aufgaben-Studio** (Aufgaben & Pakete in 3 Schritten erstellen und per Link, QR-Code oder WhatsApp teilen — mit Vorlagen, Katalog-Suche & eingebauter Anleitung) · Tarea (Aufgaben-Codes, per Link teilbar) · Cloud-Sync (opt-in) · Homescreen-Shortcuts · Definiciones · **¿Y esto?** (Bild raten mit 3-2-1-Countdown) · Spaced Repetition · Offline · Null Dependencies
 
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-857_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Tests](https://img.shields.io/badge/Tests-859_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
 [![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
 [![GEO](https://img.shields.io/badge/GEO-327_Seiten_%C2%B7_3_Sprachen-2F6B70?style=flat-square)](#-seo--geo)
@@ -64,7 +64,7 @@ Die App ist eine **einzige statische Web-App ohne Build-Zwang und mit 0 Runtime-
 - **0 Runtime-npm-Dependencies** — Reines Vanilla JS. Kein Framework, kein Bundler, kein `node_modules` zur Laufzeit. Nur Module, die sich an `window.SC` hängen. Optionales Build-Tooling (z. B. esbuild) ist dev-only; die Cloud-/Sync-Schicht ist opt-in.
 - **Reine Funktionen im Kern** — `srs`, `matcher` und `stats` kennen weder UI noch Speicher. Sie nehmen Zustand + Eingabe und geben **neuen** Zustand zurück (Immutability durchgängig).
 - **Offline first** — Service Worker cacht die komplette App. Einmal geladen, laufen **Texte, Lernkarten und UI ohne Netz** weiter. Ausnahme: Kultur-/Geschichtsbilder der Länderkunde werden von **Wikimedia** geladen — ohne Cookies/Tracker, aber als externer Request (also nicht offline verfügbar).
-- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`; diese Daten verlassen das Gerät nicht. **Keine Werbung, keine Drittanbieter-Tracker.** Der einzige externe Request im Normalbetrieb sind die Wikimedia-Bilder (s. o.). Optional und **standardmäßig aus** sind die opt-in Cloud-Sync-Schicht sowie eine **opt-in Nutzungsstatistik** (BACKEND.md §17): ein anonymer Tages-Snapshot **und** ein pseudonymer Interaktions-Event-Strom (für Weiterentwicklung & Fehler-Monitoring). Beide nur nach ausdrücklicher Zustimmung; ein Allowlist-Sanitizer stellt sicher, dass **kein** Suchtext, **keine** Karteninhalte/-IDs und **keine** Namen das Gerät verlassen — nur grobe Enums/Buckets. Pseudonyme Statistik-Id jederzeit resetbar. **Vollständige Aufstellung aller geloggten Felder:** [docs/TELEMETRIE.md](docs/TELEMETRIE.md).
+- **Privacy by Design** — Fortschritt, Einstellungen und eigene Karten leben ausschließlich im `localStorage`; diese Daten verlassen das Gerät nicht. **Keine Werbung, keine Drittanbieter-Tracker.** Der einzige externe Request im Normalbetrieb sind die Wikimedia-Bilder (s. o.). Optional und **standardmäßig aus** sind die opt-in Cloud-Sync-Schicht sowie eine **opt-in Nutzungsstatistik** (BACKEND.md §17): ein anonymer Tages-Snapshot **und** ein pseudonymer Interaktions-Event-Strom (für Weiterentwicklung & Fehler-Monitoring). Beide nur nach ausdrücklicher Zustimmung; ein Allowlist-Sanitizer stellt sicher, dass **kein** Suchtext, **keine** Karteninhalte/-IDs und **keine** Namen das Gerät verlassen — grobe Enums/Buckets plus einzelne **exakte, nicht-identifizierende Ganzzahlen** (Interaktionszähler/Rundendauer). Pseudonyme Statistik-Id jederzeit resetbar. **Vollständige Aufstellung aller geloggten Felder:** [docs/TELEMETRIE.md](docs/TELEMETRIE.md).
 - **Graceful Degradation** — Kein `localStorage`? Kein TTS? Kein Service Worker? Die App läuft trotzdem, nur ohne das jeweilige Extra.
 
 ---
@@ -293,7 +293,7 @@ SpanischCard/
 ├── seo/geo-manifest.json        # Generiertes Seiten-Manifest (327 Seiten), eingecheckt für Review/Diff
 ├── sitemap.xml · robots.txt · llms.txt  # Generierte GEO-Artefakte (aus dem Manifest, nie von Hand editieren)
 │
-├── test/                        # 855 Tests in 81 Dateien (node:test, keine Dependencies)
+├── test/                        # 859 Tests in 81 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -613,8 +613,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 857
-#  ℹ pass 857
+#  ℹ tests 859
+#  ℹ pass 859
 #  ℹ fail 0
 ```
 
@@ -625,11 +625,14 @@ node --check *.js   # Syntax-Check aller Module
 node build.js       # Build muss fehlerfrei durchlaufen
 ```
 
-**Optionaler E2E-Check (Browser).** Der „Modo profe“ (Lehrer-Modus) wird mit Playwright in echtem Chromium gegen die laufende App geprüft — Edition laden, Schüler-Backups importieren, Niveau-Verteilung, Sortierung, CSV-Export (inkl. Akzent-Namen), Re-Import-Dedupe und das A4-Druck-Layout. Playwright ist **keine** Repo-Dependency; fehlt es, überspringt der Check sauber (Exit 0), sodass `npm test` dependency-frei bleibt. Der Webserver darin nutzt nur Node-Bordmittel.
+**Optionaler E2E-Check (Browser).** Die Blackbox-E2E-Suiten unter `scripts/e2e/suites/` treiben die echte App mit Playwright in echtem Chromium — Kern-Lernpfad (Flip/Type/Listen), Boot/CSP/Offline, „Modo profe“ (Import, Sortierung, CSV, A4-Druck) und Karten-Index-Caches. Der Aggregator `scripts/e2e/run.mjs` filtert nach Tier (P0–P3) und schreibt einen JSON-Report. Playwright ist **keine** Repo-Dependency; fehlt es, überspringt der Check sauber (Exit 0), sodass `npm test` dependency-frei bleibt. Der Webserver darin nutzt nur Node-Bordmittel.
 
 ```bash
 npm i -D playwright && npx playwright install chromium   # einmalig
-npm run e2e                                               # node scripts/e2e-modo-profe.mjs
+npm run e2e                                               # Smoke (Tier P0)
+npm run e2e:smoke                                         # = Tier P0
+npm run e2e:full                                          # Tier P0+P1+P2
+npm run e2e:profe                                         # nur Modo profe
 ```
 
 Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-end gegengeprüft: Home, Flip, Rating, Type-Matcher, Persistenz nach Reload, Editor, XSS-Probe, Statistik — **0 Konsolen-Errors**. Details in [AUDIT.md](AUDIT.md).
@@ -645,7 +648,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 51 (`SC.*`) |
-| Tests | 857 (alle grün) |
+| Tests | 859 (alle grün) |
 | Laufzeit-Dependencies | 0 |
 | GEO-Seiten | 327 (DE/EN/ES) — siehe [SEO & GEO](#-seo--geo) |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |

@@ -767,6 +767,7 @@
     decodeTask,
     encodeBundle,
     decodeBundle,
+    MAX_BUNDLE_ITEMS,   // Größen-Deckel je Paket – Aufgaben-Studio spiegelt ihn (keine zweite Zahl)
     loadTasks,
     saveTasks: (l) => writeJson(TASKS_KEY, Array.isArray(l) ? l : []),
     loadFavorites,

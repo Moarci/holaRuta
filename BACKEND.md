@@ -389,7 +389,8 @@ Nutzer-ID das Gerät.
 
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies.
 - **Keine** Verknüpfung mit Sync/Social-Konten (ohne Token, eigene pseudonyme `clientId`).
-- **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen nur Enums/Buckets (s. §17.6).
+- **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen Enums/Buckets plus einzelne
+  nicht-identifizierende Ganzzahlen (Interaktionszähler/Rundendauer), aber **keine** Inhalte (s. §17.6).
 
 ### 17.6 Interaktions-Events — „was machen sie genau?" (Vollausbau, opt-in)
 
@@ -415,12 +416,18 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
 - **Lokale Pufferung & Batching:** Ring-Queue (≤ 200 Events) im `localStorage`; Versand gebündelt
   (≤ 50/Batch) periodisch und beim Verstecken/Schließen via `navigator.sendBeacon` (zuverlässig).
 
-**17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `perf` · `screen_view` · `action` ·
-`session_start` · `session_complete` · `card_rated` · `feature_complete` · `search` ·
-`onboarding_step` · `onboarding_complete` · `error` · `consent_change` · `pwa_installed`. Bewusst
+**17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `screen_view` · `action` ·
+`session_start` · `session_complete` · `card_rated` · `feature_start` · `feature_complete` ·
+`search` · `share` · `activation` · `onboarding_step` · `onboarding_complete` · `error` ·
+`consent_change` · `pwa_installed`. Bewusst
 nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Allowlist
 (`analytics.js: EVENTS`) ist erweiterbar. `session_start` deckt **alle** Lern-Startpfade ab
-(zentral aus `beginRound`); `feature_complete` **alle** Lernspiele (zentral aus `setGameStats`).
+(zentral aus `beginRound`); `feature_start`/`feature_complete` **alle** Lernspiele (zentral aus
+`onClick` bzw. `setGameStats`). `session_complete` trägt neben den Buckets exakte Ints
+(`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe; `share`/`activation`
+speisen Virality- und Aktivierungs-KPIs. Das daraus abgeleitete **Investor-Cockpit** (North Star,
+Retention-Kohorten, K-Faktor, Growth Accounting, Interaktionen pro Person/Sitzung/Tag, B2B je
+Edition) ist in [docs/INVESTOR-KPIS.md](docs/INVESTOR-KPIS.md) definiert.
 Envelope (zusätzlich `edition` + grobe `platform`-Klasse):
 `{ v, ts, day, clientId, sessionId, seq, appVersion, locale, track, edition, platform, event, props }`.
 Der **anonyme Snapshot** trägt zusätzlich `mastered` (% gemeistert), `tripGoal`/`tripDaily`,

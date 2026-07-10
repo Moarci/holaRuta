@@ -186,6 +186,21 @@ test("sanitizeProps: error-Text wird PII-bereinigt und gekappt", () => {
   assert.ok(out.msg.length <= 80);
 });
 
+test("sanitizeProps: neue Investor-Events (feature_start/share/activation) + granulares session_complete", () => {
+  // feature_start: nur Feature-Slug + Modus (Gegenstück zu feature_complete).
+  assert.deepEqual(analytics.sanitizeProps("feature_start", { feature: "precios", mode: "flip", id: "card9" }), { feature: "precios", mode: "flip" });
+  // share: nur WAS geteilt wird (content), NIE Empfänger/Freitext/unbekannte Felder (channel nicht gelistet).
+  assert.deepEqual(analytics.sanitizeProps("share", { content: "stats", channel: "native", to: "a@b.com" }), { content: "stats" });
+  assert.deepEqual(analytics.sanitizeProps("share", { content: "eine ganze karte" }), {}, "Freitext fällt strukturell durch den Slug-Filter");
+  // activation: nur milestone-Slug, sonst nichts (day_n nicht gelistet, solange nicht gesendet).
+  assert.deepEqual(analytics.sanitizeProps("activation", { milestone: "first_session", day_n: 0, name: "x" }), { milestone: "first_session" });
+  // session_complete: Buckets bleiben, exakte Ints kommen als int durch, Fremdfelder (Karteninhalt) raus.
+  assert.deepEqual(
+    analytics.sanitizeProps("session_complete", { answered: "5-10", accuracy: "75-90", xp: "30-60", again: "1-3", answered_n: 8, correct_n: 6, xp_n: 30, secs: 180, cardText: "hola" }),
+    { answered: "5-10", accuracy: "75-90", xp: "30-60", again: "1-3", answered_n: 8, correct_n: 6, xp_n: 30, secs: 180 }
+  );
+});
+
 test("buildEvent: vollständiger, deterministischer Envelope (Props sanitisiert)", () => {
   const now = 1750000000000;
   const ev = analytics.buildEvent("screen_view", { screen: "home", tab: "start", secret: "x y" }, {
