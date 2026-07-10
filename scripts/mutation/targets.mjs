@@ -97,14 +97,17 @@ export const IGNORE = [
   { file: "matcher.js", line: 229, op: "relational", grund:
     "classifyNorm: `d > 0` vs `d >= 0` im Tippfehler-Pfad. Ein exakter Treffer (d===0) wird bereits in Schritt 1 " +
     "mit return \"exact\" abgefangen; Schritt 2 sieht daher ausschließlich d>=1 → die 0-Grenze ist unerreichbar → äquivalent." },
-  // sync.js (nach dem main-Merge resampelt – nachweislich äquivalent)
+  // sync.js (nach dem Cloud-Backend-Merge resampelt – Zeilennummern nachgezogen; nachweislich äquivalent)
   { file: "sync.js", line: 84, op: "relational", grund:
+    "mergePlacementHistory: `for (… i < la.length …)` vs `<=` (la-Schleife). Extra-Iteration übergibt la[la.length]=undefined " +
+    "an add(), das mit `if (!isObj(e)) return;` aussteigt → identisches Ergebnis → äquivalent (wie die lb-Schleife)." },
+  { file: "sync.js", line: 85, op: "relational", grund:
     "mergePlacementHistory: `for (… i < lb.length …)` vs `<=`. Die Extra-Iteration übergibt lb[lb.length]=undefined " +
     "an add(), das mit `if (!isObj(e)) return;` sofort aussteigt → kein Eintrag, identisches Ergebnis → äquivalent." },
-  { file: "sync.js", line: 97, op: "number", grund:
+  { file: "sync.js", line: 98, op: "number", grund:
     "mergeGamestats: `for (k in b) keys[k] = 1` vs `= 0`. keys dient NUR als Schlüsselmenge (`for (k in keys)`); " +
     "der Wert (0/1) wird nie gelesen, der Schlüssel bleibt enumerierbar → identische Iteration → äquivalent." },
-  { file: "sync.js", line: 128, op: "logical", grund:
+  { file: "sync.js", line: 129, op: "logical", grund:
     "mergeGamestats: `else if (isObj(va) && isObj(vb))` vs `||`. Die per || zusätzlich erreichten Fälle (genau einer " +
     "ist ein Objekt) liefern über deepUnion(va,vb) denselben Wert wie der else-Zweig (a!==undefined ? a : b = va) → äquivalent." },
   // store.js

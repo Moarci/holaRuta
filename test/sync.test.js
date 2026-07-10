@@ -552,3 +552,85 @@ test("syncNow: 409 mit rev 0 -> Retry-baseRev bleibt 0 (nicht 1)", async () => {
   );
   assert.equal(pushes[1].baseRev, 0, "rev 0 bleibt 0, nicht 1");
 });
+
+// ============================================================================
+// Gezielte Mutations-Killer (Engine-Gate No-Regression für sync.js). Jeder Test
+// unten tötet exakt einen sonst überlebenden Mutanten.
+// ============================================================================
+
+test("mergeProgress: mehr reps gewinnt AUCH bei riesigem due der schwächeren Karte (progressScore: * nicht +)", () => {
+  // Mutant sync.js progressScore `reps*1e15` -> `reps+1e15`: dann dominiert due die
+  // reps-Differenz und die Karte mit WENIGER Wiederholungen (aber großem due) gewänne.
+  const a = { c: { reps: 2, due: 0 } };
+  const b = { c: { reps: 1, due: 5e14 } };
+  assert.equal(sync.mergeProgress(a, b).c.reps, 2, "reps=2 gewinnt trotz kleinem due gegen reps=1 mit riesigem due");
+});
+
+test("mergeGamestats: boolean-Wert bleibt bei nicht-boolean Gegenwert erhalten (boolean-Zweig braucht &&, nicht ||)", () => {
+  // Mutant `typeof va==="boolean" && typeof vb==="boolean"` -> `||`: dann liefe
+  // out = va || vb auch, wenn nur EINER boolean ist -> false || 5 = 5 statt false.
+  const m = sync.mergeGamestats({ someFlag: false }, { someFlag: 5 });
+  assert.equal(m.someFlag, false, "va=false (boolean) bleibt, wird nicht durch vb=5 ersetzt");
+});
+
+test("mergeTasks: gleich lange Inhalte bei Id-Kollision -> erste Variante bleibt (strikt >, nicht >=)", () => {
+  // Mutant `length > length` -> `>=`: bei Gleichstand überschriebe die zweite die erste.
+  const m = sync.mergeTasks([{ code: "T", x: 1 }], [{ code: "T", y: 2 }]);
+  assert.equal(m.length, 1);
+  assert.equal(m[0].x, 1, "erste (x:1) bleibt bei gleicher JSON-Länge; nicht durch y:2 ersetzt");
+});
+
+test("logout: ruft den Server-Logout NUR bei enabled UND eingeloggt (Guard braucht &&, nicht ||)", async () => {
+  // Mutant `enabled() && loggedIn()` -> `||`: dann würde req() schon feuern, wenn nur
+  // eines zutrifft. Hier: enabled=true, aber NICHT eingeloggt -> kein Server-Call.
+  let called = false;
+  await withStubs(
+    { loggedIn: () => false, logout: () => {}, request: () => { called = true; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, {},
+    () => { sync.logout(); },
+  );
+  assert.equal(called, false, "nicht eingeloggt -> kein POST /v1/auth/logout");
+  // Positivfall: enabled UND eingeloggt -> genau ein Logout-Request an den richtigen Pfad.
+  let path = null;
+  await withStubs(
+    { loggedIn: () => true, logout: () => {}, request: (_b, m, p) => { path = m + " " + p; return Promise.resolve({ ok: true, body: {} }); } },
+    {}, {},
+    () => { sync.logout(); },
+  );
+  assert.equal(path, "POST /v1/auth/logout", "eingeloggt -> Server-Logout ausgelöst");
+});
+
+test("syncNow: 409-Retry ohne rev in der zweiten Antwort -> rev 0 (Fallback ist 0, nicht 1)", async () => {
+  // Mutant `(pr2.body && pr2.body.rev) || 0` -> `|| 1`: dann käme fälschlich rev:1.
+  const GS = GAMESTATS;
+  const res = await withStubs(
+    {
+      loggedIn: () => true,
+      request: (() => {
+        let puts = 0;
+        return (_b, method, _p, body) => {
+          if (method === "GET") return Promise.resolve({ ok: true, body: { payload: { [GS]: { reviews: 1 } }, rev: 3 } });
+          puts++;
+          // 1. PUT -> 409 mit Serverstand; 2. PUT (pr2) -> ok, aber OHNE rev.
+          if (puts === 1) return Promise.resolve({ ok: false, status: 409, body: { payload: { [GS]: { reviews: 2 } }, rev: 4 } });
+          return Promise.resolve({ ok: true, status: 200, body: {} });
+        };
+      })(),
+    },
+    { exportData: () => ({ data: { [GS]: { reviews: 5 } } }), importData: () => {} },
+    {},
+    () => sync.syncNow(),
+  );
+  assert.equal(res.rev, 0, "fehlender rev in der Retry-Antwort -> 0, nicht 1");
+});
+
+test("syncNow: lehnt ab, wenn eingeloggt fehlt (Guard braucht ||, nicht &&)", async () => {
+  // Mutant `!enabled() || !loggedIn()` -> `&&`: dann würde bei enabled=true &
+  // loggedIn=false NICHT abgelehnt und ein Sync gestartet. Muss aber ablehnen.
+  await withStubs(
+    { loggedIn: () => false, request: () => { throw new Error("darf nicht syncen"); } },
+    { exportData: () => ({ data: {} }), importData: () => {} },
+    {},
+    () => assert.rejects(() => sync.syncNow(), /not ready/),
+  );
+});
