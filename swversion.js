@@ -40,14 +40,25 @@ function readAssets(swFile) {
 // Rückkopplungs-Effekt durch das Stempeln. `baseDir`/`swFile` erlauben es, den
 // Hash über die kopierten/minifizierten Assets eines anderen Verzeichnisses
 // (z. B. dist/) zu rechnen statt über die Quell-Dateien im Repo-Root.
+// Text-Asset-Endungen, deren Zeilenenden vor dem Hashen auf LF normalisiert werden
+// (git speichert LF; ein Windows-Checkout mit core.autocrlf=true hätte sonst CRLF und
+// damit einen ANDEREN Hash als CI/Linux -> der sw-version-Test schlüge nur auf einer
+// Plattform fehl). Binärdateien (Fonts/PNGs) bleiben bewusst roh.
+const TEXT_EXT = new Set([".js", ".css", ".html", ".svg", ".webmanifest", ".json", ".txt"]);
+
 function computeCacheVersion(baseDir, swFile) {
   const root = baseDir || ROOT;
   const h = crypto.createHash("sha256");
   for (const rel of [...new Set(readAssets(swFile))].sort()) {
     const file = path.join(root, rel);
     if (!fs.existsSync(file)) continue; // Existenz prüft der sw-assets-Test separat
+    let buf = fs.readFileSync(file); // Buffer (auch Fonts/PNGs) -> binärsicher
+    // Plattformunabhängig: Text-Assets auf LF normalisieren, Binärdateien roh lassen.
+    if (TEXT_EXT.has(path.extname(rel).toLowerCase())) {
+      buf = Buffer.from(buf.toString("utf8").replace(/\r\n/g, "\n"), "utf8");
+    }
     h.update(rel + "\0");
-    h.update(fs.readFileSync(file)); // Buffer (auch Fonts/PNGs) -> binärsicher
+    h.update(buf);
     h.update("\0");
   }
   return PREFIX + h.digest("hex").slice(0, 12);
