@@ -163,6 +163,13 @@ test("login: ohne devToken (echter Magic-Link/OTP-Flow) -> {pending:true}, kein 
   assert.equal(net.getToken(), null, "ohne devToken bleibt man abgemeldet");
 });
 
+test("login: Serverfehler (429/400/502) -> lehnt ab, NICHT pending (kein falsches Mail-pruefen)", async () => {
+  reset();
+  stubFetch(() => res(429, JSON.stringify({ error: "rate limited" })));
+  await assert.rejects(() => net.login("http://api", "x@y"), /login failed/);
+  assert.equal(net.getToken(), null, "bei Fehler kein Token gespeichert");
+});
+
 test("confirm: POST /v1/auth/confirm, accessToken wird gespeichert", async () => {
   reset();
   // Shape exakt wie tools/mock-sync-server.js /v1/auth/confirm.

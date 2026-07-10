@@ -25,6 +25,7 @@
   var SETTINGS_KEY = "spanischcard.settings.v1";
   var USERCARDS_KEY = "spanischcard.usercards.v1";
   var GAMESTATS_KEY = "spanischcard.gamestats.v1";
+  var TASKS_KEY = "spanischcard.tasks.v1"; // abonnierte Aufgaben – Liste, per code vereinen
   var FAVORITES_KEY = "spanischcard.favorites.v1"; // „Mi léxico" – wie Usercards eine persönliche Liste
   // Auth-Token (Login/Bearer) liegt in SC.net – geteilt mit social.js.
 
@@ -152,6 +153,25 @@
     return order.map(function (id) { return byId[id]; });
   }
 
+  // Abonnierte Aufgaben: Vereinigung per `code` (analog Usercards/Favoriten per id).
+  // Ohne das fiele `tasks` in mergeData auf deepUnion, das bei Arrays „local wins"
+  // zurückgibt -> auf zwei Geräten abonnierte Aufgaben würden sich beim Sync
+  // gegenseitig löschen. Reihenfolgeunabhängig: die inhaltsreichere Variante gewinnt.
+  function mergeTasks(a, b) {
+    var la = Array.isArray(a) ? a : [], lb = Array.isArray(b) ? b : [];
+    var byCode = {}, order = [];
+    function add(t) {
+      if (!t || !t.code) return;
+      var code = t.code;
+      if (!(code in byCode)) { byCode[code] = t; order.push(code); }
+      else if (JSON.stringify(t).length > JSON.stringify(byCode[code]).length) byCode[code] = t;
+    }
+    var i;
+    for (i = 0; i < la.length; i++) add(la[i]);
+    for (i = 0; i < lb.length; i++) add(lb[i]);
+    return order.map(function (code) { return byCode[code]; });
+  }
+
   // Zwei `data`-Maps (aus exportData().data) verschmelzen.
   function mergeData(localData, remoteData) {
     var l = isObj(localData) ? localData : {}, r = isObj(remoteData) ? remoteData : {};
@@ -166,6 +186,7 @@
       // deepUnion zwei Listen NICHT zusammenführen (Array → lokal gewinnt), und auf
       // zwei Geräten gemerkte Favoriten löschten sich beim Sync gegenseitig.
       else if (k === FAVORITES_KEY) out[k] = mergeUsercards(l[k], r[k]);
+      else if (k === TASKS_KEY) out[k] = mergeTasks(l[k], r[k]); // Aufgaben per code vereinen (sonst local-wins)
       else if (k === SETTINGS_KEY) out[k] = (k in l) ? l[k] : r[k]; // Einstellungen bleiben gerätelokal
       else out[k] = deepUnion(l[k], r[k]); // unbekannte/künftige Keys konservativ vereinen
     }
@@ -191,11 +212,14 @@
   function enabled() { return !!(cfg() && cfg().enabled && cfg().apiBase && typeof fetch === "function"); }
   function apiBase() { return (cfg() && cfg().apiBase || "").replace(/\/+$/, ""); }
 
-  // Server erzwingt eine Obergrenze pro Sync-Payload (BACKEND.md §13: 256 KB).
-  // Clientseitig vorab prüfen -> klare, frühe Fehlermeldung statt überraschendem
-  // 413 nach dem Hochladen. UTF-8-Bytes (nicht Zeichen) zählen, da Akzente/Emojis
-  // im Content mehr als ein Byte belegen.
-  var MAX_PAYLOAD_BYTES = 256 * 1024;
+  // Server erzwingt eine Obergrenze pro Sync-Payload. Clientseitig vorab prüfen ->
+  // klare, frühe Fehlermeldung statt überraschendem 413 nach dem Hochladen. UTF-8-
+  // Bytes (nicht Zeichen) zählen, da Akzente/Emojis im Content mehr als ein Byte
+  // belegen. 2 MB (nicht 256 KB): ein Power-User mit Fortschritt über ~2.600 Karten
+  // plus vollem placementHistory-Verlauf (lange review-Strings) überschreitet 256 KB
+  // sonst und könnte gar nicht mehr syncen. MUSS mit dem Server-Limit (api/v1/sync.js
+  // MAX_PAYLOAD_BYTES) synchron bleiben.
+  var MAX_PAYLOAD_BYTES = 2 * 1024 * 1024;
   function byteLength(s) {
     if (typeof TextEncoder !== "undefined") { try { return new TextEncoder().encode(s).length; } catch (e) { /* Fallback */ } }
     return s.length; // konservativer Fallback (zählt Zeichen)
@@ -220,7 +244,14 @@
     if (!enabled()) return Promise.reject(new Error("sync disabled"));
     return SC.net.confirm(apiBase(), email, token);
   }
-  function logout() { SC.net.logout(); }
+  function logout() {
+    // Server-Session widerrufen (best effort, fire-and-forget), BEVOR der Token
+    // lokal gelöscht wird – sonst bliebe der Opaque-Token serverseitig unbegrenzt
+    // gültig (Risiko auf geteilten Geräten). Der Bearer-Header wird synchron beim
+    // req()-Aufruf gesetzt, daher ist das anschließende net.logout() unkritisch.
+    try { if (enabled() && SC.net.loggedIn()) req("POST", "/v1/auth/logout", null); } catch (e) { /* egal */ }
+    SC.net.logout();
+  }
 
   function pull() { return req("GET", "/v1/sync", null, RETRY); }
   function push(payload, baseRev) {
@@ -290,6 +321,7 @@
     mergeProgress: mergeProgress,
     mergeGamestats: mergeGamestats,
     mergeUsercards: mergeUsercards,
+    mergeTasks: mergeTasks,
     deepUnion: deepUnion,
   };
 })();

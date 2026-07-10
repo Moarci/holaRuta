@@ -211,8 +211,30 @@ function buildDist() {
     }
   }
 
-  // index.html roh kopieren (referenziert dieselben Dateinamen wie im Root).
-  writeDist(DIST, "index.html", fs.readFileSync(path.join(DIR, SOURCE)));
+  // index.html nach dist/ schreiben. Edition-Dist (`--dist --edition=<id>`):
+  // die Edition-Config VOR config.js einhängen (setzt window.SC.editionConfig),
+  // damit config.js sie beim Merge sieht – analog zum Single-File-Build (Zeile 109).
+  // Ohne EDITION bleibt index.html unverändert (Default = HolaRuta pur, offline).
+  let indexHtml = fs.readFileSync(path.join(DIR, SOURCE), "utf8");
+  if (EDITION) {
+    const edRel = `editions/${EDITION}.js`;
+    const edSrc = path.join(DIR, edRel);
+    if (!fs.existsSync(edSrc)) throw new Error(`Edition-Datei fehlt: ${edRel}`);
+    // Edition-Modul nach dist/ (minifiziert, falls esbuild da) – nicht im SW-Precache,
+    // aber offline unkritisch: fehlt es offline, läuft die App ohne Sync (graceful).
+    const edCode = fs.readFileSync(edSrc, "utf8");
+    writeDist(DIST, edRel, esbuild
+      ? esbuild.transformSync(edCode, { loader: "js", minify: true, legalComments: "none" }).code
+      : edCode);
+    // Script-Tag direkt vor config.js einfügen.
+    const before = indexHtml;
+    indexHtml = indexHtml.replace(
+      /(<script src="config\.js"><\/script>)/,
+      `<script src="${edRel}"></script>\n  $1`
+    );
+    if (indexHtml === before) throw new Error("Edition-Einbettung: <script src=\"config.js\"> in index.html nicht gefunden.");
+  }
+  writeDist(DIST, "index.html", Buffer.from(indexHtml));
   // service-worker.js nach dist/ kopieren – wird gleich über die dist-Assets gestempelt.
   writeDist(DIST, "service-worker.js", fs.readFileSync(path.join(DIR, "service-worker.js")));
   // Zusätzliche Root-Assets, die nicht im Precache stehen, aber von index.html/Manifest

@@ -57,7 +57,7 @@ function send(res, status, body) {
 function readBody(req) {
   return new Promise((resolve) => {
     let raw = "";
-    req.on("data", (c) => { raw += c; if (raw.length > 1e6) req.destroy(); });
+    req.on("data", (c) => { raw += c; if (raw.length > 2.1 * 1024 * 1024) req.destroy(); }); // ~2 MB wie sync.js/api MAX_PAYLOAD_BYTES
     req.on("end", () => { try { resolve(raw ? JSON.parse(raw) : {}); } catch (e) { resolve(null); } });
   });
 }

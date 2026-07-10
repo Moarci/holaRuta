@@ -353,9 +353,9 @@ test("push: baseRev wird durchgereicht (Default 0, nicht verschluckt)", async ()
   assert.equal(bodies[0].payload.foo, 1);
 });
 
-test("push: lehnt zu große Payloads vorab ab (BACKEND.md §13, 256 KB) – kein Request", async () => {
+test("push: lehnt zu große Payloads vorab ab (2 MB, R1) – kein Request", async () => {
   let called = false;
-  const big = { blob: "x".repeat(300 * 1024) }; // > 256 KB als JSON
+  const big = { blob: "x".repeat(2 * 1024 * 1024 + 1024) }; // > 2 MB als JSON
   await withStubs(
     { request: () => { called = true; return Promise.resolve({ ok: true, body: {} }); } },
     {}, {},
@@ -364,23 +364,23 @@ test("push: lehnt zu große Payloads vorab ab (BACKEND.md §13, 256 KB) – kein
   assert.equal(called, false, "übergroßer Push erreicht das Netzwerk gar nicht");
 });
 
-test("push: normal große Payload geht durch (deutlich unter dem 256-KB-Limit)", async () => {
+test("push: Power-User-Payload geht durch (deutlich unter dem 2-MB-Limit)", async () => {
   let called = false;
-  // ~5 KB: liegt unter dem echten Limit (256*1024), aber ÜBER einer kaputten
-  // 256+1024-Grenze -> verriegelt, dass das Limit wirklich 256*1024 Bytes ist.
-  const ok = { blob: "x".repeat(5 * 1024) };
+  // ~300 KB: würde am alten 256-KB-Limit (R1) scheitern, unter 2 MB nun erlaubt –
+  // verriegelt, dass ein Power-User (viele Karten + placementHistory) syncen kann.
+  const ok = { blob: "x".repeat(300 * 1024) };
   await withStubs(
     { request: () => { called = true; return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
     {}, {},
     async () => { const r = await sync.push(ok, 0); assert.equal(r.ok, true); },
   );
-  assert.equal(called, true, "normale Payload wird gesendet");
+  assert.equal(called, true, "Power-User-Payload wird gesendet");
 });
 
-test("push: Payload exakt am Limit (256 KB) wird noch akzeptiert (Grenze ist exklusiv: >)", async () => {
+test("push: Payload exakt am Limit (2 MB) wird noch akzeptiert (Grenze ist exklusiv: >)", async () => {
   let called = false;
-  // JSON {"blob":"x…x"} = N + 11 Bytes (ASCII). N so, dass es GENAU 256*1024 Bytes sind.
-  const exact = { blob: "x".repeat(256 * 1024 - 11) };
+  // JSON {"blob":"x…x"} = N + 11 Bytes (ASCII). N so, dass es GENAU 2*1024*1024 Bytes sind.
+  const exact = { blob: "x".repeat(2 * 1024 * 1024 - 11) };
   await withStubs(
     { request: () => { called = true; return Promise.resolve({ ok: true, body: { rev: 1 } }); } },
     {}, {},

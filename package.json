@@ -7,6 +7,7 @@
     "test": "node --test test/*.test.js",
     "build": "node build.js",
     "dist": "node build.js --dist",
+    "dist:launch": "node build.js --dist --edition=launch",
     "e2e": "node scripts/e2e/run.mjs --tier=P0",
     "e2e:smoke": "node scripts/e2e/run.mjs --tier=P0",
     "e2e:full": "node scripts/e2e/run.mjs --tier=P0,P1,P2",
@@ -25,6 +26,9 @@
     "mutation:engine": "node scripts/mutation/run.mjs --engine",
     "mutation:diff": "node scripts/mutation/run.mjs --catalog --engine --diff",
     "mutation:score": "node scripts/mutation/run.mjs --engine"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4"
   },
   "devDependencies": {
     "esbuild": "0.28.1"
