@@ -2,12 +2,13 @@
 /*
  * scripts/e2e/suites/p1-task-code.mjs — Blackbox-E2E des Lehrer-Aufgabencodes.
  *
- * Auf dem Lehrer-Screen (ECOS-Edition) erzeugt task-generate einen base64-Code
- * (#task-code, Format „HRT1.…"). Ein Schüler öffnet die App mit ?task=<code> und
- * bekommt die Aufgabe angezeigt/abonniert. Geprüft:
- *   - Code-Generierung liefert einen HRT1.-Code
- *   - ?task=<code> in einer neuen Session zeigt/startet die Aufgabe
- *   - ein ungültiger Code führt NICHT zum Crash (graceful — landet auf Home)
+ * Codes werden über das Aufgaben-Studio (features/composer.js) erzeugt, NICHT
+ * mehr über das alte task-generate/#task-code-Formular (das PR #253 „Aufgaben-
+ * Studio" ersetzt hat). Flow: Lehrer-Screen (ECOS) → open-composer → Vorlage
+ * wählen (composer-bundle) → composer-next ×2 → Code-Box aufklappen
+ * (.cmp-codebox summary) → Textarea .cmp-codebox .task-code (readonly, .value)
+ * enthält den Code, Präfix „HRB1." für ein Paket. Ein Schüler öffnet ?task=<code>
+ * und bekommt die enthaltenen Aufgaben abonniert (Tarea-Tab, .task-item).
  *
  *   node scripts/e2e/suites/p1-task-code.mjs
  */
@@ -20,31 +21,47 @@ await process.exit(await runSuite("Aufgaben-Code (Task)", async ({ browser, suit
   let code = null;
 
   try {
-    // ----- Lehrer generiert einen Code -----
+    // ----- Lehrer erzeugt über das Aufgaben-Studio ein Paket -----
     {
       const { ctx, page, errs } = await newPage(browser, { seed: { name: "Prof" } });
       await page.goto(base + "?edition=ecos", { waitUntil: "networkidle" });
       await page.click(by.tab("tarea"));
       await page.click(by.action("open-teacher"));
-      await page.waitForSelector(by.action("task-generate"), { timeout: 5000 });
-      await page.click(by.action("task-generate"));
-      await page.waitForTimeout(400);
-      code = await page.evaluate(() => { const el = document.getElementById("task-code"); return el ? el.value : null; });
-      check("task-generate liefert einen Code (HRT1./HRB1.-Präfix)", !!code && /^HR[TB]\d\./.test(code), code || "kein Code");
-      check("Task-Generierung: keine App-Fehler", appErrs(errs).length === 0, appErrs(errs).join(" | "));
+      await page.waitForSelector(by.action("open-composer"), { timeout: 5000 });
+      await page.click(by.action("open-composer"));
+      await page.waitForSelector(".cmp-steps", { timeout: 5000 });
+
+      // Schritt 1: eine Vorlage wählt automatisch mehrere Ziele. „restaurant" liegt
+      // in einer standardmäßig OFFENEN Gruppe (composer.js: ui.groups.situation=true) —
+      // anders als z. B. die Länder-Vorlagen unter „destino", die eingeklappt starten
+      // (ui.groups.destino=false) und daher hier bewusst NICHT anklickbar sein sollen.
+      const bundle = await page.$('[data-action="composer-bundle"][data-bundle="restaurant"]');
+      check("Aufgaben-Studio: Vorlage im Katalog vorhanden", !!bundle);
+      if (bundle) await bundle.click();
+      await page.waitForTimeout(200);
+      const nextEnabled = await page.evaluate(() => { const b = document.querySelector(".cmp-nextbtn"); return !!b && !b.disabled; });
+      check("Vorlage wählt Ziele (Weiter freigeschaltet)", nextEnabled);
+
+      // Schritt 2 → Schritt 3 (Teilen).
+      await page.click(by.action("composer-next"));
+      await page.waitForSelector(".cmp-sels", { timeout: 5000 });
+      await page.click(by.action("composer-next"));
+      await page.waitForSelector(".cmp-ready", { timeout: 5000 });
+
+      await page.click(".cmp-codebox summary");
+      code = await page.$eval(".cmp-codebox .task-code", (el) => el.value.trim()).catch(() => null);
+      check("Aufgaben-Studio liefert einen Code (HRT1./HRB1.-Präfix)", !!code && /^HR[TB]\d\./.test(code), code || "kein Code");
+      check("Aufgaben-Studio: keine App-Fehler", appErrs(errs).length === 0, appErrs(errs).join(" | "));
       await ctx.close();
     }
 
-    // ----- Schüler öffnet ?task=<code> -----
+    // ----- Schüler öffnet ?task=<code> und bekommt die Aufgaben abonniert -----
     if (code) {
       const { ctx, page, errs } = await newPage(browser, { seed: { name: "Schueler" } });
-      await page.goto(base + "?task=" + encodeURIComponent(code), { waitUntil: "networkidle" });
-      await page.waitForTimeout(400);
-      const info = await page.evaluate(() => ({
-        home: !!document.querySelector('[data-action="study-all"]'),
-        head: ((document.getElementById("app") || {}).innerText || "").slice(0, 100),
-      }));
-      check("?task=<code>: App lädt fehlerfrei (Home oder Task-Screen)", info.home || info.head.length > 10, info.head.slice(0, 60));
+      await page.goto(base + "?edition=ecos&task=" + encodeURIComponent(code), { waitUntil: "networkidle" });
+      await page.click(by.tab("tarea"));
+      const hasTask = await page.waitForSelector(".task-item", { timeout: 5000 }).then(() => true).catch(() => false);
+      check("?task=<code>: Aufgabe(n) im Tarea-Tab abonniert", hasTask);
       check("?task=<code>: keine App-Fehler", appErrs(errs).length === 0, appErrs(errs).join(" | "));
       await ctx.close();
     }
