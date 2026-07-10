@@ -38,7 +38,10 @@ test("loadManifestPages: baut frisch, wenn die angeforderten Locales nicht zur D
 
 test("loadManifestPages: fällt bei fehlendem Manifest auf buildManifest() zurück", async () => {
   const { loadManifestPages, buildManifest } = await import("../scripts/geo/generate.mjs");
-  const backup = fs.existsSync(MANIFEST_PATH) ? fs.readFileSync(MANIFEST_PATH, "utf8") : null;
+  // Direkt lesen statt existsSync-dann-read (vermeidet die TOCTOU-Race, die CodeQL
+  // js/file-system-race meldet): fehlt die Datei, liefert der catch null.
+  let backup = null;
+  try { backup = fs.readFileSync(MANIFEST_PATH, "utf8"); } catch (e) { backup = null; }
   try {
     fs.rmSync(MANIFEST_PATH, { force: true });
     const pages = loadManifestPages(["de", "en", "es"]);

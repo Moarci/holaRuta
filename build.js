@@ -219,10 +219,13 @@ function buildDist() {
   if (EDITION) {
     const edRel = `editions/${EDITION}.js`;
     const edSrc = path.join(DIR, edRel);
-    if (!fs.existsSync(edSrc)) throw new Error(`Edition-Datei fehlt: ${edRel}`);
+    // Direkt lesen statt existsSync-dann-read (vermeidet die TOCTOU-Race): fehlt die
+    // Edition-Datei, wird der Lesefehler als klare Build-Meldung weitergereicht.
     // Edition-Modul nach dist/ (minifiziert, falls esbuild da) – nicht im SW-Precache,
     // aber offline unkritisch: fehlt es offline, läuft die App ohne Sync (graceful).
-    const edCode = fs.readFileSync(edSrc, "utf8");
+    let edCode;
+    try { edCode = fs.readFileSync(edSrc, "utf8"); }
+    catch (e) { throw new Error(`Edition-Datei fehlt/unlesbar: ${edRel} (${e.code || e.message})`); }
     writeDist(DIST, edRel, esbuild
       ? esbuild.transformSync(edCode, { loader: "js", minify: true, legalComments: "none" }).code
       : edCode);
