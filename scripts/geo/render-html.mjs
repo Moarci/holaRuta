@@ -113,6 +113,7 @@ function renderCriticalCss(root) {
     .geo-crumbs a{color:var(--ink-soft);}
     h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.15;margin:0 0 .75rem;}
     h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;font-size:1.3rem;margin:2rem 0 .75rem;}
+    .geo-lede-q{font-size:1.15rem;margin:.25rem 0 .5rem;color:var(--ink);}
     h3{font-size:1.05rem;margin:1.25rem 0 .4rem;}
     p{margin:0 0 1rem;}
     .geo-intro{font-size:1.1rem;color:var(--ink-soft);}
@@ -164,6 +165,22 @@ function renderRelated(page, relatedLabel, root) {
   return renderLinkList(page.internalLinks?.related, relatedLabel, root, "geo-related");
 }
 
+// Direktantwort-Block (AEO): die primäre beantwortbare Frage der Seite als
+// Überschrift, unmittelbar gefolgt von der prägnanten Antwort (Intro). Genau
+// das Q->A-Muster, aus dem Answer-Engines Featured Snippets / AI Overviews
+// ziehen – und zwar oben auf der Seite, nicht erst im FAQ-Block ganz unten.
+// Übersprungen, wenn die Frage ohnehin schon dem H1 entspricht (Pillar-Seiten
+// setzen question === h1, deren H1 IST bereits die Frage) – sonst stünde die
+// identische Zeile doppelt untereinander.
+function renderLede(page) {
+  const intro = `      <p class="geo-intro">${escapeHtml(page.intro)}</p>`;
+  const q = (page.question || "").trim();
+  if (q && q.toLowerCase() !== (page.h1 || "").trim().toLowerCase()) {
+    return `      <h2 class="geo-lede-q">${escapeHtml(q)}</h2>\n${intro}`;
+  }
+  return intro;
+}
+
 // Länder-Seiten verlinken zusätzlich auf ihre Städte-Guides: eigener Block mit
 // eigener Überschrift statt in "Weiterlesen" vermischt (klarere Ankertexte für
 // Crawler + Nutzer).
@@ -207,7 +224,7 @@ export function renderPage(page) {
     <main id="geo-main">
 ${crumbs}
       <h1>${escapeHtml(page.h1)}</h1>
-      <p class="geo-intro">${escapeHtml(page.intro)}</p>
+${renderLede(page)}
 ${page.sections.map(renderSection).join("\n")}
 ${renderFaq(page.faq, FAQ_LABEL[page.locale] || FAQ_LABEL.de)}
 ${renderCityLinks(page, CITIES_LABEL[page.locale] || CITIES_LABEL.de, root)}

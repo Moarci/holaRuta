@@ -35,11 +35,35 @@ export const DEFAULT_LOCALE = "de";
 // Menschlich lesbare Sprachnamen (für llms.txt / Hinweise).
 export const LOCALE_LABEL = Object.freeze({ de: "Deutsch", en: "English", es: "Español" });
 
-// Deterministisches "zuletzt überarbeitet"-Datum der generierten Inhalte
-// (JSON-LD dateModified, Sitemap lastmod). Bewusst KEIN Date.now(): sonst
-// ändern sich committete Artefakte bei jedem Build. Bei inhaltlichen Updates
-// hier hochsetzen.
-export const CONTENT_DATE = "2026-07-09";
+// "zuletzt überarbeitet"-Datum der generierten Inhalte (JSON-LD dateModified,
+// Sitemap lastmod). Bewusst KEIN Date.now() als Default: sonst ändern sich
+// committete Artefakte bei jedem Build. Bei inhaltlichen Updates den Default
+// hochsetzen ODER pro Build über die Umgebungsvariable CONTENT_DATE stempeln
+// (z. B. in CI: `CONTENT_DATE=$(date +%F) node build.js --dist`) – Freshness
+// ist ein Ranking-/Antwort-Signal für Answer-Engines, ein statisches Datum auf
+// allen Seiten wirkt weder aktuell noch differenziert.
+const CONTENT_DATE_DEFAULT = "2026-07-09";
+
+// Echte Kalendervalidierung, nicht nur die Ziffern-Form: der Wert wandert
+// unverändert als schema.org-Date ins JSON-LD, deshalb darf ein syntaktisch
+// passendes, aber unmögliches Datum (z. B. "2026-13-45" oder der 30. Februar)
+// NICHT durchrutschen. Rekonstruktion über Date.UTC deckt genau diese
+// Roll-over-Fälle auf (aus 2026-02-30 würde sonst still der 2. März).
+export function isValidContentDate(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  if (!m) return false;
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const dt = new Date(Date.UTC(y, mo - 1, d));
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === mo - 1 && dt.getUTCDate() === d;
+}
+
+// Env-Wert nur übernehmen, wenn er ein echtes YYYY-MM-DD-Datum ist; sonst
+// sicher auf den Default zurückfallen (nie ein kaputtes Datum ins JSON-LD).
+export function resolveContentDate(raw, fallback = CONTENT_DATE_DEFAULT) {
+  return isValidContentDate(raw) ? raw : fallback;
+}
+
+export const CONTENT_DATE = resolveContentDate(process.env.CONTENT_DATE);
 
 // og:locale-Werte pro Sprache.
 export const OG_LOCALE = Object.freeze({ de: "de_DE", en: "en_US", es: "es_ES" });

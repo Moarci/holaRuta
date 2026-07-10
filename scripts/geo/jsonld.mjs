@@ -69,9 +69,15 @@ export function softwareAppNode(locale = "de", page = null) {
   };
 }
 
-// Speakable-Selektoren: Direktantwort (Intro) + Überschriften – GEO/Voice.
+// Speakable-Selektoren (GEO/Voice): gezielt die zitierbaren Teile – Titel, die
+// Direktantwort-Frage + ihre Antwort (Intro) und die FAQ-Q&A. BEWUSST NICHT
+// "h2" pauschal: das würde auch Navigations-Überschriften wie "Weiterlesen"
+// oder "Städte-Guides in diesem Land" als vorlesbare Antwort markieren.
 function speakable() {
-  return { "@type": "SpeakableSpecification", cssSelector: ["h1", ".geo-intro", "h2"] };
+  return {
+    "@type": "SpeakableSpecification",
+    cssSelector: ["h1", ".geo-lede-q", ".geo-intro", ".geo-faq h3", ".geo-faq p"],
+  };
 }
 
 function breadcrumbNode(page) {

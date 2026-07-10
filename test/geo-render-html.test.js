@@ -46,6 +46,39 @@ test("renderPage: JSON-LD-Block ist gültiges, parsbares JSON (@context + @graph
   assert.ok(Array.isArray(parsed["@graph"]) && parsed["@graph"].length > 0);
 });
 
+// Direktantwort-Block (AEO): die primäre Frage der Seite steht als eigene
+// Überschrift oben, direkt gefolgt vom Intro als Antwort – das Q->A-Muster für
+// Featured Snippets / AI Overviews, nicht erst im FAQ-Block am Seitenende.
+test("renderPage: rendert die Seiten-Frage als geo-lede-q-Überschrift über dem Intro", async () => {
+  const { renderPage } = await import("../scripts/geo/render-html.mjs");
+  const { escapeHtml } = await import("../scripts/geo/text-utils.mjs");
+  const page = await samplePage();
+  assert.ok(page.question && page.question.toLowerCase() !== page.h1.toLowerCase(), "Länder-Seite hat eine vom H1 abweichende Frage");
+  const html = renderPage(page);
+  assert.ok(html.includes(`<h2 class="geo-lede-q">${escapeHtml(page.question)}</h2>`), "Frage fehlt als geo-lede-q");
+  // Die Frage steht VOR dem Intro (Q->A-Reihenfolge).
+  assert.ok(html.indexOf("geo-lede-q") < html.indexOf('class="geo-intro"'), "Frage muss vor dem Intro stehen");
+
+  // Kohärenz Q->A: die Lede-Frage der Städte-Seite muss zum Coverage-Intro
+  // passen (Deckungs-/Themenfrage), NICHT "welches Spanisch?" – deren Intro
+  // beschreibt den Umfang des Guides, nicht die Sprachvariante.
+  const { loadReiseData } = await import("../scripts/geo/load-sc-data.mjs");
+  const { buildAllPages } = await import("../scripts/geo/content-model.mjs");
+  const city = buildAllPages(loadReiseData(), ["de"]).find((p) => p.pageType === "city");
+  assert.ok(/deckt|Themen/i.test(city.question), `Städte-Frage sollte Deckungsfrage sein, war: ${city.question}`);
+  assert.ok(!/Welches Spanisch/i.test(city.question), "Städte-Lede-Frage darf nicht die Sprachvarianten-Frage sein");
+});
+
+// Pillar-Seiten setzen question === h1 (ihr H1 IST bereits die Frage) – dann
+// darf die Frage NICHT ein zweites Mal als geo-lede-q darüber erscheinen.
+test("renderPage: kein doppelter Frage-Block, wenn question === h1 (z. B. Pillar-Seiten)", async () => {
+  const { renderPage } = await import("../scripts/geo/render-html.mjs");
+  const page = await samplePage();
+  const html = renderPage({ ...page, question: page.h1 });
+  assert.ok(!html.includes('class="geo-lede-q"'), "geo-lede-q darf bei question === h1 nicht gerendert werden");
+  assert.ok(html.includes('class="geo-intro"'), "das Intro muss trotzdem gerendert werden");
+});
+
 test("renderPage: FAQ-Fragen und -Antworten erscheinen im Body", async () => {
   const { renderPage } = await import("../scripts/geo/render-html.mjs");
   const { escapeHtml } = await import("../scripts/geo/text-utils.mjs");

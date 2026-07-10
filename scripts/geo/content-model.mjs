@@ -443,7 +443,11 @@ function buildCityPage(cityCat, cards, countryPage, country, locale, index) {
       description: truncate(intro, 155),
     },
     h1: `${t.countryPrefix} ${name}`,
-    question: t.faq.whichSpanish(name),
+    // Direktantwort-Frage der Seite: bewusst die Deckungs-/Themenfrage, NICHT
+    // "welches Spanisch?" – das Intro der Städte-Seite beschreibt den Umfang des
+    // Guides ("... Wortschatz für N Situationen"), nicht die Sprachvariante. Nur
+    // so bilden question (H2) + intro (Antwort) im Lede ein kohärentes Q&A-Paar.
+    question: t.citySituationsFaq.cityWhat(name),
     intro,
     sections,
     faq,
