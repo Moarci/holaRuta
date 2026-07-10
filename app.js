@@ -14,6 +14,7 @@
   const spickzettel = window.SC.spickzettel; // Feature-Modul (Survival-Schnellzugriff), eager geladen
   const definiciones = window.SC.definiciones; // Feature-Modul (Zuordnen-Quiz), eager geladen
   const precios = window.SC.precios; // Feature-Modul (Preis-Hörtrainer), eager geladen
+  const composer = window.SC.composer; // Feature-Modul (Aufgaben-Studio: Aufgaben & Pakete erstellen), eager geladen
   const yestoGame = window.SC.yestoGame; // Feature-Modul (¿Y esto?, Bild-Vokabel-Spiel), eager geladen
   const frasesGame = window.SC.frasesGame; // Feature-Modul (Frases flexibles, Satzbaukasten), eager geladen
   const conjugDrill = window.SC.conjugDrill; // Feature-Modul (Conjugador-Drill), eager geladen
@@ -117,7 +118,6 @@
   let gamestats = store.loadGameStats(); // Spiel-Zähler fürs Badge-System
   let subscribedTasks = store.loadTasks(); // abonnierte Aufgaben (mehrere parallel, persistent)
   const MAX_SUBSCRIBED_TASKS = 50;          // Deckel gegen Speicher-Überlauf
-  const MAX_TASK_ITEMS = 20;                // max. Ziele je Bundle (muss store.MAX_BUNDLE_ITEMS spiegeln)
 
   // Erst-Start ohne gespeicherte Sprache: UI-/Muttersprache nach Betriebssystem-/
   // Browser-Sprache vorbelegen. Unterstützt werden nur DE und EN – Deutsch nur bei
@@ -153,7 +153,7 @@
   }
 
   const state = {
-    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'jerga' | 'derechos' | 'responsable' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'task'
+    screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'jerga' | 'derechos' | 'responsable' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'composer' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
     // 'flip' | 'type' | 'listen'. Hör-Modus nur, wenn der Browser TTS kann –
     // sonst (z.B. aus fremdem Gerät importiert) zurück auf Sprechen.
@@ -174,12 +174,10 @@
     teacherStudents: [],     // Lehrer-Modus: importierte Schüler-Auswertungen (transient, nie gespeichert)
     teacherSort: { key: "level", dir: -1 }, // Sortierung der Klassentabelle: Standard nach Niveau (höchstes zuerst, ungetestete zuletzt)
     teacherClassName: "",    // optionaler Klassenname (Druck-Kopf + CSV-Dateiname; transient)
-    teacherTaskCode: "",     // zuletzt erzeugter Aufgaben-Code (transient)
-    taskItems: [],           // gewählte Aufgaben-Ziele im Formular: [{kind,scope}] – 1 = Einzelaufgabe, ≥2 = Bundle (überlebt Re-Render)
-    targetPicker: null,      // offenes Ziel-Picker-Modal: 'task' | 'sheet' | null (Modo profe / Blatt)
-    teacherTaskCodeLabel: "", // lesbare Beschriftung des erzeugten Codes (Einzelziel oder „Bundle … · N Aufgaben")
-    taskTitle: "",           // optionaler Aufgaben-Titel (überlebt Re-Render)
-    taskDue: "",             // optionale Frist (überlebt Re-Render)
+    taskItems: [],           // im Aufgaben-Studio gewählte Ziele: [{kind,scope}] – 1 = Einzelaufgabe, ≥2 = Paket (überlebt Re-Render)
+    targetPicker: null,      // offenes Ziel-Picker-Modal des Aktivitätsblatts: 'sheet' | null
+    taskTitle: "",           // optionaler Aufgaben-Titel (Aufgaben-Studio, überlebt Re-Render)
+    taskDue: "",             // optionale Frist (Aufgaben-Studio, überlebt Re-Render)
     placement: null,         // Ruta-Check (Einstufungstest): { phase, idx, answers:[], startedAt, qStartedAt, result } | null
     assessment: null,        // HolaRuta Nivel-Test (ausführlich): { phase, asked, answers, difficulty, … } | null
     onboardStep: "intro",    // Onboarding-Teilschritt: 'intro' (Erklär-Slides) → 'profile' (Name+Geschlecht) → 'trip' (Reiseziel)
@@ -2181,6 +2179,7 @@
     carritoPlay: "carrito", carritoDone: "carrito",
     jugarPlay: "jugar", jugarDone: "jugar",
     comprasQuiz: "compras", comprasQuizDone: "compras",
+    composer: "teacher",
     editor: "home",
   };
 
@@ -2235,6 +2234,8 @@
     }
     // Zurück aus dem Onboarding-Ruta-Check schließt das Onboarding ab (nicht erneut zeigen).
     if (state.screen === "placement" && state.placement && state.placement.fromOnboarding) { finishOnboarding(); return true; }
+    // Aufgaben-Studio: erst Anleitung/Schritte zurück, dann (via SCREEN_PARENT) zum Modo profe.
+    if (state.screen === "composer" && composer && composer.handleBack()) return true;
     // 3) Eine Ebene höher.
     const target = backTarget();
     if (target === "home") goHome();
@@ -2363,6 +2364,7 @@
       "hostel": () => ui.renderHostel(hostelVM()),
       "pretrip": () => ui.renderPretrip(pretripVM()),
       "teacher": () => ui.renderTeacher(teacherVM()),
+      "composer": () => composer.screen(),
       "printsheet": () => ui.renderPrintSheet(sheetVM()),
       "task": () => ui.renderTask(taskVM()),
       "placement": () => ui.renderPlacement(placementVM()),
@@ -3328,15 +3330,9 @@
   // badges.buildMetrics berechnet daraus dieselben Kennzahlen wie für den Ruta-Pass.
   function openTeacher() {
     dismissBadgeToast();
-    // Sinnvolle Vorauswahl, damit der Ziel-Picker eine Auswahl zeigt und „Code
-    // erzeugen" sofort funktioniert (sonst bliebe die Auswahl leer = no-op).
-    if (!state.taskItems.length) {
-      const first = taskTargets()[0];
-      if (first) state.taskItems = [targetValueToItem(first.value)];
-    }
-    // QR-Generator (window.SC.qr) wird beim Lehrer-Screen inline für den
-    // Aufgaben-Code-QR gebraucht. Bei Bedarf nachladen, dann (neu) rendern –
-    // der inline qrSvg-Guard zeigt sonst nur ein leeres Feld bis zum Reload.
+    // QR-Generator (window.SC.qr) vorladen: das Aktivitätsblatt (openPrintSheet)
+    // und das Aufgaben-Studio rendern damit ihren Abo-QR inline – der qrSvg-Guard
+    // zeigt sonst nur ein leeres Feld bis zum Reload.
     navAfterLoad("qr", "teacher");
   }
 
@@ -3474,7 +3470,6 @@
     const withIdx = raw.map((s, i) => Object.assign({ _idx: i }, s));
     const sort = state.teacherSort || { key: "name", dir: 1 };
     const students = stats.sortRoster(withIdx, sort.key, sort.dir);
-    const items = state.taskItems.slice();
     return {
       sortKey: sort.key,
       sortDir: sort.dir,
@@ -3487,16 +3482,6 @@
       avgMastered: students.length
         ? Math.round(students.reduce((s, x) => s + x.cardsMastered, 0) / students.length) : 0,
       totalCards: students.length ? students[0].totalCards : 0,
-      taskTargets: taskTargets(),
-      bundles: bundlesVM(),                       // kuratierte Vorlagen
-      taskItemKeys: items.map(itemKey),           // aktuell gewählte Ziele (als "kind:scope")
-      taskSummary: taskSelectionSummary(),        // Feld-Anzeige (none/single/bundle)
-      activeBundleIds: activeBundleIds(),         // alle komplett enthaltenen Bundles (✓-Markierung)
-      targetPicker: state.targetPicker,           // offenes Ziel-Picker-Modal? ('task' | null)
-      taskTitle: state.taskTitle,                 // Titel-Feld vorbelegen
-      taskDue: state.taskDue,                     // Frist-Feld vorbelegen
-      taskCode: state.teacherTaskCode,
-      taskCodeLabel: state.teacherTaskCodeLabel,  // lesbare Bestätigung, WOFÜR der Code ist
     };
   }
 
@@ -3520,20 +3505,6 @@
     return out;
   }
 
-  // Bundle-Vorlagen mit lokalisierten Labels + Item-Schlüsseln (für die Auswahl).
-  function bundlesVM() {
-    if (isLocals()) return []; // Fertige Bundles sind reise-spezifisch -> im Locals-Track aus
-    return (data.BUNDLES || []).map((b) => ({
-      id: b.id, icon: b.icon || "📦", group: b.group || "tema",
-      label: natk(b, "label"), count: (b.items || []).length,
-      itemKeys: (b.items || []).map(itemKey),
-    }));
-  }
-
-  // "kind:scope" <-> {kind, scope}: ein Item-Schlüssel deckt sich mit taskTargets().value.
-  function itemKey(it) { return it.kind + ":" + it.scope; }
-  function targetValueToItem(value) { const p = String(value).split(":"); return { kind: p[0], scope: p.slice(1).join(":") }; }
-
   function taskTargetLabel(task) {
     if (!task) return "";
     let sc = task.scope;
@@ -3544,99 +3515,11 @@
     return prefix + ": " + name;
   }
 
-  // Schlüssel ("kind:scope") der aktuellen Auswahl.
-  function taskItemKeys() { return state.taskItems.map(itemKey); }
-  // Ist JEDES Item eines Bundles in der Auswahl? (= Bundle gilt als „aktiv")
-  function bundleFullyIn(b, keys) {
-    return (b.items || []).length > 0 && (b.items || []).every((it) => keys.indexOf(itemKey(it)) >= 0);
-  }
-  // Bundles, deren Items komplett enthalten sind (für die ✓-Markierung im Picker).
-  function activeBundleIds() {
-    const keys = taskItemKeys();
-    return (data.BUNDLES || []).filter((b) => bundleFullyIn(b, keys)).map((b) => b.id);
-  }
-  // Deckt sich die Auswahl EXAKT mit einem Bundle? Dann zeigt das Feld dessen Namen.
-  function matchedBundle() {
-    const set = taskItemKeys().slice().sort().join("|");
-    return (data.BUNDLES || []).find((b) => (b.items || []).map(itemKey).slice().sort().join("|") === set) || null;
-  }
-
-  // Wie das Ziel-Feld die aktuelle Auswahl zusammenfasst:
-  //   0 Ziele  -> { kind:"none" }
-  //   1 Ziel   -> { kind:"single", label } (Einzelaufgabe)
-  //   ≥2 Ziele -> { kind:"bundle", label, count } (exakter Bundle-Name oder „Eigenes Bundle")
-  function taskSelectionSummary() {
-    const items = state.taskItems;
-    if (!items.length) return { kind: "none" };
-    if (items.length === 1) return { kind: "single", label: taskTargetLabel(items[0]) };
-    const m = matchedBundle();
-    return { kind: "bundle", label: m ? natk(m, "label") : t("teacher.bundleCustom"), count: items.length };
-  }
-
-  // Ziel im Picker gewählt. ctx "sheet" = Aktivitätsblatt: genau EIN Ziel, danach
-  // schließen. ctx "task" = Modo profe: Mehrfachauswahl (umschalten, offen lassen),
-  // damit man ein Bundle zusammenstellen kann.
+  // Ziel im Picker des Aktivitätsblatts gewählt (genau EIN Ziel, danach schließen).
+  // Die Mehrfachauswahl fürs Aufgaben-Studio lebt in features/composer.js.
   function pickTarget(ctx, value) {
-    if (!value) return;
-    if (ctx === "sheet") { state.sheetTarget = value; state.sheetStage = "all"; state.sheetRevealed = false; state.targetPicker = null; loadFillStore(); render(); return; }
-    const item = targetValueToItem(value), key = value;
-    const idx = state.taskItems.findIndex((x) => itemKey(x) === key);
-    if (idx >= 0) { state.taskItems = state.taskItems.filter((_, i) => i !== idx); }
-    else if (state.taskItems.length >= MAX_TASK_ITEMS) { showNotice(t("teacher.tooMany", { n: MAX_TASK_ITEMS })); return; }
-    else { state.taskItems = state.taskItems.concat([item]); }
-    render();
-  }
-
-  // Bundle umschalten: ist es schon komplett in der Auswahl, dessen Items wieder
-  // entfernen; sonst die Items dazunehmen (Vereinigung). So lassen sich mehrere
-  // Bundles UND Einzelziele frei kombinieren – ein Bundle ersetzt nichts mehr.
-  function toggleBundle(id) {
-    const b = (data.BUNDLES || []).find((x) => x.id === id);
-    if (!b) return;
-    const keys = taskItemKeys();
-    if (bundleFullyIn(b, keys)) {
-      const rm = (b.items || []).map(itemKey);
-      state.taskItems = state.taskItems.filter((it) => rm.indexOf(itemKey(it)) < 0);
-    } else {
-      const have = keys.slice();
-      let capped = false;
-      (b.items || []).forEach((it) => {
-        const k = itemKey(it);
-        if (have.indexOf(k) >= 0) return;
-        if (state.taskItems.length >= MAX_TASK_ITEMS) { capped = true; return; }
-        have.push(k); state.taskItems = state.taskItems.concat([{ kind: it.kind, scope: it.scope }]);
-      });
-      if (capped) showNotice(t("teacher.tooMany", { n: MAX_TASK_ITEMS }));
-    }
-    render();
-  }
-
-  function clearTaskSelection() {
-    setState({ taskItems: [] });
-  }
-
-  // Aufgabe/Bundle erzeugen (Lehrkraft): aus der Auswahl einen Code bauen.
-  // 1 Ziel  -> Einzel-Aufgabencode (HRT1, abwärtskompatibel).
-  // ≥2 Ziele -> Bundle-Code (HRB1): ein Link, der mehrere Aufgaben abonniert.
-  function generateTask() {
-    // Aktuelle Titel/Frist übernehmen (DOM ist die Wahrheit beim Klick), in den
-    // State spiegeln, damit der Re-Render sie beibehält. Die Ziele pflegt der Picker.
-    const titleEl = document.getElementById("task-title");
-    const dueEl = document.getElementById("task-due");
-    if (titleEl) state.taskTitle = titleEl.value;
-    if (dueEl) state.taskDue = dueEl.value;
-    const items = state.taskItems;
-    if (!items.length) return;
-    const title = (state.taskTitle || "").trim(), due = state.taskDue || "";
-    if (items.length === 1) {
-      state.teacherTaskCode = store.encodeTask({ kind: items[0].kind, scope: items[0].scope, title: title, due: due });
-      state.teacherTaskCodeLabel = taskTargetLabel(items[0]);
-    } else {
-      state.teacherTaskCode = store.encodeBundle({ items: items, title: title, due: due });
-      const s = taskSelectionSummary();
-      state.teacherTaskCodeLabel = t("teacher.bundleCodeFor", { label: s.label, n: items.length });
-    }
-    render();
+    if (!value || ctx !== "sheet") return;
+    state.sheetTarget = value; state.sheetStage = "all"; state.sheetRevealed = false; state.targetPicker = null; loadFillStore(); render();
   }
 
   // ----- Druckbares Aktivitätsblatt (Lehrkraft / Coordinator) -----
@@ -4221,18 +4104,20 @@
   }
 
   // Kleines optisches Feedback auf einem Knopf (z. B. „Kopiert!“), ohne Re-Render:
-  // Beschriftung & Klasse kurz tauschen und danach zurücksetzen.
+  // Beschriftung & Klasse kurz tauschen und danach zurücksetzen. Gesichert wird das
+  // innerHTML (nicht textContent), damit Knöpfe MIT Inline-Icon (renderIcon-SVG) ihr
+  // Icon nach dem Flash zurückbekommen – textContent hätte das SVG-Kind dauerhaft entfernt.
   function flashButton(action, label) {
     const btn = root.querySelector('[data-action="' + action + '"]');
     if (!btn) return;
     if (btn.dataset.flashing === "1") return; // nicht stapeln
-    const prev = btn.textContent;
+    const prev = btn.innerHTML;
     btn.dataset.flashing = "1";
-    btn.textContent = "✓ " + label;
+    btn.textContent = "✓ " + label; // während des Flash nur Text (Icon kommt beim Restore zurück)
     btn.classList.add("btn-flash");
     setTimeout(function () {
       const b = root.querySelector('[data-action="' + action + '"]');
-      if (b) { b.textContent = prev; b.classList.remove("btn-flash"); delete b.dataset.flashing; }
+      if (b) { b.innerHTML = prev; b.classList.remove("btn-flash"); delete b.dataset.flashing; }
     }, 1600);
   }
 
@@ -4289,25 +4174,6 @@
     showNotice(text);
   }
 
-  function copyTaskCode() {
-    const code = state.teacherTaskCode;
-    if (!code) return;
-    const el = document.getElementById("task-code");
-    // 1) execCommand zuerst (robust im mobilen/Datei-Kontext).
-    if (execCopyFrom(el, code.length)) { flashButton("task-copy", t("teacher.taskCopied")); return; }
-    // 2) Moderne API als Zweitversuch (sichere Kontexte, in denen execCommand fehlt).
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(code).then(
-        function () { flashButton("task-copy", t("teacher.taskCopied")); },
-        function () { if (el) { el.focus(); el.select(); } showNotice(t("task.copyManual")); }
-      );
-      return;
-    }
-    // 3) Letzter Ausweg: markiert lassen, Hinweis zum manuellen Kopieren.
-    if (el) { el.focus(); el.select(); }
-    showNotice(t("task.copyManual"));
-  }
-
   // Lernenden-Seite: Code aus der Zwischenablage ins Eingabefeld holen (mit Feedback).
   // In gesperrten Kontexten (file://, content://, WebView) ist das Lesen der
   // Zwischenablage blockiert – dann das Feld fokussieren/markieren, damit der native
@@ -4341,27 +4207,6 @@
     if (cfg.edition) parts.push("edition=" + encodeURIComponent(cfg.edition));
     parts.push("task=" + encodeURIComponent(code));
     return base + (parts.length ? "?" + parts.join("&") : "");
-  }
-  function copyTaskLink() {
-    const code = state.teacherTaskCode;
-    if (!code) return;
-    const link = taskShareLink(code);
-    // execCommand-Kopie über ein temporäres Feld (robust im WebView/Datei-Kontext).
-    let ok = false;
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = link; ta.setAttribute("readonly", "readonly");
-      ta.style.position = "fixed"; ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ok = execCopyFrom(ta, link.length);
-      document.body.removeChild(ta);
-    } catch (e) { ok = false; }
-    if (ok) { flashButton("task-copy-link", t("teacher.linkCopied")); return; }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(link).then(function () { flashButton("task-copy-link", t("teacher.linkCopied")); }, function () { showNotice(link); });
-      return;
-    }
-    showNotice(link);
   }
 
   // Lernenden-Seite: Aufgabe-Bildschirm öffnen, eingegebenen Code dekodieren.
@@ -7416,13 +7261,26 @@
     "fav-group-toggle": (el) => { favGroupToggle(el.dataset.key); },
     "fav-share": (el) => { favShareList(); },
     "fav-practice-start": (el) => { favPracticeStart(); },
-    "apply-bundle": (el) => { toggleBundle(el.dataset.bundle); },
-    "clear-task-sel": (el) => { clearTaskSelection(); },
-    "task-generate": (el) => { generateTask(); },
-    "task-copy": (el) => { copyTaskCode(); },
     "copy-phrase": (el) => { copyPhrase(el); },
-    "task-copy-link": (el) => { copyTaskLink(); },
     "task-paste": (el) => { pasteTaskCode(); },
+    // Aufgaben-Studio (features/composer.js): Aufgaben & Pakete erstellen und teilen.
+    "open-composer": (el) => { composer.open(); },
+    "composer-back": (el) => { composer.back(); },
+    "composer-step": (el) => { composer.goStep(Number(el.dataset.step)); },
+    "composer-next": (el) => { composer.next(); },
+    "composer-tab": (el) => { composer.setTab(el.dataset.tab); },
+    "composer-group": (el) => { composer.toggleGroup(el.dataset.group); },
+    "composer-toggle": (el) => { composer.toggleTarget(el.dataset.value); },
+    "composer-bundle": (el) => { composer.toggleBundle(el.dataset.bundle); },
+    "composer-clear": (el) => { composer.clearAll(); },
+    "composer-new": (el) => { composer.restart(); },
+    "composer-copy-link": (el) => { composer.copyLink(); },
+    "composer-copy-code": (el) => { composer.copyCode(); },
+    "composer-whatsapp": (el) => { composer.shareWhatsApp(); },
+    "composer-share": (el) => { composer.shareNative(); },
+    "composer-guide": (el) => { composer.openGuide(); },
+    "composer-guide-close": (el) => { composer.closeGuide(); },
+    "composer-guide-stop": (el) => { /* Klick auf die Anleitung-Karte: nicht schließen */ },
     "open-task": (el) => { openTaskScreen(); },
     "back-pretrip": (el) => { openPretrip(); },
     "back-task": (el) => { openTaskScreen(); },
@@ -7818,6 +7676,12 @@
       snapshotFillVals();
       return;
     }
+    // Aufgaben-Studio: Katalog-Suche zeichnet nur die Trefferliste neu (Fokus bleibt);
+    // Titel/Frist werden als Entwurf in den State gespiegelt (überleben Re-Render).
+    if (state.screen === "composer" && e.target) {
+      if (e.target.id === "cmp-search") { composer.onSearch(e.target.value); return; }
+      if (e.target.id === "cmp-title" || e.target.id === "cmp-due") { composer.captureDraft(); return; }
+    }
     // Lexikon-Filter: nur die Trefferliste neu zeichnen (Feld behält Fokus/Cursor).
     if (state.screen === "favorites" && e.target && e.target.id === "fav-filter") {
       state.favQuery = e.target.value;
@@ -7896,11 +7760,10 @@
       state.battleNameEdited = true; // ab jetzt nicht mehr automatisch mit dem Profil-Namen vorbelegen
       return;
     }
-    // Aufgaben-Formular (Modo profe): Titel/Frist merken, damit ein Re-Render
-    // (z. B. nach „Code erzeugen“) sie nicht zurücksetzt. Das Ziel läuft über das
-    // Picker-Modal (data-action="pick-target"), nicht mehr über ein <select>.
-    if (e.target && e.target.id === "task-title") { state.taskTitle = e.target.value; return; }
-    if (e.target && e.target.id === "task-due") { state.taskDue = e.target.value; return; }
+    // Aufgaben-Studio: Titel/Frist auch bei 'change' sichern. Manche Browser/WebViews
+    // feuern für den nativen Datums-Picker NUR 'change' (kein 'input') – ohne diesen
+    // Zweig ginge eine so gesetzte Frist bei einem Re-Render (z. B. Ziel entfernen) verloren.
+    if (state.screen === "composer" && e.target && (e.target.id === "cmp-title" || e.target.id === "cmp-due")) { composer.captureDraft(); return; }
     // Klassenname (Modo profe): nur merken (für Druck-Kopf/CSV) – KEIN Re-Render,
     // damit der Cursor beim Tippen nicht springt.
     if (e.target && e.target.id === "teacher-classname") { setClassName(e.target.value); return; }
@@ -7914,6 +7777,8 @@
   function onKeydown(e) {
     // Focus-Trap: ist ein modaler Dialog offen, Tab/Shift+Tab darin halten.
     if (trapModalTab(e)) return;
+    // Aufgaben-Studio: Anleitung-Overlay schließt mit Escape (wie jedes andere Overlay).
+    if (state.screen === "composer" && e.key === "Escape" && composer.closeGuideIfOpen()) { e.preventDefault(); return; }
     // Ziel-Picker-Modal (Modo profe / Aktivitätsblatt): Escape schließt.
     if (state.targetPicker && e.key === "Escape") {
       setState({ targetPicker: null });
@@ -8313,6 +8178,9 @@
     salud, logistica, cafe, juegos, // flirt bewusst NICHT: navAfterLoad-Opener → SC.flirtSheet liest window.SC.flirt live
     categoryById, cardById, nat, natk, isFavorite, levelById, withName, shuffle, buzz, syncBadges,
     DEFAULT_ACCENT, root, loadModule, navEpoch: () => navEpoch,
+    // Aufgaben-/Teilen-Dienste fürs Aufgaben-Studio (features/composer.js): dieselben
+    // Quellen wie Aktivitätsblatt & Tarea-Screen, damit nichts doppelt gepflegt wird.
+    showNotice, flashButton, taskTargets, taskTargetLabel, taskShareLink, taskCardsFor,
     // Accessoren für neu-zugewiesene Controller-Felder (gamestats/settings werden
     // ersetzt, nicht in-place mutiert) – so persistieren Feature-Module korrekt.
     gameStats: () => gamestats,
@@ -8323,6 +8191,7 @@
   if (spickzettel) spickzettel.init(featureCtx);
   if (definiciones) definiciones.init(featureCtx);
   if (precios) precios.init(featureCtx);
+  if (composer) composer.init(featureCtx);
   if (yestoGame) yestoGame.init(featureCtx);
   if (frasesGame) frasesGame.init(featureCtx);
   if (conjugDrill) conjugDrill.init(featureCtx);

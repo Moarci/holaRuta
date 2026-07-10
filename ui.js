@@ -2502,14 +2502,6 @@
     { id: "preset",   icon: "lc:backpack", labelKey: "teacher.grpPreset",   helpKey: "teacher.grpPresetHelp" },
     { id: "category", icon: "lc:package", labelKey: "teacher.grpCategory", helpKey: "teacher.grpCategoryHelp" },
   ];
-  // Abschnitte der Bundle-Vorlagen im Picker (Reihenfolge = Anzeigereihenfolge).
-  const BUNDLE_GROUPS = [
-    { id: "destino",   labelKey: "teacher.bgDestino" },
-    { id: "kurs",      labelKey: "teacher.bgKurs" },
-    { id: "situation", labelKey: "teacher.bgSituation" },
-    { id: "orga",      labelKey: "teacher.bgOrga" },
-  ];
-
   // Gruppe (pretrip/preset/category) zum Ziel-Wert „kind:scope". Passt nichts,
   // gibt es bewusst KEINE Gruppe zurück (null) – statt still als „category" zu
   // labeln; die Aufrufer rendern dann ohne Gruppen-Kicker.
@@ -2522,28 +2514,16 @@
   const tgLabelKey = (g) => (isLocalsTrk() && g.id === "pretrip") ? "teacher.grpCurso" : g.labelKey;
   const tgHelpKey = (g) => (isLocalsTrk() && g.id === "pretrip") ? "teacher.grpCursoHelp" : g.helpKey;
 
-  // Tappbarer „Select-Ersatz": zeigt die aktuelle Auswahl und öffnet das Modal.
-  //   sheet (Aktivitätsblatt): EIN Ziel → Gruppe + Label.
-  //   task  (Modo profe): Auswahl-Zusammenfassung (keins / Einzelaufgabe / Bundle).
+  // Tappbarer „Select-Ersatz" (Aktivitätsblatt): zeigt das gewählte Ziel
+  // (Gruppe + Label) und öffnet das Modal. Die Mehrfachauswahl fürs
+  // Aufgaben-Studio lebt in features/composer.js.
   function targetField(ctx, opts) {
     opts = opts || {};
-    let valLine;
-    if (ctx === "sheet") {
-      const cur = (opts.targets || []).find((x) => x.value === opts.current);
-      const g = cur ? targetGroupOf(cur.value) : null;
-      valLine = cur
-        ? `${g ? `<span class="tgt-field__kicker">${renderIcon(g.icon)} ${esc(t(tgLabelKey(g)))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
-        : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
-    } else {
-      const s = opts.summary || { kind: "none" };
-      if (s.kind === "single") {
-        valLine = `<span class="tgt-field__kicker">${esc(t("teacher.sumSingle"))}</span><span class="tgt-field__val">${esc(s.label)}</span>`;
-      } else if (s.kind === "bundle") {
-        valLine = `<span class="tgt-field__kicker">${renderIcon("lc:package")} ${esc(t("teacher.sumBundle"))}</span><span class="tgt-field__val">${esc(s.label)} · ${esc(t("teacher.bundleItems", { n: s.count }))}</span>`;
-      } else {
-        valLine = `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
-      }
-    }
+    const cur = (opts.targets || []).find((x) => x.value === opts.current);
+    const g = cur ? targetGroupOf(cur.value) : null;
+    const valLine = cur
+      ? `${g ? `<span class="tgt-field__kicker">${renderIcon(g.icon)} ${esc(t(tgLabelKey(g)))}</span>` : ""}<span class="tgt-field__val">${esc(cur.label)}</span>`
+      : `<span class="tgt-field__val tgt-field__val--none">${esc(t("teacher.pickNone"))}</span>`;
     return `
       <button type="button" class="tgt-field" data-action="open-target-picker" data-ctx="${esc(ctx)}"
               aria-haspopup="dialog" aria-label="${esc(t("teacher.pickFieldLabel"))}">
@@ -2575,81 +2555,22 @@
     }).join("");
   }
 
-  // Das Modal selbst (Scrim + Karte).
-  //   sheet: EIN Ziel wählen (Tipp schließt sofort).
-  //   task : Mehrfachauswahl + Bundle-Vorlagen → ein Code für eine ODER mehrere
-  //          Aufgaben. Vorlagen setzen die Auswahl als Startpunkt (frei anpassbar).
+  // Das Modal selbst (Scrim + Karte), Aktivitätsblatt: EIN Ziel wählen
+  // (Tipp schließt sofort).
   function targetPickerModal(ctx, opts) {
     opts = opts || {};
-    if (ctx === "sheet") {
-      const selKeys = opts.current ? [opts.current] : [];
-      return `
-        <div class="tgt-scrim" data-action="close-target-picker">
-          <div class="tgt-modal" role="dialog" aria-modal="true" aria-labelledby="tgt-title" data-action="target-stop">
-            <div class="tgt-modal__head">
-              <h2 class="tgt-modal__title" id="tgt-title">${renderIcon("lc:target")} ${esc(t("sheet.pickTitle"))}</h2>
-              <button type="button" class="tgt-modal__x" data-action="close-target-picker" aria-label="${esc(t("teacher.pickClose"))}">✕</button>
-            </div>
-            <p class="tgt-modal__intro">${esc(t("sheet.pickIntro"))}</p>
-            <div class="tgt-modal__body">${targetSections("sheet", opts.targets, selKeys)}</div>
-            <div class="tgt-modal__foot">
-              <button type="button" class="cta tgt-modal__done" data-action="close-target-picker">${esc(t("teacher.pickClose"))}</button>
-            </div>
-          </div>
-        </div>`;
-    }
-    // --- task: Bundle-Vorlagen (nach Gruppe) + Mehrfachauswahl ---
-    const selKeys = opts.selectedKeys || [];
-    const activeBundles = opts.activeBundleIds || [];
-    const bundles = opts.bundles || [];
-    const bundleRow = (b) => {
-      const active = activeBundles.indexOf(b.id) >= 0;
-      return `<button type="button" class="tgt-bundle${active ? " is-active" : ""}"
-                data-action="apply-bundle" data-bundle="${esc(b.id)}"${active ? ' aria-current="true"' : ""}>
-                <span class="tgt-bundle__icon" aria-hidden="true">${renderIcon(b.icon)}</span>
-                <span class="tgt-bundle__text"><span class="tgt-bundle__label">${esc(b.label)}</span>
-                  <span class="tgt-bundle__meta">${esc(t("teacher.bundleItems", { n: b.count }))}</span></span>
-                <span class="tgt-opt__check" aria-hidden="true">${active ? "✓" : ""}</span>
-              </button>`;
-    };
-    // Bundles in ihre Abschnitte einsortieren (bekannte Gruppen zuerst, Rest danach).
-    let bundleSubs = BUNDLE_GROUPS.map((bg) => {
-      const list = bundles.filter((b) => b.group === bg.id);
-      if (!list.length) return "";
-      return `<h4 class="tgt-subhead">${esc(t(bg.labelKey))}</h4><div class="tgt-opts">${list.map(bundleRow).join("")}</div>`;
-    }).join("");
-    const known = BUNDLE_GROUPS.map((g) => g.id);
-    const rest = bundles.filter((b) => known.indexOf(b.group) < 0);
-    if (rest.length) bundleSubs += `<div class="tgt-opts">${rest.map(bundleRow).join("")}</div>`;
-    const bundleSection = bundles.length
-      ? `<section class="tgt-group">
-           <h3 class="tgt-group__title">${esc(t("teacher.bundleSectionTitle"))}</h3>
-           <p class="tgt-group__help">${esc(t("teacher.bundleSectionHelp"))}</p>
-           ${bundleSubs}
-         </section>`
-      : "";
-    const count = selKeys.length;
-    const footCount = count
-      ? esc(t("teacher.selCount", { n: count }))
-      : esc(t("teacher.pickNone"));
+    const selKeys = opts.current ? [opts.current] : [];
     return `
       <div class="tgt-scrim" data-action="close-target-picker">
         <div class="tgt-modal" role="dialog" aria-modal="true" aria-labelledby="tgt-title" data-action="target-stop">
           <div class="tgt-modal__head">
-            <h2 class="tgt-modal__title" id="tgt-title">${renderIcon("lc:target")} ${esc(t("teacher.pickTitle"))}</h2>
+            <h2 class="tgt-modal__title" id="tgt-title">${renderIcon("lc:target")} ${esc(t("sheet.pickTitle"))}</h2>
             <button type="button" class="tgt-modal__x" data-action="close-target-picker" aria-label="${esc(t("teacher.pickClose"))}">✕</button>
           </div>
-          <p class="tgt-modal__intro">${esc(t("teacher.pickIntro"))} ${esc(t("teacher.multiHint"))}</p>
-          <div class="tgt-modal__body">
-            ${bundleSection}
-            ${targetSections("task", opts.targets, selKeys)}
-          </div>
-          <div class="tgt-modal__foot tgt-modal__foot--task">
-            <span class="tgt-foot__count">${footCount}</span>
-            <span class="tgt-foot__btns">
-              ${count ? `<button type="button" class="tgt-clear" data-action="clear-task-sel">${esc(t("teacher.clearSel"))}</button>` : ""}
-              <button type="button" class="cta tgt-modal__done" data-action="close-target-picker">${esc(t("teacher.pickClose"))}</button>
-            </span>
+          <p class="tgt-modal__intro">${esc(t("sheet.pickIntro"))}</p>
+          <div class="tgt-modal__body">${targetSections("sheet", opts.targets, selKeys)}</div>
+          <div class="tgt-modal__foot">
+            <button type="button" class="cta tgt-modal__done" data-action="close-target-picker">${esc(t("teacher.pickClose"))}</button>
           </div>
         </div>
       </div>`;
@@ -3252,25 +3173,15 @@
       </div>`
       : `<p class="teacher-empty">${esc(t("teacher.empty"))}</p>`;
 
-    const taskForm = `
-      <h3 class="teacher-h3">${esc(t("teacher.taskHeading"))}</h3>
-      <p class="teacher-sub2">${esc(t("teacher.taskHint"))}</p>
-      <div class="task-form">
-        ${targetField("task", { summary: vm.taskSummary })}
-        <input id="task-title" class="task-input" type="text" maxlength="80" placeholder="${esc(t("teacher.taskTitlePh"))}" value="${esc(vm.taskTitle || "")}">
-        <input id="task-due" class="task-input" type="date" aria-label="${esc(t("teacher.taskDue"))}" value="${esc(vm.taskDue || "")}">
-        <button class="teacher-btn teacher-btn--main" data-action="task-generate">${esc(t("teacher.taskGenerate"))}</button>
-      </div>
-      ${vm.taskCode ? `
-      <div class="task-result">
-        ${vm.taskCodeLabel ? `<p class="task-codefor">${renderIcon("lc:target")} ${esc(t("teacher.taskCodeFor", { label: vm.taskCodeLabel }))}</p>` : ""}
-        <textarea id="task-code" class="task-code" readonly rows="2" aria-label="${esc(t("teacher.taskTarget"))}">${esc(vm.taskCode)}</textarea>
-        <p class="task-profe-hint">${esc(t("teacher.taskShareHint"))}</p>
-        <div class="teacher-actions task-result__btns">
-          <button class="teacher-btn teacher-btn--main" data-action="task-copy-link">${renderIcon("lc:link")} ${esc(t("teacher.taskCopyLink"))}</button>
-          <button class="teacher-btn" data-action="task-copy">${renderIcon("lc:clipboard-list")} ${esc(t("teacher.taskCopy"))}</button>
-        </div>
-      </div>` : ""}`;
+    // Einstieg ins Aufgaben-Studio (features/composer.js): das Erstellen & Teilen
+    // von Aufgaben/Paketen lebt in einem eigenen, geführten Screen – hier nur die
+    // prominente Einstiegskarte statt des früheren Inline-Formulars.
+    const composerCard = `
+      <h3 class="teacher-h3">${esc(t("teacher.composerHeading"))}</h3>
+      <p class="teacher-sub2">${esc(t("teacher.composerHint"))}</p>
+      <div class="teacher-actions">
+        <button class="teacher-btn teacher-btn--main" data-action="open-composer">${renderIcon("lc:package")} ${esc(t("teacher.composerBtn"))}</button>
+      </div>`;
 
     // In Editionen hängt Modo profe unter dem Tarea-Reiter: Tab-Leiste mit „Tarea“
     // aktiv, und der Zurück-Pfeil führt zurück in den Tarea-Screen (nicht Home).
@@ -3285,7 +3196,7 @@
         ${body}
         <div class="no-print">
           <hr class="teacher-sep">
-          ${taskForm}
+          ${composerCard}
           <hr class="teacher-sep">
           <h3 class="teacher-h3">${esc(t("sheet.heading"))}</h3>
           <p class="teacher-sub2">${esc(t("sheet.hint"))}</p>
@@ -3294,7 +3205,6 @@
           </div>
         </div>
       </section>
-      ${vm.targetPicker === "task" ? targetPickerModal("task", { targets: vm.taskTargets, bundles: vm.bundles, selectedKeys: vm.taskItemKeys, activeBundleIds: vm.activeBundleIds }) : ""}
       ${withTab ? tabbar("tarea") : ""}`;
   }
 

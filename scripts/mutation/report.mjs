@@ -1,6 +1,6 @@
 /*
  * scripts/mutation/report.mjs — Gemeinsame Formatierung für das Mutationstesting,
- * im Stil von scripts/e2e-verify.mjs (Padding, Trennlinien, ✓/✗, deutsch).
+ * im Stil von scripts/e2e/suites/p0-boot-verify.mjs (Padding, Trennlinien, ✓/✗, deutsch).
  *
  * Liefert formatReport({ catalog, engine, threshold }) → { text, exitCode }.
  *   catalog: [{ label, file, line, status }]   status ∈ "killed" | "survived" | "error"
