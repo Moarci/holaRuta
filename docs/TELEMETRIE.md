@@ -148,11 +148,11 @@ node tools/telemetry-server.js            # Server + Dashboard auf :8789
 # optional:  PORT=9000 TELEMETRY_DIR=/var/holaruta node tools/telemetry-server.js
 ```
 
-Dashboard öffnen: **http://localhost:8789/** · API: `GET /api/stats` (JSON) · `GET /api/stats.csv` (Tagesreihe).
+Dashboard öffnen: **http://localhost:8789/** · API: `GET /api/stats` (JSON) · `GET /api/stats.csv` (Tagesreihe) · `GET /api/kpis.csv` (Investor-KPI-Zeile fürs Data-Room).
 
 **Bedienung/Betrieb:**
 - **Zeitfenster** 7 / 30 / 90 Tage (Umschalter im Header bzw. `?days=`).
-- **Export:** Buttons **JSON** (ganze Statistik) und **CSV** (Tag · DAU · Sessions).
+- **Export:** Buttons **JSON** (ganze Statistik), **CSV** (Tag · DAU · Sessions) und **KPI-CSV** (eine Investor-KPI-Zeile fürs Data-Room, `/api/kpis.csv`).
 - **Zugriffsschutz (optional):** `TELEMETRY_TOKEN=… node tools/telemetry-server.js` → Dashboard/API nur mit `?token=…`.
 - **Aufbewahrung:** `TELEMETRY_RETENTION_DAYS` (Default 120) — ältere Einträge werden beim Start verworfen und die Dateien kompaktiert.
 - Ungültiger/zu großer POST → `400` (Client behält den Batch und sendet erneut → kein Datenverlust).

@@ -66,6 +66,7 @@
     <span id="daysbtns"></span>
     <button id="exp-json" title="Statistik als JSON laden">JSON</button>
     <button id="exp-csv" title="Tagesreihe als CSV laden">CSV</button>
+    <button id="exp-kpicsv" title="Investor-KPIs als CSV (Data-Room / Pitch-Deck)">KPI-CSV</button>
     <button id="refresh">Aktualisieren</button>
   </span>
 </header>
@@ -176,6 +177,8 @@ function render(s){
       + kpi(fmtDur((inv.timeOnTask&&inv.timeOnTask.avgSec)||0), "Ø Lernzeit/Runde", ((inv.timeOnTask&&inv.timeOnTask.rounds)||0)+" Runden", "var(--good)")
       + kpi(((inv.nsm&&inv.nsm.walMauPct)||0)+" %", "WAL / MAU", "Wochen-Lerner-Anteil (Ziel ≥50%)", ((inv.nsm&&inv.nsm.walMauPct)||0)>=50?"var(--good)":"var(--ink)")
       + kpi(((inv.rounds&&inv.rounds.completionPct)||0)+" %", "Runden-Abschluss", ((inv.rounds&&inv.rounds.completed)||0)+" / "+((inv.rounds&&inv.rounds.started)||0)+" Runden", "var(--good)")
+      + kpi(((inv.quality&&inv.quality.bouncePct)||0)+" %", "Bounce", "nur 1 Tag aktiv (niedriger = besser)", ((inv.quality&&inv.quality.bouncePct)||0)>40?"var(--warn)":"var(--ink)")
+      + kpi(((inv.quality&&inv.quality.errorsPerSession)||0), "Fehler/Sitzung", ((inv.quality&&inv.quality.errors)||0)+" Fehler gesamt", ((inv.quality&&inv.quality.errorsPerSession)||0)>0.1?"var(--bad)":"var(--good)")
       + '</div>';
 
     html += '<div class="panel"><h2>Retention-Kohorten <small>(Erst-Tag × Tag-N, % wieder aktiv — grob, UTC-Tagesgrenzen)</small></h2>'+heatmap(inv.cohorts)+'</div>';
@@ -350,6 +353,7 @@ function load(){
 $("refresh").addEventListener("click", load);
 $("daysbtns").addEventListener("click", function(e){ var b=e.target.closest("[data-days]"); if(!b) return; DAYS=Number(b.dataset.days); renderDaysBtns(); load(); });
 $("exp-csv").addEventListener("click", function(){ location.href = apiUrl("/api/stats.csv"); });
+$("exp-kpicsv").addEventListener("click", function(){ location.href = apiUrl("/api/kpis.csv"); });
 $("exp-json").addEventListener("click", function(){ fetch(apiUrl("/api/stats")).then(function(r){return r.text();}).then(function(t){ var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([t],{type:"application/json"})); a.download="holaruta-stats.json"; a.click(); }); });
 renderDaysBtns();
 load();

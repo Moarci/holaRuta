@@ -9,7 +9,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("path");
-const { aggregate, dayUTC, durationBucket } = require(path.join(__dirname, "..", "tools", "telemetry-server.js"));
+const { aggregate, dayUTC, durationBucket, toKpiCsv } = require(path.join(__dirname, "..", "tools", "telemetry-server.js"));
 
 const NOW = Date.UTC(2026, 5, 30, 12, 0, 0); // 2026-06-30
 const TODAY = "2026-06-30";
@@ -302,4 +302,13 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
     { event: "session_complete", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 2000, props: { secs: 60 } },
   ], [], { now: NOW }).investor.rounds;
   assert.deepEqual(r, { started: 2, completed: 1, completionPct: 50 });
+  // Qualität: keine Fehler im Fixture -> 0/Sitzung; Bounce = 2 von 3 Nutzern nur 1 Tag aktiv (B,C) = 67 %.
+  assert.equal(inv.quality.errors, 0);
+  assert.equal(inv.quality.errorsPerSession, 0);
+  assert.equal(inv.quality.bouncePct, 67);
+  // KPI-CSV-Export: Kopfzeile + einzelne Kennzahlen (Data-Room/Pitch-Deck).
+  const csv = toKpiCsv(s);
+  assert.match(csv, /^kpi,wert\n/);
+  assert.match(csv, /\nNorth Star WAL,2\n/);
+  assert.match(csv, /\nBounce %,67\n/);
 });

@@ -75,7 +75,9 @@ Cockpit: Kachel **Aktivierungsrate** + Panel **Aktivierungs-Funnel**.
 | Wiederkehrrate | Anteil mit ≥ 2 aktiven Tagen | `users.returnRatePct` | steigend |
 | **Growth Accounting** | neu / wiederkehrend / reaktiviert / abgewandert | `investor.growth` | — |
 | **Quick Ratio** | (neu + reaktiviert) / abgewandert | `investor.growth.quickRatio` | **> 1** (Wachstum), gute Produkte **> 1,5** |
+| **Bounce** (nur 1 Tag aktiv) | Anteil Nutzer mit genau 1 aktivem Tag | `investor.quality.bouncePct` | niedrig = starke Aktivierung/Retention |
 | Streak / aktive Tage | Snapshot-Verteilungen | `usage`-Snapshot | rechtslastig |
+| **Stabilität** (Fehler/Sitzung) | JS-Fehler / Sitzungen | `investor.quality.errorsPerSession` | niedrig = wenig Churn-durch-Bugs |
 
 Cockpit: **Retention-Kohorten**-Heatmap + Panel **Growth Accounting** + Kacheln D1/D7/D30, Stickiness, Quick Ratio.
 
@@ -192,6 +194,7 @@ App-Interaktion → analytics.track(<event>)  ──►  POST /v1/events (opt-in
 ```bash
 node tools/telemetry-server.js          # Collector + Dashboard auf :8789
 # Dashboard:  http://localhost:8789/     (Zeitfenster 7/30/90 T, JSON/CSV-Export)
+# KPI-Export: GET /api/kpis.csv          (eine Investor-KPI-Zeile fürs Data-Room; Button „KPI-CSV")
 ```
 
 In einer Edition den Endpunkt setzen und im Profil „Nutzungsstatistik teilen → An":
@@ -220,5 +223,6 @@ analytics: { enabled: true, endpoint: "http://localhost:8789" }
 | K-Faktor / Virality | virale Neuzugänge 7T / Basis Vorwoche | `investor.virality` |
 | Interaktionen / Sitzung · Person · Tag | Engagement-Tiefe | `investor.interactions` |
 | Ø Lernzeit / Runde | Time-on-Task | `investor.timeOnTask` |
+| Bounce / Stabilität | 1-Tag-Nutzer % · Fehler/Sitzung | `investor.quality` |
 | Start → Abschluss je Spiel | Abschlussquote | `investor.featureFunnel` |
 | B2B: KPIs je Edition | Umsatzkanal | `investor.editions` |

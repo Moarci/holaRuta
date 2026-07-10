@@ -491,6 +491,14 @@ function aggregate(events, usage, opts) {
   });
   editionKPIs.sort(function (a, b) { return b.users - a.users; });
 
+  // --- Qualität/Stabilität + Bounce (aus vorhandenen Zählern) ---
+  var totalErr = 0; errorCounts.forEach(function (v) { totalErr += v; });
+  var quality = {
+    errors: totalErr,
+    errorsPerSession: sessions.size ? Math.round((totalErr / sessions.size) * 1000) / 1000 : 0, // Stabilität
+    bouncePct: totalUsers ? Math.round((activeDaysHist["1"] / totalUsers) * 100) : 0,             // nur 1 Tag aktiv
+  };
+
   return {
     generatedAt: now,
     windowDays: windowDays,
@@ -500,7 +508,7 @@ function aggregate(events, usage, opts) {
       users: totalUsers,
       sessions: sessions.size,
       snapshots: us.length,
-      errors: (function () { var t = 0; errorCounts.forEach(function (v) { t += v; }); return t; })(),
+      errors: totalErr,
     },
     users: {
       total: totalUsers,
@@ -537,6 +545,7 @@ function aggregate(events, usage, opts) {
     investor: {
       nsm: nsm,                    // North Star: Weekly Active Learners + Trend + WAL/MAU
       rounds: rounds,              // Runden-Abschlussquote (session_start -> session_complete)
+      quality: quality,            // Stabilität (Fehler/Sitzung) + Bounce (nur 1 Tag aktiv)
       cohorts: cohorts,            // Retention-Heatmap (Erst-Tag × Tag-N)
       growth: growth,              // new/retained/resurrected/churned + Quick Ratio
       activation: activation,      // Aktivierungsrate + Funnel (neue Nutzer)
@@ -581,7 +590,38 @@ function aggregate(events, usage, opts) {
   };
 }
 
-module.exports = { aggregate: aggregate, dayUTC: dayUTC, durationBucket: durationBucket };
+// Kompakter Investor-KPI-Export (eine Zeile je Kennzahl) für Pitch-Deck/Data-Room.
+// REIN, deterministisch über das aggregate()-Ergebnis. Labels bewusst komma-frei
+// (keine CSV-Quotierung nötig).
+function toKpiCsv(stats) {
+  var s = isObj(stats) ? stats : {};
+  var i = isObj(s.investor) ? s.investor : {};
+  var u = isObj(s.users) ? s.users : {};
+  function ret(k) { var arr = Array.isArray(u.retention) ? u.retention : []; for (var j = 0; j < arr.length; j++) if (arr[j].day === k) return arr[j].pct; return 0; }
+  function g(o, path, d) { var cur = o; var ps = path.split("."); for (var j = 0; j < ps.length; j++) { if (!cur || typeof cur !== "object") return d; cur = cur[ps[j]]; } return cur == null ? d : cur; }
+  var rows = [
+    ["kpi", "wert"],
+    ["North Star WAL", g(i, "nsm.wal", 0)],
+    ["WAL Trend %", g(i, "nsm.trend.deltaPct", 0)],
+    ["WAL/MAU %", g(i, "nsm.walMauPct", 0)],
+    ["DAU", u.dauToday || 0],
+    ["WAU", u.wau || 0],
+    ["MAU", u.mau || 0],
+    ["Stickiness %", u.stickinessPct || 0],
+    ["Aktivierungsrate %", g(i, "activation.ratePct", 0)],
+    ["D1 %", ret(1)], ["D7 %", ret(7)], ["D30 %", ret(30)],
+    ["Quick Ratio", g(i, "growth.quickRatio", 0)],
+    ["K-Faktor", g(i, "virality.kFactor", 0)],
+    ["Runden-Abschluss %", g(i, "rounds.completionPct", 0)],
+    ["Oe Interaktionen/Sitzung", g(i, "interactions.perSession.avg", 0)],
+    ["Oe Lernzeit/Runde s", g(i, "timeOnTask.avgSec", 0)],
+    ["Bounce %", g(i, "quality.bouncePct", 0)],
+    ["Fehler/Sitzung", g(i, "quality.errorsPerSession", 0)],
+  ];
+  return rows.map(function (r) { return r.join(","); }).join("\n") + "\n";
+}
+
+module.exports = { aggregate: aggregate, dayUTC: dayUTC, durationBucket: durationBucket, toKpiCsv: toKpiCsv };
 
 // ===================== Server (nur beim Direktstart) =========================
 
@@ -687,7 +727,7 @@ if (require.main === module) {
     }
 
     // Lese-Endpunkte optional per Token geschützt (TELEMETRY_TOKEN).
-    if (req.method === "GET" && (url === "/api/stats" || url === "/api/stats.csv" || url === "/" || url === "/dashboard")) {
+    if (req.method === "GET" && (url === "/api/stats" || url === "/api/stats.csv" || url === "/api/kpis.csv" || url === "/" || url === "/dashboard")) {
       if (!authed(q, req)) return send(res, 401, { error: "Token erforderlich (?token=… oder Authorization: Bearer …)" });
     }
     if (req.method === "GET" && url === "/api/stats") {
@@ -695,6 +735,9 @@ if (require.main === module) {
     }
     if (req.method === "GET" && url === "/api/stats.csv") {
       return send(res, 200, toCsv(aggregate(events, usage, { now: Date.now(), windowDays: windowDaysOf(q) })), "text/csv; charset=utf-8");
+    }
+    if (req.method === "GET" && url === "/api/kpis.csv") {
+      return send(res, 200, toKpiCsv(aggregate(events, usage, { now: Date.now(), windowDays: windowDaysOf(q) })), "text/csv; charset=utf-8");
     }
     if (req.method === "GET" && (url === "/" || url === "/dashboard")) {
       try { return send(res, 200, fs.readFileSync(DASH_FILE, "utf8"), "text/html; charset=utf-8"); }
@@ -706,7 +749,7 @@ if (require.main === module) {
   server.listen(PORT, function () {
     console.log("HolaRuta Telemetrie-Server auf http://localhost:" + PORT);
     console.log("  Dashboard:   http://localhost:" + PORT + "/" + (TOKEN ? "?token=…" : "") + (TOKEN ? "  (TELEMETRY_TOKEN gesetzt)" : ""));
-    console.log("  API:         /api/stats?days=7|30|90 · /api/stats.csv");
+    console.log("  API:         /api/stats?days=7|30|90 · /api/stats.csv · /api/kpis.csv");
     console.log("  Daten:       " + DATA_DIR + " (events=" + events.length + ", usage=" + usage.length + ", Aufbewahrung " + RETENTION_DAYS + " Tage)");
     console.log("  Edition:     analytics: { enabled: true, endpoint: \"http://localhost:" + PORT + "\" }");
   });
