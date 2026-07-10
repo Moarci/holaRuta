@@ -104,8 +104,8 @@ Cockpit: Panel **B2B: KPIs je Edition** (Tabelle).
 |---|---|---|---|
 | Teilende Nutzer / Shares | distinkte Sharer, Shares gesamt | `share`-Event (`content`/`channel`) | steigend |
 | Shares je Nutzer | Shares / Nutzer | `investor.virality.sharesPerUser` | — |
-| **Share-Installs** | neue Nutzer, deren **erste Quelle** ein Teil-Link ist | `app_open.src ∈ {module-link, task, onboard-link}` (lebenslang) | wächst |
-| **K-Faktor** (viraler Koeffizient) | Share-Installs / Nutzer | `investor.virality.kFactor` | **> 0,5** stark viral-unterstützt; **> 1** = selbsttragendes Wachstum |
+| **Share-Installs** | im Fenster aktive Nutzer, deren **erste Quelle** (lebenslang bestimmt) ein Teil-Link ist | `app_open.src ∈ {module-link, task, onboard-link}` | wächst |
+| **K-Faktor** (viraler Koeffizient) | Share-Installs / Nutzer (**gleiche Fenster-Population**) | `investor.virality.kFactor` | **> 0,5** stark viral-unterstützt; **> 1** = selbsttragendes Wachstum |
 
 Cockpit: Kachel **K-Faktor** + Panel **Virality**.
 

@@ -398,10 +398,14 @@ function aggregate(events, usage, opts) {
     ],
   };
 
-  // --- Virality / K-Faktor (Erst-Quelle lebenslang -> keine Fenster-Verzerrung) ---
+  // --- Virality / K-Faktor ---
+  // Erst-Quelle wird LEBENSLANG bestimmt (clientFirstOpenAll, keine Fenster-Verzerrung der
+  // Attribution), die GEZÄHLTE Population ist aber – wie der Nenner totalUsers – auf die im
+  // Fenster aktiven Nutzer (clientsAll) beschränkt. Sonst würde der Zähler (lebenslange
+  // Share-Installs) gegen einen Fenster-Nenner geteilt und K könnte unsinnig > 1 werden.
   var SHARE_SRC = { "module-link": 1, "task": 1, "onboard-link": 1 }; // feste Schlüssel
   var sharedInstalls = 0;
-  clientFirstOpenAll.forEach(function (fo) { if (fo && SHARE_SRC[fo.src] === 1) sharedInstalls++; });
+  clientFirstOpenAll.forEach(function (fo, cid) { if (fo && SHARE_SRC[fo.src] === 1 && clientsAll.has(cid)) sharedInstalls++; });
   var virality = {
     sharers: sharers.size,
     shares: shareEvents,
