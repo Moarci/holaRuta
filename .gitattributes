@@ -1,0 +1,5 @@
+# Repo-Konvention: alle Text-Dateien mit LF (git erkennt Binärdateien automatisch
+# und lässt sie unangetastet). Verhindert, dass core.autocrlf=true auf Windows
+# generierte Dateien (SEO-Manifest, sitemap.xml, robots.txt, llms.txt, ...) als
+# "modified" markiert, obwohl sich am Inhalt nichts geändert hat.
+* text=auto eol=lf
