@@ -362,9 +362,10 @@ body {
   padding: 4px; border-radius: 999px;
 }
 .seg {
-  border: none; background: transparent; cursor: pointer;
+  border: none; cursor: pointer;
   padding: 10px 12px; border-radius: 999px; min-height: 44px;
   font-size: 0.95rem; font-weight: 700; color: var(--ink-soft);
+  background: color-mix(in srgb, var(--card) 55%, transparent);
   transition: all 0.18s ease;
 }
 .seg.is-active { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
