@@ -1538,3 +1538,26 @@ test("store.loadGameStats: assessment-Zahlen werden typisiert (String/Infinity -
   assert.equal(a.accuracy, 0);   // Infinity ist nicht endlich -> 0
   assert.equal(a.correct, 7);    // echte Zahl bleibt
 });
+
+// ---------- de-en track (HelloAbroad) ----------
+test("SC.track.TRACKS: de-en Eintrag existiert mit korrekten Feldern", () => {
+  // config.js ist DOM-frei (reines Merge/Daten) und daher genau wie data.js
+  // direkt im Node-Testrunner ladbar.
+  require(path.join(SRC, "config.js"));
+  const track = globalThis.window.SC.track;
+  assert.ok(track && track.TRACKS && track.TRACKS["de-en"], "TRACKS.de-en fehlt");
+  assert.deepEqual(track.TRACKS["de-en"], {
+    id: "de-en", learnLang: "en", nativeLangs: ["de"], cardNativeLang: null, ttsLocale: "en-US",
+  });
+});
+
+test("matcher.check: de-en-Track prüft gegen card.en, nicht card.es", () => {
+  // Isolierter Stub statt vollem config.js-Require: matcher.js liest nur
+  // window.SC.track.learnLang()/.cardNativeLang() (siehe matcher.js:45-59).
+  const prevTrack = globalThis.window.SC.track;
+  globalThis.window.SC.track = { learnLang: () => "en", cardNativeLang: () => null };
+  const card = { de: "Hallo", en: "Hello", es: "Hola" };
+  assert.equal(matcher.check("Hello", card, "learn").correct, true);
+  assert.equal(matcher.check("Hola", card, "learn").correct, false);
+  globalThis.window.SC.track = prevTrack; // Testisolation: anderen Tests nicht beeinflussen
+});

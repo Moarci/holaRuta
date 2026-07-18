@@ -60,9 +60,14 @@
     //   hostel: { banner: true, featured: ["open-hostel","open-juegos", …] }
     // featured = Liste von FEATURES-Aktionen in Wunschreihenfolge (siehe ui.js).
     hostel: null,
-    // Lern-Track: "de-es" (Standard, Reise) | "es-en" (Locals, Englisch lernen).
-    // null = Standard "de-es". Eine Edition setzt z.B. track: "es-en".
+    // Lern-Track: "de-es" (Standard, Reise) | "es-en" (Locals, Englisch lernen) |
+    // "de-en" (HelloAbroad, Reiseenglisch). null = Standard "de-es".
     track: null,
+    // Kategorie-Filter fürs Lernen-Tab/Suche/Editor/Stats: null = alle Kategorien
+    // sichtbar (Standard, unverändert für bestehende Editionen). Eine Edition mit
+    // schmalerem Themenumfang (z.B. HelloAbroad) setzt eine explizite Liste
+    // erlaubter Kategorie-IDs.
+    categoryAllowlist: null,
   };
 
   SC.config = Object.assign({}, DEFAULT, SC.editionConfig || {});
@@ -77,6 +82,10 @@
   var TRACKS = {
     "de-es": { id: "de-es", learnLang: "es", nativeLangs: ["de", "en"], cardNativeLang: null, ttsLocale: "es-419" },
     "es-en": { id: "es-en", learnLang: "en", nativeLangs: ["es", "en"], cardNativeLang: "es", ttsLocale: "en-US" },
+    // HelloAbroad: DE-Muttersprachler lernt Reiseenglisch. cardNativeLang: null
+    // (wie de-es) -> Frage folgt der UI-Sprache (Deutsch); learnLang "en" -> die
+    // gelernte Antwort ist card.en (in data.js bereits zu 100% befüllt).
+    "de-en": { id: "de-en", learnLang: "en", nativeLangs: ["de"], cardNativeLang: null, ttsLocale: "en-US" },
   };
   var DEFAULT_TRACK = "de-es";
 
