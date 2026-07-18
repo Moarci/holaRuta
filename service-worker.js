@@ -18,7 +18,7 @@
  * neue Dateien in einer laufenden Sitzung (Mixed-Version-Load): das Aktivieren
  * ist immer an ein vollständiges Reload gekoppelt.
  */
-const CACHE_VERSION = "holaruta-5d910a424fba"; // von build.js gestempelt – nicht von Hand ändern
+const CACHE_VERSION = "holaruta-89eef500c6d4"; // von build.js gestempelt – nicht von Hand ändern
 const ASSETS = [
   "./",
   "./index.html",
@@ -120,15 +120,21 @@ const ASSETS = [
   "./features/banderas-game.js",
   "./app.js",
   "./icon.svg",
+  "./icon-hello-abroad.svg",
   "./icon-180.png",
   "./icon-192.png",
   "./icon-512.png",
   "./icon-512-maskable.png",
+  "./icon-180-hello-abroad.png",
+  "./icon-192-hello-abroad.png",
+  "./icon-512-hello-abroad.png",
+  "./icon-512-maskable-hello-abroad.png",
   "./fonts/bricolage-grotesque-600-800-latin.woff2",
   "./fonts/instrument-sans-400-700-latin.woff2",
   "./fonts/instrument-sans-italic-400-latin.woff2",
   "./manifest.webmanifest",
   "./manifest-dark.webmanifest",
+  "./manifest-hello-abroad.webmanifest",
 ];
 
 // Absolute URLs der bekannten Assets – nur diese werden zur Laufzeit
