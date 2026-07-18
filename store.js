@@ -6,12 +6,25 @@
 (function () {
   "use strict";
 
-  const PROGRESS_KEY = "spanischcard.progress.v2";
-  const SETTINGS_KEY = "spanischcard.settings.v1";
-  const USERCARDS_KEY = "spanischcard.usercards.v1";
-  const GAMESTATS_KEY = "spanischcard.gamestats.v1";
-  const TASKS_KEY = "spanischcard.tasks.v1"; // abonnierte Aufgaben (mehrere parallel)
-  const FAVORITES_KEY = "spanischcard.favorites.v1"; // „Mi léxico": gemerkte Wörter/Sätze
+  // Track-Namespace: verhindert, dass zwei Editionen mit unterschiedlicher
+  // Lernrichtung (z.B. de-es/HolaRuta und de-en/HelloAbroad) unter derselben
+  // Origin denselben Fortschritt teilen (Karten-IDs sind identisch, nur
+  // learnLang unterscheidet sich). de-es (Standard) bleibt UNPRÄFIXIERT
+  // (Rückwärtskompatibilität, keine Migration für die meisten Nutzer). config.js
+  // läuft synchron VOR allen deferred Scripts (siehe index.html-Kommentar bei
+  // registry.js/config.js) - SC.track ist hier bereits vollständig gesetzt.
+  const TRACK_ID = (() => {
+    try { return (window.SC && window.SC.track && window.SC.track.id && window.SC.track.id()) || "de-es"; }
+    catch (e) { return "de-es"; }
+  })();
+  const TRACK_NS = TRACK_ID === "de-es" ? "" : TRACK_ID + ".";
+
+  const PROGRESS_KEY = "spanischcard." + TRACK_NS + "progress.v2";
+  const SETTINGS_KEY = "spanischcard." + TRACK_NS + "settings.v1";
+  const USERCARDS_KEY = "spanischcard." + TRACK_NS + "usercards.v1";
+  const GAMESTATS_KEY = "spanischcard." + TRACK_NS + "gamestats.v1";
+  const TASKS_KEY = "spanischcard." + TRACK_NS + "tasks.v1"; // abonnierte Aufgaben (mehrere parallel)
+  const FAVORITES_KEY = "spanischcard." + TRACK_NS + "favorites.v1"; // „Mi léxico": gemerkte Wörter/Sätze
   // Zuletzt gesehene App-Version (für den „Was ist neu?"-Hinweis nach Updates).
   // Bewusst NICHT in KNOWN_KEYS: das ist gerätelokaler Anzeige-Status, kein
   // Nutzer-Inhalt – ein Backup-Import von einem anderen Gerät soll ihn nicht
@@ -23,6 +36,26 @@
   const SHEETFILL_KEY = "spanischcard.sheetfill.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
   const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY, FAVORITES_KEY];
+
+  // Einmalige Migration für bereits produktive Nicht-de-es-Nutzer (aktuell nur
+  // es-en/ingles-pro/venue-en): vor diesem Fix lagen ihre Daten unter den
+  // unpräfixierten de-es-Keys (die einzigen, die es damals gab). Für de-en
+  // (neu, HelloAbroad) existieren keine Alt-Daten -> diese Schleife ist dort
+  // ein reines No-Op (LEGACY_KEYS sind immer leer).
+  if (TRACK_NS) {
+    const LEGACY_KEYS = [
+      "spanischcard.progress.v2", "spanischcard.settings.v1", "spanischcard.usercards.v1",
+      "spanischcard.gamestats.v1", "spanischcard.tasks.v1", "spanischcard.favorites.v1",
+    ];
+    KNOWN_KEYS.forEach((key, i) => {
+      try {
+        if (localStorage.getItem(key) == null) {
+          const legacy = localStorage.getItem(LEGACY_KEYS[i]);
+          if (legacy != null) localStorage.setItem(key, legacy);
+        }
+      } catch (e) { /* localStorage gesperrt o.ä. – ohne Migration weiter, App läuft trotzdem */ }
+    });
+  }
 
   function readJson(key, fallback) {
     let raw = null;
