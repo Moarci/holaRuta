@@ -2,13 +2,15 @@
 
 **Status:** Implementiert auf Branch `feat/hello-abroad` (alle 7 Tasks aus
 `docs/superpowers/plans/2026-07-18-helloabroad-implementation.md` abgeschlossen
-und subagent-review-geprüft, `npm test` grün (907/907), manuelle DoD-Verifikation
+und subagent-review-geprüft, `npm test` grün (884/884), manuelle DoD-Verifikation
 per Playwright durchgeführt). Abweichungen vom ursprünglichen Plan, gefunden
 während der Implementierung: (1) die geplante es-en-Legacy-Migration in
 `store.js` wurde entfernt (Cross-Track-Datenvermischungsrisiko bei
-Editions-Wechsel auf demselben Origin) – bestehende es-en-Nutzer bekommen
-stattdessen einmalig einen sauberen Reset statt eines fehleranfälligen
-Copy-Forward; (2) `categoryAllowlist` musste zusätzlich Stats-/Badges-Aggregate
+Editions-Wechsel auf demselben Origin) – statt eines fehleranfälligen
+Copy-Forward sehen bestehende es-en-Nutzer ab dem ersten Laden nach diesem Fix
+leere Fortschrittsdaten unter dem neuen Namespace – ihre alten Daten bleiben
+unter dem alten, unpräfixierten Schlüssel liegen, werden aber von der App
+nicht mehr gelesen; (2) `categoryAllowlist` musste zusätzlich Stats-/Badges-Aggregate
 (`stats.overview`, `badges.buildMetrics`) filtern, nicht nur Home/Suche/Editor;
 (3) PWA-Manifest/Icons wurden zusätzlich in `service-worker.js`s Offline-Precache
 aufgenommen; (4) eine neue Karte (`fh17`) musste wegen Inhalts-Dopplung mit
