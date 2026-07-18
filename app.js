@@ -1736,7 +1736,7 @@
   // sie für die Glückwunsch-Einblendung; beim Start (false) still nachtragen.
   function syncBadges(now, announce) {
     if (!badges) return [];
-    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const metrics = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), progress, gamestats);
     const newly = badges.satisfiedIds(metrics).filter((id) => !gamestats.unlocked[id]);
     if (!newly.length) return [];
     const unlocked = Object.assign({}, gamestats.unlocked);
@@ -1770,7 +1770,7 @@
     // Cache) -> null. ui.renderBadges zeigt dann einen Hinweis statt zu crashen
     // (sonst würde JEDER weitere Render erneut werfen – App friert ein).
     if (!badges) return null;
-    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const metrics = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), progress, gamestats);
     const all = badges.evaluate(metrics, gamestats.unlocked);
     const groups = (badges.groups ? badges.groups() : badges.GROUPS)
       .map((g) => {
@@ -3347,7 +3347,7 @@
   function studentSummaryFromBackup(name, payload) {
     const b = store.readBackup(payload);
     if (!b) return null;
-    const m = badges.buildMetrics(allCards(), b.progress, b.gamestats);
+    const m = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), b.progress, b.gamestats);
     const planMax = (data.PRETRIP && data.PRETRIP[0] && data.PRETRIP[0].days.length) || 7;
     // Gemeisterte Destination-Pakete: Kategorien mit ≥80 % Mastery (wie cat-Badges).
     const masteredCats = Object.keys(m.categoryMastery || {})
@@ -6841,7 +6841,7 @@
   // wenn der Stempel auch wirklich freigeschaltet ist.
   function shareBadge(id) {
     if (!share || !badges) return;
-    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const metrics = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), progress, gamestats);
     const all = badges.evaluate(metrics, gamestats.unlocked);
     const b = all.find((x) => x.id === id);
     if (!b || !b.unlocked) return;
