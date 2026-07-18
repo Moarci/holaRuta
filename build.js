@@ -279,6 +279,13 @@ function buildDist() {
     "docs/anleitungen/handout.js",
     "docs/anleitungen/qr-holaruta.svg",
     "docs/pitch/weroad-colombia.html",
+    // Shareable Redirect-URLs (?edition=… fest verdrahtet, per README/Poster
+    // verlinkt): fehlten bisher hier und landeten dadurch NIE in dist/ – die
+    // Links gaben in Produktion 404, obwohl sie lokal (Datei direkt geöffnet)
+    // funktionierten. en/ = ingles-pro (Locals-Schule), hello-abroad/ = die
+    // HelloAbroad-Edition (siehe editions/registry.js appUrl).
+    "en/index.html",
+    "hello-abroad/index.html",
     // SEO/GEO: Sitemap + robots + llms.txt (von Landing/Suche/KI-Crawlern
     // referenziert, bewusst nicht im Precache). Werden von generateGeo() (oben
     // in buildDist()) VOR dieser Schleife frisch aus dem GEO-Manifest
