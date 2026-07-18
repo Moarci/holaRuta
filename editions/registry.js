@@ -164,6 +164,28 @@
       taskTab: false,
       teacherTab: false,
     },
+    // HelloAbroad: eigenständiger DE-EN-Reiseenglisch-Ableger für 50-60+
+    // (siehe docs/superpowers/specs/2026-07-18-helloabroad-design.md). Bewusst
+    // KEIN "HolaRuta"-Bezug im brandName. categoryAllowlist beschränkt das
+    // Lernen-Tab auf die 10 MVP-Reisebereiche (siehe Task 3 für "flughafen").
+    "hello-abroad": {
+      edition: "hello-abroad",
+      brandName: "HelloAbroad",
+      accent: { brand: "#2F6B70", brandInk: "#1F4A4E" },
+      partner: null,
+      logo: null,
+      defaultDestination: null,
+      appUrl: "https://moarci.github.io/holaRuta/hello-abroad/",
+      track: "de-en",
+      taskTab: false,
+      teacherTab: false,
+      sync: null,
+      categoryAllowlist: [
+        "basics", "talk", "flughafen", "grenze", "hotel", "hostel",
+        "essen", "trinken", "compras", "dinero", "banco",
+        "verkehr", "rumbo", "auto", "farmacia", "notfall",
+      ],
+    },
   };
 
   SC.editions = EDITIONS;
