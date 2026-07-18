@@ -59,6 +59,7 @@
     { id: "alltag",  label: "Alltag",     labelEn: "Everyday", icon: "🏙️", grad: ["#8A6A52", "#A3846B"], group: "people" },
     { id: "frases",  label: "Sätze",      labelEn: "Phrases", icon: "🙋", grad: ["#A85A6E", "#C2748A"], group: "basics" },
     { id: "grenze",  label: "Behörden",   labelEn: "Officials", icon: "🛂", grad: ["#566B8A", "#6E86A3"], group: "travel" },
+    { id: "flughafen", label: "Flughafen & Gepäck", labelEn: "Airport & Luggage", icon: "✈️", grad: ["#2F6B70", "#3E8388"], group: "travel" },
     { id: "reise",   label: "Busreise",   labelEn: "Bus travel", icon: "🚐", grad: ["#B5503F", "#CE6855"], group: "travel" },
     { id: "ropa",    label: "Kleidung & Schmuck", labelEn: "Clothes & jewellery", icon: "👕", grad: ["#A8497E", "#C2629A"], group: "food" },
     { id: "rumbo",   label: "Wegbeschreibung", labelEn: "Directions", icon: "🧭", grad: ["#2B7A78", "#3AA89F"], group: "travel" },
@@ -470,6 +471,28 @@
     { id: "n13", cat: "notfall", lvl: 1, de: "mein Handy", en: "my phone", es: "mi celular", tip: "se-lu-LAR" },
     { id: "n14", cat: "notfall", lvl: 2, de: "Können Sie mir helfen?", en: "Can you help me?", es: "¿Puede ayudarme?", tip: "a-yu-DAR-me" },
     { id: "n15", cat: "notfall", lvl: 3, de: "Wo ist die nächste Apotheke?", en: "Where's the nearest pharmacy?", es: "¿Dónde está la farmacia más cercana?", tip: "mas ser-KA-na" },
+
+    // ---------- Flughafen & Gepäck (neu, HelloAbroad) ----------
+    // fh09-fh13 portiert/adaptiert aus logistica.js:270-277 ("equipaje"-Sektion,
+    // Airport & lost luggage) statt neu geschrieben (Content-Wiederverwendung).
+    { id: "fh01", cat: "flughafen", lvl: 1, de: "Ich möchte einchecken", en: "I'd like to check in", es: "Quiero hacer el check-in" },
+    { id: "fh02", cat: "flughafen", lvl: 1, de: "die Bordkarte", en: "the boarding pass", es: "la tarjeta de embarque" },
+    { id: "fh03", cat: "flughafen", lvl: 1, de: "Wo ist Gate 12?", en: "Where is gate 12?", es: "¿Dónde está la puerta 12?" },
+    { id: "fh04", cat: "flughafen", lvl: 1, de: "das Handgepäck", en: "the hand luggage / carry-on", es: "el equipaje de mano" },
+    { id: "fh05", cat: "flughafen", lvl: 2, de: "Ich möchte diesen Koffer aufgeben", en: "I'd like to check this suitcase", es: "Quiero facturar esta maleta" },
+    { id: "fh06", cat: "flughafen", lvl: 3, de: "Habe ich Übergepäck?", en: "Do I have excess baggage?", es: "¿Tengo exceso de equipaje?" },
+    { id: "fh07", cat: "flughafen", lvl: 2, de: "Der Flug hat Verspätung", en: "The flight is delayed", es: "El vuelo está retrasado" },
+    { id: "fh08", cat: "flughafen", lvl: 3, de: "Ich habe meinen Anschlussflug verpasst", en: "I missed my connecting flight", es: "Perdí mi vuelo de conexión" },
+    { id: "fh09", cat: "flughafen", lvl: 2, de: "Mein Koffer ist nicht angekommen", en: "My suitcase didn't arrive", es: "Mi maleta no llegó" },
+    { id: "fh10", cat: "flughafen", lvl: 3, de: "Ich habe diesen Rucksack aufgegeben und er ist nicht aufgetaucht", en: "I checked in this backpack and it didn't show up", es: "Facturé esta mochila y no apareció" },
+    { id: "fh11", cat: "flughafen", lvl: 2, de: "Wo melde ich verlorenes Gepäck?", en: "Where do I report lost luggage?", es: "¿Dónde reporto el equipaje perdido?" },
+    { id: "fh12", cat: "flughafen", lvl: 2, de: "Hier ist mein Gepäckschein", en: "Here's my baggage tag", es: "Aquí está mi talón de equipaje" },
+    { id: "fh13", cat: "flughafen", lvl: 2, de: "Können Sie ihn mir zum Hotel schicken?", en: "Can you send it to my hotel?", es: "¿Me lo pueden enviar al hotel?" },
+    { id: "fh14", cat: "flughafen", lvl: 1, de: "die Sicherheitskontrolle", en: "the security check", es: "el control de seguridad" },
+    { id: "fh15", cat: "flughafen", lvl: 2, de: "Flüssigkeiten müssen in einen durchsichtigen Beutel", en: "Liquids must go in a clear bag", es: "Los líquidos deben ir en una bolsa transparente" },
+    { id: "fh16", cat: "flughafen", lvl: 1, de: "Muss ich die Schuhe ausziehen?", en: "Do I need to take off my shoes?", es: "¿Tengo que quitarme los zapatos?" },
+    { id: "fh17", cat: "flughafen", lvl: 2, de: "Ich habe einen Anschlussflug", en: "I have a connecting flight", es: "Tengo un vuelo de conexión" },
+    { id: "fh18", cat: "flughafen", lvl: 1, de: "Wo ist der Ausgang?", en: "Where is the exit?", es: "¿Dónde está la salida?" },
 
     // ===================== ZEIT & DATUM =====================
     { id: "ti01", cat: "zeit", lvl: 2, de: "Wie spät ist es?", en: "What time is it?", es: "¿Qué hora es?", tip: "ke O-ra es" },

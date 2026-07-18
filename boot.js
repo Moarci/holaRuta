@@ -31,8 +31,16 @@
     document.documentElement.dataset.theme = t;
     var m = document.querySelector('meta[name="theme-color"]');
     if (m) m.setAttribute("content", t === "dark" ? "#0E0907" : "#241510");
+    // Edition-Erkennung VOR config.js unmöglich (boot.js läuft zuerst, DOM-frei) -
+    // liest darum direkt denselben ?edition=-Query-Param wie editions/registry.js.
+    var isHelloAbroad = /(?:^|[?&])edition=hello-abroad(?:&|$)/.test(location.search);
     var man = document.querySelector('link[rel="manifest"]');
-    if (man) man.setAttribute("href", t === "dark" ? "manifest-dark.webmanifest" : "manifest.webmanifest");
+    if (man) man.setAttribute("href", isHelloAbroad ? "manifest-hello-abroad.webmanifest" : (t === "dark" ? "manifest-dark.webmanifest" : "manifest.webmanifest"));
+    // apple-touch-icon ist NICHT Teil des Manifests (iOS liest es separat aus
+    // index.html) - ohne diesen zweiten Swap würde "Zum Home-Bildschirm" auf
+    // iOS weiterhin das HolaRuta-Icon zeigen.
+    var appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+    if (appleIcon && isHelloAbroad) appleIcon.setAttribute("href", "icon-180-hello-abroad.png");
   } catch (e) { /* localStorage gesperrt o.ä. – App startet hell */ }
 })();
 

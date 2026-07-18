@@ -1,0 +1,23 @@
+{
+  "name": "HelloAbroad – Reiseenglisch",
+  "short_name": "HelloAbroad",
+  "description": "Reiseenglisch auffrischen für unterwegs – Karteikarten mit Spaced Repetition für Flughafen, Hotel, Restaurant, Einkaufen und Notfall. Funktioniert offline.",
+  "lang": "de",
+  "dir": "ltr",
+  "id": "hello-abroad",
+  "start_url": "./?edition=hello-abroad&source=pwa",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1F4A4E",
+  "theme_color": "#1F4A4E",
+  "categories": ["education", "travel"],
+  "launch_handler": { "client_mode": "navigate-existing" },
+  "handle_links": "preferred",
+  "icons": [
+    { "src": "icon-192-hello-abroad.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-hello-abroad.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable-hello-abroad.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-hello-abroad.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

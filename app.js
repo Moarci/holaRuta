@@ -324,6 +324,13 @@
   const cardNativeField = () => (trk() && trk().cardNativeLang && trk().cardNativeLang()) || (i18n ? i18n.getLang() : "de");
   // Locals-Track aktiv? (Spanisch lernt Englisch.)
   const isLocals = () => { const t = trk(); return !!(t && t.id && t.id() === "es-en"); };
+  // Kategorie-Filter fürs Lernen-Tab/Suche/Editor/Stats (siehe config.js
+  // categoryAllowlist). null/unset -> alles erlaubt (unverändertes Verhalten
+  // für jede bestehende Edition ohne categoryAllowlist).
+  const isCategoryAllowed = (catId) => {
+    const allow = window.SC.config && window.SC.config.categoryAllowlist;
+    return !allow || allow.indexOf(catId) >= 0;
+  };
   // Mengen der Locals-Kategorien/-Gruppen (aus data.locals.js). Im Locals-Track werden
   // nur diese sichtbar/lernbar gemacht – die Reise-Inhalte bleiben im Korpus, sind aber
   // ausgeblendet (fokussierte Edition, ohne Reise-Code-Pfade zu brechen).
@@ -411,7 +418,7 @@
     return true;
   };
   const scopeCards = (scopeId) =>
-    allCards().filter((c) => (scopeId === "all" || c.cat === scopeId) && matchesLevel(c) && matchesKind(c));
+    allCards().filter((c) => (scopeId === "all" ? isCategoryAllowed(c.cat) : c.cat === scopeId) && matchesLevel(c) && matchesKind(c));
   const dueIn = (cards) => cards.filter((c) => srs.isDue(progress[c.id]));
   // Orts-/länderspezifisch? Karten der Gruppe „destinos" (Städte- & Länder-Packs).
   // Eigene Karten ohne bekannte Kategorie zählen als allgemein (Grundlagen-Pfad).
@@ -557,7 +564,7 @@
     // ausblenden); im Reise-Track alle.
     const visibleCats = isLocals()
       ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group))
-      : data.CATEGORIES;
+      : data.CATEGORIES.filter((c) => isCategoryAllowed(c.id));
     const categories = visibleCats.map((c) => {
       const allInCat = byCat.get(c.id) || [];
       const cards = allInCat.filter((card) => matchesLevel(card) && matchesKind(card)); // entspricht scopeCards(c.id)
@@ -585,12 +592,12 @@
     // Karten-Filter ausblenden – sie würden sonst als leere 0-Stufe erscheinen.
     const levels = data.LEVELS.map((l) => ({
       id: l.id, label: natk(l, "label"), short: l.short, color: l.color,
-      count: everyCard.filter((c) => c.lvl === l.id).length,
+      count: everyCard.filter((c) => isCategoryAllowed(c.cat) && c.lvl === l.id).length,
       active: state.levels.includes(l.id),
     })).filter((l) => l.count > 0);
     // Wortart-Filter (Vokabeln/Wendungen/Sätze): Kartenzahl je Klasse über das
     // sichtbare, stufengefilterte Deck – so sieht man, wie viel jede Wahl zieht.
-    const levelPool = everyCard.filter(matchesLevel);
+    const levelPool = everyCard.filter((c) => isCategoryAllowed(c.cat) && matchesLevel(c));
     const kindCount = { word: 0, phrase: 0, sentence: 0 };
     for (let i = 0; i < levelPool.length; i++) kindCount[cardKind(levelPool[i])]++;
     const vocabKinds = [
@@ -600,7 +607,7 @@
     ].map((k) => ({ ...k, active: state.vocabKind === k.id }));
     // Gesamtfortschritt für die "Heute"-Karte – über ALLE Karten, unabhängig
     // vom Stufenfilter, damit der Balken eine stabile Bezugsgröße hat.
-    const overall = stats.overview(everyCard, progress);
+    const overall = stats.overview(everyCard.filter((c) => isCategoryAllowed(c.cat)), progress);
     // Quick-Resume: zuletzt gelernte Kategorie, nur wenn dort noch etwas fällig ist.
     let lastCat = null;
     if (settings.lastScope) {
@@ -949,7 +956,7 @@
   }
 
   function statsVM() {
-    const all = allCards();
+    const all = allCards().filter((c) => isCategoryAllowed(c.cat));
     const ov = stats.overview(all, progress);
     const filter = state.statsFilter;
 
@@ -1167,7 +1174,7 @@
     let tripMilestone = null;
     const updated = { xp: xpAfter };
     if (gamestats.tripGoal) {
-      const ov = stats.overview(allCards(), progress);
+      const ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
       const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
       const seen = Object.assign({}, gamestats.tripMilestonesSeen || {});
       const fresh = stats.freshTripMilestones(pct, seen);
@@ -1390,7 +1397,7 @@
     const recentAvg = recentSum / 7;
     // Aktueller Mastery-Stand fürs Budget-Modell (gemeistert/total) – dieselbe Quelle
     // wie Dashboard & Profil (stats.overview), nur hier fürs Trip-Ziel wiederverwendet.
-    const ov = overview || stats.overview(allCards(), progress);
+    const ov = overview || stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
     // Reise-Prognose: nur sinnvoll, solange die Abreise noch in der Zukunft liegt.
     const forecast = (daysLeft !== null && daysLeft > 0)
       ? stats.tripForecast({
@@ -1596,7 +1603,7 @@
     // Bearbeiten eines bestehenden Ziels (cur) bleibt der bisherige Stand unangetastet.
     const patch = { tripGoal: goal };
     if (!cur) {
-      const ov = stats.overview(allCards(), progress);
+      const ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
       const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
       const stamp = Date.now();
       const seeded = {};
@@ -1729,7 +1736,7 @@
   // sie für die Glückwunsch-Einblendung; beim Start (false) still nachtragen.
   function syncBadges(now, announce) {
     if (!badges) return [];
-    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const metrics = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), progress, gamestats);
     const newly = badges.satisfiedIds(metrics).filter((id) => !gamestats.unlocked[id]);
     if (!newly.length) return [];
     const unlocked = Object.assign({}, gamestats.unlocked);
@@ -1763,7 +1770,7 @@
     // Cache) -> null. ui.renderBadges zeigt dann einen Hinweis statt zu crashen
     // (sonst würde JEDER weitere Render erneut werfen – App friert ein).
     if (!badges) return null;
-    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const metrics = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), progress, gamestats);
     const all = badges.evaluate(metrics, gamestats.unlocked);
     const groups = (badges.groups ? badges.groups() : badges.GROUPS)
       .map((g) => {
@@ -3340,7 +3347,7 @@
   function studentSummaryFromBackup(name, payload) {
     const b = store.readBackup(payload);
     if (!b) return null;
-    const m = badges.buildMetrics(allCards(), b.progress, b.gamestats);
+    const m = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), b.progress, b.gamestats);
     const planMax = (data.PRETRIP && data.PRETRIP[0] && data.PRETRIP[0].days.length) || 7;
     // Gemeisterte Destination-Pakete: Kategorien mit ≥80 % Mastery (wie cat-Badges).
     const masteredCats = Object.keys(m.categoryMastery || {})
@@ -5207,7 +5214,7 @@
     // Lernfortschritt (% gemeisterte Karten) und Reiseziel grob mitgeben – beides
     // gebucketet, keine Inhalte. Mastery aus der vorhandenen stats.overview-Logik.
     var masteredPct = 0;
-    try { var ov = stats.overview(allCards(), progress); if (ov && ov.total) masteredPct = Math.round((ov.mastered / ov.total) * 100); } catch (e) { /* egal */ }
+    try { var ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress); if (ov && ov.total) masteredPct = Math.round((ov.mastered / ov.total) * 100); } catch (e) { /* egal */ }
     var tg = gamestats.tripGoal || null;
     window.SC.analytics.maybeSend(gamestats, Object.assign(analyticsCtx(), {
       masteredPct: masteredPct,
@@ -6061,15 +6068,15 @@
   // Definiciones, Precios, Cuerpo, Compras, Frases, Diálogos, Vocabulario sin fin,
   // ¿Y esto?, Mi léxico) sind in BEIDEN Tracks sichtbar und daher auch suchbar.
   const SEARCH_FEATURES = [
-    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",        subKey: "discover.subFavorites", tracks: ["de-es", "es-en"] },
+    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",        subKey: "discover.subFavorites", tracks: ["de-es", "es-en", "de-en"] },
     { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",    subKey: "discover.subSupervivencia", tracks: ["de-es", "es-en"] },
     { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",       subKey: "discover.subHostel" },
     { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",      subKey: "discover.subDefiniciones", tracks: ["de-es", "es-en"] },
-    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", tracks: ["de-es", "es-en"] },
+    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", tracks: ["de-es", "es-en", "de-en"] },
     { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases", tracks: ["de-es", "es-en"] },
     { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos", tracks: ["de-es", "es-en"] },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
-    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech", tracks: ["de-es", "es-en"] },
+    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech", tracks: ["de-es", "es-en", "de-en"] },
     { action: "open-cuerpo",      icon: "lc:person-standing", title: "El Cuerpo",         subKey: "discover.subCuerpo", tracks: ["de-es", "es-en"] },
     { action: "open-compras",     icon: "lc:shopping-cart", title: "Lista de compras",  subKey: "discover.subCompras", tracks: ["de-es", "es-en"] },
     { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto", tracks: ["de-es", "es-en"] },
@@ -6107,7 +6114,7 @@
     const locals = isLocals();
 
     // --- Übungen: Vokabelkarten (eigene inklusive) ---
-    allCards().forEach((c) => {
+    allCards().filter((c) => isCategoryAllowed(c.cat)).forEach((c) => {
       const cat = categoryById(c.cat);
       idx.push({
         group: "ex", kind: "card", kindLabel: t("search.kindCard"),
@@ -6119,7 +6126,7 @@
     });
 
     // --- Übungen: Lern-Kategorien (ganze Themen-Decks) ---
-    const searchCats = locals ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group)) : data.CATEGORIES;
+    const searchCats = locals ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group)) : data.CATEGORIES.filter((c) => isCategoryAllowed(c.id));
     searchCats.forEach((c) => {
       idx.push({
         group: "ex", kind: "category", kindLabel: t("search.kindCategory"),
@@ -6498,7 +6505,7 @@
     const cards = userCards ? userCards.list() : [];
     return {
       supported: !!userCards,
-      categories: data.CATEGORIES.map((c) => ({ id: c.id, label: natk(c, "label"), icon: c.icon })),
+      categories: data.CATEGORIES.filter((c) => isCategoryAllowed(c.id)).map((c) => ({ id: c.id, label: natk(c, "label"), icon: c.icon })),
       levels: data.LEVELS.map((l) => ({ id: l.id, label: natk(l, "label"), short: l.short })),
       msg: editorMsg,
       cards: cards.map((c) => {
@@ -6796,7 +6803,7 @@
   // Erzeugt aus dem aktuellen Lernfortschritt ein Bild und teilt/lädt es.
   function shareStats() {
     if (!share) return;
-    const ov = stats.overview(allCards(), progress);
+    const ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
     buzz(12);
     share.shareImage("stats", {
       userName: profileName(),
@@ -6834,7 +6841,7 @@
   // wenn der Stempel auch wirklich freigeschaltet ist.
   function shareBadge(id) {
     if (!share || !badges) return;
-    const metrics = badges.buildMetrics(allCards(), progress, gamestats);
+    const metrics = badges.buildMetrics(allCards().filter((c) => isCategoryAllowed(c.cat)), progress, gamestats);
     const all = badges.evaluate(metrics, gamestats.unlocked);
     const b = all.find((x) => x.id === id);
     if (!b || !b.unlocked) return;

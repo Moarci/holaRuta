@@ -5640,6 +5640,7 @@
           "Alltag: Spanisch-Sätze für unterwegs",
           "Sätze: Spanisch-Sätze für unterwegs",
           "Behörden: Spanisch-Sätze für unterwegs",
+          "Flughafen & Gepäck: Spanisch-Sätze für unterwegs",
           "Busreise: Spanisch-Sätze für unterwegs",
           "Kleidung & Schmuck: Spanisch-Sätze für unterwegs",
           "Wegbeschreibung: Spanisch-Sätze für unterwegs",
@@ -5792,6 +5793,10 @@
         {
           "path": "/de/spanisch-behoerden-unterwegs/",
           "label": "Behörden: Spanisch-Sätze für unterwegs"
+        },
+        {
+          "path": "/de/spanisch-flughafen-gepaeck-unterwegs/",
+          "label": "Flughafen & Gepäck: Spanisch-Sätze für unterwegs"
         },
         {
           "path": "/de/spanisch-busreise-unterwegs/",
@@ -8807,6 +8812,96 @@
     "source": "data:cards"
   },
   {
+    "key": "situation:flughafen",
+    "track": "reise",
+    "locale": "de",
+    "slug": "spanisch-flughafen-gepaeck-unterwegs",
+    "path": "/de/spanisch-flughafen-gepaeck-unterwegs/",
+    "canonical": "https://moarci.github.io/holaRuta/de/spanisch-flughafen-gepaeck-unterwegs/",
+    "pageType": "situation",
+    "schemaType": "LearningResource",
+    "meta": {
+      "title": "Flughafen & Gepäck: Spanisch-Sätze für unterwegs | HolaRuta",
+      "description": "Für „Flughafen & Gepäck\" unterwegs in Lateinamerika reichen diese 18 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine…"
+    },
+    "h1": "Flughafen & Gepäck: Spanisch-Sätze für unterwegs",
+    "question": "Welche Spanisch-Sätze brauche ich für Flughafen & Gepäck auf Reisen?",
+    "intro": "Für „Flughafen & Gepäck\" unterwegs in Lateinamerika reichen diese 18 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln.",
+    "sections": [
+      {
+        "heading": "Wörter & Sätze",
+        "bullets": [
+          "„Quiero hacer el check-in\" — Ich möchte einchecken",
+          "„la tarjeta de embarque\" — die Bordkarte",
+          "„¿Dónde está la puerta 12?\" — Wo ist Gate 12?",
+          "„el equipaje de mano\" — das Handgepäck",
+          "„Quiero facturar esta maleta\" — Ich möchte diesen Koffer aufgeben",
+          "„¿Tengo exceso de equipaje?\" — Habe ich Übergepäck?",
+          "„El vuelo está retrasado\" — Der Flug hat Verspätung",
+          "„Perdí mi vuelo de conexión\" — Ich habe meinen Anschlussflug verpasst",
+          "„Mi maleta no llegó\" — Mein Koffer ist nicht angekommen",
+          "„Facturé esta mochila y no apareció\" — Ich habe diesen Rucksack aufgegeben und er ist nicht aufgetaucht",
+          "„¿Dónde reporto el equipaje perdido?\" — Wo melde ich verlorenes Gepäck?",
+          "„Aquí está mi talón de equipaje\" — Hier ist mein Gepäckschein",
+          "„¿Me lo pueden enviar al hotel?\" — Können Sie ihn mir zum Hotel schicken?",
+          "„el control de seguridad\" — die Sicherheitskontrolle",
+          "„Los líquidos deben ir en una bolsa transparente\" — Flüssigkeiten müssen in einen durchsichtigen Beutel",
+          "„¿Tengo que quitarme los zapatos?\" — Muss ich die Schuhe ausziehen?",
+          "„Tengo un vuelo de conexión\" — Ich habe einen Anschlussflug",
+          "„¿Dónde está la salida?\" — Wo ist der Ausgang?"
+        ]
+      }
+    ],
+    "faq": [
+      {
+        "question": "Wie sagt man „Ich möchte einchecken\" in Spanisch?",
+        "answer": "Auf lokalem Spanisch: „Quiero hacer el check-in\". Diesen Satz übst du als Karteikarte direkt in der HolaRuta-App, inklusive Aussprache-Tipp."
+      },
+      {
+        "question": "Wie sagt man „die Bordkarte\" in Spanisch?",
+        "answer": "Auf lokalem Spanisch: „la tarjeta de embarque\". Diesen Satz übst du als Karteikarte direkt in der HolaRuta-App, inklusive Aussprache-Tipp."
+      },
+      {
+        "question": "Welche Spanisch-Sätze brauche ich für Flughafen & Gepäck auf Reisen?",
+        "answer": "Für „Flughafen & Gepäck\" hat HolaRuta 18 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
+      },
+      {
+        "question": "Warum sollte ich Flughafen & Gepäck-Vokabeln vor der Reise lernen?",
+        "answer": "Weil einmal Lesen nicht reicht: HolaRuta wiederholt „Flughafen & Gepäck\"-Vokabeln mit Spaced Repetition automatisch im richtigen Abstand, bis sie auch unter Reisestress abrufbar sind."
+      }
+    ],
+    "internalLinks": {
+      "hub": {
+        "path": "/de/spanisch-reisesituationen-lateinamerika/",
+        "label": "Spanisch für Reisesituationen"
+      },
+      "related": [
+        {
+          "path": "/de/spanisch-hotel-unterwegs/",
+          "label": "Hotel: Spanisch-Sätze für unterwegs"
+        },
+        {
+          "path": "/de/spanisch-hostel-unterwegs/",
+          "label": "Hostel: Spanisch-Sätze für unterwegs"
+        },
+        {
+          "path": "/de/spanisch-verkehr-unterwegs/",
+          "label": "Verkehr: Spanisch-Sätze für unterwegs"
+        }
+      ],
+      "app": {
+        "url": "https://moarci.github.io/holaRuta/",
+        "label": "HolaRuta-App öffnen"
+      }
+    },
+    "translationGroup": "situation:flughafen",
+    "alternates": {
+      "de": "/de/spanisch-flughafen-gepaeck-unterwegs/",
+      "en": "/en/spanish-airport-luggage-travel-phrases/"
+    },
+    "source": "data:cards"
+  },
+  {
     "key": "situation:reise",
     "track": "reise",
     "locale": "de",
@@ -8817,11 +8912,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Busreise: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "Für „Busreise\" unterwegs in Lateinamerika reichen diese 20 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln."
+      "description": "Diese 20 Sätze und Wörter brauchst du auf Spanisch für „Busreise\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus."
     },
     "h1": "Busreise: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Busreise auf Reisen?",
-    "intro": "Für „Busreise\" unterwegs in Lateinamerika reichen diese 20 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln.",
+    "intro": "Diese 20 Sätze und Wörter brauchst du auf Spanisch für „Busreise\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -8864,7 +8959,7 @@
       },
       {
         "question": "Warum sollte ich Busreise-Vokabeln vor der Reise lernen?",
-        "answer": "Weil einmal Lesen nicht reicht: HolaRuta wiederholt „Busreise\"-Vokabeln mit Spaced Repetition automatisch im richtigen Abstand, bis sie auch unter Reisestress abrufbar sind."
+        "answer": "Weil dich genau diese Sätze im Alltag erwarten. HolaRuta nutzt Spaced Repetition, damit „Busreise\"-Vokabeln vor der Abreise wirklich sitzen, statt nach der ersten Anwendung wieder zu verschwinden."
       }
     ],
     "internalLinks": {
@@ -8909,11 +9004,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Kleidung & Schmuck: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Kleidung & Schmuck\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus."
+      "description": "„Kleidung & Schmuck\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika."
     },
     "h1": "Kleidung & Schmuck: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Kleidung & Schmuck auf Reisen?",
-    "intro": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Kleidung & Schmuck\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus.",
+    "intro": "„Kleidung & Schmuck\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -8960,7 +9055,7 @@
       },
       {
         "question": "Warum sollte ich Kleidung & Schmuck-Vokabeln vor der Reise lernen?",
-        "answer": "Weil dich genau diese Sätze im Alltag erwarten. HolaRuta nutzt Spaced Repetition, damit „Kleidung & Schmuck\"-Vokabeln vor der Abreise wirklich sitzen, statt nach der ersten Anwendung wieder zu verschwinden."
+        "answer": "Weil du sie garantiert brauchst, sobald du unterwegs bist. HolaRuta plant „Kleidung & Schmuck\"-Vokabeln mit Spaced Repetition genau so ein, dass sie zur Abreise wirklich sitzen."
       }
     ],
     "internalLinks": {
@@ -9005,11 +9100,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Wegbeschreibung: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "„Wegbeschreibung\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika."
+      "description": "Für „Wegbeschreibung\" unterwegs in Lateinamerika reichen diese 24 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine…"
     },
     "h1": "Wegbeschreibung: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Wegbeschreibung auf Reisen?",
-    "intro": "„Wegbeschreibung\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika.",
+    "intro": "Für „Wegbeschreibung\" unterwegs in Lateinamerika reichen diese 24 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -9056,7 +9151,7 @@
       },
       {
         "question": "Warum sollte ich Wegbeschreibung-Vokabeln vor der Reise lernen?",
-        "answer": "Weil du sie garantiert brauchst, sobald du unterwegs bist. HolaRuta plant „Wegbeschreibung\"-Vokabeln mit Spaced Repetition genau so ein, dass sie zur Abreise wirklich sitzen."
+        "answer": "Weil einmal Lesen nicht reicht: HolaRuta wiederholt „Wegbeschreibung\"-Vokabeln mit Spaced Repetition automatisch im richtigen Abstand, bis sie auch unter Reisestress abrufbar sind."
       }
     ],
     "internalLinks": {
@@ -9101,11 +9196,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Farben: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "Für „Farben\" unterwegs in Lateinamerika reichen diese 24 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln."
+      "description": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Farben\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus."
     },
     "h1": "Farben: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Farben auf Reisen?",
-    "intro": "Für „Farben\" unterwegs in Lateinamerika reichen diese 24 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln.",
+    "intro": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Farben\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -9152,7 +9247,7 @@
       },
       {
         "question": "Warum sollte ich Farben-Vokabeln vor der Reise lernen?",
-        "answer": "Weil einmal Lesen nicht reicht: HolaRuta wiederholt „Farben\"-Vokabeln mit Spaced Repetition automatisch im richtigen Abstand, bis sie auch unter Reisestress abrufbar sind."
+        "answer": "Weil dich genau diese Sätze im Alltag erwarten. HolaRuta nutzt Spaced Repetition, damit „Farben\"-Vokabeln vor der Abreise wirklich sitzen, statt nach der ersten Anwendung wieder zu verschwinden."
       }
     ],
     "internalLinks": {
@@ -9197,11 +9292,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Gegenteile: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Gegenteile\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus."
+      "description": "„Gegenteile\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika."
     },
     "h1": "Gegenteile: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Gegenteile auf Reisen?",
-    "intro": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Gegenteile\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus.",
+    "intro": "„Gegenteile\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -9248,7 +9343,7 @@
       },
       {
         "question": "Warum sollte ich Gegenteile-Vokabeln vor der Reise lernen?",
-        "answer": "Weil dich genau diese Sätze im Alltag erwarten. HolaRuta nutzt Spaced Repetition, damit „Gegenteile\"-Vokabeln vor der Abreise wirklich sitzen, statt nach der ersten Anwendung wieder zu verschwinden."
+        "answer": "Weil du sie garantiert brauchst, sobald du unterwegs bist. HolaRuta plant „Gegenteile\"-Vokabeln mit Spaced Repetition genau so ein, dass sie zur Abreise wirklich sitzen."
       }
     ],
     "internalLinks": {
@@ -14923,6 +15018,7 @@
           "Everyday: Spanish phrases for travel",
           "Phrases: Spanish phrases for travel",
           "Officials: Spanish phrases for travel",
+          "Airport & Luggage: Spanish phrases for travel",
           "Bus travel: Spanish phrases for travel",
           "Clothes & jewellery: Spanish phrases for travel",
           "Directions: Spanish phrases for travel",
@@ -15075,6 +15171,10 @@
         {
           "path": "/en/spanish-officials-travel-phrases/",
           "label": "Officials: Spanish phrases for travel"
+        },
+        {
+          "path": "/en/spanish-airport-luggage-travel-phrases/",
+          "label": "Airport & Luggage: Spanish phrases for travel"
         },
         {
           "path": "/en/spanish-bus-travel-travel-phrases/",
@@ -18090,6 +18190,96 @@
     "source": "data:cards"
   },
   {
+    "key": "situation:flughafen",
+    "track": "reise",
+    "locale": "en",
+    "slug": "spanish-airport-luggage-travel-phrases",
+    "path": "/en/spanish-airport-luggage-travel-phrases/",
+    "canonical": "https://moarci.github.io/holaRuta/en/spanish-airport-luggage-travel-phrases/",
+    "pageType": "situation",
+    "schemaType": "LearningResource",
+    "meta": {
+      "title": "Airport & Luggage: Spanish phrases for travel | HolaRuta",
+      "description": "18 field-tested Spanish words and phrases for \"Airport & Luggage\" — no textbook filler, just what you'll actually need on the road in Latin America."
+    },
+    "h1": "Airport & Luggage: Spanish phrases for travel",
+    "question": "What Spanish phrases do I need for Airport & Luggage while travelling?",
+    "intro": "18 field-tested Spanish words and phrases for \"Airport & Luggage\" — no textbook filler, just what you'll actually need on the road in Latin America.",
+    "sections": [
+      {
+        "heading": "Words & phrases",
+        "bullets": [
+          "„Quiero hacer el check-in\" — I'd like to check in",
+          "„la tarjeta de embarque\" — the boarding pass",
+          "„¿Dónde está la puerta 12?\" — Where is gate 12?",
+          "„el equipaje de mano\" — the hand luggage / carry-on",
+          "„Quiero facturar esta maleta\" — I'd like to check this suitcase",
+          "„¿Tengo exceso de equipaje?\" — Do I have excess baggage?",
+          "„El vuelo está retrasado\" — The flight is delayed",
+          "„Perdí mi vuelo de conexión\" — I missed my connecting flight",
+          "„Mi maleta no llegó\" — My suitcase didn't arrive",
+          "„Facturé esta mochila y no apareció\" — I checked in this backpack and it didn't show up",
+          "„¿Dónde reporto el equipaje perdido?\" — Where do I report lost luggage?",
+          "„Aquí está mi talón de equipaje\" — Here's my baggage tag",
+          "„¿Me lo pueden enviar al hotel?\" — Can you send it to my hotel?",
+          "„el control de seguridad\" — the security check",
+          "„Los líquidos deben ir en una bolsa transparente\" — Liquids must go in a clear bag",
+          "„¿Tengo que quitarme los zapatos?\" — Do I need to take off my shoes?",
+          "„Tengo un vuelo de conexión\" — I have a connecting flight",
+          "„¿Dónde está la salida?\" — Where is the exit?"
+        ]
+      }
+    ],
+    "faq": [
+      {
+        "question": "How do you say \"I'd like to check in\" in Spanish?",
+        "answer": "In local Spanish: \"Quiero hacer el check-in\". You can practise this exact phrase as a flashcard in the HolaRuta app, pronunciation tip included."
+      },
+      {
+        "question": "How do you say \"the boarding pass\" in Spanish?",
+        "answer": "In local Spanish: \"la tarjeta de embarque\". You can practise this exact phrase as a flashcard in the HolaRuta app, pronunciation tip included."
+      },
+      {
+        "question": "What Spanish phrases do I need for Airport & Luggage while travelling?",
+        "answer": "For \"Airport & Luggage\", HolaRuta has put together 18 practical words and phrases so you can communicate in real situations on the road."
+      },
+      {
+        "question": "Why should I learn Airport & Luggage vocabulary before the trip?",
+        "answer": "Because reading a list once doesn't stick. HolaRuta reviews \"Airport & Luggage\" vocabulary at increasing intervals until it's recallable even under travel stress."
+      }
+    ],
+    "internalLinks": {
+      "hub": {
+        "path": "/en/spanish-travel-situations-latin-america/",
+        "label": "Spanish for travel situations"
+      },
+      "related": [
+        {
+          "path": "/en/spanish-hotel-travel-phrases/",
+          "label": "Hotel: Spanish phrases for travel"
+        },
+        {
+          "path": "/en/spanish-hostel-travel-phrases/",
+          "label": "Hostel: Spanish phrases for travel"
+        },
+        {
+          "path": "/en/spanish-transport-travel-phrases/",
+          "label": "Transport: Spanish phrases for travel"
+        }
+      ],
+      "app": {
+        "url": "https://moarci.github.io/holaRuta/",
+        "label": "Open the HolaRuta app"
+      }
+    },
+    "translationGroup": "situation:flughafen",
+    "alternates": {
+      "de": "/de/spanisch-flughafen-gepaeck-unterwegs/",
+      "en": "/en/spanish-airport-luggage-travel-phrases/"
+    },
+    "source": "data:cards"
+  },
+  {
     "key": "situation:reise",
     "track": "reise",
     "locale": "en",
@@ -18100,11 +18290,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Bus travel: Spanish phrases for travel | HolaRuta",
-      "description": "20 field-tested Spanish words and phrases for \"Bus travel\" — no textbook filler, just what you'll actually need on the road in Latin America."
+      "description": "These 20 words and phrases cover \"Bus travel\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard…"
     },
     "h1": "Bus travel: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Bus travel while travelling?",
-    "intro": "20 field-tested Spanish words and phrases for \"Bus travel\" — no textbook filler, just what you'll actually need on the road in Latin America.",
+    "intro": "These 20 words and phrases cover \"Bus travel\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard corpus.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -18147,7 +18337,7 @@
       },
       {
         "question": "Why should I learn Bus travel vocabulary before the trip?",
-        "answer": "Because reading a list once doesn't stick. HolaRuta reviews \"Bus travel\" vocabulary at increasing intervals until it's recallable even under travel stress."
+        "answer": "Because these are exactly the phrases you'll run into. HolaRuta uses spaced repetition so \"Bus travel\" vocabulary actually sticks before departure, instead of fading after the first use."
       }
     ],
     "internalLinks": {
@@ -18192,11 +18382,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Clothes & jewellery: Spanish phrases for travel | HolaRuta",
-      "description": "These 24 words and phrases cover \"Clothes & jewellery\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta…"
+      "description": "\"Clothes & jewellery\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin…"
     },
     "h1": "Clothes & jewellery: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Clothes & jewellery while travelling?",
-    "intro": "These 24 words and phrases cover \"Clothes & jewellery\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard corpus.",
+    "intro": "\"Clothes & jewellery\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -18243,7 +18433,7 @@
       },
       {
         "question": "Why should I learn Clothes & jewellery vocabulary before the trip?",
-        "answer": "Because these are exactly the phrases you'll run into. HolaRuta uses spaced repetition so \"Clothes & jewellery\" vocabulary actually sticks before departure, instead of fading after the first use."
+        "answer": "Because you'll need it the moment you land. HolaRuta schedules \"Clothes & jewellery\" vocabulary with spaced repetition so it's actually ready before you leave, not just skimmed once."
       }
     ],
     "internalLinks": {
@@ -18288,11 +18478,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Directions: Spanish phrases for travel | HolaRuta",
-      "description": "\"Directions\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America."
+      "description": "24 field-tested Spanish words and phrases for \"Directions\" — no textbook filler, just what you'll actually need on the road in Latin America."
     },
     "h1": "Directions: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Directions while travelling?",
-    "intro": "\"Directions\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America.",
+    "intro": "24 field-tested Spanish words and phrases for \"Directions\" — no textbook filler, just what you'll actually need on the road in Latin America.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -18339,7 +18529,7 @@
       },
       {
         "question": "Why should I learn Directions vocabulary before the trip?",
-        "answer": "Because you'll need it the moment you land. HolaRuta schedules \"Directions\" vocabulary with spaced repetition so it's actually ready before you leave, not just skimmed once."
+        "answer": "Because reading a list once doesn't stick. HolaRuta reviews \"Directions\" vocabulary at increasing intervals until it's recallable even under travel stress."
       }
     ],
     "internalLinks": {
@@ -18384,11 +18574,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Colours: Spanish phrases for travel | HolaRuta",
-      "description": "24 field-tested Spanish words and phrases for \"Colours\" — no textbook filler, just what you'll actually need on the road in Latin America."
+      "description": "These 24 words and phrases cover \"Colours\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard…"
     },
     "h1": "Colours: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Colours while travelling?",
-    "intro": "24 field-tested Spanish words and phrases for \"Colours\" — no textbook filler, just what you'll actually need on the road in Latin America.",
+    "intro": "These 24 words and phrases cover \"Colours\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard corpus.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -18435,7 +18625,7 @@
       },
       {
         "question": "Why should I learn Colours vocabulary before the trip?",
-        "answer": "Because reading a list once doesn't stick. HolaRuta reviews \"Colours\" vocabulary at increasing intervals until it's recallable even under travel stress."
+        "answer": "Because these are exactly the phrases you'll run into. HolaRuta uses spaced repetition so \"Colours\" vocabulary actually sticks before departure, instead of fading after the first use."
       }
     ],
     "internalLinks": {
@@ -18480,11 +18670,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Opposites: Spanish phrases for travel | HolaRuta",
-      "description": "These 24 words and phrases cover \"Opposites\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard…"
+      "description": "\"Opposites\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America."
     },
     "h1": "Opposites: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Opposites while travelling?",
-    "intro": "These 24 words and phrases cover \"Opposites\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard corpus.",
+    "intro": "\"Opposites\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -18531,7 +18721,7 @@
       },
       {
         "question": "Why should I learn Opposites vocabulary before the trip?",
-        "answer": "Because these are exactly the phrases you'll run into. HolaRuta uses spaced repetition so \"Opposites\" vocabulary actually sticks before departure, instead of fading after the first use."
+        "answer": "Because you'll need it the moment you land. HolaRuta schedules \"Opposites\" vocabulary with spaced repetition so it's actually ready before you leave, not just skimmed once."
       }
     ],
     "internalLinks": {
@@ -18576,11 +18766,11 @@
     "schemaType": "SoftwareApplication",
     "meta": {
       "title": "Was ist HolaRuta? | HolaRuta",
-      "description": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2293 Karteikarten mit Spaced Repetition für…"
+      "description": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2311 Karteikarten mit Spaced Repetition für…"
     },
     "h1": "Was ist HolaRuta?",
     "question": "Was ist HolaRuta?",
-    "intro": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2293 Karteikarten mit Spaced Repetition für Situationen wie Bus, Hotel, Essen, Geld, Notfall und Smalltalk, komplett offline nutzbar und ohne Konto.",
+    "intro": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2311 Karteikarten mit Spaced Repetition für Situationen wie Bus, Hotel, Essen, Geld, Notfall und Smalltalk, komplett offline nutzbar und ohne Konto.",
     "sections": [
       {
         "heading": "Für wen ist HolaRuta?",
@@ -18619,7 +18809,7 @@
       },
       {
         "question": "Wie viele Karteikarten hat HolaRuta?",
-        "answer": "HolaRuta enthält 2293 Karteikarten in 72 Kategorien, sortiert nach vier Schwierigkeitsstufen (A1 bis B2)."
+        "answer": "HolaRuta enthält 2311 Karteikarten in 73 Kategorien, sortiert nach vier Schwierigkeitsstufen (A1 bis B2)."
       }
     ],
     "internalLinks": {
@@ -18902,11 +19092,11 @@
     "schemaType": "SoftwareApplication",
     "meta": {
       "title": "What is HolaRuta? | HolaRuta",
-      "description": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2293 flashcards with spaced repetition for situations like…"
+      "description": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2311 flashcards with spaced repetition for situations like…"
     },
     "h1": "What is HolaRuta?",
     "question": "What is HolaRuta?",
-    "intro": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2293 flashcards with spaced repetition for situations like buses, hotels, food, money, emergencies and small talk, fully usable offline and without an account.",
+    "intro": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2311 flashcards with spaced repetition for situations like buses, hotels, food, money, emergencies and small talk, fully usable offline and without an account.",
     "sections": [
       {
         "heading": "Who is HolaRuta for?",
@@ -18945,7 +19135,7 @@
       },
       {
         "question": "How many flashcards does HolaRuta have?",
-        "answer": "HolaRuta contains 2293 flashcards across 72 categories, sorted into four difficulty levels (A1 to B2)."
+        "answer": "HolaRuta contains 2311 flashcards across 73 categories, sorted into four difficulty levels (A1 to B2)."
       }
     ],
     "internalLinks": {

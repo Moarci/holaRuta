@@ -9,10 +9,10 @@
 [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES2017-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#-tech-stack)
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
-[![Tests](https://img.shields.io/badge/Tests-879_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
-[![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
+[![Tests](https://img.shields.io/badge/Tests-884_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
+[![Karten](https://img.shields.io/badge/Karten-2311-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
-[![GEO](https://img.shields.io/badge/GEO-327_Seiten_%C2%B7_3_Sprachen-2F6B70?style=flat-square)](#-seo--geo)
+[![GEO](https://img.shields.io/badge/GEO-329_Seiten_%C2%B7_3_Sprachen-2F6B70?style=flat-square)](#-seo--geo)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
 Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Spanisch vor · Funktioniert ohne Netz
@@ -293,7 +293,7 @@ SpanischCard/
 ├── seo/geo-manifest.json        # Generiertes Seiten-Manifest (327 Seiten), eingecheckt für Review/Diff
 ├── sitemap.xml · robots.txt · llms.txt  # Generierte GEO-Artefakte (aus dem Manifest, nie von Hand editieren)
 │
-├── test/                        # 879 Tests in 85 Dateien (node:test, keine Dependencies)
+├── test/                        # 884 Tests in 86 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
@@ -471,7 +471,7 @@ Alles Persistente liegt im `localStorage` — sauber versioniert und durch Struk
 
 | Feld | Bedeutung |
 |---|---|
-| `cat` | Kategorie-Id (eine von 72) |
+| `cat` | Kategorie-Id (eine von 73) |
 | `lvl` | Stufe: `1` Einsteiger (A1) · `2` Mittel (A2) · `3` Fortgeschritten (B1) |
 | `de` | Frage (Deutsch) |
 | `es` | Antwort (Spanisch); mehrere gültige Antworten mit `/` getrennt |
@@ -613,8 +613,8 @@ Die testbare Kernlogik (`srs`, `matcher`, `stats`) ist vollständig von DOM und 
 
 ```bash
 npm test            # bzw. node --test
-#  ℹ tests 879
-#  ℹ pass 879
+#  ℹ tests 884
+#  ℹ pass 884
 #  ℹ fail 0
 ```
 
@@ -643,14 +643,14 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 
 | Kennzahl | Wert |
 |---|---|
-| Karten | 2293 |
-| Bereiche / Kategorien | 72 |
+| Karten | 2311 |
+| Bereiche / Kategorien | 73 |
 | Stufen | 3 (A1, A2, B1) |
 | Länderkunde | 19 Länder, 3 Regionen |
 | JS-Module | 51 (`SC.*`) |
-| Tests | 879 (alle grün) |
+| Tests | 884 (alle grün) |
 | Laufzeit-Dependencies | 0 |
-| GEO-Seiten | 327 (DE/EN/ES) — siehe [SEO & GEO](#-seo--geo) |
+| GEO-Seiten | 329 (DE/EN/ES) — siehe [SEO & GEO](#-seo--geo) |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 
 **Audit-Ergebnis (Stand 2026-06-10):** Keine CRITICALs — kein Crash, kein exploitierbares XSS, keine falschen Übersetzungen. Schwerpunkte der Nacharbeit lagen in **Accessibility** und **PWA-Details**; die wichtigsten Fixes sind umgesetzt.
