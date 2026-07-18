@@ -36,3 +36,6 @@ Thumbs.db
 
 # Stray screenshots
 info-accordion.png
+
+# Subagent-driven-development scratch ledger (local only)
+.superpowers/
