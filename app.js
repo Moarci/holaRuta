@@ -324,6 +324,13 @@
   const cardNativeField = () => (trk() && trk().cardNativeLang && trk().cardNativeLang()) || (i18n ? i18n.getLang() : "de");
   // Locals-Track aktiv? (Spanisch lernt Englisch.)
   const isLocals = () => { const t = trk(); return !!(t && t.id && t.id() === "es-en"); };
+  // Kategorie-Filter fürs Lernen-Tab/Suche/Editor/Stats (siehe config.js
+  // categoryAllowlist). null/unset -> alles erlaubt (unverändertes Verhalten
+  // für jede bestehende Edition ohne categoryAllowlist).
+  const isCategoryAllowed = (catId) => {
+    const allow = window.SC.config && window.SC.config.categoryAllowlist;
+    return !allow || allow.indexOf(catId) >= 0;
+  };
   // Mengen der Locals-Kategorien/-Gruppen (aus data.locals.js). Im Locals-Track werden
   // nur diese sichtbar/lernbar gemacht – die Reise-Inhalte bleiben im Korpus, sind aber
   // ausgeblendet (fokussierte Edition, ohne Reise-Code-Pfade zu brechen).
@@ -411,7 +418,7 @@
     return true;
   };
   const scopeCards = (scopeId) =>
-    allCards().filter((c) => (scopeId === "all" || c.cat === scopeId) && matchesLevel(c) && matchesKind(c));
+    allCards().filter((c) => (scopeId === "all" ? isCategoryAllowed(c.cat) : c.cat === scopeId) && matchesLevel(c) && matchesKind(c));
   const dueIn = (cards) => cards.filter((c) => srs.isDue(progress[c.id]));
   // Orts-/länderspezifisch? Karten der Gruppe „destinos" (Städte- & Länder-Packs).
   // Eigene Karten ohne bekannte Kategorie zählen als allgemein (Grundlagen-Pfad).
@@ -557,7 +564,7 @@
     // ausblenden); im Reise-Track alle.
     const visibleCats = isLocals()
       ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group))
-      : data.CATEGORIES;
+      : data.CATEGORIES.filter((c) => isCategoryAllowed(c.id));
     const categories = visibleCats.map((c) => {
       const allInCat = byCat.get(c.id) || [];
       const cards = allInCat.filter((card) => matchesLevel(card) && matchesKind(card)); // entspricht scopeCards(c.id)
@@ -6107,7 +6114,7 @@
     const locals = isLocals();
 
     // --- Übungen: Vokabelkarten (eigene inklusive) ---
-    allCards().forEach((c) => {
+    allCards().filter((c) => isCategoryAllowed(c.cat)).forEach((c) => {
       const cat = categoryById(c.cat);
       idx.push({
         group: "ex", kind: "card", kindLabel: t("search.kindCard"),
@@ -6119,7 +6126,7 @@
     });
 
     // --- Übungen: Lern-Kategorien (ganze Themen-Decks) ---
-    const searchCats = locals ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group)) : data.CATEGORIES;
+    const searchCats = locals ? data.CATEGORIES.filter((c) => localsGroupSet().has(c.group)) : data.CATEGORIES.filter((c) => isCategoryAllowed(c.id));
     searchCats.forEach((c) => {
       idx.push({
         group: "ex", kind: "category", kindLabel: t("search.kindCategory"),
@@ -6498,7 +6505,7 @@
     const cards = userCards ? userCards.list() : [];
     return {
       supported: !!userCards,
-      categories: data.CATEGORIES.map((c) => ({ id: c.id, label: natk(c, "label"), icon: c.icon })),
+      categories: data.CATEGORIES.filter((c) => isCategoryAllowed(c.id)).map((c) => ({ id: c.id, label: natk(c, "label"), icon: c.icon })),
       levels: data.LEVELS.map((l) => ({ id: l.id, label: natk(l, "label"), short: l.short })),
       msg: editorMsg,
       cards: cards.map((c) => {
