@@ -739,6 +739,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/de/spanisch-behoerden-unterwegs/" />
   </url>
   <url>
+    <loc>https://moarci.github.io/holaRuta/de/spanisch-flughafen-gepaeck-unterwegs/</loc>
+    <lastmod>2026-07-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://moarci.github.io/holaRuta/de/spanisch-flughafen-gepaeck-unterwegs/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/en/spanish-airport-luggage-travel-phrases/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/de/spanisch-flughafen-gepaeck-unterwegs/" />
+  </url>
+  <url>
     <loc>https://moarci.github.io/holaRuta/de/spanisch-busreise-unterwegs/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -1484,6 +1493,15 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://moarci.github.io/holaRuta/de/spanisch-behoerden-unterwegs/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/en/spanish-officials-travel-phrases/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/de/spanisch-behoerden-unterwegs/" />
+  </url>
+  <url>
+    <loc>https://moarci.github.io/holaRuta/en/spanish-airport-luggage-travel-phrases/</loc>
+    <lastmod>2026-07-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://moarci.github.io/holaRuta/de/spanisch-flughafen-gepaeck-unterwegs/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/en/spanish-airport-luggage-travel-phrases/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/de/spanisch-flughafen-gepaeck-unterwegs/" />
   </url>
   <url>
     <loc>https://moarci.github.io/holaRuta/en/spanish-bus-travel-travel-phrases/</loc>
