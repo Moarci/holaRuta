@@ -1,6 +1,8 @@
 # HelloAbroad – DE-EN Reiseenglisch-Ableger von HolaRuta
 
-**Status:** Design genehmigt, bereit für Implementierungsplanung.
+**Status:** Design genehmigt, Multi-Perspektiven-Review (Fakten/Architektur/
+Konsistenz/Security/Redundanz) durchgeführt und Korrekturen eingearbeitet.
+Bereit für Implementierungsplanung.
 
 ## Ziel
 
@@ -69,17 +71,56 @@ In `config.js` (`TRACKS`-Objekt, analog zu bestehendem `de-es`/`es-en`):
 }
 ```
 
+### Speicher-Trennung (kritischer Fix, durch Review gefunden)
+
+HelloAbroad und HolaRuta laufen unter derselben Origin
+(`moarci.github.io/holaRuta/*`) – `localStorage`/`IndexedDB` sind **origin-**,
+nicht pfadgebunden. Die bestehenden Storage-Keys (`spanischcard.progress.v2`,
+`.settings.v1`, `.usercards.v1`, `.gamestats.v1`, IndexedDB-Name
+`holaruta-backup`, siehe `store.js:9-25`) sind fest verdrahtet und tragen
+keinen Edition-/Track-Diskriminator. Da HelloAbroad **dieselben Karten-IDs**
+nutzt (nur `learnLang` unterscheidet sich), würde ein Nutzer, der beide
+Editionen auf demselben Gerät installiert, SRS-Fortschritt teilen: eine als
+„gewusst" markierte Karte in HolaRuta (Spanisch) würde fälschlich auch in
+HelloAbroad (Englisch) als gelernt gelten, und umgekehrt.
+
+**Fix:** Storage-Keys um den Track als Namespace-Präfix erweitern, sobald
+`SC.track.id() !== "de-es"` (Rückwärtskompatibilität: bestehende HolaRuta-Keys
+ohne Präfix bleiben für den Standard-Track unangetastet, keine Migration für
+bestehende Nutzer nötig). Betrifft `store.js` (Progress, Settings, User-Cards,
+Game-Stats) und die IndexedDB-Backup-Datenbank. Gilt analog auch für den
+bereits produktiven `es-en`-Track (dort bislang offenbar unkritisch, weil
+`ingles-pro`/`venue-en` bisher nicht typischerweise auf demselben Gerät wie
+die Standard-App genutzt werden – wird hier aber erstmals zum echten Problem,
+da HelloAbroad bewusst als eigenständige App an dieselbe Zielgruppe geht, die
+ggf. auch HolaRuta nutzt). Dieser Fix ist **Voraussetzung**, kein Nice-to-have.
+
 ### Neuer Config-Mechanismus: `categoryAllowlist`
 
 HolaRuta hat aktuell 71 Kategorien (Zahlen, 27 Länder-/Destinationspakete,
 Grammatik-Sets, Jerga, Flirten etc.) – für HelloAbroad sollen nur die den 10
 MVP-Themen zugeordneten Kategorien sichtbar sein. Neues optionales Config-Feld
 `categoryAllowlist: string[] | null` (`null` = Standardverhalten, alle Kategorien
-sichtbar – bestehende Editionen bleiben unverändert). Wenn gesetzt, filtert
-`ui.js` beim Rendern der Lernen-Kacheln auf diese Liste. Bestehende
-Gruppierung (`group`-Feld je Kategorie: basics/food/travel/people) bleibt
-unverändert – keine neue Gruppierungslogik nötig, die 16 Kategorien verteilen
-sich sinnvoll auf die vorhandenen 4 Gruppen.
+sichtbar – bestehende Editionen bleiben unverändert).
+
+**Korrigierter Befund aus dem Review:** Es gibt aktuell **keinen** zentralen
+Rendering-Filter, den man einfach umbiegen könnte – `homeVM()` (app.js:558-560)
+filtert Kategorien nur über das hartcodierte `isLocals()` (Track-ID `"es-en"`,
+app.js:326), nicht generisch. `categoryAllowlist` muss deshalb an mehreren
+Stellen greifen, nicht nur „beim Rendern":
+
+1. `homeVM()` (app.js:558-560) – Kategorien-Kacheln im Lernen-Tab.
+2. Such-Indizierung (app.js:6122) – sonst tauchen ausgeblendete Kategorien
+   trotzdem in der Suche auf.
+3. Eigene-Karten-Editor Kategorie-Auswahl (ui.js:2247) – sonst kann man Karten
+   in unsichtbaren Kategorien anlegen.
+4. Stats/Fortschritt (`scopeCards("all")`, app.js:582, 3029) – sonst zählen
+   Badges/Streaks/Gesamtfortschritt Karten außerhalb der 16 erlaubten
+   Kategorien mit.
+
+Bestehende Gruppierung (`group`-Feld je Kategorie: basics/food/travel/people)
+bleibt unverändert. Die neue Kategorie `flughafen` wird der Gruppe `"travel"`
+zugeordnet (konsistent mit `hotel`, `verkehr`, `auto`, `farmacia`, `notfall`).
 
 **Themen→Kategorien-Zuordnung:**
 
@@ -98,23 +139,48 @@ sich sinnvoll auf die vorhandenen 4 Gruppen.
 
 ### Neue Kategorie „flughafen"
 
-Einzige echte Content-Lücke. Neue Kategorie in `data.js` `CATEGORIES` +
-~15-20 neue Karten (Schema `{id, cat:"flughafen", lvl, de, en, es?, tip?}`)
-für: Einchecken, Bordkarte, Gate, Gepäck aufgeben, Handgepäck, Verspätung,
-Anschlussflug verpasst, Gepäck verloren/beschädigt, Sicherheitskontrolle,
-Flüssigkeiten-Regel, Zoll/Verzollung, Ausgang/Abholung. `es`-Feld wird nach
-Möglichkeit mitgepflegt (Datenkonsistenz mit Rest von data.js), ist aber für
-HelloAbroad selbst nicht nötig.
+**Keine echte Content-Lücke mehr (Review-Fund):** `logistica.js:265-298`
+enthält bereits eine fertige Sektion `id: "equipaje"` („Airport & lost
+luggage") mit ES/DE/EN-Phrasen zu Gepäck, Handgepäck, Gepäckschein/Tracker
+etc. – diese wird nach `data.js` `CATEGORIES`/`CARDS` **portiert und ergänzt**
+statt komplett neu geschrieben. Zielumfang: 15-20 Karten (Schema `{id,
+cat:"flughafen", lvl, de, en, es?, tip?}`, Gruppe `"travel"`) für: Einchecken,
+Bordkarte, Gate, Gepäck aufgeben/Handgepäck (aus `logistica.js` übernehmbar),
+Verspätung, Anschlussflug verpasst, Gepäck verloren/beschädigt,
+Sicherheitskontrolle, Flüssigkeiten-Regel, Zoll/Verzollung, Ausgang/Abholung.
+`es`-Feld wird mitgepflegt (Datenkonsistenz mit Rest von data.js, und weil die
+Kategorie – wie jede andere in `data.js` – bei `categoryAllowlist: null` auch
+in HolaRuta selbst (Track `de-es`) sichtbar wird; das ist **gewollt**: die
+neue Kategorie bereichert nebenbei auch die bestehende App, kein isolierter
+Datensatz nur für HelloAbroad).
 
-### Ausblendung LatAm-Kultur-Features
+### Ausblendung LatAm-Kultur-Features / Einblendung Kern-Features
 
-Jerga, Flirten, Nachtleben, Länderkunde, Tanzen, Hostel-Modus (Featured-Banner),
-Rollenspiele/Dialogos, Musik/Feiern-Spiele verschwinden komplett aus
-„Entdecken" für den `de-en`-Track. Mechanismus: bestehendes
-`tracks: ["de-es", "es-en"]`-Gate im `FEATURES`-Array (app.js) um Einträge
-ergänzen bzw. sicherstellen, dass alle LatAm-spezifischen Einträge **kein**
-`de-en` in ihrer `tracks`-Liste haben (Implementierungsdetail für den Plan:
-jedes Feature-Item einzeln prüfen, nicht pauschal).
+**Korrigierter Befund aus dem Review:** Das bestehende `tracks`-Gate im
+`FEATURES`-Array (`ui.js:139` ff., nicht `app.js`) verhält sich anders als in
+der ersten Fassung dieser Spec angenommen. Fehlt das `tracks`-Feld, gilt der
+Default `["de-es"]` (ui.js:1095) – **LatAm-Kultur-Features (Jerga, Flirten,
+Nachtleben, Länderkunde, Tanzen, Hostel-Banner, Musik/Feiern-Spiele) sind für
+`de-en` dadurch bereits automatisch unsichtbar, ohne jede Code-Änderung.**
+
+Das eigentliche Problem ist umgekehrt: Kern-Features, die man in HelloAbroad
+weiterhin braucht, tragen ein **explizites** `tracks: ["de-es", "es-en"]`
+(ui.js:6064-6075) – ohne `"de-en"` wäre der „Entdecken"-Tab für HelloAbroad
+komplett leer. Diese Liste muss um `"de-en"` **erweitert** werden:
+
+- `open-favorites` (Mi léxico / Meine Vokabeln)
+- `open-spickzettel` (Supervivencia / Spickzettel)
+- `open-quiz-setup` (Definiciones / Quiz)
+- `open-endless` (Vocabulario sin fin / Endlos-Vokabeltraining)
+- `open-frases` (Frases flexibles, sofern für HelloAbroad relevant – prüfen)
+- `open-precios` (Precios al oído / Preise per Gehör, sofern Sprachausgabe
+  relevant)
+- `open-compras` (Lista de compras / Einkaufsliste)
+- weitere Einträge im `FEATURES`-Array einzeln gegen die 10 MVP-Themen prüfen
+  (nicht pauschal alle mit `es-en` übernehmen – z.B. `open-dialogos`/
+  `open-cuerpo`/`open-yesto` sind Kandidaten zum Weglassen, da sie eher
+  Reise-Spanisch-spezifisch entstanden sind; endgültige Liste im
+  Implementierungsplan).
 
 ## Aussprache-Tipps: bewusste MVP-Lücke
 
@@ -150,22 +216,33 @@ identisch (viele bestehende Karten haben ebenfalls keinen Kontext).
 
 ## Eigene installierbare PWA
 
-Damit „Zum Startbildschirm hinzufügen" korrekt „HelloAbroad" mit eigenem Icon
-zeigt (wichtig für die Zielgruppe – ein Icon antippen ist einfacher als eine
-URL/Lesezeichen zu merken), reicht der reine `?edition=`-Query-Param-Mechanismus
-**nicht**, da alle Editionen sich sonst ein einziges `manifest.webmanifest`
-teilen. Stattdessen:
+**Vereinfachter Ansatz nach Review-Fund:** `boot.js:19-35` tauscht den
+`<link rel="manifest">`-href bereits **dynamisch zur Laufzeit** aus (heute:
+Theme-abhängig zwischen `manifest.webmanifest`/`manifest-dark.webmanifest`).
+Statt eines komplett separaten Build-Outputs (ursprünglicher Plan – hätte
+zusätzlich Service-Worker-Scope/Cache-Namespace-Fragen zwischen `/holaRuta/`
+und `/holaRuta/hello-abroad/` aufgeworfen, siehe Architektur-Review) wird
+dasselbe Muster um eine dritte Bedingung erweitert: `edition ===
+"hello-abroad"` → `manifest-hello-abroad.webmanifest`. Das funktioniert mit
+dem bestehenden Query-Param-Mechanismus (`?edition=hello-abroad`) und
+**vermeidet die zweite-Service-Worker-Problematik komplett** (ein einziger
+Service Worker wie bei ecos/weroad/ingles-pro heute schon).
 
-- Neues `manifest-hello-abroad.webmanifest` (Name „HelloAbroad", eigene Farbe,
-  eigenes Icon-Set – Muster: bestehendes `manifest-dark.webmanifest` als
-  Präzedenzfall für eine alternative Manifest-Datei).
+- Neues `manifest-hello-abroad.webmanifest` (eigener `name`/`short_name`
+  „HelloAbroad", eigene `id` – wichtig, damit Browser die Installation als
+  eigenständige App-Identität führen, nicht als zweite Instanz von HolaRuta –,
+  eigene `theme_color`/`background_color` passend zur Petrol-Akzentfarbe,
+  eigenes Icon-Set).
 - Neues Icon-Set (analog `icon-180.png`/`icon-192.png`/`icon-512*.png`),
-  Motiv/Farbe passend zur Petrol-Akzentfarbe.
-- Ausgeliefert über den bestehenden Edition-Build (`node build.js
-  --edition=hello-abroad`), gehostet als eigenständige Seite unter
-  `moarci.github.io/holaRuta/hello-abroad/` (echte Build-Ausgabe, kein reiner
-  Redirect wie `en/index.html`), damit Manifest/Icons dieser Seite fest auf
-  HelloAbroad zeigen.
+  Motiv/Farbe passend zur Petrol-Akzentfarbe – eigener Implementierungs-Slice
+  (visuell/kreativ, anderes Abnahmekriterium als die übrigen Code-Änderungen).
+- Eigene erreichbare URL weiterhin über einen Redirect-Ordner
+  `hello-abroad/index.html` (identisches Muster zu `en/index.html`,
+  Meta-Refresh auf `../?edition=hello-abroad`), **kein** separater
+  Edition-Build nötig.
+- `boot.js` muss die Manifest-Umschaltung **vor** dem für die PWA-Installation
+  relevanten Zeitpunkt anwenden (wie heute schon beim Theme-Fall – gleiches
+  bewährtes Timing, kein neues Risiko).
 
 ## Hosting/URL
 
@@ -184,9 +261,32 @@ Infrastrukturänderung nötig.
   `learnLang()==="en"` korrekt gegen `card.en` (kein Spanisch-Nachsichts-Bonus
   greift fälschlich – bereits durch `ansLang`-Gate in matcher.js sichergestellt,
   Test dient als Regressionsschutz).
-- Manuelle Verifikation im Browser: Lernen-Tab zeigt nur die 16 erlaubten
-  Kategorien, Entdecken-Tab zeigt keine LatAm-Kultur-Kacheln, PWA-Installation
-  zeigt „HelloAbroad"-Icon/Name.
+- **Neuer Test-Fall (Review-Fund): Storage-Key-Trennung.** Verifizieren, dass
+  `store.js` für Track `de-en` (und `es-en`) einen anderen Storage-Key/
+  IndexedDB-Namespace nutzt als `de-es`, und dass bestehende `de-es`-Keys
+  unverändert bleiben (Rückwärtskompatibilität, keine Migration nötig).
+- Manuelle Verifikation im Browser: Lernen-Tab zeigt nur die erlaubten
+  Kategorien (Home, Suche, Editor, Stats – alle vier Stellen), Entdecken-Tab
+  zeigt die geprüfte Kern-Feature-Liste (nicht leer, keine LatAm-Kacheln),
+  PWA-Installation zeigt „HelloAbroad"-Icon/Name als eigenständige App neben
+  einer ggf. installierten HolaRuta-App, Fortschritt in HelloAbroad bleibt
+  unabhängig von parallel installiertem HolaRuta auf demselben Gerät.
+
+## Definition of Done
+
+- [ ] Track `de-en` + Edition `hello-abroad` in `config.js`/`editions/registry.js`.
+- [ ] Storage-Key-Namespace-Trennung für `de-en` implementiert und getestet.
+- [ ] `categoryAllowlist` greift an allen 4 Stellen (Home, Suche, Editor, Stats).
+- [ ] Kategorie `flughafen` (15-20 Karten, Gruppe `travel`) in `data.js`, Inhalt
+      aus `logistica.js`/`equipaje` portiert + ergänzt.
+- [ ] `FEATURES`-Array: geprüfte Kern-Feature-Liste trägt `"de-en"`, LatAm-Features
+      bleiben ungetaggt (automatisch ausgeblendet).
+- [ ] `manifest-hello-abroad.webmanifest` + eigenes Icon-Set, `boot.js`-Switch
+      um Edition-Fall erweitert.
+- [ ] `hello-abroad/index.html`-Redirect-Ordner live unter
+      `moarci.github.io/holaRuta/hello-abroad/`.
+- [ ] `npm test` grün (inkl. neuer Kategorie- und Track-Tests).
+- [ ] Manuelle Verifikation gemäß Testing-Abschnitt durchgeführt.
 
 ## Nicht im MVP (bewusst zurückgestellt)
 
