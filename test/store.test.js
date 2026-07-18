@@ -40,12 +40,19 @@ test("store: de-en (HelloAbroad) nutzt einen eigenen, namensraum-getrennten Key"
   assert.equal(localStorage.getItem("spanischcard.progress.v2"), null); // kein Bluten in den de-es-Key
 });
 
-test("store: es-en migriert einmalig bestehende Legacy-Daten (bestehende ingles-pro/venue-en-Nutzer verlieren keinen Fortschritt)", () => {
+test("store: es-en migriert NICHT aus den unpräfixierten Legacy-Keys (verhindert de-es->es-en-Vermischung bei ?edition=-Wechsel)", () => {
+  // registry.js erlaubt ?edition=ingles-pro/venue-en/medellin (Track es-en) zur
+  // Laufzeit auf derselben Origin wie die de-es-Standard-App. Die unpräfixierten
+  // Keys können daher echte de-es-Nutzerdaten enthalten, nicht nur alte
+  // es-en-Legacy-Daten – eine Migration könnte die beiden Fälle nicht
+  // unterscheiden und müsste daher entfallen (siehe Kommentar in store.js).
   const preSeeded = freshLocalStorage();
   preSeeded.setItem("spanischcard.progress.v2", JSON.stringify({ legacy: true }));
   globalThis.localStorage = preSeeded;
   globalThis.window = { SC: { track: { id: () => "es-en" } } };
   delete require.cache[require.resolve(path.join(__dirname, "..", "store.js"))];
   require(path.join(__dirname, "..", "store.js"));
-  assert.equal(globalThis.localStorage.getItem("spanischcard.es-en.progress.v2"), JSON.stringify({ legacy: true }));
+  assert.equal(globalThis.localStorage.getItem("spanischcard.es-en.progress.v2"), null);
+  // Die unpräfixierte Legacy-Quelle bleibt unangetastet (kein Löschen/Verschieben).
+  assert.equal(globalThis.localStorage.getItem("spanischcard.progress.v2"), JSON.stringify({ legacy: true }));
 });

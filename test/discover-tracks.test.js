@@ -28,6 +28,21 @@ function freshApp(edition) {
   if (globalThis.window.SC) globalThis.window.SC.editionConfig = null;
   stub.seedOnboarded();
   const SRC = path.join(__dirname, "..");
+  // Zusätzlich unter dem track-namespaced Key seeden: store.js migriert seit dem
+  // Entfernen der Legacy-Migration (Cross-Track-Bleed-Risiko, siehe store.js-
+  // Kommentar) KEINE unpräfixierten Alt-Daten mehr in einen es-en-Namespace.
+  // Ohne dies würde ein es-en-Edition-Boot (ingles-pro/venue-en/medellin) hier
+  // fälschlich ins Onboarding statt ins Dashboard laufen.
+  if (edition) {
+    delete require.cache[require.resolve(path.join(SRC, "editions/registry.js"))];
+    require(path.join(SRC, "editions/registry.js"));
+    const trackId = (window.SC.editions[edition] && window.SC.editions[edition].track) || "de-es";
+    if (trackId !== "de-es") {
+      globalThis.window.localStorage.setItem(
+        "spanischcard." + trackId + ".settings.v1",
+        JSON.stringify({ onboarded: true, mode: "flip" }));
+    }
+  }
   for (const key of Object.keys(require.cache)) {
     if (key.startsWith(SRC) && !key.includes(`${path.sep}test${path.sep}`)) {
       delete require.cache[key];

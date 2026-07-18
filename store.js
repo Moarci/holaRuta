@@ -37,25 +37,19 @@
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
   const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY, FAVORITES_KEY];
 
-  // Einmalige Migration für bereits produktive Nicht-de-es-Nutzer (aktuell nur
-  // es-en/ingles-pro/venue-en): vor diesem Fix lagen ihre Daten unter den
-  // unpräfixierten de-es-Keys (die einzigen, die es damals gab). Für de-en
-  // (neu, HelloAbroad) existieren keine Alt-Daten -> diese Schleife ist dort
-  // ein reines No-Op (LEGACY_KEYS sind immer leer).
-  if (TRACK_NS) {
-    const LEGACY_KEYS = [
-      "spanischcard.progress.v2", "spanischcard.settings.v1", "spanischcard.usercards.v1",
-      "spanischcard.gamestats.v1", "spanischcard.tasks.v1", "spanischcard.favorites.v1",
-    ];
-    KNOWN_KEYS.forEach((key, i) => {
-      try {
-        if (localStorage.getItem(key) == null) {
-          const legacy = localStorage.getItem(LEGACY_KEYS[i]);
-          if (legacy != null) localStorage.setItem(key, legacy);
-        }
-      } catch (e) { /* localStorage gesperrt o.ä. – ohne Migration weiter, App läuft trotzdem */ }
-    });
-  }
+  // BEWUSST KEINE Migration von den unpräfixierten Alt-Keys in die
+  // TRACK_NS-Keys (z.B. spanischcard.progress.v2 -> spanischcard.es-en.progress.v2).
+  // Grund: registry.js erlaubt Nutzern, per ?edition=ingles-pro/venue-en/medellin
+  // (alle Track es-en) zur LAUFZEIT auf derselben Origin wie die de-es-Standard-App
+  // umzuschalten. Öffnet ein Nutzer mit echtem de-es-Fortschritt eine solche
+  // Edition erstmals auf demselben Gerät, sind die unpräfixierten Keys bereits
+  // mit seinen de-es-Daten belegt – eine Migration könnte dann nicht zwischen
+  // "echte alte es-en-Legacy-Daten" und "dieser Nutzer lernt eigentlich de-es"
+  // unterscheiden und würde im zweiten Fall fälschlich de-es-Fortschritt in den
+  // es-en-Namespace kopieren (Vermischung zweier Lernrichtungen). Ein einmaliger,
+  // sauberer Fortschritts-Reset für bestehende es-en-Track-Installationen
+  // (ingles-pro/venue-en/medellin) beim ersten Laden nach diesem Fix ist die
+  // sicherere Alternative zu einer Heuristik, die falsch raten kann.
 
   function readJson(key, fallback) {
     let raw = null;
