@@ -607,7 +607,7 @@
     ].map((k) => ({ ...k, active: state.vocabKind === k.id }));
     // Gesamtfortschritt für die "Heute"-Karte – über ALLE Karten, unabhängig
     // vom Stufenfilter, damit der Balken eine stabile Bezugsgröße hat.
-    const overall = stats.overview(everyCard, progress);
+    const overall = stats.overview(everyCard.filter((c) => isCategoryAllowed(c.cat)), progress);
     // Quick-Resume: zuletzt gelernte Kategorie, nur wenn dort noch etwas fällig ist.
     let lastCat = null;
     if (settings.lastScope) {
@@ -956,7 +956,7 @@
   }
 
   function statsVM() {
-    const all = allCards();
+    const all = allCards().filter((c) => isCategoryAllowed(c.cat));
     const ov = stats.overview(all, progress);
     const filter = state.statsFilter;
 
@@ -1174,7 +1174,7 @@
     let tripMilestone = null;
     const updated = { xp: xpAfter };
     if (gamestats.tripGoal) {
-      const ov = stats.overview(allCards(), progress);
+      const ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
       const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
       const seen = Object.assign({}, gamestats.tripMilestonesSeen || {});
       const fresh = stats.freshTripMilestones(pct, seen);
@@ -1397,7 +1397,7 @@
     const recentAvg = recentSum / 7;
     // Aktueller Mastery-Stand fürs Budget-Modell (gemeistert/total) – dieselbe Quelle
     // wie Dashboard & Profil (stats.overview), nur hier fürs Trip-Ziel wiederverwendet.
-    const ov = overview || stats.overview(allCards(), progress);
+    const ov = overview || stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
     // Reise-Prognose: nur sinnvoll, solange die Abreise noch in der Zukunft liegt.
     const forecast = (daysLeft !== null && daysLeft > 0)
       ? stats.tripForecast({
@@ -1603,7 +1603,7 @@
     // Bearbeiten eines bestehenden Ziels (cur) bleibt der bisherige Stand unangetastet.
     const patch = { tripGoal: goal };
     if (!cur) {
-      const ov = stats.overview(allCards(), progress);
+      const ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
       const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
       const stamp = Date.now();
       const seeded = {};
@@ -5214,7 +5214,7 @@
     // Lernfortschritt (% gemeisterte Karten) und Reiseziel grob mitgeben – beides
     // gebucketet, keine Inhalte. Mastery aus der vorhandenen stats.overview-Logik.
     var masteredPct = 0;
-    try { var ov = stats.overview(allCards(), progress); if (ov && ov.total) masteredPct = Math.round((ov.mastered / ov.total) * 100); } catch (e) { /* egal */ }
+    try { var ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress); if (ov && ov.total) masteredPct = Math.round((ov.mastered / ov.total) * 100); } catch (e) { /* egal */ }
     var tg = gamestats.tripGoal || null;
     window.SC.analytics.maybeSend(gamestats, Object.assign(analyticsCtx(), {
       masteredPct: masteredPct,
@@ -6803,7 +6803,7 @@
   // Erzeugt aus dem aktuellen Lernfortschritt ein Bild und teilt/lädt es.
   function shareStats() {
     if (!share) return;
-    const ov = stats.overview(allCards(), progress);
+    const ov = stats.overview(allCards().filter((c) => isCategoryAllowed(c.cat)), progress);
     buzz(12);
     share.shareImage("stats", {
       userName: profileName(),
