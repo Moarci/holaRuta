@@ -1493,6 +1493,19 @@ test("store.decodeBundle: verwirft falsches app-Tag UND nicht-Array items (|| bl
   assert.equal(store.decodeBundle(b64(42)), null);
 });
 
+test("store.decodeBundle: deckelt unabhängig vom Encoder auf 20 Ziele (Grenzfall exakt 20 vs. 21)", () => {
+  // Baut den Roh-Payload direkt (am Encoder mit seinem eigenen 20er-Deckel
+  // vorbei), damit decodeBundle's EIGENER `items.length < MAX_BUNDLE_ITEMS`-Deckel
+  // unabhängig geprüft wird – sonst würde ein manipulierter/älterer Code mit >20
+  // Zielen unbemerkt durchgelassen.
+  const b64 = (o) => "HRB1." + Buffer.from(JSON.stringify(o), "utf8").toString("base64");
+  const items25 = [];
+  for (let i = 0; i < 25; i++) items25.push({ kind: "category", scope: "cat" + i });
+  const decoded = store.decodeBundle(b64({ app: "holaruta-bundle", v: 1, items: items25 }));
+  assert.equal(decoded.items.length, 20, "deckelt auf 20, auch wenn der Roh-Payload 25 enthält");
+  assert.equal(decoded.items[19].scope, "cat19", "genau die ersten 20 (0..19) bleiben erhalten");
+});
+
 test("store.loadGameStats: placement.reliability (String) bleibt erhalten", () => {
   storeMem[GKEY] = JSON.stringify({ reviews: 1, placement: { level: "A2", reliability: "hoch" } });
   assert.equal(store.loadGameStats().placement.reliability, "hoch");
@@ -1517,6 +1530,19 @@ test("store.loadGameStats: assessmentProgress-Zahlen werden typisiert (String/In
   const ap = store.loadGameStats().assessmentProgress;
   assert.equal(ap.difficulty, 0, "String ist keine Zahl -> 0");
   assert.equal(ap.mcAsked, 3, "echte Zahl bleibt");
+});
+
+test("store.loadGameStats: assessmentProgress.answers[].text wird ab Position 0 gekürzt (slice(0,200))", () => {
+  storeMem[GKEY] = JSON.stringify({
+    reviews: 1,
+    assessmentProgress: {
+      asked: ["q1"],
+      answers: [{ selectedIndex: 0, text: "ABCDEFGHIJ", responseTimeMs: 1200 }],
+    },
+  });
+  const ap = store.loadGameStats().assessmentProgress;
+  // Erstes Zeichen MUSS erhalten bleiben (slice(0,200), nicht slice(1,200)).
+  assert.equal(ap.answers[0].text, "ABCDEFGHIJ");
 });
 
 test("store.loadGameStats: Trip-Ziel – überlanges Ziel wird verworfen (str-Guard, nicht durchgelassen)", () => {

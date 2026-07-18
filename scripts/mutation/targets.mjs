@@ -16,7 +16,7 @@
 // modul-relevanten Tests zu fahren (Geschwindigkeit + sauberer Pro-Modul-Score).
 export const MODULES = {
   srs:     { file: "srs.js",     tests: ["sc.test.js"], pattern: "^srs" },
-  store:   { file: "store.js",   tests: ["sc.test.js", "favorites.test.js", "store-backup.test.js"] },
+  store:   { file: "store.js",   tests: ["sc.test.js", "favorites.test.js", "store-backup.test.js", "store.test.js", "core-fixes.test.js"] },
   stats:   { file: "stats.js",   tests: ["sc.test.js"], pattern: "^stats" },
   badges:  { file: "badges.js",  tests: ["badges.test.js"] },
   matcher: { file: "matcher.js", tests: ["matcher-de.test.js", "typo-corpus.test.js"] },
