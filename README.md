@@ -10,9 +10,9 @@
 [![PWA](https://img.shields.io/badge/PWA-installierbar_&_offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)](#-offline--pwa)
 [![Dependencies](https://img.shields.io/badge/Runtime_Dependencies-0-3F7355?style=flat-square)](#-architektur)
 [![Tests](https://img.shields.io/badge/Tests-882_passing-brightgreen?style=flat-square&logo=nodedotjs&logoColor=white)](#-tests)
-[![Karten](https://img.shields.io/badge/Karten-2293-C2502E?style=flat-square)](#datenmodell)
+[![Karten](https://img.shields.io/badge/Karten-2311-C2502E?style=flat-square)](#datenmodell)
 [![Sprache](https://img.shields.io/badge/Spanisch-LatAm-B97C24?style=flat-square)](#-die-w%C3%B6rterbasis)
-[![GEO](https://img.shields.io/badge/GEO-327_Seiten_%C2%B7_3_Sprachen-2F6B70?style=flat-square)](#-seo--geo)
+[![GEO](https://img.shields.io/badge/GEO-329_Seiten_%C2%B7_3_Sprachen-2F6B70?style=flat-square)](#-seo--geo)
 [![License](https://img.shields.io/badge/License-Privat-red?style=flat-square)](#-lizenz)
 
 Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Spanisch vor · Funktioniert ohne Netz
@@ -650,7 +650,7 @@ Zusätzlich wurde die App in einem **Live-Browser-Audit** (Playwright) end-to-en
 | JS-Module | 51 (`SC.*`) |
 | Tests | 882 (alle grün) |
 | Laufzeit-Dependencies | 0 |
-| GEO-Seiten | 327 (DE/EN/ES) — siehe [SEO & GEO](#-seo--geo) |
+| GEO-Seiten | 329 (DE/EN/ES) — siehe [SEO & GEO](#-seo--geo) |
 | Code-Audit | abgeschlossen — 0 CRITICAL ([AUDIT.md](AUDIT.md)) |
 
 **Audit-Ergebnis (Stand 2026-06-10):** Keine CRITICALs — kein Crash, kein exploitierbares XSS, keine falschen Übersetzungen. Schwerpunkte der Nacharbeit lagen in **Accessibility** und **PWA-Details**; die wichtigsten Fixes sind umgesetzt.

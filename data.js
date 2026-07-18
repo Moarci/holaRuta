@@ -491,7 +491,7 @@
     { id: "fh14", cat: "flughafen", lvl: 1, de: "die Sicherheitskontrolle", en: "the security check", es: "el control de seguridad" },
     { id: "fh15", cat: "flughafen", lvl: 2, de: "Flüssigkeiten müssen in einen durchsichtigen Beutel", en: "Liquids must go in a clear bag", es: "Los líquidos deben ir en una bolsa transparente" },
     { id: "fh16", cat: "flughafen", lvl: 1, de: "Muss ich die Schuhe ausziehen?", en: "Do I need to take off my shoes?", es: "¿Tengo que quitarme los zapatos?" },
-    { id: "fh17", cat: "flughafen", lvl: 1, de: "Ich habe nichts zu verzollen", en: "I have nothing to declare", es: "No tengo nada que declarar" },
+    { id: "fh17", cat: "flughafen", lvl: 2, de: "Ich habe einen Anschlussflug", en: "I have a connecting flight", es: "Tengo un vuelo de conexión" },
     { id: "fh18", cat: "flughafen", lvl: 1, de: "Wo ist der Ausgang?", en: "Where is the exit?", es: "¿Dónde está la salida?" },
 
     // ===================== ZEIT & DATUM =====================
