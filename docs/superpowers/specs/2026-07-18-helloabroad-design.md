@@ -1,8 +1,18 @@
 # HelloAbroad – DE-EN Reiseenglisch-Ableger von HolaRuta
 
-**Status:** Design genehmigt, Multi-Perspektiven-Review (Fakten/Architektur/
-Konsistenz/Security/Redundanz) durchgeführt und Korrekturen eingearbeitet.
-Bereit für Implementierungsplanung.
+**Status:** Implementiert auf Branch `feat/hello-abroad` (alle 7 Tasks aus
+`docs/superpowers/plans/2026-07-18-helloabroad-implementation.md` abgeschlossen
+und subagent-review-geprüft, `npm test` grün (907/907), manuelle DoD-Verifikation
+per Playwright durchgeführt). Abweichungen vom ursprünglichen Plan, gefunden
+während der Implementierung: (1) die geplante es-en-Legacy-Migration in
+`store.js` wurde entfernt (Cross-Track-Datenvermischungsrisiko bei
+Editions-Wechsel auf demselben Origin) – bestehende es-en-Nutzer bekommen
+stattdessen einmalig einen sauberen Reset statt eines fehleranfälligen
+Copy-Forward; (2) `categoryAllowlist` musste zusätzlich Stats-/Badges-Aggregate
+(`stats.overview`, `badges.buildMetrics`) filtern, nicht nur Home/Suche/Editor;
+(3) PWA-Manifest/Icons wurden zusätzlich in `service-worker.js`s Offline-Precache
+aufgenommen; (4) eine neue Karte (`fh17`) musste wegen Inhalts-Dopplung mit
+`g11` ersetzt werden. Bereit für PR/Merge nach main.
 
 ## Ziel
 
