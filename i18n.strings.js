@@ -328,6 +328,15 @@
     onboardSlide3Body: "Setz dein Reiseziel: HolaRuta zählt die Tage bis zur Abreise und schlägt ein machbares Tagespensum vor. Pre-Arrival-Pakete und der Ruta-Check finden dein Startniveau.",
     onboardSlide4Title: "Viel mehr als Vokabeln",
     onboardSlide4Body: "Über 2200 Karten in mehr als 70 Bereichen – dazu Spickzettel, Historia, Länderkunde, Regatear, Logística & Salud. Alles offline, ohne Anmeldung und kostenlos.",
+    // HelloAbroad (Track de-en): eigene Slides 1/3/4 statt der Reise-Spanisch-Texte
+    // oben – Slide 2 (Lernmodi) ist track-neutral und bleibt geteilt (siehe ui.js
+    // ONBOARD_SLIDES_DE_EN).
+    onboardSlide1TitleDeEn: "Reiseenglisch für echte Situationen",
+    onboardSlide1BodyDeEn: "HelloAbroad bringt dir genau das Englisch bei, das du unterwegs brauchst: Flughafen, Hotel, Restaurant, Einkaufen und Notfall – für deine nächste Reise.",
+    onboardSlide3TitleDeEn: "Auf deine Reise zugeschnitten",
+    onboardSlide3BodyDeEn: "Setz dein Reiseziel: HelloAbroad zählt die Tage bis zur Abreise und schlägt ein machbares Tagespensum vor.",
+    onboardSlide4TitleDeEn: "Alles, was du unterwegs brauchst",
+    onboardSlide4BodyDeEn: "408 Karten in 16 Themenbereichen – von Begrüßung über Flughafen bis Notfall. Mit eigenen Karten, Sprachausgabe und Statistik. Alles offline, ohne Anmeldung und kostenlos.",
     onboardWelcomeTitle: "Willkommen bei HolaRuta",
     onboardWelcomeTitleEdition: "Willkommen!", // in Partner-Editionen (Logo zeigt schon die Marke)
     onboardWelcomeIntro: "Sag uns kurz, wie wir dich ansprechen dürfen – Name und Geschlecht. Beides ist jederzeit im Profil änderbar.",
@@ -573,6 +582,15 @@
     onboardSlide3Body: "Set your destination: HolaRuta counts down the days to departure and suggests a doable daily target. Pre-arrival packs and the Ruta-Check find your starting level.",
     onboardSlide4Title: "Far more than vocabulary",
     onboardSlide4Body: "Over 2,200 cards across 70+ areas – plus cheat sheets, Historia, country guides, Regatear, Logística & Salud. All offline, no sign-up, and free.",
+    // HelloAbroad (de-en track) EN pendants — required for DE⟷EN key parity
+    // (this UI-language layer is never actually shown for de-en, whose
+    // nativeLangs is ["de"] only, but the dictionary must still have a match).
+    onboardSlide1TitleDeEn: "Travel English for real situations",
+    onboardSlide1BodyDeEn: "HelloAbroad teaches exactly the English you need on the road: airport, hotel, restaurant, shopping and emergencies – for your next trip.",
+    onboardSlide3TitleDeEn: "Tailored to your trip",
+    onboardSlide3BodyDeEn: "Set your destination: HelloAbroad counts down the days to departure and suggests a doable daily target.",
+    onboardSlide4TitleDeEn: "Everything you need on the road",
+    onboardSlide4BodyDeEn: "408 cards across 16 topics – from greetings to airport to emergencies. Plus your own cards, audio pronunciation, and stats. All offline, no sign-up, and free.",
     onboardWelcomeTitle: "Welcome to HolaRuta",
     onboardWelcomeTitleEdition: "Welcome!",
     onboardWelcomeIntro: "Tell us briefly how we should address you – name and gender. You can change both anytime in your profile.",

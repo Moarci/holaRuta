@@ -589,16 +589,28 @@
     { icon: "lc:compass", title: "home.onboardSlide3Title", body: "home.onboardSlide3Body" },
     { icon: "lc:map", title: "home.onboardSlide4Title", body: "home.onboardSlide4Body" },
   ];
+  // HelloAbroad (Track de-en): Slides 1/3/4 sind reise-spanisch-spezifisch
+  // (Marke, Sprache, Kartenzahl, LatAm-Kultur-Features) und passen nicht.
+  // Slide 2 (Lernmodi) ist track-neutral und bleibt geteilt.
+  const ONBOARD_SLIDES_DE_EN = [
+    { icon: "lc:flame", title: "home.onboardSlide1TitleDeEn", body: "home.onboardSlide1BodyDeEn" },
+    ONBOARD_SLIDES[1],
+    { icon: "lc:compass", title: "home.onboardSlide3TitleDeEn", body: "home.onboardSlide3BodyDeEn" },
+    { icon: "lc:map", title: "home.onboardSlide4TitleDeEn", body: "home.onboardSlide4BodyDeEn" },
+  ];
+  const activeOnboardSlides = () =>
+    (window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en") ? ONBOARD_SLIDES_DE_EN : ONBOARD_SLIDES;
 
   // Intro-Slides rendern (Schritt 'intro'). Ein Slide zur Zeit, mit Punkt-Navigation
   // (antippbar), „Weiter" bzw. auf dem letzten Slide „Los geht's", und „Überspringen"
   // (springt direkt zum Profil-Schritt). brand = optionales Partner-Branding oben.
   function renderOnboardSlides(vm, brand) {
-    const n = ONBOARD_SLIDES.length;
+    const slides = activeOnboardSlides();
+    const n = slides.length;
     const i = Math.max(0, Math.min(vm.onboardSlide || 0, n - 1));
-    const s = ONBOARD_SLIDES[i];
+    const s = slides[i];
     const last = i === n - 1;
-    const dots = ONBOARD_SLIDES.map((_, k) =>
+    const dots = slides.map((_, k) =>
       `<button class="onboarding__dot${k === i ? " onboarding__dot--on" : ""}" type="button"
                data-action="onboard-slide-go" data-idx="${k}"
                aria-label="${esc(t("home.onboardSlideAria", { n: k + 1, total: n }))}"${k === i ? ' aria-current="true"' : ""}></button>`
