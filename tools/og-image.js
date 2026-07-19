@@ -2,13 +2,19 @@
 /*
  * tools/og-image.js – Erzeugt die Social-Media-/OG-Vorschaubilder aus der Marke.
  *
- *   og-image.png         1200×630  – Link-Vorschau (WhatsApp, Facebook, Instagram, LinkedIn, Signal …)
- *   og-image-square.png  1080×1080 – Instagram-Post / quadratische WhatsApp-Vorschau
+ * HolaRuta (Reise-Spanisch, Standard-Marke):
+ *   og-image.png                    1200×630  – Link-Vorschau (WhatsApp, Facebook, Instagram, LinkedIn, Signal …)
+ *   og-image-square.png             1080×1080 – Instagram-Post / quadratische WhatsApp-Vorschau
+ *
+ * HelloAbroad (DE-EN-Reiseenglisch-Edition, siehe editions/registry.js):
+ *   og-image-hello-abroad.png        1200×630 – Link-Vorschau der /hello-abroad/-URL
+ *   og-image-square-hello-abroad.png 1080×1080 – quadratische Vorschau
  *
  * Quelle der Wahrheit ist DIESES Skript (kein KI-Bildgenerator): das Bild wird aus
- * denselben Tokens wie die App gebaut – Terrakotta→Ocker-Verlauf, Creme-Flächen,
- * Standort-Pin-Logo, Bricolage Grotesque + Instrument Sans. Die PNGs unter / sind
- * NUR Ergebnis und werden nie von Hand bearbeitet.
+ * denselben Tokens wie die App gebaut – Marken-Verlauf, Creme-Flächen, App-Icon-Motiv,
+ * Bricolage Grotesque + Instrument Sans. Die PNGs unter / sind NUR Ergebnis und werden
+ * nie von Hand bearbeitet. Beide Marken teilen sich Layout und Primitive; sie
+ * unterscheiden sich nur in ihrer Theme-Tabelle (THEMES unten).
  *
  * Aufruf (Dev-Werkzeug, KEINE Runtime-Dependency der App):
  *   1) Renderer holen:        npm i -D @resvg/resvg-js
@@ -34,45 +40,99 @@ const FONTS = [
   "instrument-sans-italic-400-latin.ttf",
 ].map((f) => path.join(FONT_DIR, f));
 
-// ---- Markentokens (aus styles.css :root, Light-Theme) -------------------
-const C = {
-  pageDeep: "#1B0F0A",
-  surface: "#F7EFE3",
-  card: "#FFFDF6",
-  cream: "#FBF3E4",
-  brand: "#C2502E",
-  brandInk: "#A23E20",
-  ochre: "#E9A23B",
-  ink: "#2D1B12",
-  inkSoft: "#6E5A4C",
-  muted: "#6E5848",
-  ok: "#3F7355",
-  warn: "#B97C24",
-};
 const DISPLAY = "Bricolage Grotesque";
 const TEXT = "Instrument Sans";
 
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-// App-Icon: gerundetes Quadrat, Terrakotta→Ocker, Creme-Pin, „¿?".
-function appIcon(x, y, size, id) {
+// ---- Marken-Themes ------------------------------------------------------
+// Jedes Theme trägt seine Farbtokens (aus styles.css :root bzw. der Edition-Palette
+// in editions/registry.js) UND seine Wortmarke/Beispielkarte. Die Zeichen-Primitive
+// weiter unten lesen ausschließlich aus dem übergebenen Theme – so bleibt das Layout
+// für beide Marken identisch und nur die Marke wechselt.
+
+// App-Icon-Motive (im 512×512-Raum, deckungsgleich mit icon.svg / icon-hello-abroad.svg).
+const MOTIF_PIN = "M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z";
+const MOTIF_BUBBLE = "M96 150 h320 a40 40 0 0 1 40 40 v140 a40 40 0 0 1 -40 40 h-186 l-64 62 v-62 h-70 a40 40 0 0 1 -40 -40 v-140 a40 40 0 0 1 40 -40 Z";
+
+const THEMES = {
+  holaruta: {
+    C: {
+      pageDeep: "#1B0F0A", surface: "#F7EFE3", card: "#FFFDF6", cream: "#FBF3E4",
+      brand: "#C2502E", brandInk: "#A23E20", ochre: "#E9A23B", ink: "#2D1B12",
+      inkSoft: "#6E5A4C", muted: "#6E5848", ok: "#3F7355", warn: "#B97C24",
+    },
+    bg: ["#2E1B12", "#1B0F0A"],            // dunkler Marken-Hintergrund
+    stripe: ["#C2502E", "#E9A23B"],        // Terrakotta → Ocker
+    route: "#E9A23B",
+    icon: { grad: ["#C2502E", "#E9A23B"], motif: MOTIF_PIN, motifFill: "#FBF3E4",
+            text: "¿?", textFill: "#C2502E", textSize: 118, textY: 252 },
+    wordmark: [{ t: "Hola", c: "#2D1B12" }, { t: "Ruta", c: "#C2502E" }],
+    tagline: "Reise-Spanisch für echte Situationen",
+    subline: "Karteikarten mit Spaced Repetition – lernt mit dir mit.",
+    chips5: ["Bus", "Hotel", "Essen", "Geld", "Notfall"],
+    chips6: ["Bus", "Hotel", "Essen", "Geld", "Notfall", "Smalltalk"],
+    badge: "Offline · ohne Konto · kostenlos",
+    stamp: "¡HOLA!",
+    card: { tag: "Geld & Markt", tagW: 150, tagColor: "#B97C24",
+            de: "Was kostet das?", es: "¿Cuánto cuesta?", ipa: "kuán-to kués-ta" },
+    targets: {
+      landscape: { svgFile: "docs/og/og-image.svg", png: "og-image.png" },
+      square:    { svgFile: "docs/og/og-image-square.svg", png: "og-image-square.png" },
+    },
+  },
+
+  "hello-abroad": {
+    // Petrol-Palette der HelloAbroad-Edition (editions/registry.js accent + icon).
+    // Warmes Ocker bleibt als Zweitakzent (Teal + Amber = ruhig, kontraststark –
+    // bewusst für die Zielgruppe 50-60+ gut lesbar). Creme-Flächen wie HolaRuta.
+    C: {
+      pageDeep: "#0E2A2D", surface: "#F7EFE3", card: "#FFFDF6", cream: "#FBF3E4",
+      brand: "#2F6B70", brandInk: "#1F4A4E", ochre: "#E9A23B", ink: "#22343A",
+      inkSoft: "#5A6E6E", muted: "#6E7A78", ok: "#3F7355", warn: "#B97C24",
+    },
+    bg: ["#265257", "#123336"],            // dunkles Petrol
+    stripe: ["#2F6B70", "#3E8388"],        // Petrol → helleres Teal (wie Icon-Verlauf)
+    route: "#E9A23B",
+    icon: { grad: ["#2F6B70", "#3E8388"], motif: MOTIF_BUBBLE, motifFill: "#FBF3E4",
+            text: "Hi", textFill: "#1F4A4E", textSize: 150, textY: 258 },
+    wordmark: [{ t: "Hello", c: "#22343A" }, { t: "Abroad", c: "#2F6B70" }],
+    tagline: "Reiseenglisch für echte Situationen",
+    subline: "Karteikarten mit Spaced Repetition – lernt mit dir mit.",
+    chips5: ["Flughafen", "Hotel", "Restaurant", "Taxi", "Notfall"],
+    chips6: ["Flughafen", "Hotel", "Restaurant", "Taxi", "Notfall", "Smalltalk"],
+    badge: "Offline · ohne Konto · kostenlos",
+    stamp: "HELLO!",
+    card: { tag: "Einkaufen", tagW: 130, tagColor: "#B97C24",
+            de: "Was kostet das?", es: "How much is it?", ipa: "hau matsch is it" },
+    targets: {
+      landscape: { svgFile: "docs/og/og-image-hello-abroad.svg", png: "og-image-hello-abroad.png" },
+      square:    { svgFile: "docs/og/og-image-square-hello-abroad.svg", png: "og-image-square-hello-abroad.png" },
+    },
+  },
+};
+
+// App-Icon: gerundetes Quadrat, Marken-Verlauf, Creme-Motiv (Pin bzw. Sprechblase).
+function appIcon(x, y, size, id, T) {
   const s = size / 512;
+  const ic = T.icon;
   return `
   <g transform="translate(${x},${y}) scale(${s})">
     <defs>
       <linearGradient id="ic${id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="${C.brand}"/><stop offset="1" stop-color="${C.ochre}"/>
+        <stop offset="0" stop-color="${ic.grad[0]}"/><stop offset="1" stop-color="${ic.grad[1]}"/>
       </linearGradient>
     </defs>
     <rect width="512" height="512" rx="116" fill="url(#ic${id})"/>
-    <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="${C.cream}"/>
-    <text x="256" y="252" font-family="${DISPLAY}" font-size="118" font-weight="800" fill="${C.brand}" text-anchor="middle" dominant-baseline="middle">¿?</text>
+    <path d="${ic.motif}" fill="${ic.motifFill}"/>
+    <text x="256" y="${ic.textY}" font-family="${DISPLAY}" font-size="${ic.textSize}" font-weight="800" fill="${ic.textFill}" text-anchor="middle" dominant-baseline="middle">${esc(ic.text)}</text>
   </g>`;
 }
 
-function chip(x, y, label, w, h = 52) {
+function chip(x, y, label, w, T, h = 52) {
   const r = h / 2;
+  const C = T.C;
   return `<g>
     <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${C.brand}" fill-opacity="0.10" stroke="${C.brand}" stroke-opacity="0.30" stroke-width="1.5"/>
     <text x="${x + w / 2}" y="${y + h / 2 + 1}" font-family="${TEXT}" font-weight="700" font-size="24" fill="${C.brandInk}" text-anchor="middle" dominant-baseline="middle">${esc(label)}</text>
@@ -80,16 +140,16 @@ function chip(x, y, label, w, h = 52) {
 }
 const chipW = (label) => Math.round(label.length * 13.2 + 40);
 
-function chipRow(x, y, labels, gap = 14) {
+function chipRow(x, y, labels, T, gap = 14) {
   let cx = x, out = "";
-  for (const l of labels) { const w = chipW(l); out += chip(cx, y, l, w); cx += w + gap; }
+  for (const l of labels) { const w = chipW(l); out += chip(cx, y, l, w, T); cx += w + gap; }
   return out;
 }
-function chipRowCentered(cx, y, labels, gap = 16) {
+function chipRowCentered(cx, y, labels, T, gap = 16) {
   const widths = labels.map(chipW);
   const total = widths.reduce((a, b) => a + b, 0) + gap * (labels.length - 1);
   let x = cx - total / 2, out = "";
-  labels.forEach((l, i) => { out += chip(x, y, l, widths[i]); x += widths[i] + gap; });
+  labels.forEach((l, i) => { out += chip(x, y, l, widths[i], T); x += widths[i] + gap; });
   return out;
 }
 
@@ -105,8 +165,9 @@ function stamp(cx, cy, r, label, color, rot) {
   </g>`;
 }
 
-// Lernkarte (DE-Frage → ES-Antwort), leicht gekippt.
-function flashcard(x, y, w, h, rot, o) {
+// Lernkarte (DE-Frage → Antwort in der Lernsprache), leicht gekippt.
+function flashcard(x, y, w, h, rot, o, T) {
+  const C = T.C;
   const r = 30;
   return `<g transform="rotate(${rot} ${x + w / 2} ${y + h / 2})">
     <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${C.card}" stroke="${C.brand}" stroke-opacity="0.16" stroke-width="2"/>
@@ -119,77 +180,82 @@ function flashcard(x, y, w, h, rot, o) {
   </g>`;
 }
 
-const routeLine = (d, op) =>
-  `<path d="${d}" fill="none" stroke="${C.ochre}" stroke-opacity="${op}" stroke-width="3" stroke-dasharray="2 14" stroke-linecap="round"/>`;
+const routeLine = (d, op, color) =>
+  `<path d="${d}" fill="none" stroke="${color}" stroke-opacity="${op}" stroke-width="3" stroke-dasharray="2 14" stroke-linecap="round"/>`;
 
-const DEFS = (extra = "") => `<defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="#2E1B12"/><stop offset="1" stop-color="${C.pageDeep}"/></linearGradient>
-  <linearGradient id="stripe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${C.brand}"/><stop offset="1" stop-color="${C.ochre}"/></linearGradient>
-  <linearGradient id="cream" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF4E8"/><stop offset="1" stop-color="${C.surface}"/></linearGradient>
+const DEFS = (T, extra = "") => `<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="${T.bg[0]}"/><stop offset="1" stop-color="${T.bg[1]}"/></linearGradient>
+  <linearGradient id="stripe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${T.stripe[0]}"/><stop offset="1" stop-color="${T.stripe[1]}"/></linearGradient>
+  <linearGradient id="cream" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF4E8"/><stop offset="1" stop-color="${T.C.surface}"/></linearGradient>
   <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#000" flood-opacity="0.33"/></filter>
   <filter id="cardsh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="20" flood-color="#1B0F0A" flood-opacity="0.28"/></filter>
   ${extra}</defs>`;
 
-const CARD = {
-  tag: "Geld & Markt", tagW: 150, tagColor: C.warn,
-  de: "Was kostet das?", es: "¿Cuánto cuesta?", ipa: "kuán-to kués-ta",
-};
+function wordmark(x, y, size, parts, anchor) {
+  const spans = parts.map((p) => `<tspan fill="${p.c}">${esc(p.t)}</tspan>`).join("");
+  const a = anchor ? ` text-anchor="${anchor}"` : "";
+  return `<text x="${x}" y="${y}" font-family="${DISPLAY}" font-weight="800" font-size="${size}" letter-spacing="-2"${a}>${spans}</text>`;
+}
 
-function landscape() {
+function landscape(T) {
+  const C = T.C;
   const W = 1200, H = 630, m = 40;
   const px = m, py = m + 8, pw = W - m * 2, ph = H - (m + 8) * 2;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  ${DEFS()}
+  ${DEFS(T)}
   <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  ${routeLine("M-20 540 C 240 470, 380 600, 640 470 S 1080 330, 1240 420", 0.16)}
+  ${routeLine("M-20 540 C 240 470, 380 600, 640 470 S 1080 330, 1240 420", 0.16, T.route)}
   <circle cx="240" cy="487" r="7" fill="${C.ochre}" fill-opacity="0.22"/>
   <circle cx="640" cy="470" r="7" fill="${C.ochre}" fill-opacity="0.22"/>
   <circle cx="1040" cy="356" r="7" fill="${C.ochre}" fill-opacity="0.22"/>
   <g filter="url(#soft)"><rect x="${px}" y="${py}" width="${pw}" height="${ph}" rx="40" fill="url(#cream)"/></g>
   <rect x="${px}" y="${py}" width="${pw}" height="12" rx="6" fill="url(#stripe)"/>
-  ${appIcon(px + 56, py + 70, 104, "L")}
-  <text x="${px + 56}" y="${py + 270}" font-family="${DISPLAY}" font-weight="800" font-size="104" letter-spacing="-2"><tspan fill="${C.ink}">Hola</tspan><tspan fill="${C.brand}">Ruta</tspan></text>
-  <text x="${px + 60}" y="${py + 322}" font-family="${TEXT}" font-weight="700" font-size="31" fill="${C.ink}">Reise-Spanisch für echte Situationen</text>
-  <text x="${px + 60}" y="${py + 362}" font-family="${TEXT}" font-weight="400" font-size="24" fill="${C.inkSoft}">Karteikarten mit Spaced Repetition – lernt mit dir mit.</text>
-  ${chipRow(px + 60, py + 392, ["Bus", "Hotel", "Essen", "Geld", "Notfall"])}
+  ${appIcon(px + 56, py + 70, 104, "L", T)}
+  ${wordmark(px + 56, py + 270, 104, T.wordmark)}
+  <text x="${px + 60}" y="${py + 322}" font-family="${TEXT}" font-weight="700" font-size="31" fill="${C.ink}">${esc(T.tagline)}</text>
+  <text x="${px + 60}" y="${py + 362}" font-family="${TEXT}" font-weight="400" font-size="24" fill="${C.inkSoft}">${esc(T.subline)}</text>
+  ${chipRow(px + 60, py + 392, T.chips5, T)}
   <rect x="${px + 60}" y="${py + 524}" width="412" height="48" rx="24" fill="${C.ok}" fill-opacity="0.12"/>
   ${check(px + 84, py + 537, 22, C.ok)}
-  <text x="${px + 116}" y="${py + 555}" font-family="${TEXT}" font-weight="700" font-size="22" fill="${C.ok}">Offline · ohne Konto · kostenlos</text>
-  <g filter="url(#cardsh)">${flashcard(px + 662, py + 92, 420, 300, 4, { ...CARD, esSize: 52 })}</g>
-  ${stamp(px + 1042, py + 360, 56, "¡HOLA!", C.brand, -14)}
+  <text x="${px + 116}" y="${py + 555}" font-family="${TEXT}" font-weight="700" font-size="22" fill="${C.ok}">${esc(T.badge)}</text>
+  <g filter="url(#cardsh)">${flashcard(px + 662, py + 92, 420, 300, 4, { ...T.card, esSize: 52 }, T)}</g>
+  ${stamp(px + 1042, py + 360, 56, T.stamp, C.brand, -14)}
 </svg>`;
 }
 
-function square() {
+function square(T) {
+  const C = T.C;
   const W = 1080, H = 1080, m = 36;
   const px = m, py = m, pw = W - m * 2, ph = H - m * 2, cx = W / 2;
   const cardW = 640, cardH = 300, cardX = cx - cardW / 2, cardY = 470;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  ${DEFS()}
+  ${DEFS(T)}
   <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  ${routeLine("M-20 250 C 220 180, 360 330, 560 240 S 960 120, 1120 210", 0.15)}
-  ${routeLine("M-20 880 C 240 820, 400 940, 600 850 S 980 720, 1120 800", 0.13)}
+  ${routeLine("M-20 250 C 220 180, 360 330, 560 240 S 960 120, 1120 210", 0.15, T.route)}
+  ${routeLine("M-20 880 C 240 820, 400 940, 600 850 S 980 720, 1120 800", 0.13, T.route)}
   <circle cx="560" cy="240" r="7" fill="${C.ochre}" fill-opacity="0.22"/>
   <circle cx="600" cy="850" r="7" fill="${C.ochre}" fill-opacity="0.20"/>
   <g filter="url(#soft)"><rect x="${px}" y="${py}" width="${pw}" height="${ph}" rx="44" fill="url(#cream)"/></g>
   <rect x="${px}" y="${py}" width="${pw}" height="13" rx="6.5" fill="url(#stripe)"/>
-  ${appIcon(cx - 66, py + 70, 132, "S")}
-  <text x="${cx}" y="${py + 330}" font-family="${DISPLAY}" font-weight="800" font-size="120" letter-spacing="-2" text-anchor="middle"><tspan fill="${C.ink}">Hola</tspan><tspan fill="${C.brand}">Ruta</tspan></text>
-  <text x="${cx}" y="${py + 388}" font-family="${TEXT}" font-weight="700" font-size="34" fill="${C.ink}" text-anchor="middle">Reise-Spanisch für echte Situationen</text>
-  <g filter="url(#cardsh)">${flashcard(cardX, cardY, cardW, cardH, -3, { ...CARD, esSize: 58 })}</g>
-  ${stamp(cardX + cardW - 30, cardY + 28, 56, "¡HOLA!", C.brand, -14)}
-  ${chipRowCentered(cx, 840, ["Bus", "Hotel", "Essen", "Geld", "Notfall", "Smalltalk"])}
+  ${appIcon(cx - 66, py + 70, 132, "S", T)}
+  ${wordmark(cx, py + 330, 120, T.wordmark, "middle")}
+  <text x="${cx}" y="${py + 388}" font-family="${TEXT}" font-weight="700" font-size="34" fill="${C.ink}" text-anchor="middle">${esc(T.tagline)}</text>
+  <g filter="url(#cardsh)">${flashcard(cardX, cardY, cardW, cardH, -3, { ...T.card, esSize: 58 }, T)}</g>
+  ${stamp(cardX + cardW - 30, cardY + 28, 56, T.stamp, C.brand, -14)}
+  ${chipRowCentered(cx, 840, T.chips6, T)}
   <rect x="${cx - 230}" y="930" width="460" height="54" rx="27" fill="${C.ok}" fill-opacity="0.12"/>
   ${check(cx - 196, 945, 24, C.ok)}
-  <text x="${cx + 16}" y="959" font-family="${TEXT}" font-weight="700" font-size="25" fill="${C.ok}" text-anchor="middle">Offline · ohne Konto · kostenlos</text>
+  <text x="${cx + 16}" y="959" font-family="${TEXT}" font-weight="700" font-size="25" fill="${C.ok}" text-anchor="middle">${esc(T.badge)}</text>
 </svg>`;
 }
 
 // ---- Ausgabe ------------------------------------------------------------
-const TARGETS = [
-  { svg: landscape(), svgFile: "docs/og/og-image.svg", png: "og-image.png" },
-  { svg: square(), svgFile: "docs/og/og-image-square.svg", png: "og-image-square.png" },
-];
+const TARGETS = [];
+for (const key of Object.keys(THEMES)) {
+  const T = THEMES[key];
+  TARGETS.push({ svg: landscape(T), svgFile: T.targets.landscape.svgFile, png: T.targets.landscape.png });
+  TARGETS.push({ svg: square(T), svgFile: T.targets.square.svgFile, png: T.targets.square.png });
+}
 
 fs.mkdirSync(path.join(ROOT, "docs/og"), { recursive: true });
 for (const t of TARGETS) {

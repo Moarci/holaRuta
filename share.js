@@ -153,10 +153,20 @@
   // Stats-Legende bzw. Badge-Pille im Quadrat-Format.)
   function brandFooter(ctx, h) {
     const cx = W / 2;
+    // Marke + Flagge folgen dem aktiven Track/der Edition: HelloAbroad (de-en,
+    // Reiseenglisch) zeigt die EIGENE Marke mit neutralem 🌍 – bewusst OHNE
+    // HolaRuta-/Spanien-Bezug, wie die ganze Edition (siehe editions/registry.js).
+    // Alle anderen Tracks bleiben unverändert „🇪🇸 HolaRuta".
+    const trackId = (window.SC && SC.track && SC.track.id && SC.track.id()) || "de-es";
+    const isHelloAbroad = trackId === "de-en";
+    const brand = isHelloAbroad
+      ? ((window.SC && SC.config && SC.config.brandName) || "HelloAbroad")
+      : BRAND;
+    const flag = isHelloAbroad ? "🌍" : "🇪🇸";
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,0.96)";
     ctx.font = font("800", 46);
-    ctx.fillText("🇪🇸 " + BRAND, cx, h - 96);
+    ctx.fillText(flag + " " + brand, cx, h - 96);
 
     // App-Adresse als Link gestaltet: 👉 + unterstrichener Text.
     const url = "👉  " + appUrlLabel();
