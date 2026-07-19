@@ -529,6 +529,11 @@
   // und Profil. type="button", damit die Knöpfe innerhalb des Onboarding-<form>
   // dieses NICHT absenden (sonst springt „Weiter" beim Antippen vorzeitig).
   function genderGroup(vm) {
+    // Das Geschlecht löst nur SPANISCHE Anrede-Tokens ({o/a}, z.B. perdido/perdida)
+    // auf. In en-lernenden Tracks (HelloAbroad de-en, Locals es-en) ist die Antwort
+    // Englisch – die Angabe hätte keine Wirkung und der Hinweis verweist obendrein auf
+    // Spanisch. Dann gar nicht anzeigen (showGender kommt aus homeVM: learnLang==="es").
+    if (vm && vm.showGender === false) return "";
     const g = vm.userGender;
     return `
       <div class="switchgroup">
@@ -1606,8 +1611,10 @@
       ? `<div class="context-panel__block"><div class="context-panel__label">${esc(label)}</div><p class="context-panel__text">${esc(text)}</p></div>`
       : "";
     const exLine = ctx.loc
-      ? line(ctx.egLearn, "en", ctx.egNative)        // Locals: englischer Satz + spanische Übersetzung
-      : line(ctx.sentenceEs, "es", ctx.sentenceDe);  // Reise: spanischer Satz + Mutterspr.
+      ? line(ctx.egLearn, "en", ctx.egNative)          // Locals: englischer Satz + spanische Übersetzung
+      : ctx.enLearn
+        ? line(ctx.sentenceEn, "en", ctx.sentenceDe)   // HelloAbroad (de-en): englischer Reisesatz + Mutterspr.
+        : line(ctx.sentenceEs, "es", ctx.sentenceDe);  // Reise (de-es): spanischer Satz + Mutterspr.
     // Locals (Englisch lernen) nutzt die Arbeits-Labels statt des Reise-Wortlauts.
     const titleKey = ctx.loc ? "study.contextTitleWork" : "study.contextTitle";
     const noteKey = ctx.loc ? "study.contextNoteWork" : "study.contextNote";

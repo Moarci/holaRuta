@@ -48,7 +48,10 @@ test("Matcher: field 'learn' prüft gegen Englisch (card.en)", () => {
 });
 
 test("Matcher: card.alt zählt als englische Alternativen (field 'learn')", () => {
-  const card = { es: "el baño", en: "the restroom", alt: ["the restroom", "the toilet", "the bathroom"] };
+  // loc-Karten tragen ENGLISCHE alt-Listen; nur bei ihnen darf alt die englische
+  // Antwortmenge ersetzen. Der Matcher erkennt das am "loc-"-Präfix (Reise-Karten aus
+  // data.js tragen SPANISCHE alt und dürfen sie in en-Tracks NICHT ersetzen).
+  const card = { id: "loc-tst-bano", es: "el baño", en: "the restroom", alt: ["the restroom", "the toilet", "the bathroom"] };
   assert.equal(matcher.check("the toilet", card, "learn").correct, true);
   assert.equal(matcher.check("bathroom", card, "learn").correct, true); // artikellos
 });
@@ -58,7 +61,7 @@ test("Matcher: jede loc-alt-Karte akzeptiert ihre eigene Haupt-en (Regression)",
   // ANGEZEIGTE Haupt-en weiterhin akzeptiert wird (früher ein Bug – „besides" wurde
   // als falsch gewertet), MUSS jede loc-alt-Liste die Hauptantwort als ersten Eintrag
   // enthalten. Diese Daten-Invariante wird hier festgeschrieben.
-  const card = { es: "además", en: "besides", alt: ["besides", "in addition", "moreover"] };
+  const card = { id: "loc-tst-ademas", es: "además", en: "besides", alt: ["besides", "in addition", "moreover"] };
   assert.equal(matcher.check("besides", card, "learn").correct, true, "Haupt-en akzeptiert");
   assert.equal(matcher.check("moreover", card, "learn").correct, true, "Synonym akzeptiert");
   assert.equal(matcher.acceptedAnswers(card, "learn")[0], "besides", "Anzeige/TTS = Haupt-en zuerst");
