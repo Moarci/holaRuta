@@ -142,6 +142,16 @@
   function natKey(obj, base) {
     if (!obj) return "";
     const de = obj[base];
+    // HelloAbroad (de-en): reiseenglisch umgerahmte Inhaltsfelder bevorzugen
+    // (<base>DeEn), sonst der deutsche Basiswert. Die UI-Sprache ist Deutsch, daher
+    // würde sonst gleich der de-Zweig greifen – die DeEn-Überlagerung muss davor
+    // stehen. Nur die Inhaltsfelder der Entdecken-Ratgeber tragen …DeEn-Pendants.
+    if (deEnTrack()) {
+      const dstem = /De$/.test(base) ? base.slice(0, -2) : base;
+      const dz = obj[dstem + "DeEn"];
+      if (dz != null && dz !== "") return dz;
+      return de != null ? de : "";
+    }
     if (lang === "de") return de != null ? de : "";
     // "situationDe" -> Stamm "situation"; "title" -> "title".
     const stem = /De$/.test(base) ? base.slice(0, -2) : base;
@@ -172,8 +182,30 @@
   // So leuchten alle von den Inhaltsdateien ergänzten …En-Felder auf, ohne dass
   // jede einzelne Render-Stelle umgebaut werden muss (Pass-Through-Ansichten).
   function localizeDeep(value) {
+    // HelloAbroad-Track (de-en): tiefe DeEn-Umrahmung – jedes Feld mit einem
+    // <feld>DeEn-Pendant wird durch dessen reiseenglisch passende Fassung ersetzt
+    // (Anbieter, Ortsbezüge, spanische Wörter → englischsprachige Reiseziele). Felder
+    // OHNE DeEn-Pendant (inkl. der Blattwerte es/de/en der Sätze & Glossare) bleiben
+    // unangetastet – die Lern-/Muttersprachen-Wahl der Sätze macht phraseGroups/
+    // glossItem selbst. Läuft VOR dem lang-Check, da die de-en-UI Deutsch ist.
+    if (deEnTrack()) return _locDeEn(value);
     if (lang !== "en") return value;
     return _loc(value);
+  }
+  function _locDeEn(value) {
+    if (Array.isArray(value)) return value.map(_locDeEn);
+    if (value && typeof value === "object") {
+      const out = {};
+      for (const k in value) {
+        if (!Object.prototype.hasOwnProperty.call(value, k)) continue;
+        if (/DeEn$/.test(k)) continue; // …DeEn-Quellfelder nicht direkt ins Ergebnis kopieren
+        const dk = (/De$/.test(k) ? k.slice(0, -2) : k) + "DeEn";
+        const dz = value[dk];
+        out[k] = (dz != null && dz !== "") ? _locDeEn(dz) : _locDeEn(value[k]);
+      }
+      return out;
+    }
+    return value;
   }
   function _loc(value) {
     if (Array.isArray(value)) return value.map(_loc);

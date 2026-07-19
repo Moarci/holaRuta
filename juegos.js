@@ -48,6 +48,13 @@
     "(from UNO to Truco), explained briefly, plus the Spanish phrases for the table " +
     "so you play with locals, not just with other backpackers.";
 
+  const INTRO_DEEN =
+    "Spiele sind der schnellste Weg, im Hostel Leute kennenzulernen: Karten, " +
+    "Würfel oder ein Gruppenspiel – und schon sitzt man in einer Runde. Hier die " +
+    "Spiele, die Reisende wirklich spielen (von UNO bis Werwolf), kurz erklärt, " +
+    "plus die englischen Sätze für den Tisch, damit du überall sofort mitspielst " +
+    "und nicht nur danebensitzt.";
+
   // ---------- Die Spiele (aufklappbar, Knigge-/Salud-Stil) ----------
   const TOPICS = [
     {
@@ -70,6 +77,13 @@
         "Down to one card? Shout „¡UNO!“ out loud – or take 2 penalty cards.",
         "No matching card? Draw one from the pile.",
       ],
+      dosDeEn: [
+        "Ziel: als Erster alle Karten loswerden.",
+        "Reihum eine Karte ablegen, die in Farbe ODER Zahl zur obersten Karte passt.",
+        "Aktionskarten: +2 (Ziehen), Reverse (Richtung dreht), Skip (nächster setzt aus), Wild (Farbe wählen), Wild +4.",
+        "Hast du nur noch eine Karte, laut „UNO!“ rufen – sonst 2 Strafkarten.",
+        "Keine passende Karte? Eine vom Stapel ziehen.",
+      ],
       donts: [
         "Hausregeln nicht als „echte“ Regeln annehmen: Stapeln von +2/+4, „Jump-in“ oder 7/0-Tausch sind inoffiziell – vorher klären.",
         "Offiziell darfst du +4 nur spielen, wenn du KEINE farblich passende Karte hast.",
@@ -79,6 +93,11 @@
         "Don't treat house rules as the „real“ rules: stacking +2/+4, „jump-in“ or 7/0 swaps are unofficial – agree them up front.",
         "Officially you may only play +4 when you have NO card matching the colour.",
         "Don't forget to call „¡UNO!“ – or it gets expensive.",
+      ],
+      dontsDeEn: [
+        "Hausregeln nicht als „echte“ Regeln annehmen: Stapeln von +2/+4, „Jump-in“ oder 7/0-Tausch sind inoffiziell – vorher klären.",
+        "Offiziell darfst du +4 nur spielen, wenn du KEINE farblich passende Karte hast.",
+        "Das „UNO!“-Rufen nicht vergessen – sonst wird's teuer.",
       ],
       tips: [
         "Heb dir Comodín und +4 bis zum Schluss auf: Ruft ein Gegner „¡UNO!“, wechselst du die Farbe und drückst ihm Strafkarten auf.",
@@ -93,6 +112,13 @@
         "Watch the colour an opponent keeps avoiding (they draw or change it) – they probably don't have it; play it on purpose.",
         "If the next player is down to one card, play Skip, Reverse or +2 so they never get to lay it.",
         "Heads-up (two players), Skip and Reverse hand you the turn straight back – effectively a double move.",
+      ],
+      tipsDeEn: [
+        "Heb dir Wild und +4 bis zum Schluss auf: Ruft ein Gegner „UNO!“, wechselst du die Farbe und drückst ihm Strafkarten auf.",
+        "Wirf hohe Zahlenkarten zuerst ab – bleibst du auf einer 9 sitzen, kostet sie beim Punktezählen viel mehr als eine 1.",
+        "Achte auf die Farbe, die ein Gegner ständig meidet (er zieht oder wechselt) – die hat er wahrscheinlich nicht; spiel sie gezielt.",
+        "Hat der Nächste nur noch eine Karte, spiel Skip, Reverse oder +2 – dann kommt er gar nicht zum Ablegen.",
+        "Im Duell zu zweit bringen dir Skip und Reverse sofort wieder den Zug – praktisch ein Doppelzug.",
       ],
     },
     {
@@ -113,6 +139,12 @@
         "Action cards: collect rent, „Deal Breaker“ (steal a whole set), „Just Say No“ (block an action), birthday (everyone pays), debt collector.",
         "No cards left in hand? You draw 5 instead of 2.",
       ],
+      dosDeEn: [
+        "Ziel: 3 vollständige Farb-Sets (Eigentums-Sätze) vor dir auslegen.",
+        "Pro Zug spielst du bis zu 3 Karten – als Geld, als Eigentum oder als Aktion.",
+        "Aktionskarten: Miete kassieren, „Deal Breaker“ (komplettes Set klauen), „Just Say No“ (eine Aktion blocken), Geburtstag (jeder zahlt), Schuldeneintreiber.",
+        "Keine Karten mehr auf der Hand? Du ziehst 5 statt 2.",
+      ],
       donts: [
         "Geld auf der Bank zählt NICHT als Eigentums-Set – du brauchst echte Farb-Sätze.",
         "Heb dir ein „¡No, gracias!“ für den großen Klau („Deal Breaker“) auf.",
@@ -122,6 +154,11 @@
         "Money in the bank does NOT count as a property set – you need real colour sets.",
         "Save a „Just Say No“ for the big steal („Deal Breaker“).",
         "Don't burn all your strong action cards as money.",
+      ],
+      dontsDeEn: [
+        "Geld auf der Bank zählt NICHT als Eigentums-Set – du brauchst echte Farb-Sätze.",
+        "Heb dir ein „Just Say No“ für den großen Klau („Deal Breaker“) auf.",
+        "Verheize nicht alle starken Aktionskarten als Geld.",
       ],
       tips: [
         "Spiel „Pass Go“ früh aus – mehr Handkarten heißt mehr Optionen in jedem Zug.",
@@ -139,11 +176,20 @@
         "Never end a turn with more than 7 cards or you must discard – bank weak action cards as money first.",
         "Keep two-colour wild properties flexible and play them on the set where you're missing exactly one colour.",
       ],
+      tipsDeEn: [
+        "Spiel „Pass Go“ früh aus – mehr Handkarten heißt mehr Optionen in jedem Zug.",
+        "Halt immer ein „Just Say No“ in der Hinterhand, vor allem gegen „Deal Breaker“ – ein geklautes Komplettset entscheidet die Partie.",
+        "Leg deinen eigenen „Deal Breaker“ erst, wenn ein Gegner ein vollständiges Set hat – dann schnappst du dir den größten Brocken.",
+        "Verteile deinen Wert: Geld auf der Bank ist durch Miete und Schulden angreifbar – behalt lieber schlagkräftige Aktionskarten.",
+        "Beende den Zug nie mit mehr als 7 Karten, sonst musst du abwerfen – zahl vorher schwache Aktionskarten als Geld ein.",
+        "Zweifarbige Wildcard-Grundstücke flexibel halten und erst dort einsetzen, wo dir genau eine Farbe zum Set fehlt.",
+      ],
     },
     {
       icon: "lc:crown",
       title: "El Presidente (Culo / Asshole)",
       titleEn: "President (Asshole / Culo)",
+      titleDeEn: "President (Asshole)",
       intro: "Der Backpacker-Klassiker weltweit: ein Rangspiel mit normalem Deck, 4–8 Spieler, schnell und lustig. Wird oft als Trinkspiel gespielt – funktioniert genauso gut ohne.",
       introEn: "The worldwide backpacker classic: a ranking game with a normal deck, 4–8 players, fast and funny. Often played as a drinking game – works just as well without.",
       dos: [
@@ -157,6 +203,12 @@
         "Take turns placing a higher card (or the same number of equal cards) on the pile; if you can't or won't, you pass.",
         "First one empty becomes „President“, the last is the „Asshole“/„Culo“.",
         "Next round: the Asshole gives the President their 2 best cards, the President gives any 2 back. Seating by rank.",
+      ],
+      dosDeEn: [
+        "Ziel: zuerst alle Karten ablegen.",
+        "Reihum legst du eine höhere Karte (oder gleich viele gleiche) auf den Stapel; wer nicht kann/will, passt.",
+        "Wer zuerst leer ist, wird „President“, der Letzte „Asshole“.",
+        "Nächste Runde: der Asshole gibt dem President seine 2 besten Karten, der President zwei beliebige zurück. Sitzordnung nach Rang.",
       ],
       donts: [
         "Kartenwert-Reihenfolge vorher klären (oft ist die 2 die höchste) – sie variiert je Runde/Region.",
@@ -182,6 +234,13 @@
         "Track who has already spent their high cards – after that, your mid cards suddenly get through.",
         "As President you hand over your two weakest cards – use the swap to complete a pair on purpose.",
       ],
+      tipsDeEn: [
+        "Behalte deine höchsten Karten (oft die 2): Wer den Stapel mit ihnen abräumt, darf neu eröffnen und seine unbequemen Karten loswerden.",
+        "Wenn alle passen, beginnst du frei – das ist der Moment, deine einzelnen niedrigen Karten abzustoßen.",
+        "Heb Paare und Drillinge auf, um die Einzelkarten-Serien der Gegner zu brechen, statt sie früh zu verheizen.",
+        "Merk dir, wer schon viele hohe Karten gespielt hat – danach setzen sich deine mittleren Karten plötzlich durch.",
+        "Als President gibst du deine zwei schwächsten Karten ab – nutze den Tausch, um gezielt ein Paar zu vervollständigen.",
+      ],
     },
     {
       icon: "lc:layers",
@@ -189,6 +248,7 @@
       titleEn: "Truco (Argentina · Uruguay)",
       intro: "Das Kartenspiel des Südens, mit der baraja española (40 Karten). 2, 4 oder 6 Spieler in Teams. Es lebt vom Bluffen, vom Wetten („¡Truco!“ – „¡Quiero!“) und von heimlichen Zeichen (señas) zum Partner.",
       introEn: "The card game of the south, with the baraja española (40 cards). 2, 4 or 6 players in teams. It thrives on bluffing, betting („¡Truco!“ – „¡Quiero!“) and secret signs (señas) to your partner.",
+      introDeEn: "Ein Kartenspiel, das südamerikanische Reisende gern mit ins Hostel bringen, gespielt mit dem spanischen Blatt (40 Karten). 2, 4 oder 6 Spieler in Teams. Es lebt vom Bluffen, vom Wetten („Truco!“ – „Quiero!“) und von heimlichen Zeichen (señas) zum Partner.",
       dos: [
         "Spanisches 40-Karten-Blatt: 1–7 plus Sota, Caballo und Rey (eine 8 und 9 gibt es darin gar nicht). Die Kartenrangfolge ist eigen (1 de espada ist die höchste).",
         "Jeder bekommt 3 Karten; es gewinnt, wer 2 der 3 Stiche („manos“) holt.",
@@ -245,6 +305,7 @@
       titleEn: "Dudo / Perudo / Cacho (the Andes)",
       intro: "Das Lügen-Würfelspiel der Anden – in Peru, Bolivien und Chile fast überall. Jeder hat 5 Würfel und einen Becher (cubilete); es geht ums Bluffen und ums „¡Dudo!“ (ich zweifle).",
       introEn: "The lying dice game of the Andes – nearly everywhere in Peru, Bolivia and Chile. Everyone has 5 dice and a cup (cubilete); it's about bluffing and calling „¡Dudo!“ (I doubt it).",
+      introDeEn: "Das Lügen-Würfelspiel aus den Anden, das Reisende von dort gern weitertragen. Jeder hat 5 Würfel und einen Becher; es geht ums Bluffen und ums „Dudo!“ (ich zweifle).",
       dos: [
         "Alle würfeln verdeckt unter dem Becher und schauen heimlich.",
         "Reihum erhöht man das Gebot: „cuatro cincos“ = mindestens 4 der Würfel (aller Spieler) zeigen die 5.",
@@ -259,6 +320,13 @@
         "Doubt the bid? Shout „¡Dudo!“ – then reveal: if the bidder was too high, they lose a die, otherwise you do.",
         "Lose all your dice and you're out; the last player with dice wins.",
       ],
+      dosDeEn: [
+        "Alle würfeln verdeckt unter dem Becher und schauen heimlich.",
+        "Reihum erhöht man das Gebot: „four fives“ = mindestens 4 der Würfel (aller Spieler) zeigen die 5.",
+        "Die 1 (ace) ist Joker und zählt für jede Zahl.",
+        "Zweifelst du das Gebot an, rufst du „Dudo!“ – dann wird aufgedeckt: lag der Bieter zu hoch, verliert er einen Würfel, sonst du.",
+        "Wer alle Würfel verliert, scheidet aus; der Letzte mit Würfeln gewinnt.",
+      ],
       donts: [
         "Becher nicht zu früh heben – der Bluff ist der ganze Spaß.",
         "Die Joker-Regel und den „as“-Übergang vorher klären (was passiert, wenn Einsen geboten werden).",
@@ -268,6 +336,11 @@
         "Don't lift the cup too early – the bluff is the whole point.",
         "Agree the wild rule and the „as“ switch up front (what happens once ones are bid).",
         "Use „Calzo“ (the bid is exactly right) only if you play that extra rule.",
+      ],
+      dontsDeEn: [
+        "Becher nicht zu früh heben – der Bluff ist der ganze Spaß.",
+        "Die Joker-Regel und den „ace“-Übergang vorher klären (was passiert, wenn Einsen geboten werden).",
+        "„Calzo“ (Gebot ist exakt richtig) nur nutzen, wenn ihr diese Zusatzregel spielt.",
       ],
       tips: [
         "Faustregel: Bei N Würfeln im Spiel zeigt im Schnitt rund N/3 eine bestimmte Zahl (Einsen als Joker mitgezählt). Gebote weit darüber kannst du getrost anzweifeln.",
@@ -282,6 +355,13 @@
         "Keep count of how many dice are still in play – the fewer there are, the riskier every high bid becomes.",
         "Bluff in small steps early; save the big jumps for when opponents are under pressure.",
         "If you play „calzo“: call it when you think the bid is exactly right – land it and you even win a die back.",
+      ],
+      tipsDeEn: [
+        "Faustregel: Bei N Würfeln im Spiel zeigt im Schnitt rund N/3 eine bestimmte Zahl (Einsen als Joker mitgezählt). Gebote weit darüber kannst du getrost anzweifeln.",
+        "Nimm deine eigenen Würfel als Anker: Hast du selbst drei Fünfen, ist „four fives“ fast sicher – erhöh ruhig.",
+        "Zähl mit, wie viele Würfel noch im Spiel sind – je weniger, desto riskanter wird jedes hohe Gebot.",
+        "Bluff früh nur in kleinen Schritten; heb die großen Sprünge auf, wenn die Gegner unter Druck stehen.",
+        "Spielt ihr mit „calzo“: ansagen, wenn du das Gebot für exakt richtig hältst – triffst du, gewinnst du sogar einen Würfel zurück.",
       ],
       level: "A2",
       es: [
@@ -396,6 +476,12 @@
         "First to get rid of all tiles wins – or, if the game is blocked, whoever holds the fewest pips.",
         "The opponents' pips are added up; you usually play to 100 or 200 points.",
       ],
+      dosDeEn: [
+        "Jeder zieht Steine (tiles); wer den höchsten Doppelstein hat, beginnt.",
+        "Reihum eine passende Zahl anlegen; wer nicht anlegen kann, passt („pass“).",
+        "Wer zuerst alle Steine los ist, gewinnt – oder bei blockiertem Spiel, wer die wenigsten Augen hält.",
+        "Die Augen der Gegner werden zusammengezählt; meist spielt man bis 100 oder 200 Punkte.",
+      ],
       donts: [
         "Steine niemandem zeigen – im Team zählt verdeckte Information.",
         "Doble-Seis vs. Doble-Nueve (Set-Größe) vorher klären.",
@@ -405,6 +491,11 @@
         "Don't show your tiles to anyone – in a team, hidden information matters.",
         "Agree double-six vs. double-nine (set size) up front.",
         "The noise is part of it – but not in a quiet dorm in the middle of the night.",
+      ],
+      dontsDeEn: [
+        "Steine niemandem zeigen – im Team zählt verdeckte Information.",
+        "Doppel-Sechs vs. Doppel-Neun (Set-Größe) vorher klären.",
+        "Lautstärke gehört dazu – aber nicht im stillen Schlafsaal mitten in der Nacht.",
       ],
       tips: [
         "Passt jemand („paso“), fehlen ihm beide offenen End-Zahlen – merk sie dir und halt diese Enden im Spiel, um ihn auszubremsen.",
@@ -419,6 +510,13 @@
         "In a team, never block your partner: leave open the end they can serve.",
         "Save your double for the right moment to dictate the tempo, rather than getting stuck with it.",
         "Keep a running pip count – if the game blocks, whoever holds the fewest pips wins.",
+      ],
+      tipsDeEn: [
+        "Passt jemand („pass“), fehlen ihm beide offenen End-Zahlen – merk sie dir und halt diese Enden im Spiel, um ihn auszubremsen.",
+        "Spiel die Zahl, von der du die meisten Steine hast – so kontrollierst du, an welchen Enden es weitergeht.",
+        "Im Team nie den Partner blockieren: Lass das Ende offen, das er bedienen kann.",
+        "Heb deinen Doppelstein für den richtigen Moment auf, um das Tempo zu bestimmen statt darauf sitzenzubleiben.",
+        "Zähl die Augen mit – bei blockiertem Spiel gewinnt, wer am wenigsten auf der Hand hält.",
       ],
       level: "A2",
       es: [
@@ -439,8 +537,10 @@
       icon: "lc:venetian-mask",
       title: "Yo nunca · Verdad o reto",
       titleEn: "Never have I ever · Truth or dare",
+      titleDeEn: "Never have I ever · Truth or dare",
       intro: "Die Eisbrecher ganz ohne Material. „Yo nunca“ (Never have I ever) und „Verdad o reto“ (Wahrheit oder Pflicht) bringen eine frische Hostel-Runde in Minuten zum Reden und Lachen.",
       introEn: "The icebreakers with no equipment at all. „Yo nunca“ (Never have I ever) and „Verdad o reto“ (Truth or dare) get a fresh hostel circle talking and laughing in minutes.",
+      introDeEn: "Die Eisbrecher ganz ohne Material. „Never have I ever“ und „Truth or dare“ (Wahrheit oder Pflicht) bringen eine frische Hostel-Runde in Minuten zum Reden und Lachen.",
       dos: [
         "Yo nunca: reihum sagt jemand „Yo nunca he…“ + etwas; wer es getan hat, zeigt einen Finger (oder trinkt einen Schluck).",
         "Verdad o reto: Wahrheit beantworten oder eine harmlose Aufgabe erfüllen.",
@@ -453,6 +553,12 @@
         "Play in Spanish – you practise real sentences and meet people at the same time.",
         "Pick light, funny prompts so everyone can join in.",
       ],
+      dosDeEn: [
+        "Never have I ever: reihum sagt jemand „Never have I ever…“ + etwas; wer es getan hat, zeigt einen Finger (oder trinkt einen Schluck).",
+        "Truth or dare: eine Wahrheit (truth) beantworten oder eine harmlose Aufgabe (dare) erfüllen.",
+        "Auf Englisch spielen – so übst du echte Sätze und lernst gleichzeitig Leute kennen.",
+        "Leichte, lustige Fragen wählen, damit alle mitmachen können.",
+      ],
       donts: [
         "Grenzen respektieren – niemanden bloßstellen oder unter Druck setzen.",
         "Konsens vor jeder „reto“ (Aufgabe); ein „Nein“ wird akzeptiert.",
@@ -462,6 +568,11 @@
         "Respect boundaries – don't expose or pressure anyone.",
         "Consent before every „dare“; a „no“ is accepted.",
         "If drinking: always a non-alcoholic option, never forced.",
+      ],
+      dontsDeEn: [
+        "Grenzen respektieren – niemanden bloßstellen oder unter Druck setzen.",
+        "Konsens vor jeder „dare“ (Aufgabe); ein „Nein“ wird akzeptiert.",
+        "Beim Trinken: immer eine alkoholfreie Option, kein Zwang.",
       ],
       tips: [
         "Leg dir vorab 3–4 lockere „Yo nunca he…“-Sätze auf Spanisch zurecht – wer flüssig dran ist, gibt der Runde den Ton an.",
@@ -475,13 +586,21 @@
         "For „truth or dare“, suggest doable mini-dares – it keeps the circle relaxed and everyone joining in.",
         "Listen closely: the answers are your best conversation openers afterwards – the real edge in a hostel.",
       ],
+      tipsDeEn: [
+        "Leg dir vorab 3–4 lockere „Never have I ever…“-Sätze auf Englisch zurecht – wer flüssig dran ist, gibt der Runde den Ton an.",
+        "Reise-Themen ziehen immer („Never have I ever slept at an airport“) – sie bringen Geschichten und neue Bekanntschaften.",
+        "Bei „truth or dare“ machbare Mini-Aufgaben vorschlagen – so bleibt die Runde locker und alle machen mit.",
+        "Hör genau zu: Die Antworten sind die besten Gesprächsaufhänger für danach – dein eigentlicher Vorteil im Hostel.",
+      ],
     },
     {
       icon: "lc:dog",
       title: "Hombre lobo / Mafia",
       titleEn: "Werewolf / Mafia",
+      titleDeEn: "Werewolf / Mafia",
       intro: "Das große Gruppenspiel für laue Hostel-Abende: 8–18 Spieler, Werwölfe gegen das Dorf, und ein Spielleiter (moderador), der durch Nacht und Tag führt. Braucht nur ein paar Kärtchen oder eine App.",
       introEn: "The big group game for warm hostel evenings: 8–18 players, werewolves against the village, and a moderator who guides through night and day. Needs only a few cards or an app.",
+      introDeEn: "Das große Gruppenspiel für laue Hostel-Abende: 8–18 Spieler, Werwölfe gegen das Dorf, und ein Spielleiter (moderator), der durch Nacht und Tag führt. Braucht nur ein paar Kärtchen oder eine App.",
       dos: [
         "Rollen verdeckt verteilen: Werwölfe, Dorfbewohner und Sonderrollen (Seherin, Arzt).",
         "„Nachts“ wählen die Wölfe heimlich ein Opfer; „tags“ diskutiert das Dorf und lyncht einen Verdächtigen.",
@@ -493,6 +612,12 @@
         "At „night“ the wolves secretly pick a victim; by „day“ the village debates and lynches a suspect.",
         "Goal: completely eliminate the other side.",
         "The moderator narrates the story and keeps the flow together.",
+      ],
+      dosDeEn: [
+        "Rollen verdeckt verteilen: Werwölfe, Dorfbewohner und Sonderrollen (Seherin, Arzt).",
+        "„Nachts“ wählen die Wölfe heimlich ein Opfer; „tags“ diskutiert das Dorf und lyncht einen Verdächtigen.",
+        "Ziel: die jeweils andere Seite vollständig ausschalten.",
+        "Der Spielleiter (moderator) erzählt die Geschichte und hält den Ablauf zusammen.",
       ],
       donts: [
         "Der Spielleiter spielt nicht mit – er bleibt neutral.",
@@ -516,6 +641,12 @@
         "As the seer: reveal your knowledge in small doses – out yourself too early and you're the next night's first victim.",
         "Read body language and speech pace, not just words – in Werewolf, whoever reads people best wins.",
       ],
+      tipsDeEn: [
+        "Als Werwolf: bleib ruhig, rede aktiv mit und beschuldige selbstbewusst einen Unschuldigen – Wölfe, die sich verstecken, fallen am ehesten auf.",
+        "Als Dorf: achte auf Abstimmungsmuster – wer immer mit der Mehrheit geht oder auffällig schweigt, ist verdächtig.",
+        "Als Seherin: gib dein Wissen dosiert preis – outest du dich zu früh, bist du das erste Opfer der nächsten Nacht.",
+        "Lies Körpersprache und Redetempo statt nur die Worte – beim Werwolf gewinnt, wer Menschen liest.",
+      ],
     },
   ];
 
@@ -528,8 +659,8 @@
       titleEn: "Joining in & suggesting a game",
       items: [
         { es: "¿Jugamos a las cartas?", de: "Spielen wir Karten?", en: "Shall we play cards?" },
-        { es: "¿Puedo jugar con ustedes?", de: "Kann ich mitspielen?", en: "Can I join you?" },
-        { es: "¿Cuántos jugamos?", de: "Zu wievielt spielen wir?", en: "How many are we playing?" },
+        { es: "¿Puedo jugar con ustedes?", de: "Kann ich mitspielen?", en: "Can I join in?" },
+        { es: "¿Cuántos jugamos?", de: "Zu wievielt spielen wir?", en: "How many of us are playing?" },
         { es: "¿Me explicas las reglas?", de: "Erklärst du mir die Regeln?", en: "Can you explain the rules?" },
         { es: "¿De qué va el juego?", de: "Worum geht es im Spiel?", en: "What's the game about?" },
         { es: "Soy nuevo en esto, ten paciencia.", de: "Ich bin neu darin, hab Geduld.", en: "I'm new to this, bear with me." },
@@ -671,5 +802,5 @@
     },
   ];
 
-  window.SC.juegos = { INTRO, INTRO_EN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
+  window.SC.juegos = { INTRO, INTRO_EN, INTRO_DEEN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
 })();

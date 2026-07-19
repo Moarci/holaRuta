@@ -138,16 +138,37 @@
   //               „Mi léxico"; Schnappschuss es/de + cat reist am Stern mit).
   //   opts.cat  = Modul-Kategorie (für Schnappschuss + stabile, sprachunabhängige Id).
   //   opts.copy = Kopier-Knopf je Satz (zum Weiterschicken).
+  // Track-fähige Seiten-Wahl für die Modul-Sätze/Glossare. Lernseite = das gelernte
+  // Kartenfeld des aktiven Tracks (SC.track.learnLang(): "es" im Reise-Track de-es,
+  // "en" im Locals-Track es-en UND bei HelloAbroad de-en). Muttersprache = Spanisch
+  // NUR im echten Locals-Track (es-en) – de-en lernt zwar auch Englisch, hat aber
+  // Deutsch als Muttersprache, deshalb an der Track-ID festmachen, nicht an learnLang
+  // (Muster wie features/compras.js:56-66). Der konstante spanische Satz (p.es) bleibt
+  // für alle Tracks vorhanden und trägt weiter die stabile, sprachunabhängige Fav-Id.
+  function phraseSides() {
+    const track = window.SC && window.SC.track;
+    const learnLang = (track && track.learnLang && track.learnLang()) || "es";
+    const nativeEs = !!(track && track.id && track.id() === "es-en");
+    return {
+      learnLang,
+      learnOf: (p) => p[learnLang] || p.es || p.de || "",
+      nativeOf: (p) => (nativeEs ? (p.es || p.de || "") : (p.de || p.es || "")),
+    };
+  }
+
   function phraseGroups(groups, opts) {
     const o = opts || {};
     const favOn = typeof o.fav === "function";
+    const { learnLang, learnOf, nativeOf } = phraseSides();
     const copyBtn = (p) => o.copy
-      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(p.es)}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: p.es }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">${renderIcon("lc:clipboard-list")}</span></button>`
+      ? `<button class="rg-copy" type="button" data-action="copy-phrase" data-text="${esc(learnOf(p))}" aria-label="${esc(t("discover.copyPhraseAria", { phrase: learnOf(p) }))}" title="${esc(t("discover.copyPhrase"))}"><span class="rg-copy__icon" aria-hidden="true">${renderIcon("lc:clipboard-list")}</span></button>`
       : "";
     const favBtn = (p) => {
       if (!favOn) return "";
-      const fid = favPhraseId(o.cat, p.es);
-      return favStar(fid, o.fav(fid), { cls: "rg-fav", snap: { es: p.es, de: p.de, cat: o.cat || "" } });
+      // Stabile Id am konstanten spanischen Satz (sprachunabhängig über alle Tracks);
+      // der Schnappschuss trägt aber die aktuell angezeigte Lern-/Muttersprachen-Seite.
+      const fid = favPhraseId(o.cat, p.es || p.en || p.de);
+      return favStar(fid, o.fav(fid), { cls: "rg-fav", snap: { es: learnOf(p), de: nativeOf(p), cat: o.cat || "" } });
     };
     const actions = (p) => {
       const a = favBtn(p) + copyBtn(p);
@@ -162,8 +183,8 @@
             return `
             <li class="rg-phrase${a ? " rg-phrase--row" : ""}">
               <span class="rg-phrase__text">
-                <span class="rg-phrase__es" lang="es">${esc(p.es)}</span>
-                <span class="rg-phrase__de">${esc(p.de)}</span>
+                <span class="rg-phrase__es" lang="${esc(learnLang)}">${esc(learnOf(p))}</span>
+                <span class="rg-phrase__de">${esc(nativeOf(p))}</span>
               </span>
               ${a}
             </li>`;
@@ -334,12 +355,14 @@
            </details>`;
   }
 
-  // Ein Glossar-Eintrag { es, de }.
+  // Ein Glossar-Eintrag { es, de, en }. Track-fähig wie phraseGroups: Lernseite folgt
+  // SC.track.learnLang() (en bei es-en/de-en), Muttersprache Spanisch nur im es-en-Track.
   function glossItem(g) {
+    const { learnLang, learnOf, nativeOf } = phraseSides();
     return `
       <li class="rg-gloss">
-        <span class="rg-gloss__es" lang="es">${esc(g.es)}</span>
-        <span class="rg-gloss__de">${esc(g.de)}</span>
+        <span class="rg-gloss__es" lang="${esc(learnLang)}">${esc(learnOf(g))}</span>
+        <span class="rg-gloss__de">${esc(nativeOf(g))}</span>
       </li>`;
   }
 
@@ -364,10 +387,14 @@
   // cat fürs Teilen, readingPerTopic/copyPhrases-Schalter). Leere Abschnitte fallen
   // weg. Reine Anzeige – nutzt die vorhandenen Regatear/Knigge-CSS-Klassen.
   function moduleSheet(vm, cfg) {
+    // HelloAbroad (de-en): das aufklappbare Lesetraining ist SPANISCH (es-Absätze
+    // mit antippbaren spanischen Vokabeln) und für englischlernende de-en-Nutzer
+    // sinnlos – im de-en-Track komplett unterdrücken (wie in features/fotografia.js).
+    const deEn = !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
     const topicBlock = (tp, i) => {
       // Optionales spanisches Lesetraining pro Thema: nur wenn das Modul es
       // einschaltet (cfg.readingPerTopic) UND das Thema einen es-Text trägt.
-      const reading = cfg.readingPerTopic ? readingDetails(tp) : "";
+      const reading = (cfg.readingPerTopic && !deEn) ? readingDetails(tp) : "";
       return `
       <details class="knigge-topic">
         <summary class="knigge-topic__head">

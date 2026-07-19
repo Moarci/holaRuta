@@ -39,6 +39,12 @@
     "valuables sensibly across several bags, and keeping an eye on your luggage. " +
     "First the tips, then the phrases you need for them.";
 
+  const INTRO_DEEN =
+    "Bevor es losgeht und gleich nach der Landung zählen ein paar praktische " +
+    "Handgriffe: online kommen, an Bargeld kommen, Geld und Wertsachen klug auf " +
+    "mehrere Gepäckstücke verteilen und das Gepäck im Blick behalten. Erst die " +
+    "Tipps, dann die englischen Sätze, die du dafür brauchst.";
+
   // ---------- Erklärung: die praktischen Handgriffe (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
@@ -47,6 +53,7 @@
       titleEn: "Getting online: SIM & eSIM",
       intro: "Eine lokale SIM (hier oft „chip“) ist meist viel billiger als Roaming. Am Flughafen ist es teurer – ein paar Schritte weiter im Laden oder im offiziellen Shop des Anbieters lohnt sich.",
       introEn: "A local SIM (often called „chip“ here) is usually far cheaper than roaming. At the airport it costs more – a few steps further into a shop or the provider's official store pays off.",
+      introDeEn: "Eine lokale SIM ist meist viel billiger als Roaming – für längere Trips oft günstiger als eine reine Reise-eSIM. Am Flughafen ist es teurer; ein Shop in der Stadt oder der offizielle Laden des Anbieters (z. B. EE, Vodafone, Three) lohnt sich.",
       dos: [
         "Vorab prüfen, ob dein Handy entsperrt (desbloqueado) und SIM- bzw. eSIM-fähig ist.",
         "Anbieter mit guter Netzabdeckung wählen (z. B. Claro, Movistar, Tigo, Entel, WOM – je nach Land).",
@@ -54,6 +61,14 @@
         "Das Datenpaket gleich aktivieren lassen und VOR dem Verlassen des Ladens testen (öffnet Maps/WhatsApp?).",
         "Eine eSIM (Airalo, Holafly o. Ä.) vorab kaufen, wenn du sofort bei der Landung online sein willst.",
         "Die PIN/PUK und die Nummer notieren – fürs Aufladen (recarga) und Entsperren.",
+      ],
+      dosDeEn: [
+        "Vorab prüfen, ob dein Handy entsperrt (unlocked) und SIM- bzw. eSIM-fähig ist.",
+        "Anbieter mit guter Netzabdeckung wählen (z. B. EE, Vodafone, Three in UK; AT&T, T-Mobile in den USA; Telstra in Australien).",
+        "Ausweis/Pass griffbereit haben – beim Kauf mancherorts verlangt.",
+        "Das Datenpaket gleich aktivieren lassen und VOR dem Verlassen des Ladens testen (öffnet Maps/WhatsApp?).",
+        "Eine eSIM (Airalo, Holafly o. Ä.) vorab kaufen, wenn du sofort bei der Landung online sein willst.",
+        "Die PIN/PUK und die Nummer notieren – fürs Aufladen (top-up) und Entsperren.",
       ],
       dosEn: [
         "Check beforehand that your phone is unlocked (desbloqueado) and SIM- or eSIM-capable.",
@@ -80,11 +95,19 @@
       titleEn: "Changing & withdrawing money",
       intro: "Bargeld ist in Lateinamerika oft König. Wechsle nur eine kleine Menge am Flughafen (schlechter Kurs) und hol den Rest am Geldautomaten (cajero) oder in einer seriösen Wechselstube (casa de cambio).",
       introEn: "Cash is often king in Latin America. Change only a small amount at the airport (poor rate) and get the rest from an ATM (cajero) or a reputable exchange office (casa de cambio).",
+      introDeEn: "In UK, USA & Co. zahlst du fast alles mit Karte – aber etwas Bargeld (Pfund/Dollar) schadet nie. Wechsle nur eine kleine Menge am Flughafen (schlechter Kurs) und hol den Rest am Geldautomaten (ATM, in UK „cash machine“) oder in einer seriösen Wechselstube.",
       dos: [
         "Eine kleine Menge Landeswährung schon dabeihaben oder am Airport wechseln – fürs Taxi/den Bus.",
         "Am cajero den Betrag in Landeswährung abheben und „ohne Umrechnung“ (sin conversión) wählen – der Kurs deiner Bank ist besser.",
         "Auf Gebühren achten: manche Automaten nehmen comisión; lieber einen größeren Betrag auf einmal holen.",
         "Den Kurs vorher grob kennen (App) und in der casa de cambio nachrechnen.",
+        "Scheine gleich prüfen und um kleinere Scheine bitten – große sind schwer loszuwerden.",
+      ],
+      dosDeEn: [
+        "Etwas Landeswährung (Pfund/Dollar) schon dabeihaben oder am Airport wechseln – fürs Taxi/den Bus.",
+        "Am Automaten in Landeswährung abheben und „ohne Umrechnung“ (without conversion) wählen – der Kurs deiner Bank ist besser.",
+        "Auf Gebühren achten: manche Automaten nehmen eine Gebühr; lieber einen größeren Betrag auf einmal holen.",
+        "Den Kurs vorher grob kennen (App) und in der Wechselstube nachrechnen.",
         "Scheine gleich prüfen und um kleinere Scheine bitten – große sind schwer loszuwerden.",
       ],
       dosEn: [
@@ -97,6 +120,11 @@
       donts: [
         "Nicht auf der Straße bei „cambistas“ mit Traumkursen wechseln – Falschgeld und Trickbetrug.",
         "Am Automaten nie „mit Umrechnung“ (con conversión / DCC) bestätigen – das ist teurer.",
+        "Nicht den ganzen Bargeldbedarf auf einmal mit dir herumtragen.",
+      ],
+      dontsDeEn: [
+        "Nicht bei dubiosen Straßenwechslern mit Traumkursen wechseln – Falschgeld und Trickbetrug.",
+        "Am Automaten nie „mit Umrechnung“ (with conversion / DCC) bestätigen – das ist teurer.",
         "Nicht den ganzen Bargeldbedarf auf einmal mit dir herumtragen.",
       ],
       dontsEn: [
@@ -148,6 +176,12 @@
         "Bei verlorenem Fluggepäck den Standort als Beleg fürs Personal nutzen („mi maleta está allí“).",
         "Einen zweiten kleinen Tracker in den Tagesrucksack oder ans Schlüsselbund.",
       ],
+      dosDeEn: [
+        "Einen Tracker tief und versteckt ins aufgegebene Gepäck legen (nicht in Außentaschen).",
+        "Vor der Reise koppeln und testen; Batterie frisch oder Akku geladen.",
+        "Bei verlorenem Fluggepäck den Standort als Beleg fürs Personal nutzen („my bag is right here“).",
+        "Einen zweiten kleinen Tracker in den Tagesrucksack oder ans Schlüsselbund.",
+      ],
       dosEn: [
         "Put a tracker deep and hidden in your checked luggage (not in outside pockets).",
         "Pair and test it before the trip; fresh battery or charged up.",
@@ -178,6 +212,13 @@
         "Powerbank, Ladekabel und Elektronik ins Handgepäck (Powerbank im Frachtraum verboten).",
         "Den Gepäckschein (talón/etiqueta) gut aufheben – ohne ihn keine Verlustmeldung.",
       ],
+      dosDeEn: [
+        "Wichtige (vor allem verschreibungspflichtige) Medikamente IMMER ins Handgepäck.",
+        "Einen Satz Wechselwäsche, Mini-Hygiene und ein frisches Oberteil dabei.",
+        "Pass, Karten, Bargeld und Kopien gehören nie in den aufgegebenen Rucksack.",
+        "Powerbank, Ladekabel und Elektronik ins Handgepäck (Powerbank im Frachtraum verboten).",
+        "Den Gepäckschein (baggage tag / claim tag) gut aufheben – ohne ihn keine Verlustmeldung.",
+      ],
       dosEn: [
         "Important (especially prescription) medication ALWAYS in your carry-on.",
         "A change of underwear, mini toiletries and a fresh top with you.",
@@ -204,6 +245,12 @@
       introEn: "In some regions and at peak times beds are scarce – or the well-known top hostels sell out fast. Then it pays to book earlier rather than turning up and hoping for the best.",
       dos: [
         "In Hotspots und zur Hochsaison (Patagonien, Cusco/Machu Picchu, Inseln, Festivals) Betten und Touren Tage bis Wochen vorher sichern.",
+        "Sehr beliebte oder bekannte Hostels früh buchen – die sind oft als Erste ausgebucht.",
+        "Die erste Nacht nach einer langen Anreise immer vorab buchen (müde ankommen und erst suchen ist mies).",
+        "Nachtbusse und Fähren mit begrenzten Plätzen rechtzeitig reservieren.",
+      ],
+      dosDeEn: [
+        "In Hotspots und zur Hochsaison (z. B. schottische Highlands, Lake District, Nationalparks in den USA, Festivals) Betten und Touren Tage bis Wochen vorher sichern.",
         "Sehr beliebte oder bekannte Hostels früh buchen – die sind oft als Erste ausgebucht.",
         "Die erste Nacht nach einer langen Anreise immer vorab buchen (müde ankommen und erst suchen ist mies).",
         "Nachtbusse und Fähren mit begrenzten Plätzen rechtzeitig reservieren.",
@@ -281,7 +328,7 @@
 
   // ---------- Glossar: Schlüsselwörter rund um SIM, Geld & Gepäck ----------
   const GLOSSARY = [
-    { es: "el chip / la SIM", de: "die SIM-Karte (LatAm: „chip“)", en: "the SIM card (LatAm: „chip“)" },
+    { es: "el chip / la SIM", de: "die SIM-Karte (LatAm: „chip“)", en: "the SIM card (LatAm: „chip“)", deDeEn: "die SIM-Karte", enDeEn: "the SIM card" },
     { es: "la recarga", de: "das Aufladen (von Prepaid-Guthaben)", en: "the top-up (of prepaid credit)" },
     { es: "el saldo", de: "das (Prepaid-)Guthaben", en: "the (prepaid) credit/balance" },
     { es: "los datos / los gigas", de: "das mobile Datenvolumen", en: "the mobile data" },
@@ -308,7 +355,7 @@
     { icon: "lc:battery-full", item: "Powerbank & Ladekabel", itemEn: "Power bank & charging cable", why: "Die Powerbank MUSS ins Handgepäck (im Frachtraum verboten).", whyEn: "The power bank MUST go in the carry-on (banned in the hold)." },
     { icon: "lc:stamp", item: "Pass, Karten & Bargeld", itemEn: "Passport, cards & cash", why: "Dokumente, Geld und Kopien nie aufgeben – immer am Körper bzw. im Handgepäck.", whyEn: "Never check in documents, money and copies – keep them on you or in the carry-on." },
     { icon: "lc:camera", item: "Wertsachen & Elektronik", itemEn: "Valuables & electronics", why: "Kamera, Laptop, Ersatzakku – nichts davon in den Frachtraum.", whyEn: "Camera, laptop, spare battery – none of it in the hold." },
-    { icon: "lc:ear", item: "Zwei Packungen Ohrstöpsel", itemEn: "Two packs of earplugs", why: "In LatAm oft schwer zu finden, im Dorm und im Nachtbus aber Gold wert – guter Schlaf gibt dir die Energie für den Tag.", whyEn: "Often hard to find in LatAm, but worth their weight in gold in the dorm and on the night bus – good sleep gives you the energy for the day." },
+    { icon: "lc:ear", item: "Zwei Packungen Ohrstöpsel", itemEn: "Two packs of earplugs", why: "In LatAm oft schwer zu finden, im Dorm und im Nachtbus aber Gold wert – guter Schlaf gibt dir die Energie für den Tag.", whyEn: "Often hard to find in LatAm, but worth their weight in gold in the dorm and on the night bus – good sleep gives you the energy for the day.", whyDeEn: "Im Dorm und im Nachtbus Gold wert – guter Schlaf gibt dir die Energie für den Tag." },
   ];
 
   window.SC = window.SC || {};

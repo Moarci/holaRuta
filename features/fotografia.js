@@ -31,9 +31,12 @@
     const fotografia = window.SC.fotografia; // live: kann per navAfterLoad nachgeladen sein
     if (!fotografia) return { intro: "", topics: [], phrases: [], sharing: null, apps: [], glossary: [], checklist: [] };
     const en = ctx.i18n && ctx.i18n.getLang() === "en";
+    const deEn = !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
     const loc = (v) => (ctx.i18n ? ctx.i18n.localizeDeep(v) : v);
     return {
-      intro: (en && fotografia.INTRO_EN) ? fotografia.INTRO_EN : fotografia.INTRO,
+      intro: deEn && fotografia.INTRO_DEEN ? fotografia.INTRO_DEEN
+           : (en && fotografia.INTRO_EN) ? fotografia.INTRO_EN
+           : fotografia.INTRO,
       topics: loc(fotografia.TOPICS || []),
       phrases: loc(fotografia.PHRASES || []),
       sharing: fotografia.SHARING ? loc(fotografia.SHARING) : null,
@@ -66,6 +69,10 @@
     '</svg>';
 
   function renderFotos(vm) {
+    // de-en-Track (HelloAbroad): das spanische Lesetraining pro Thema ist für
+    // Englisch-Lernende sinnlos → komplett ausblenden. Tipps/Sätze/Teilen/Apps
+    // bleiben. de-es bleibt unverändert (Lesetraining wie gehabt).
+    const deEn = !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
     // Ein Thema: aufklappbar wie bei Knigge/Salud, plus spanisches Lesetraining.
     const topicBlock = (tp, i) => `
         <details class="knigge-topic">
@@ -78,7 +85,7 @@
             ${tp.intro ? `<p class="knigge-intro">${esc(tp.intro)}</p>` : ""}
             ${tp.dos && tp.dos.length ? `<ul class="knigge-list">${kniggeList(tp.dos, "knigge-do", "✅")}</ul>` : ""}
             ${tp.donts && tp.donts.length ? `<ul class="knigge-list">${kniggeList(tp.donts, "knigge-dont", "🚫")}</ul>` : ""}
-            ${readingDetails(tp)}
+            ${deEn ? "" : readingDetails(tp)}
             ${tipsShareBtn("fotos", i)}
           </div>
         </details>`;
@@ -138,7 +145,7 @@
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${renderIcon("lc:camera")} Fotos y videos</div>
+          <div class="topbar__title">${renderIcon("lc:camera")} ${esc(ctx.i18n.t("discover.fotosName"))}</div>
           <span></span>
         </div>
         <p class="pageintro">${esc(vm.intro)}</p>

@@ -43,6 +43,18 @@
     "for a moment – and finally, how to share your shots (AirDrop, Quick Share, " +
     "apps like Mymories).";
 
+  // de-en-Track (HelloAbroad): gleiche deutsche Einleitung – der Inhalt ist
+  // universell (Motiv, Licht, Posen, Teilen); nichts ist Spanien-/LatAm-spezifisch,
+  // darum keine inhaltliche Umschreibung nötig. Das spanische Lesetraining der
+  // Themen wird im Feature-Modul für de-en ausgeblendet.
+  const INTRO_DEEN =
+    "Die schönsten Erinnerungen stecken in Fotos und Videos – und tolle Bilder " +
+    "macht man mit ein paar einfachen Handgriffen, nicht mit der teuersten Kamera. " +
+    "Hier lernst du, worauf es ankommt: Motiv und Bildaufbau, die richtigen " +
+    "Einstellungen, das beste Licht und natürliche Posen. Dazu die englischen Sätze, " +
+    "um andere um ein Foto zu bitten oder kurz um Platz – und am Ende, wie du deine " +
+    "Bilder teilst (AirDrop, Quick Share, Apps wie Mymories).";
+
   // ---------- Erklärung: tolle Reisebilder (aufklappbar, mit ES-Lesetraining) ----------
   const TOPICS = [
     {
@@ -416,7 +428,7 @@
   // ---------- Glossar: Schlüsselwörter rund ums Fotografieren ----------
   const GLOSSARY = [
     { es: "la foto / sacar una foto", de: "das Foto / ein Foto machen", en: "the photo / to take a photo" },
-    { es: "tomar una foto", de: "ein Foto machen (LatAm)", en: "to take a photo (LatAm)" },
+    { es: "tomar una foto", de: "ein Foto machen (LatAm)", en: "to take a photo (LatAm)", deDeEn: "ein Foto machen", enDeEn: "to take a photo" },
     { es: "grabar un video", de: "ein Video aufnehmen", en: "to record a video" },
     { es: "la cámara", de: "die Kamera", en: "the camera" },
     { es: "la lente", de: "die Linse / das Objektiv", en: "the lens" },
@@ -447,5 +459,5 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.fotografia = { INTRO, INTRO_EN, TOPICS, PHRASES, SHARING, APPS, GLOSSARY, CHECKLIST };
+  window.SC.fotografia = { INTRO, INTRO_EN, INTRO_DEEN, TOPICS, PHRASES, SHARING, APPS, GLOSSARY, CHECKLIST };
 })();

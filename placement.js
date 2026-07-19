@@ -22,7 +22,7 @@
   // ---------- Fragenkatalog (V1: 24 Fragen) ----------
   // type "mc": options + correctIndex.  type "free": accept[] (akzeptierte Antworten).
   // skill steuert die Skill-Aufschlüsselung; block die Anzeige-Gruppierung.
-  var QUESTIONS = [
+  var QUESTIONS_ES = [
     // --- Block 1: Verstehen (Spanisch lesen → Bedeutung wählen) ---
     { id: "pt_un_001", block: "understanding", skill: "understanding", level: "A1", type: "mc",
       promptDe: "Was bedeutet dieser Satz?", questionEs: "¿Cuánto cuesta?",
@@ -194,6 +194,190 @@
       explanationDe: "„¿Cuánto cuesta?“ ist die Standardfrage nach dem Preis (Akzente/Satzzeichen egal)." },
   ];
 
+  // ---------- Fragenkatalog EN (de-en Track: UI Deutsch, gelernt: Englisch) ----------
+  // 1:1 struktureller Spiegel von QUESTIONS_ES: gleiche id/block/skill/level/type/
+  // expectedTimeSec und (bei mc) gleicher correctIndex – nur der INHALT prüft die
+  // äquivalente ENGLISCHE Kompetenz auf demselben CEFR-Niveau. So bleibt die
+  // Kalibrierung der adaptiven Engine identisch. questionEs enthält hier den
+  // ENGLISCHEN Satz/das englische Wort (Feldname bleibt, der Renderer liest ihn).
+  var QUESTIONS_EN = [
+    // --- Block 1: Verstehen (Englisch lesen → Bedeutung wählen) ---
+    { id: "pt_un_001", block: "understanding", skill: "understanding", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "How much is it?",
+      options: ["Wo ist es?", "Wie viel kostet es?", "Ich brauche Hilfe.", "Ich habe eine Reservierung."],
+      correctIndex: 1, expectedTimeSec: 8,
+      explanationDe: "„How much is it?“ = Wie viel kostet es? Einer der wichtigsten Reisesätze." },
+    { id: "pt_un_002", block: "understanding", skill: "understanding", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "The bill, please.",
+      options: ["Die Rechnung, bitte.", "Einen Tisch, bitte.", "Das Zimmer, bitte.", "Die Speisekarte, bitte."],
+      correctIndex: 0, expectedTimeSec: 8,
+      explanationDe: "„The bill, please“ = Die Rechnung, bitte." },
+    { id: "pt_un_003", block: "understanding", skill: "understanding", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Where is the bathroom?",
+      options: ["Wo ist der Bus?", "Wo ist die Toilette?", "Wo ist das Hostel?", "Wo ist der Markt?"],
+      correctIndex: 1, expectedTimeSec: 8,
+      explanationDe: "„bathroom“ (auch „toilet“/„restroom“) ist die Toilette." },
+    { id: "pt_un_004", block: "understanding", skill: "understanding", level: "A2", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "I'm at the hostel.",
+      options: ["Ich war im Hostel.", "Ich bin im Hostel.", "Ich werde im Hostel sein.", "Ich gehe zum Hostel."],
+      correctIndex: 1, expectedTimeSec: 9,
+      explanationDe: "„I'm“ = I am = ich bin (gerade). Present Simple von to be." },
+    { id: "pt_un_005", block: "understanding", skill: "understanding", level: "A2", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "There was no hot water.",
+      options: ["Es gibt kein warmes Wasser.", "Es gab kein warmes Wasser.", "Es wird kein warmes Wasser geben.", "Ich brauche warmes Wasser."],
+      correctIndex: 1, expectedTimeSec: 11,
+      explanationDe: "„there was“ = es gab (Past Simple). Nützlich, um ein Problem zu erklären." },
+    { id: "pt_un_006", block: "understanding", skill: "understanding", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "I was waiting for the bus when it started to rain.",
+      options: ["Ich werde auf den Bus warten, wenn es regnet.", "Ich wartete gerade auf den Bus, als es zu regnen begann.", "Ich habe den Bus genommen, weil es regnete.", "Ich warte auf den Bus, sobald es regnet."],
+      correctIndex: 1, expectedTimeSec: 15,
+      explanationDe: "„was waiting“ (Past Continuous) + „started“ (Past Simple) = lief gerade, als etwas passierte." },
+
+    // --- Block 2: Reagieren (Situation → passende englische Äußerung) ---
+    { id: "pt_re_001", block: "reaction", skill: "reaction", level: "A1", type: "mc",
+      promptDe: "Du willst im Restaurant bezahlen. Was sagst du?",
+      options: ["The bill, please.", "I have a reservation.", "Where is the bus?", "I don't understand."],
+      correctIndex: 0, expectedTimeSec: 9,
+      explanationDe: "Kurz, höflich und im Restaurant sehr realistisch." },
+    { id: "pt_re_002", block: "reaction", skill: "reaction", level: "A1", type: "mc",
+      promptDe: "Du verstehst etwas nicht. Was sagst du?",
+      options: ["I'm fine.", "I don't understand.", "Nice to meet you.", "See you later."],
+      correctIndex: 1, expectedTimeSec: 9,
+      explanationDe: "„I don't understand“ = Ich verstehe nicht." },
+    { id: "pt_re_003", block: "reaction", skill: "reaction", level: "A1", type: "mc",
+      promptDe: "Du begrüßt jemanden am Nachmittag. Was passt?",
+      options: ["Good morning.", "Good afternoon.", "Good night.", "See you tomorrow."],
+      correctIndex: 1, expectedTimeSec: 9,
+      explanationDe: "„Good afternoon“ = Guten Tag/Nachmittag (ab Mittag)." },
+    { id: "pt_re_004", block: "reaction", skill: "reaction", level: "A2", type: "mc",
+      promptDe: "Du kommst im Hostel an und willst an der Rezeption sagen, dass du eine Reservierung hast. Was passt?",
+      options: ["I have a reservation.", "I want a reservation.", "I look for a reservation.", "I make a reservation."],
+      correctIndex: 0, expectedTimeSec: 12,
+      explanationDe: "„I have a reservation“ = Ich habe eine Reservierung – der Standardsatz beim Check-in." },
+    { id: "pt_re_005", block: "reaction", skill: "reaction", level: "A2", type: "mc",
+      promptDe: "Du suchst den Weg zum Busbahnhof. Was fragst du?",
+      options: ["How much is the bus?", "How do I get to the bus station?", "What time does the bus leave?", "Where do I buy the ticket?"],
+      correctIndex: 1, expectedTimeSec: 12,
+      explanationDe: "„How do I get to…?“ = Wie komme ich nach/zu…? – fragt nach dem Weg." },
+
+    // --- Block 3: Wortschatz / Kontext ---
+    { id: "pt_vo_001", block: "vocab", skill: "vocab", level: "A1", type: "mc",
+      promptDe: "Was bedeutet „the ticket“?",
+      options: ["das Gepäck", "die Fahrkarte / das Ticket", "der Schlüssel", "die Rechnung"],
+      correctIndex: 1, expectedTimeSec: 8,
+      explanationDe: "„the ticket“ = die Fahrkarte / das Ticket." },
+    { id: "pt_vo_002", block: "vocab", skill: "vocab", level: "A1", type: "mc",
+      promptDe: "Was bedeutet „the key“?",
+      options: ["der Schlüssel", "das Zimmer", "die Tür", "das Bett"],
+      correctIndex: 0, expectedTimeSec: 8,
+      explanationDe: "„the key“ = der Schlüssel." },
+    { id: "pt_vo_003", block: "vocab", skill: "vocab", level: "A2", type: "mc",
+      promptDe: "Du hast Kopfschmerzen und gehst in die Apotheke. Was brauchst du?",
+      options: ["a pillow", "a pill", "a towel", "a blanket"],
+      correctIndex: 1, expectedTimeSec: 10,
+      explanationDe: "„a pill“ = eine Tablette. (pillow = Kissen, towel = Handtuch, blanket = Decke)" },
+    { id: "pt_vo_004", block: "understanding", skill: "understanding", level: "A2", type: "mc",
+      promptDe: "Was bedeutet „Do you have a room available?“",
+      options: ["Haben Sie ein freies Zimmer?", "Haben Sie einen freien Tisch?", "Ist das Zimmer sauber?", "Wie viel kostet das Zimmer?"],
+      correctIndex: 0, expectedTimeSec: 11,
+      explanationDe: "„room available“ = freies/verfügbares Zimmer." },
+
+    // --- Block 4: Konjugation (englische Verbformen, reisepraktisch) ---
+    { id: "pt_cj_001", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",
+      promptDe: "Du willst sagen: Ich brauche Hilfe. Welche Form passt?",
+      options: ["You need help.", "I need help.", "We need help.", "They need help."],
+      correctIndex: 1, expectedTimeSec: 10,
+      explanationDe: "„I need help“ = Ich brauche Hilfe (Present Simple, 1. Person)." },
+    { id: "pt_cj_002", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",
+      promptDe: "Du fragst einen anderen Reisenden: Reist du allein? Was passt?",
+      options: ["Am I travelling alone?", "Are you travelling alone?", "Is he travelling alone?", "Are we travelling alone?"],
+      correctIndex: 1, expectedTimeSec: 11,
+      explanationDe: "„Are you…?“ = die richtige to be-Form für „you“ (du)." },
+    { id: "pt_cj_003", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",
+      promptDe: "Du und ein anderer Reisender wollt zusammen gehen. Was passt?",
+      options: ["Let's go together.", "They go together.", "I goes together.", "You going together."],
+      correctIndex: 0, expectedTimeSec: 11,
+      explanationDe: "„Let's go“ = lass uns gehen (we-Form). Sehr nützlich in der Gruppe." },
+    { id: "pt_cj_004", block: "conjugation", skill: "conjugation", level: "A2", type: "mc",
+      promptDe: "Du sprichst über einen Freund: Er nimmt den Bus. Welche Form ist richtig?",
+      options: ["He take the bus.", "He takes the bus.", "He taking the bus.", "He taken the bus."],
+      correctIndex: 1, expectedTimeSec: 13,
+      explanationDe: "3. Person Singular (he/she/it) bekommt ein -s: „He takes the bus.“" },
+
+    // --- Block 5: Zeiten (Gegenwart / Verlauf / Zukunft / Vergangenheit) ---
+    { id: "pt_ti_001", block: "tenses", skill: "tenses", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "I'm going to take the bus tomorrow.",
+      options: ["Ich nehme morgen den Bus.", "Ich habe gestern den Bus genommen.", "Ich nehme gerade den Bus.", "Ich habe keinen Bus."],
+      correctIndex: 0, expectedTimeSec: 11,
+      explanationDe: "„going to + Infinitiv“ ist die einfache Zukunft: going to take = ich werde nehmen." },
+    { id: "pt_ti_002", block: "tenses", skill: "tenses", level: "A1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "I'm waiting for a taxi.",
+      options: ["Ich habe ein Taxi genommen.", "Ich warte gerade auf ein Taxi.", "Ich werde ein Taxi bestellen.", "Ich brauche kein Taxi."],
+      correctIndex: 1, expectedTimeSec: 11,
+      explanationDe: "„am/is/are + -ing“ (Present Continuous) beschreibt, was gerade passiert." },
+    { id: "pt_ti_003", block: "tenses", skill: "tenses", level: "A2", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "I arrived yesterday.",
+      options: ["Ich komme morgen an.", "Ich komme gerade an.", "Ich bin gestern angekommen.", "Ich möchte ankommen."],
+      correctIndex: 2, expectedTimeSec: 11,
+      explanationDe: "„yesterday“ (gestern) + Past Simple: arrived = ich kam an / bin angekommen." },
+
+    // --- Zusätzliche Stufen für den adaptiven Test (A0 ganz einfach, B1 fordernd) ---
+    { id: "pt_un_a0a", block: "understanding", skill: "understanding", level: "A0", type: "mc",
+      promptDe: "Was bedeutet dieses Wort?", questionEs: "Hello.",
+      options: ["Hallo", "Danke", "Tschüss", "Bitte"], correctIndex: 0, expectedTimeSec: 6,
+      explanationDe: "„Hello“ = Hallo." },
+    { id: "pt_un_a0b", block: "understanding", skill: "understanding", level: "A0", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "Water, please.",
+      options: ["Wasser, bitte.", "Brot, bitte.", "Die Rechnung, bitte.", "Hilfe, bitte."],
+      correctIndex: 0, expectedTimeSec: 7, explanationDe: "„water“ = Wasser." },
+    { id: "pt_vo_a0a", block: "vocab", skill: "vocab", level: "A0", type: "mc",
+      promptDe: "Was bedeutet „yes“?",
+      options: ["ja", "nein", "vielleicht", "gut"], correctIndex: 0, expectedTimeSec: 6,
+      explanationDe: "„yes“ = ja, „no“ = nein." },
+    { id: "pt_re_a0a", block: "reaction", skill: "reaction", level: "A0", type: "mc",
+      promptDe: "Jemand sagt „Thank you.“ Was antwortest du?",
+      options: ["You're welcome.", "Good morning.", "No.", "Goodbye."], correctIndex: 0, expectedTimeSec: 8,
+      explanationDe: "„You're welcome“ = gern geschehen / keine Ursache." },
+
+    { id: "pt_re_a2b", block: "reaction", skill: "reaction", level: "A2", type: "mc",
+      promptDe: "Du fragst nach der Abfahrtszeit des Busses. Was passt?",
+      options: ["How much is the bus?", "What time does the bus leave?", "Where is the bus?", "Is the bus direct?"],
+      correctIndex: 1, expectedTimeSec: 12, explanationDe: "„What time does … leave?“ = Um wie viel Uhr fährt … ab?" },
+
+    { id: "pt_cj_b1a", block: "conjugation", skill: "conjugation", level: "B1", type: "mc",
+      promptDe: "Im Restaurant willst du höflich sagen: Bringen Sie mir bitte die Rechnung. Was passt?",
+      options: ["Could you bring me the bill, please?", "You bring me the bill.", "You brings me the bill.", "You brought me the bill."],
+      correctIndex: 0, expectedTimeSec: 15, explanationDe: "„Could you…?“ ist die höfliche Bitte – höflicher als der einfache Present Simple." },
+    { id: "pt_re_b1a", block: "reaction", skill: "reaction", level: "B1", type: "mc",
+      promptDe: "Du willst besonders höflich/vorsichtig fragen: Könnten Sie mir helfen? Was passt?",
+      options: ["Can you help me?", "Could you help me?", "You can help me?", "Help me!"],
+      correctIndex: 1, expectedTimeSec: 15, explanationDe: "„Could you…?“ ist die besonders höfliche Bitte – höflicher als „Can you…?“ (direkter) oder der Imperativ „Help me!“." },
+    { id: "pt_ti_b1a", block: "tenses", skill: "tenses", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "I've already eaten, thanks.",
+      options: ["Ich esse gerade.", "Ich habe schon gegessen, danke.", "Ich werde essen.", "Ich aß gestern."],
+      correctIndex: 1, expectedTimeSec: 14, explanationDe: "„have/has + Partizip“ (Present Perfect): I've eaten = ich habe gegessen; „already“ = schon." },
+    { id: "pt_un_b1a", block: "understanding", skill: "understanding", level: "B1", type: "mc",
+      promptDe: "Was bedeutet dieser Satz?", questionEs: "If I had time, I would go to the beach.",
+      options: ["Wenn ich Zeit habe, gehe ich an den Strand.", "Wenn ich Zeit hätte, würde ich an den Strand gehen.", "Ich hatte Zeit und ging an den Strand.", "Ich werde Zeit haben für den Strand."],
+      correctIndex: 1, expectedTimeSec: 16, explanationDe: "„If I had … I would …“ (Conditional II) = irreale Bedingung: hätte ich …, würde ich …" },
+
+    // --- Block 6: Freie Antwort (kurz schreiben; groß-/kleinschreib-/satzzeichentolerant) ---
+    { id: "pt_fr_001", block: "free", skill: "free", level: "A1", type: "free",
+      promptDe: "Schreib auf Englisch: Ich möchte einen Kaffee.",
+      accept: ["i want a coffee", "i would like a coffee", "a coffee please", "can i have a coffee", "can i have a coffee please", "i want a coffee please"], solutionEs: "I'd like a coffee.", expectedTimeSec: 14,
+      explanationDe: "„I'd like a coffee.“ = Ich möchte einen Kaffee. (Groß-/Kleinschreibung/Satzzeichen egal)" },
+    { id: "pt_fr_002", block: "free", skill: "free", level: "A2", type: "free",
+      promptDe: "Schreib auf Englisch die Frage: Wie viel kostet das?",
+      accept: ["how much is it", "how much is this", "how much is that", "how much does it cost", "how much does this cost", "how much does that cost", "what does it cost", "how much"], solutionEs: "How much is it?", expectedTimeSec: 16,
+      explanationDe: "„How much is it?“ ist die Standardfrage nach dem Preis (Groß-/Kleinschreibung/Satzzeichen egal)." },
+  ];
+
+  // Aktiven Fragenkatalog nach Track wählen: „en“ gelernt -> EN, sonst ES.
+  // In Node-Tests (kein window.SC.track) fällt es auf QUESTIONS_ES zurück.
+  function activeQuestions() {
+    return (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang() === "en") ? QUESTIONS_EN : QUESTIONS_ES;
+  }
+
   // Kommunikation vs. Grammatik (für das Profil + die Empfehlung).
   var COMM_SKILLS = { understanding: 1, reaction: 1, vocab: 1, free: 1 };
   var GRAMMAR_SKILLS = { conjugation: 1, tenses: 1 };
@@ -248,7 +432,7 @@
     return pool[0];
   }
 
-  function freeQuestions(questions) { return (questions || QUESTIONS).filter(function (q) { return q.type === "free"; }); }
+  function freeQuestions(questions) { return (questions || activeQuestions()).filter(function (q) { return q.type === "free"; }); }
 
   // ---------- IRT-artige Einschätzung + Zuverlässigkeit ----------
   // „Demonstriertes“ Niveau: die höchste Stufe, auf der mehr richtig als falsch
@@ -337,7 +521,8 @@
   }
 
   function questionById(id) {
-    for (var i = 0; i < QUESTIONS.length; i++) if (QUESTIONS[i].id === id) return QUESTIONS[i];
+    var qs = activeQuestions();
+    for (var i = 0; i < qs.length; i++) if (qs[i].id === id) return qs[i];
     return null;
   }
 
@@ -447,7 +632,10 @@
   }
 
   SC.placement = {
-    QUESTIONS: QUESTIONS,
+    QUESTIONS: activeQuestions(),
+    QUESTIONS_ES: QUESTIONS_ES,
+    QUESTIONS_EN: QUESTIONS_EN,
+    activeQuestions: activeQuestions,
     COMM_SKILLS: COMM_SKILLS,
     GRAMMAR_SKILLS: GRAMMAR_SKILLS,
     LEVEL_ORDER: LEVEL_ORDER,

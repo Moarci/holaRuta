@@ -269,27 +269,41 @@ test("Entdecken (HelloAbroad de-en): deutsche Modulnamen, adoptierte Kacheln da,
   assert.equal(window.SC.track.id(), "de-en", "de-en-Track aktiv");
   const d = driver(root);
   d.click("set-tab", { tab: "entdecken" });
-  // Adoptierte + weiterhin sinnvolle Kacheln (open-precios via need:"speech" im
-  // Stub ausgeblendet – seine de-en-Logik prüft der Precios-Test separat).
+  // Adoptierte Kernmodule + die erweiterte Ratgeber-/Test-Auswahl (open-precios via
+  // need:"speech" im Stub ausgeblendet – seine de-en-Logik prüft der Precios-Test
+  // separat). Die sieben Ratgeber-Blätter (Knigge/Logistik/Gesundheit/Fotos/
+  // Nachhaltig/Rechte/Reisespiele), das Quiz und die beiden Tests sind jetzt de-en.
   for (const a of ["open-favorites", "open-spickzettel", "open-cuerpo",
-    "open-compras", "open-frases", "open-endless", "open-yesto"]) {
+    "open-compras", "open-frases", "open-endless", "open-yesto",
+    "open-quiz-setup", "open-knigge", "open-logistica", "open-salud", "open-fotos",
+    "open-responsable", "open-derechos", "open-placement"]) {
     assert.ok(d.find(a), `de-en-Kachel ${a} sichtbar`);
   }
-  // Spanisch-content-gebundene bzw. reise-/locals-spezifische Module bleiben weg.
-  for (const a of ["open-quiz-setup", "open-dialogos", "open-banderas",
-    "open-conjugacion", "open-jerga", "open-regatear", "open-hostel", "open-info",
-    "open-historia", "open-venue-roleplay"]) {
+  // Rein spanisch-content-gebundene bzw. reise-/locals-/LatAm-spezifische Module
+  // bleiben weg (Spanisch-Grammatik, LatAm-Kultur, Locals-Rollenspiele). Der
+  // ausführliche Nivel-Test (open-assessment, eigener EN-Fragenkatalog) und die
+  // Reisespiele (open-juegos, stark LatAm-Spielkultur) folgen separat.
+  for (const a of ["open-dialogos", "open-banderas", "open-conjugacion",
+    "open-tiempos", "open-jerga", "open-regatear", "open-hostel", "open-info",
+    "open-historia", "open-flirt", "open-bailar", "open-musica", "open-cafe",
+    "open-venue-roleplay", "open-med-ciudad", "open-med-paisa", "open-assessment",
+    "open-juegos"]) {
     assert.ok(!d.find(a), `Kachel ${a} im de-en-Track ausgeblendet`);
   }
   const html = d.html();
-  // Benennungen sind deutsch …
+  // Benennungen sind deutsch (Kernmodule + adoptierte Ratgeber/Tests) …
   for (const name of ["Notfall-Sätze", "Einkaufsliste", "Der Körper",
-    "Meine Vokabeln", "Satzbaukasten", "Vokabeln ohne Ende", "Was ist das?"]) {
+    "Meine Vokabeln", "Satzbaukasten", "Vokabeln ohne Ende", "Was ist das?",
+    "Reise-Knigge", "Reise-Logistik", "Gesund unterwegs", "Fotos &amp; Videos",
+    "Nachhaltig reisen", "Deine Rechte", "Einstufungs-Check"]) {
     assert.ok(html.indexOf(name) >= 0, `deutscher Modulname „${name}" sichtbar`);
   }
-  // … nicht die spanischen Marken.
+  // … nicht die spanischen Marken (auch nicht der HolaRuta-Marken-Check).
   for (const es of ["Supervivencia", "Lista de compras", "El Cuerpo", "Mi léxico",
-    "Vocabulario sin fin", "Frases flexibles", "¿Y esto?"]) {
+    "Vocabulario sin fin", "Frases flexibles", "¿Y esto?",
+    "Etiqueta de viaje", "Logística de viaje", "Salud y energía", "Fotos y videos",
+    "Viaja responsable", "Conoce tus derechos", "Juegos de viaje", "Definiciones",
+    "HolaRuta-Check"]) {
     assert.ok(html.indexOf(es) < 0, `spanischer Name „${es}" nicht mehr sichtbar`);
   }
 });

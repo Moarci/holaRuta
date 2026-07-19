@@ -43,6 +43,14 @@
         "Shared kitchen: wash up straight away, put dishes away, label your own food in the fridge.",
         "Introduce yourself briefly when you arrive – a „Hola, soy nuevo aquí“ breaks the ice.",
       ],
+      dosDeEn: [
+        "Nachtruhe ab ca. 22–23 Uhr: leise reden, kein grelles Deckenlicht – nutze die Handy-Taschenlampe.",
+        "Wenn du früh los musst, packe deinen Rucksack schon am Vorabend, nicht im dunklen Dorm.",
+        "Kopfhörer für Musik/Videos benutzen und das Handy auf lautlos stellen.",
+        "Bring ein eigenes Schloss mit und schließ Wertsachen ins Fach – im Hostel heißt das einfach „locker“.",
+        "Gemeinschaftsküche: sofort abspülen, Geschirr wegräumen, eigenes Essen im Kühlschrank beschriften.",
+        "Stell dich kurz vor, wenn du ankommst – ein „Hi, I'm new here“ bricht das Eis.",
+      ],
       donts: [
         "Kein Deckenlicht anschalten, wenn andere schlafen.",
         "Nachts nicht in Plastiktüten rascheln und keine Telefonate im Dorm führen.",
@@ -79,6 +87,13 @@
         "Only recline your seat gently and, when getting off, check you take the right luggage.",
         "At short stops, ask: „¿Cuánto tiempo paramos?“ – so you don't miss the bus.",
       ],
+      dosDeEn: [
+        "Wertsachen (Pass, Geld, Handy) immer am Körper tragen, nie im Gepäckfach oder über dem Sitz.",
+        "Im Nachtbus (National Express, Greyhound, Megabus) Jacke oder Schal dabeihaben – die Klimaanlage läuft oft eiskalt.",
+        "Ticket und Gepäckabschnitt gut aufheben und die Endhaltestelle vorher kennen.",
+        "Den Sitz nur sachte zurücklehnen und beim Aussteigen prüfen, ob das richtige Gepäck mitkommt.",
+        "Bei kurzen Stopps fragen: „How long do we stop here?“ – damit du den Bus nicht verpasst.",
+      ],
       donts: [
         "Die Tasche nicht offen am Gang oder lose unter dem Sitz liegen lassen.",
         "Keine laute Musik ohne Kopfhörer; nicht den Sitznachbarn mit Gepäck oder Beinen zustellen.",
@@ -99,6 +114,7 @@
       titleEn: "Groups & people",
       intro: "Reisende sind offen – ein ehrliches „Hola“ öffnet fast überall Türen.",
       introEn: "Travellers are open – an honest „Hola“ opens doors almost everywhere.",
+      introDeEn: "Reisende sind offen – ein ehrliches „Hi“ öffnet fast überall Türen.",
       dos: [
         "Trau dich, anzusprechen: „¿De dónde eres?“ oder „¿Viajas solo/a?“ – Smalltalk ist normal und erwünscht.",
         "Frag, ob du mitkommen darfst: „¿Te unes?“ / „¿Vamos juntos?“ – statt dich einfach anzuhängen.",
@@ -113,6 +129,13 @@
         "For group activities, agree a clear meeting point and time – and be punctual.",
         "Swap contacts: „Escríbeme por WhatsApp“ – that way you stay in touch on the road.",
       ],
+      dosDeEn: [
+        "Trau dich, anzusprechen: „Where are you from?“ oder „Are you travelling solo?“ – Smalltalk ist normal und erwünscht.",
+        "Frag, ob du mitkommen darfst: „Mind if I join you?“ / „Shall we go together?“ – statt dich einfach anzuhängen.",
+        "Gemeinsame Pläne früh absprechen und Kosten fair & transparent teilen.",
+        "Bei Gruppenaktivitäten Treffpunkt und Uhrzeit klar vereinbaren – und pünktlich sein.",
+        "Kontakte sichern: „Text me on WhatsApp“ – so bleibt man unterwegs in Verbindung.",
+      ],
       donts: [
         "Sich niemandem aufdrängen, der sichtbar Ruhe oder Zeit für sich will.",
         "Keine versteckten Kosten – die Rechnung sauber und nachvollziehbar splitten.",
@@ -124,6 +147,12 @@
         "No hidden costs – split the bill cleanly and clearly.",
         "Don't pressure anyone into drinking, partying or spending.",
         "Don't stay stuck in your own language bubble – a few words of Spanish open more doors.",
+      ],
+      dontsDeEn: [
+        "Sich niemandem aufdrängen, der sichtbar Ruhe oder Zeit für sich will.",
+        "Keine versteckten Kosten – die Rechnung sauber und nachvollziehbar splitten.",
+        "Niemanden zum Trinken, Feiern oder zu Ausgaben drängen.",
+        "Nicht ständig nur in der eigenen Sprachblase bleiben – ein paar Brocken Englisch öffnen mehr Türen.",
       ],
     },
     {
@@ -149,6 +178,14 @@
         "Observe local customs and join in, rather than judging them.",
         "Put toilet paper in the bin (papelera) next to the loo – in much of Latin America the pipes are too narrow for the WC (sign: „No arrojar papeles ni toallas sanitarias“).",
       ],
+      dosDeEn: [
+        "Freundlich grüßen: „Good morning / good afternoon“ beim Betreten von Läden, Bussen oder Pubs.",
+        "„Please“ und „thank you“ großzügig benutzen – Höflichkeit zählt in UK, Irland & Co. besonders viel.",
+        "Trinkgeld gehört dazu: in UK/Irland ~10–12 %, in den USA/Kanada 15–20 % – außer es steht schon ein „service charge“ auf der Rechnung.",
+        "Schlangestehen ist heilig: ordentlich anstellen („queue“) und warten, bis du dran bist.",
+        "Lokale Gepflogenheiten beobachten und mitmachen, statt sie zu bewerten.",
+        "In Läden gelten feste Preise – nur auf Flohmärkten oder „car boot sales“ ist mal freundliches Handeln drin.",
+      ],
       donts: [
         "Nicht mit der Tür ins Haus fallen – erst grüßen, dann fragen oder bestellen.",
         "Menschen, Häuser oder Märkte nicht ungefragt fotografieren.",
@@ -162,6 +199,13 @@
         "Handle sensitive topics (politics, drugs, comparisons with the USA) with restraint.",
         "Don't haggle hard everywhere – in shops with fixed prices haggling isn't the done thing.",
         "Don't put paper down the loo if there's a bin beside it – it blocks the pipes immediately.",
+      ],
+      dontsDeEn: [
+        "Nicht mit der Tür ins Haus fallen – erst grüßen, dann fragen oder bestellen.",
+        "Menschen, Häuser oder Märkte nicht ungefragt fotografieren.",
+        "Heikle Themen (Politik, Religion, Geld/Gehalt) lieber zurückhaltend behandeln.",
+        "Nicht handeln wollen – in Läden gelten feste Preise, Feilschen wirkt befremdlich.",
+        "Sich nicht in die Schlange vordrängeln – „queue-jumping“ gilt als grober Verstoß.",
       ],
     },
   ];

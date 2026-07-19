@@ -40,6 +40,14 @@
     "travel info, not legal advice – laws vary by country, and drugs are illegal " +
     "everywhere.";
 
+  const INTRO_DEEN =
+    "Fast jede Reise läuft ohne Ärger. Falls aber doch mal eine Kontrolle oder " +
+    "Festnahme passiert, helfen ein paar ruhige englische Sätze: nach einem Anwalt " +
+    "fragen, die deutsche Botschaft verständigen, nichts unterschreiben, was du nicht " +
+    "verstehst. Erst die Orientierung, dann die Sätze. Allgemeine Reise-Info, kein " +
+    "Rechtsrat – Gesetze unterscheiden sich je Land (UK, USA, Australien …), Drogen " +
+    "sind überall illegal.";
+
   // ---------- Erklärung: ruhig & sicher bleiben (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
@@ -61,6 +69,13 @@
         "Show a copy/photo of your passport and visa; keep the original safe.",
         "If your Spanish is limited, say so clearly: „No hablo bien español.“",
         "When unsure, ask for an interpreter and to contact your embassy.",
+      ],
+      dosDeEn: [
+        "Ruhig und höflich bleiben, Hände sichtbar, keine hektischen Bewegungen.",
+        "Nach dem Grund fragen: „Why are you stopping me?“ (Warum halten Sie mich auf?)",
+        "Eine Kopie/Foto von Pass und Visum zeigen; das Original sicher verwahren.",
+        "Wenn dir das Englisch zu schnell geht, sag es ruhig: „Could you speak slowly, please?“",
+        "Im Zweifel um Kontakt zur deutschen Botschaft bitten.",
       ],
       donts: [
         "Nicht weglaufen, schubsen oder laut werden – das macht alles schlimmer.",
@@ -108,6 +123,13 @@
         "Note (or memorise) names, the station and the reason.",
         "Have family/friends told where you are.",
       ],
+      dosDeEn: [
+        "Klar sagen: „I'd like to speak to a lawyer.“ (in UK/Australien oft „duty solicitor“ genannt).",
+        "Auf Kontakt zur deutschen Botschaft bestehen: „I'd like to contact the German embassy.“",
+        "Höflich, knapp und ehrlich bleiben; im Zweifel auf einen Anwalt warten.",
+        "Dir Namen, Dienststelle und Grund notieren (oder merken).",
+        "Familie/Freunde informieren lassen, wo du bist.",
+      ],
       donts: [
         "Nichts unterschreiben, was du nicht vollständig verstehst: „No voy a firmar nada que no entienda.“",
         "Keine Aussage ohne Anwalt machen, wenn es ernst ist.",
@@ -119,6 +141,12 @@
         "Don't give a statement without a lawyer if it's serious.",
         "Don't hand over your passport permanently without a receipt/reason.",
         "Don't lie or hide evidence – it makes things worse.",
+      ],
+      dontsDeEn: [
+        "Nichts unterschreiben, was du nicht vollständig verstehst: „I won't sign anything I don't understand.“",
+        "Keine Aussage ohne Anwalt machen, wenn es ernst ist.",
+        "Den Pass nicht dauerhaft aus der Hand geben, ohne eine Quittung/Begründung.",
+        "Nicht lügen oder Beweise verstecken – das verschlimmert die Lage.",
       ],
       es: [
         "Si te *detienen*, tienes derecho a un *abogado* y a llamar a tu *embajada*. Dilo con calma: „Quiero hablar con un abogado.“",
@@ -140,6 +168,7 @@
       titleEn: "Drugs & the law",
       intro: "Drogen sind in ganz Lateinamerika illegal – auch dort, wo Konsum geduldet wirkt. Strafen reichen je nach Land und Menge bis zu langer Haft. Das Risiko ist es nie wert.",
       introEn: "Drugs are illegal across Latin America – even where use seems tolerated. Penalties range up to long prison terms depending on country and amount. The risk is never worth it.",
+      introDeEn: "Drogen sind auch in England, den USA, Kanada oder Australien illegal – selbst dort, wo Konsum locker wirkt. Strafen reichen je nach Land und Menge bis zu langer Haft. Das Risiko ist es nie wert.",
       dos: [
         "Finger weg – egal, was andere Reisende erzählen.",
         "Lokale Gesetze respektieren; im Zweifel offizielle Quellen deiner Botschaft prüfen.",
@@ -271,7 +300,7 @@
       items: [
         { es: "¿Por qué me detiene?", de: "Warum halten Sie mich auf?", en: "Why are you stopping me?" },
         { es: "Aquí tiene una copia de mi pasaporte.", de: "Hier ist eine Kopie meines Passes.", en: "Here's a copy of my passport." },
-        { es: "No hablo bien español.", de: "Ich spreche nicht gut Spanisch.", en: "I don't speak Spanish well." },
+        { es: "No hablo bien español.", de: "Ich spreche nicht gut Spanisch.", en: "I don't speak Spanish well.", deDeEn: "Ich spreche nicht fließend Englisch.", enDeEn: "I'm not a fluent English speaker." },
         { es: "¿Necesito un traductor, por favor?", de: "Kann ich bitte einen Dolmetscher bekommen?", en: "Can I have an interpreter, please?" },
         { es: "Soy turista, estoy de viaje.", de: "Ich bin Tourist und auf Reisen.", en: "I'm a tourist, I'm travelling." },
       ],
@@ -282,9 +311,9 @@
       title: "Deine Rechte einfordern",
       titleEn: "Asserting your rights",
       items: [
-        { es: "Quiero hablar con un abogado.", de: "Ich möchte mit einem Anwalt sprechen.", en: "I want to speak to a lawyer." },
-        { es: "Quiero contactar a mi embajada.", de: "Ich möchte meine Botschaft kontaktieren.", en: "I want to contact my embassy." },
-        { es: "Quiero contactar a mi consulado.", de: "Ich möchte mein Konsulat kontaktieren.", en: "I want to contact my consulate." },
+        { es: "Quiero hablar con un abogado.", de: "Ich möchte mit einem Anwalt sprechen.", en: "I'd like to speak to a lawyer." },
+        { es: "Quiero contactar a mi embajada.", de: "Ich möchte meine Botschaft kontaktieren.", en: "I'd like to contact my embassy." },
+        { es: "Quiero contactar a mi consulado.", de: "Ich möchte mein Konsulat kontaktieren.", en: "I'd like to contact my consulate." },
         { es: "No voy a firmar nada que no entienda.", de: "Ich unterschreibe nichts, was ich nicht verstehe.", en: "I won't sign anything I don't understand." },
         { es: "¿Estoy detenido/a?", de: "Bin ich festgenommen?", en: "Am I under arrest?" },
         { es: "¿Puedo llamar a alguien?", de: "Darf ich jemanden anrufen?", en: "May I call someone?" },
@@ -376,6 +405,7 @@
       icon: "lc:life-buoy",
       item: "Örtliche Notrufnummer (z. B. 123 in Kolumbien)",
       itemEn: "Local emergency number (e.g. 123 in Colombia)",
+      itemDeEn: "Örtliche Notrufnummer (999 in UK, 911 in den USA/Kanada, 000 in Australien, 112 in Irland)",
       why: "Notrufnummern unterscheiden sich je Land – vor der Ankunft nachsehen.",
       whyEn: "Emergency numbers vary by country – look them up before arrival.",
     },
@@ -403,5 +433,5 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.derechos = { INTRO, INTRO_EN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
+  window.SC.derechos = { INTRO, INTRO_EN, INTRO_DEEN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
 })();

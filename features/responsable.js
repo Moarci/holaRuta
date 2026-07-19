@@ -24,9 +24,12 @@
     const responsable = ctx.responsable;
     if (!responsable) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
     const en = ctx.i18n && ctx.i18n.getLang() === "en";
+    const deEn = !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
     const loc = (v) => (ctx.i18n ? ctx.i18n.localizeDeep(v) : v);
     return {
-      intro: (en && responsable.INTRO_EN) ? responsable.INTRO_EN : responsable.INTRO,
+      intro: deEn && responsable.INTRO_DEEN ? responsable.INTRO_DEEN
+           : (en && responsable.INTRO_EN) ? responsable.INTRO_EN
+           : responsable.INTRO,
       topics: loc(responsable.TOPICS || []),
       phrases: loc(responsable.PHRASES || []),
       glossary: loc(responsable.GLOSSARY || []),
@@ -37,7 +40,7 @@
   // ----- Render -----
   function renderResponsable(vm) {
     return moduleSheet(vm, {
-      icon: "lc:sprout", title: "Viaja responsable", cat: "responsable",
+      icon: "lc:sprout", title: ctx.i18n.t("discover.responsableName"), cat: "responsable",
       readingPerTopic: true, // spanisches Lesetraining je Thema (es/vocab/level)
       favPhrases: ctx.isFavorite, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.rpTips", headPhrases: "discover.rpPhrases",
