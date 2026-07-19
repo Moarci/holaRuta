@@ -164,3 +164,65 @@ test("Gegenprobe: de-es zeigt die Geschlechts-Auswahl weiterhin (spanische Anred
   const de_es = settingsHtml(null);
   assert.match(de_es, /data-action="set-gender"/, "de-es braucht die Geschlechts-Auswahl (perdido/perdida)");
 });
+
+// ===================== (3b) Reise-Kontext: englischer Beispielsatz ==================
+// Das Kontext-Panel zeigt bei Reise-Karten sonst den SPANISCHEN Beispielsatz. In de-en
+// (learnLang=en) muss stattdessen der englische Satz (sentenceEn) erscheinen, sonst ist
+// der „Beispiel"-Satz Spanisch (Leck). Marker: die gelernte Zeile trägt lang="en".
+function openContextPanel(edition) {
+  const root = freshApp(edition);
+  const d = makeDriver(root);
+  d.setTab("profil");
+  if (d.find("set-mode", { mode: "flip" })) d.click("set-mode", { mode: "flip" });
+  d.setTab("entdecken");
+  assert.ok(d.click("open-endless"), "open-endless startet den Study-Screen");
+  for (let i = 0; i < 40; i++) {
+    if (d.find("flip")) d.click("flip");            // Antwortseite (mit Kontext-Knopf)
+    if (d.find("toggle-context")) {
+      d.click("toggle-context");                    // Panel aufklappen
+      const html = d.html();
+      const m = html.match(/context-panel__es" lang="(\w+)"/);
+      if (m) return m[1];                           // Sprache der Beispiel-Zeile
+    }
+    if (!d.click("rate", { rating: "good" })) break;
+  }
+  return null;
+}
+
+test("Reise-Kontext: de-en zeigt den ENGLISCHEN Beispielsatz (lang=en), nicht Spanisch", () => {
+  assert.equal(openContextPanel("hello-abroad"), "en", "Kontext-Beispiel muss in de-en Englisch sein");
+});
+
+test("Gegenprobe: de-es zeigt weiterhin den spanischen Beispielsatz (lang=es)", () => {
+  assert.equal(openContextPanel(null), "es", "Kontext-Beispiel bleibt in de-es Spanisch");
+});
+
+// ============================ (4) 50+-Abdeckung ============================
+// Die 10 Reisebereiche wurden gezielt für die 50+-Zielgruppe ergänzt (Mobilität/
+// Barrierefreiheit + chronische Gesundheit + Verständnis-Helfer). Sichert die
+// Kernkarten samt en-US-Antwort ab (data-Ebene, track-unabhängig).
+test("50+-Abdeckung: neue Mobilitäts-/Gesundheits-/Verständnis-Karten vorhanden", () => {
+  freshApp("hello-abroad"); // lädt data.js + hello-abroad-Allowlist
+  const { data } = window.SC;
+  const byId = new Map(data.CARDS.map((c) => [c.id, c]));
+  const expect = {
+    h25: "Is there an elevator?",              // Mobilität Hotel
+    h26: "I'd like a room on the ground floor",
+    fh21: "I need wheelchair assistance",       // Barrierefreiheit Flughafen
+    fh20: "Where is the baggage claim?",
+    fa25: "I have high blood pressure",         // chronische Gesundheit
+    fa26: "I have diabetes",
+    fa27: "I take heart medication",
+    n17: "I have chest pain",                   // Notfall
+    n16: "Where is the nearest hospital?",
+    b22: "Could you repeat that, please?",      // Verständnis-Helfer
+    b23: "Could you write it down?",
+  };
+  const allow = window.SC.config.categoryAllowlist || [];
+  for (const [id, en] of Object.entries(expect)) {
+    const c = byId.get(id);
+    assert.ok(c, `Karte ${id} fehlt`);
+    assert.equal(c.en, en, `${id}: falsche englische Antwort`);
+    assert.ok(allow.indexOf(c.cat) >= 0, `${id}: Kategorie ${c.cat} muss in HelloAbroad sichtbar sein`);
+  }
+});

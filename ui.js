@@ -1611,8 +1611,10 @@
       ? `<div class="context-panel__block"><div class="context-panel__label">${esc(label)}</div><p class="context-panel__text">${esc(text)}</p></div>`
       : "";
     const exLine = ctx.loc
-      ? line(ctx.egLearn, "en", ctx.egNative)        // Locals: englischer Satz + spanische Übersetzung
-      : line(ctx.sentenceEs, "es", ctx.sentenceDe);  // Reise: spanischer Satz + Mutterspr.
+      ? line(ctx.egLearn, "en", ctx.egNative)          // Locals: englischer Satz + spanische Übersetzung
+      : ctx.enLearn
+        ? line(ctx.sentenceEn, "en", ctx.sentenceDe)   // HelloAbroad (de-en): englischer Reisesatz + Mutterspr.
+        : line(ctx.sentenceEs, "es", ctx.sentenceDe);  // Reise (de-es): spanischer Satz + Mutterspr.
     // Locals (Englisch lernen) nutzt die Arbeits-Labels statt des Reise-Wortlauts.
     const titleKey = ctx.loc ? "study.contextTitleWork" : "study.contextTitle";
     const noteKey = ctx.loc ? "study.contextNoteWork" : "study.contextNote";

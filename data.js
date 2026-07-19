@@ -133,6 +133,9 @@
     { id: "b19", cat: "basics", lvl: 3, de: "Rufen Sie die Polizei", en: "Call the police", es: "Llame a la policía", tip: "YA-me a la po-li-SI-a" },
     { id: "b20", cat: "basics", lvl: 2, de: "Ich habe mich verlaufen", en: "I'm lost", es: "Estoy perdido/a", tip: "es-TOY per-DI-do", alt: ["estoy perdido", "estoy perdida"] },
     { id: "b21", cat: "basics", lvl: 1, de: "Apotheke", en: "pharmacy", es: "la farmacia", tip: "la far-MA-si-a" },
+    { id: "b22", cat: "basics", lvl: 2, de: "Können Sie das bitte wiederholen?", en: "Could you repeat that, please?", es: "¿Puede repetirlo, por favor?" },
+    { id: "b23", cat: "basics", lvl: 2, de: "Können Sie es aufschreiben?", en: "Could you write it down?", es: "¿Puede escribirlo?" },
+    { id: "b24", cat: "basics", lvl: 2, de: "Wie sagt man ... auf Englisch?", en: "How do you say ... in English?", es: "¿Cómo se dice ... en inglés?" },
 
     // ===================== ZAHLEN =====================
     { id: "z00", cat: "zahlen", lvl: 1, de: "0", en: "0", es: "cero", tip: "SE-ro" },
@@ -367,6 +370,9 @@
     { id: "h21", cat: "hotel", lvl: 3, de: "Kann ich später auschecken?", en: "Can I check out later?", es: "¿Puedo hacer el check-out más tarde?", tip: "mas TAR-de" },
     { id: "h23", cat: "hotel", lvl: 2, de: "Die Toilette ist verstopft", en: "The toilet is blocked", es: "El baño está tapado", tip: "ta-PA-do" },
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", en: "I'm too cold / too hot", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR" },
+    { id: "h25", cat: "hotel", lvl: 1, de: "Gibt es einen Aufzug?", en: "Is there an elevator?", es: "¿Hay ascensor?" },
+    { id: "h26", cat: "hotel", lvl: 2, de: "Ich hätte gern ein Zimmer im Erdgeschoss", en: "I'd like a room on the ground floor", es: "Quiero una habitación en la planta baja" },
+    { id: "h27", cat: "hotel", lvl: 2, de: "Um wie viel Uhr gibt es Frühstück?", en: "What time is breakfast?", es: "¿A qué hora es el desayuno?" },
 
     // ===================== HOSTEL =====================
     { id: "hostel01", cat: "hostel", lvl: 1, de: "Ich habe eine Reservierung.", en: "I have a reservation.", es: "Tengo una reserva.", tip: "TEN-go U-na re-SER-wa" },
@@ -471,6 +477,9 @@
     { id: "n13", cat: "notfall", lvl: 1, de: "mein Handy", en: "my phone", es: "mi celular", tip: "se-lu-LAR" },
     { id: "n14", cat: "notfall", lvl: 2, de: "Können Sie mir helfen?", en: "Can you help me?", es: "¿Puede ayudarme?", tip: "a-yu-DAR-me" },
     { id: "n15", cat: "notfall", lvl: 3, de: "Wo ist die nächste Apotheke?", en: "Where's the nearest pharmacy?", es: "¿Dónde está la farmacia más cercana?", tip: "mas ser-KA-na" },
+    { id: "n16", cat: "notfall", lvl: 2, de: "Wo ist das nächste Krankenhaus?", en: "Where is the nearest hospital?", es: "¿Dónde está el hospital más cercano?" },
+    { id: "n17", cat: "notfall", lvl: 3, de: "Ich habe Schmerzen in der Brust", en: "I have chest pain", es: "Tengo dolor en el pecho" },
+    { id: "n18", cat: "notfall", lvl: 3, de: "Ich habe ein Herzleiden", en: "I have a heart condition", es: "Tengo un problema del corazón" },
 
     // ---------- Flughafen & Gepäck (neu, HelloAbroad) ----------
     // fh09-fh13 portiert/adaptiert aus logistica.js:270-277 ("equipaje"-Sektion,
@@ -493,6 +502,9 @@
     { id: "fh16", cat: "flughafen", lvl: 1, de: "Muss ich die Schuhe ausziehen?", en: "Do I need to take off my shoes?", es: "¿Tengo que quitarme los zapatos?" },
     { id: "fh17", cat: "flughafen", lvl: 2, de: "Ich habe einen Anschlussflug", en: "I have a connecting flight", es: "Tengo un vuelo de conexión" },
     { id: "fh18", cat: "flughafen", lvl: 1, de: "Wo ist der Ausgang?", en: "Where is the exit?", es: "¿Dónde está la salida?" },
+    { id: "fh19", cat: "flughafen", lvl: 1, de: "Ist der Flug pünktlich?", en: "Is the flight on time?", es: "¿El vuelo sale a tiempo?" },
+    { id: "fh20", cat: "flughafen", lvl: 2, de: "Wo ist die Gepäckausgabe?", en: "Where is the baggage claim?", es: "¿Dónde está la banda de equipaje?" },
+    { id: "fh21", cat: "flughafen", lvl: 2, de: "Ich brauche einen Rollstuhl-Service", en: "I need wheelchair assistance", es: "Necesito asistencia en silla de ruedas" },
 
     // ===================== ZEIT & DATUM =====================
     { id: "ti01", cat: "zeit", lvl: 2, de: "Wie spät ist es?", en: "What time is it?", es: "¿Qué hora es?", tip: "ke O-ra es" },
@@ -1957,6 +1969,10 @@
     { id: "fa22", cat: "farmacia", lvl: 3, de: "Es tut hier weh, seit zwei Tagen.", en: "It hurts here, for two days now.", es: "Me duele aquí, desde hace dos días.", tip: "me DUE-le a-KI DES-de A-se dos DI-as" },
     { id: "fa23", cat: "farmacia", lvl: 3, de: "Ich brauche eine Rechnung für die Versicherung.", en: "I need a receipt for my insurance.", es: "Necesito una factura para el seguro.", tip: "ne-se-SI-to U-na fak-TU-ra PA-ra el se-GU-ro" },
     { id: "fa24", cat: "farmacia", lvl: 3, de: "Kann man das Leitungswasser trinken?", en: "Is the tap water safe to drink?", es: "¿Se puede tomar el agua de la llave?", tip: "se PUE-de to-MAR el A-gua de la JA-ve" },
+    { id: "fa25", cat: "farmacia", lvl: 2, de: "Ich habe hohen Blutdruck", en: "I have high blood pressure", es: "Tengo la presión alta" },
+    { id: "fa26", cat: "farmacia", lvl: 2, de: "Ich habe Diabetes", en: "I have diabetes", es: "Tengo diabetes" },
+    { id: "fa27", cat: "farmacia", lvl: 3, de: "Ich nehme Medikamente fürs Herz", en: "I take heart medication", es: "Tomo medicamentos para el corazón" },
+    { id: "fa28", cat: "farmacia", lvl: 3, de: "Das ist mein Dauermedikament", en: "This is my regular medication", es: "Este es mi medicamento habitual" },
 
     // ===================== TOUREN & OUTDOOR (Themen-Pack) =====================
     { id: "to01", cat: "tour", lvl: 1, de: "Ich möchte einen Ausflug buchen.", en: "I'd like to book a tour.", es: "Quiero reservar una excursión.", tip: "KIE-ro re-ser-VAR U-na es-kur-SION" },

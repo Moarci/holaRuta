@@ -351,6 +351,14 @@
     if (isReiseCard && learnField() !== "es") return null;
     return (card && card.tip) || null;
   };
+  // Reise-Kontext einer Karte fürs Display aufbereiten: lokalisieren, {name}/{o/a}
+  // auflösen und markieren, ob die gelernte Sprache Englisch ist. enLearn=true (de-en/
+  // HelloAbroad) lässt das Kontext-Panel den ENGLISCHEN Beispielsatz (sentenceEn) statt
+  // des spanischen (sentenceEs) zeigen – sonst wäre der Reise-Beispielsatz in de-en
+  // Spanisch (Leck). Für Locals-Karten (ctx.loc) bleibt der bestehende en-Pfad in ui.js.
+  const displayContext = (card) => card.context
+    ? Object.assign(withNameObj(loc(card.context)), { enLearn: learnField() === "en" })
+    : null;
   const cardNative = (o) => {
     const t = trk();
     const l1 = t && t.cardNativeLang && t.cardNativeLang();
@@ -851,7 +859,7 @@
       studied: state.session ? (state.session.right + state.session.wrong) : 0,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context ? withNameObj(loc(card.context)) : null,
+      context: displayContext(card),
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -1025,7 +1033,7 @@
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context ? withNameObj(loc(card.context)) : null,
+      context: displayContext(card),
       contextOpen: state.contextOpen,
       isFav: isFavorite(card.id),
     });
