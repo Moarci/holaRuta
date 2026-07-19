@@ -290,12 +290,118 @@
     .concat(LOC_CATEGORY_BADGES);
   const LOC_BY_ID = LOC_BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
 
+  // ===================================================================
+  // HELLOABROAD-TRACK (de-en, Reise-Englisch lernen): eigene Badge-Welt
+  // für Deutsche, die fürs Reisen ENGLISCH lernen. Wie beim Locals-Track
+  // wird sie zur Laufzeit über window.SC.track (isDeEnTrack) gewählt; die
+  // reise-spanische Default-Welt (BADGES) bleibt unangetastet.
+  //
+  // Zwei Korrekturen gegenüber der Default-Welt:
+  //  1) KEIN Spanisch/LatAm: die Reise-Welt trägt spanische Badge-Namen
+  //     („¿Y esto?", „Primer oído", „Peso-Profi" …) und LatAm-Bezüge
+  //     („Reise-Spanisch", „Flaggen Lateinamerikas") – in einer Deutsch→
+  //     Englisch-App ein Fremdkörper. Hier deutsch/englisch neu betextet.
+  //  2) NUR erreichbare Features: HelloAbroad (Discover-Tracks, siehe
+  //     ui.js/app.js) bietet Satzbaukasten, „Was ist das?", Preise-Hören
+  //     und die Körperkarte – ABER kein Modo hostal (Battle/Rollenspiel),
+  //     keine Definiciones, keine Banderas, keine Ruta del día / Pre-Trip.
+  //     Deren Badges würden ewig gesperrt bleiben – also raus.
+  // ===================================================================
+  const DEEN_GROUPS = [
+    { id: "learning", label: "Lernreise",     labelEn: "Learning journey", icon: "🧭" },
+    { id: "streak",   label: "Dranbleiben",   labelEn: "Keeping it up",    icon: "🔥" },
+    { id: "category", label: "Bereiche",      labelEn: "Topics",           icon: "🗂️" },
+    { id: "context",  label: "Reise-Kontext", labelEn: "Travel context",   icon: "🧭" },
+    { id: "construir",label: "Satzbaukasten", labelEn: "Sentence builder", icon: "🧱" },
+    { id: "yesto",    label: "Was ist das?",  labelEn: "What's this?",      icon: "👀" },
+    { id: "listening",label: "Hören",         labelEn: "Listening",         icon: "👂" },
+    { id: "cuerpo",   label: "Körper",        labelEn: "The body",          icon: "🧍" },
+    { id: "special",  label: "Spezial",       labelEn: "Special",           icon: "✨" },
+  ];
+  // Kategorie-Badges an die HelloAbroad-categoryAllowlist gekoppelt (siehe
+  // editions/registry.js). Jede erlaubte Kategorie bekommt ein Reward – auch
+  // die in der Reise-Welt bisher badgelosen (flughafen/banco/auto/farmacia).
+  // Keine peso-/taco-Bezüge: generisches Reise-Englisch. category-Id = data.js-cat.
+  const DEEN_CATEGORY_BADGES = [
+    { category: "basics",    icon: "💬", name: "Erste Worte",        nameEn: "First words",        description: "Meistere 80 % der Grundlagen-Karten.",   descriptionEn: "Master 80% of the basics cards." },
+    { category: "talk",      icon: "🤝", name: "Smalltalk-Starter",  nameEn: "Small talk starter", description: "Meistere 80 % der Smalltalk-Karten.",    descriptionEn: "Master 80% of the small talk cards." },
+    { category: "flughafen", icon: "✈️", name: "Flughafen-Profi",    nameEn: "Airport pro",        description: "Meistere 80 % der Flughafen-Karten.",    descriptionEn: "Master 80% of the airport cards." },
+    { category: "grenze",    icon: "🛂", name: "Grenzgänger",        nameEn: "Border crosser",     description: "Meistere 80 % der Behörden-Karten.",     descriptionEn: "Master 80% of the officialdom cards." },
+    { category: "hotel",     icon: "🔑", name: "Check-in-Champion",  nameEn: "Check-in champion",  description: "Meistere 80 % der Hotel-Karten.",        descriptionEn: "Master 80% of the hotel cards." },
+    { category: "hostel",    icon: "🛏️", name: "Hostel-Held",        nameEn: "Hostel hero",        description: "Meistere 80 % der Hostel-Karten.",       descriptionEn: "Master 80% of the hostel cards." },
+    { category: "essen",     icon: "🍽️", name: "Menü-Meister",       nameEn: "Menu master",        description: "Meistere 80 % der Essen-Karten.",        descriptionEn: "Master 80% of the food cards." },
+    { category: "trinken",   icon: "🥤", name: "Runde geht auf mich", nameEn: "Drinks are on me",  description: "Meistere 80 % der Trinken-Karten.",      descriptionEn: "Master 80% of the drinks cards." },
+    { category: "compras",   icon: "🛍️", name: "Einkaufs-Profi",     nameEn: "Shopping pro",       description: "Meistere 80 % der Einkaufen-Karten.",    descriptionEn: "Master 80% of the shopping cards." },
+    { category: "dinero",    icon: "💵", name: "Geld-Profi",         nameEn: "Money pro",          description: "Meistere 80 % der Geld-Karten.",         descriptionEn: "Master 80% of the money cards." },
+    { category: "banco",     icon: "🏧", name: "Bank-Basics",        nameEn: "Bank basics",        description: "Meistere 80 % der Bank-Karten.",         descriptionEn: "Master 80% of the bank cards." },
+    { category: "verkehr",   icon: "🚌", name: "Unterwegs-Profi",    nameEn: "Getting-around pro", description: "Meistere 80 % der Verkehr-Karten.",      descriptionEn: "Master 80% of the transport cards." },
+    { category: "rumbo",     icon: "🧭", name: "Wegfinder",          nameEn: "Wayfinder",          description: "Meistere 80 % der Wegbeschreibung-Karten.", descriptionEn: "Master 80% of the directions cards." },
+    { category: "auto",      icon: "🚗", name: "Mietwagen-Meister",  nameEn: "Rental-car master",  description: "Meistere 80 % der Auto-Karten.",         descriptionEn: "Master 80% of the car cards." },
+    { category: "farmacia",  icon: "💊", name: "Apotheken-Held",     nameEn: "Pharmacy hero",      description: "Meistere 80 % der Apotheken-Karten.",    descriptionEn: "Master 80% of the pharmacy cards." },
+    { category: "notfall",   icon: "🆘", name: "Ruhe im Chaos",      nameEn: "Calm in chaos",      description: "Meistere 80 % der Notfall-Karten.",      descriptionEn: "Master 80% of the emergency cards." },
+  ].map((b) => Object.assign({
+    id: "cat_" + b.category, group: "category", type: "categoryMastery", threshold: 0.8,
+    unlockedText: "Du kommst in diesem Bereich klar. 🎒", unlockedTextEn: "You can hold your own in this area. 🎒",
+  }, b));
+  // Neu betextete Standard-Badges für den HelloAbroad-Track: nur die abweichenden
+  // Felder (Rest wird vom Original geerbt). Ziel: kein Spanisch, kein „HolaRuta"/
+  // „Ruta"-Marken- oder LatAm-Bezug – stattdessen Reise-Englisch/„unterwegs".
+  const DEEN_OVERRIDES = {
+    // Lernreise
+    first_steps:     { unlockedText: "Dein erster Schritt unterwegs ist gemacht.", unlockedTextEn: "You've taken your first step on the road." },
+    ten_cards:       { unlockedText: "Dein Reise-Englisch kommt in Fahrt.", unlockedTextEn: "Your travel English is picking up speed." },
+    fifty_cards:     { unlockedText: "Genug Englisch für viele Alltagssituationen.", unlockedTextEn: "Enough English for plenty of everyday situations." },
+    hundred_cards:   { name: "Reise-Rookie", nameEn: "Travel rookie", unlockedText: "Du findest dich sprachlich unterwegs zurecht.", unlockedTextEn: "You can find your way around in the language on the road." },
+    all_cards:       { name: "HelloAbroad Legend", nameEn: "HelloAbroad Legend", unlockedText: "Du hast das komplette Reise-Deck durchgespielt.", unlockedTextEn: "You've worked through the entire travel deck." },
+    // Dranbleiben
+    streak_3:        { unlockedText: "Drei Tage am Stück drangeblieben.", unlockedTextEn: "Three days in a row without a break." },
+    streak_7:        { unlockedText: "Eine Woche Reise-Englisch durchgezogen.", unlockedTextEn: "A whole week of travel English, done." },
+    streak_14:       { unlockedText: "Englisch ist Teil deiner Reiseroutine.", unlockedTextEn: "English is part of your travel routine now." },
+    streak_30:       { name: "Reise-Ritual", nameEn: "Travel ritual", unlockedText: "Aus Lernen ist eine echte Gewohnheit geworden.", unlockedTextEn: "Learning has turned into a real habit." },
+    // Reise-Kontext
+    context_25:      { unlockedText: "Du verstehst immer besser, wie Englisch unterwegs klingt.", unlockedTextEn: "You're getting a better and better feel for how English sounds on the road." },
+    // Satzbaukasten
+    frases_perfect:  { name: "Perfekt gebaut", nameEn: "Perfectly built" },
+    frases_themes:   { name: "Bau-Experte", nameEn: "Master builder", description: "Schließe jedes Satzbaukasten-Thema mindestens einmal ab.", descriptionEn: "Complete every sentence builder theme at least once." },
+    // Was ist das?
+    yesto_first:     { name: "Was ist das?", nameEn: "What's this?", description: "Schließe deine erste „Was ist das?“-Runde ab.", descriptionEn: "Complete your first What's this? round." },
+    yesto_10:        { name: "Geschultes Auge", nameEn: "Trained eye", description: "Schließe 10 „Was ist das?“-Runden ab.", descriptionEn: "Complete 10 What's this? rounds." },
+    yesto_perfect:   { name: "Alles im Blick", nameEn: "All in sight", description: "Beende eine „Was ist das?“-Runde, in der du jedes Bild wusstest.", descriptionEn: "Finish a What's this? round where you knew every picture." },
+    // Hören
+    listen_first:    { name: "Erstes Hören", nameEn: "First listen", unlockedText: "Du trainierst jetzt auch dein Ohr für echtes Reise-Englisch.", unlockedTextEn: "You're now training your ear for real spoken English too." },
+    listen_25:       { name: "Gutes Ohr", nameEn: "Good ear", unlockedText: "Gesprochenes Englisch zu verstehen fällt dir spürbar leichter.", unlockedTextEn: "Understanding spoken English is noticeably easier for you." },
+    precios_first:   { name: "Preis-Gehör", nameEn: "Ear for prices" },
+    precios_perfect: { name: "Kein Cent verloren", nameEn: "Not a penny lost" },
+    // Körper
+    cuerpo_first:    { name: "Erster Tipp", nameEn: "First tap", unlockedText: "Du erkundest den Körper jetzt auf Englisch.", unlockedTextEn: "You're exploring the body in English now." },
+    cuerpo_10:       { name: "Anatom", nameEn: "Anatomist" },
+    cuerpo_all:      { name: "Ganzer Körper", nameEn: "Whole body", unlockedText: "Vom Kopf bis zu den Füßen – alles erkundet.", unlockedTextEn: "From head to toe – all explored." },
+    // Spezial
+    night_owl:       { name: "Mitternachts-Englisch", nameEn: "Midnight English", unlockedText: "Noch schnell ein bisschen Englisch vor dem Schlafen.", unlockedTextEn: "A quick bit of English before bed." },
+    early_bird:      { name: "Vokabeln zum Kaffee", nameEn: "Vocab with coffee", unlockedText: "Englisch gelernt, bevor der Tag richtig losging.", unlockedTextEn: "Learned English before the day had properly started." },
+    many_again:      { description: "Drücke 20× „Nochmal“.", descriptionEn: "Press „Again“ 20 times." },
+  };
+  // Aktive Badge-Welt für HelloAbroad: reise-spanische Spielmodi ohne de-en-Feature
+  // raus (hostel/quiz/banderas/reallife) und einzelne, im de-en-Track nicht
+  // erreichbare Badges (Ruta del día, Pre-Trip, „Große Beträge") gestrichen.
+  const DEEN_KEEP_GROUPS = { learning: 1, streak: 1, context: 1, construir: 1, yesto: 1, listening: 1, cuerpo: 1, special: 1 };
+  const DEEN_DROP_IDS = { ruta_dia_first: 1, ruta_dia_7: 1, pretrip_done: 1, precios_millon: 1 };
+  const DEEN_BADGES = BADGES
+    .filter((b) => b.group !== "category" && DEEN_KEEP_GROUPS[b.group] && !DEEN_DROP_IDS[b.id])
+    .map((b) => (DEEN_OVERRIDES[b.id] ? Object.assign({}, b, DEEN_OVERRIDES[b.id]) : b))
+    .concat(DEEN_CATEGORY_BADGES);
+  const DEEN_BY_ID = DEEN_BADGES.reduce((acc, b) => { acc[b.id] = b; return acc; }, {});
+
   function isLocalsTrack() {
     return !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "es-en");
   }
-  function activeBadges() { return isLocalsTrack() ? LOC_BADGES : BADGES; }
-  function activeById(id) { return (isLocalsTrack() ? LOC_BY_ID : BY_ID)[id] || null; }
-  function groups() { return isLocalsTrack() ? LOC_GROUPS : GROUPS; }
+  // HelloAbroad-Track (de-en). Schließt sich mit isLocalsTrack (es-en) gegenseitig aus.
+  function isDeEnTrack() {
+    return !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
+  }
+  function activeBadges() { return isLocalsTrack() ? LOC_BADGES : isDeEnTrack() ? DEEN_BADGES : BADGES; }
+  function activeById(id) { return (isLocalsTrack() ? LOC_BY_ID : isDeEnTrack() ? DEEN_BY_ID : BY_ID)[id] || null; }
+  function groups() { return isLocalsTrack() ? LOC_GROUPS : isDeEnTrack() ? DEEN_GROUPS : GROUPS; }
 
   const byId = (id) => activeById(id);
 
