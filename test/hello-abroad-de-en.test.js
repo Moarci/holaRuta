@@ -108,6 +108,18 @@ test("Matcher: ENGLISCHES card.alt (loc-Karte) bleibt auch in de-en gültig", ()
 // In de-en tragen ALLE Reise-Karten eine ENGLISCHE Aussprachehilfe (card.enPron,
 // z. B. "Hello" → "he-LOU"). Der spanische card.tip ("OH-la") darf NIE erscheinen.
 // Der Study-Screen zeigt im de-en-Track also ausschließlich enPron-Werte.
+// Entfernt HTML-Tags vollständig: wiederholt anwenden, bis sich nichts mehr
+// ändert, damit auch verschachtelte/teilweise Tags (z. B. "<scr<script>ipt>")
+// nicht als Rest stehen bleiben.
+function stripTags(s) {
+  let prev;
+  let out = String(s);
+  do {
+    prev = out;
+    out = out.replace(/<[^>]*>/g, "");
+  } while (out !== prev);
+  return out;
+}
 function drainStudyTips(edition) {
   const root = freshApp(edition);
   const d = makeDriver(root);
@@ -120,7 +132,7 @@ function drainStudyTips(edition) {
     if (d.find("flip")) d.click("flip"); // Antwortseite (mit Tipp) aufdecken
     if (/face__tip/.test(d.html())) {
       const m = d.html().match(/face__tip[^>]*>([\s\S]*?)<\/div>/);
-      if (m) texts.push(m[1].replace(/<[^>]+>/g, "").trim());
+      if (m) texts.push(stripTags(m[1]).trim());
     }
     if (!d.click("rate", { rating: "good" })) break;
   }
