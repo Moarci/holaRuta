@@ -172,7 +172,7 @@
 
     return `
       <section class="screen bp-screen">
-        ${hmTopbar(`${renderIcon("lc:person-standing")} El Cuerpo`, "home")}
+        ${hmTopbar(`${renderIcon("lc:person-standing")} ${esc(t("discover.cuerpoName"))}`, "home")}
         <p class="hm-intro">${esc(t("discover.cuerpoIntro"))}</p>
         ${moduleShareBtn("cuerpo")}
         ${progress}

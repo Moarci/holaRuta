@@ -78,6 +78,16 @@
     return !!(tr && typeof tr.id === "function" && tr.id() === "es-en");
   }
 
+  // HelloAbroad-Track (Edition „de-en", Deutsch lernt Reiseenglisch) aktiv?
+  // Analog zu localsTrack(): einzelne UI-Strings tragen eine <key>DeEn-Variante,
+  // die das reise-spanische Basiswording (Marken-/Modulnamen „Supervivencia",
+  // „auf Spanisch"-Hinweise …) durch ein deutsch-englisches Pendant ersetzt.
+  // Beide Tracks schließen sich aus (unterschiedliche id), daher keine Kollision.
+  function deEnTrack() {
+    const tr = window.SC && window.SC.track;
+    return !!(tr && typeof tr.id === "function" && tr.id() === "de-en");
+  }
+
   // UI-String holen. Fallback-Kette: aktive Sprache -> Deutsch -> der Key selbst
   // (sichtbar, aber crashfrei). Werte dürfen Funktionen sein (Pluralformen):
   //   inNDays: (p) => p.n === 1 ? "morgen" : `in ${p.n} Tagen`
@@ -95,6 +105,11 @@
     // Basiszeile der ES-UI nicht überschreiben. Fehlt die Variante in der aktiven
     // Sprache, greift unverändert der Basis-Key (Reise-Track bleibt unberührt).
     if (localsTrack()) s = DICT[L][key + "Locals"];
+    // HelloAbroad-Track: bevorzugt die <key>DeEn-Variante (z. B. „Notfall-Sätze"
+    // statt „Supervivencia", „auf Englisch" statt „auf Spanisch"). Gleiches Muster
+    // wie Locals, gleiche bewusste Nicht-Rückfall-Semantik: fehlt die Variante,
+    // greift unverändert der Basis-Key (Reise-Wording), nichts bricht.
+    else if (deEnTrack()) s = DICT[L][key + "DeEn"];
     if (s == null) {
       s = DICT[L][key];
       // Fallback-Kette: aktive Sprache -> (für es: Englisch) -> Deutsch -> der Key.

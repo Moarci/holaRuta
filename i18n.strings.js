@@ -827,6 +827,44 @@
     subPlacement: "Kurzer Einstufungstest: finde dein Startlevel",
     subAssessment: "Ausführlich (A0–C1) oder Extremo mit Hörverstehen",
 
+    // ---- HelloAbroad-Track (de-en): Modul-/Kachelnamen + korrigierte Untertitel ----
+    // Basiswert = das gewohnte spanische Wording (Reise de-es UND Locals es-en:
+    // beide behalten es). Die <name>DeEn-Variante greift NUR im de-en-Track (siehe
+    // i18n.js deEnTrack) und ersetzt die spanischen Marken-/Modulnamen durch
+    // deutsche – ein 50+-Publikum, das Reiseenglisch auffrischt, versteht sonst
+    // weder „Mi léxico" noch „Precios al oído". Dieselben Keys speisen die
+    // Entdecken-Kachel (ui.js FEATURES titleKey) UND die Screen-Kopfzeile des
+    // jeweiligen Moduls, damit beide synchron bleiben.
+    endlessName: "Vocabulario sin fin",
+    endlessNameDeEn: "Vokabeln ohne Ende",
+    preciosName: "Precios al oído",
+    preciosNameDeEn: "Preise nach Gehör",
+    spickzettelName: "Supervivencia",
+    spickzettelNameDeEn: "Notfall-Sätze",
+    comprasName: "Lista de compras",
+    comprasNameDeEn: "Einkaufsliste",
+    cuerpoName: "El Cuerpo",
+    cuerpoNameDeEn: "Der Körper",
+    yestoName: "¿Y esto?",
+    yestoNameDeEn: "Was ist das?",
+    frasesName: "Frases flexibles",
+    frasesNameDeEn: "Satzbaukasten",
+    // Untertitel, deren Basiszeile spanisch-reisespezifisch ist (Peso-Millionen,
+    // „Farmacia", „das spanische Wort", „Reisetipp") → de-en-Pendant.
+    subPreciosDeEn: "Preise hören & die Zahl eintippen – vom Kleingeld bis zu großen Summen",
+    subComprasDeEn: "Supermarkt, Kleidung, Apotheke – Einkaufen auf Englisch üben",
+    subCuerpoDeEn: "Körperteile antippen und das englische Wort lernen",
+    subYestoDeEn: "Bild raten: 3-2-1 – wie heißt das auf Englisch?",
+    // Intro-Zeilen: die Basiszeile sagt ausdrücklich „auf Spanisch" – im de-en-Track
+    // durch die englisch-orientierte Fassung ersetzen (inhaltsgleich zur Locals-Zeile).
+    cuerpoIntroDeEn: "Der menschliche Körper auf Englisch – als drehbares 3D-Modell. Ziehe die Figur zum Drehen und tippe ein Körperteil an: dann erscheint das englische Wort und wird vorgelesen.",
+    comprasIntroDeEn: "Dein Reise-Einkaufszettel auf Englisch. Wähle eine Rubrik und tippe ein Wort an – dann erscheint das englische Wort mit zwei fertigen Fragen fürs Geschäft (ob sie es haben und wo man es findet), und alles wird vorgelesen. Über das Kästchen links hakst du ab, was du erledigt hast – und nimmst es bei Bedarf wieder zurück. Wenn du magst, prüf dich danach im kurzen Quiz.",
+    // Weitere Zeilen mit „Spanisch"-Bezug auf de-en-sichtbaren Screens.
+    discoverIntroDeEn: "Spielen, zuordnen, nachschlagen – Englisch abseits der Karten.",
+    prcIntroDeEn: "Hör einen Preis auf Englisch und tippe die Zahl. Wähle die Währung und wie groß die Beträge werden sollen – vom Kleingeld bis zu großen Summen.",
+    cuerpoHintDeEn: "👆 Tippe einen Punkt auf der Figur an – dann erscheint das englische Wort und wird vorgelesen.",
+    comprasSolutionDeEn: (p) => `Richtig: <b lang="en">${p.es}</b>`,
+
     // Bebidas AM/PM (Tag-/Abendgetränk pro Land)
     bebHint: "Tippen zum Umschalten",
     bebAmText: (p) => `Morgens: ${p.drink} – zum Start in den Tag.`,
@@ -1345,6 +1383,36 @@
     medWords: "Paisa glossary",
     subPlacement: "Short placement test: find your starting level",
     subAssessment: "In-depth (A0–C1) or Extreme with listening",
+
+    // ---- HelloAbroad-Track (de-en) — EN pendants for DE⟷EN key parity ----
+    // The base names keep the Spanish brand wording (as the de/es UI does today);
+    // the …DeEn layer is never actually shown for de-en (nativeLangs is ["de"]
+    // only), but the dictionary must still carry a matching key, so a plausible
+    // English translation stands in.
+    endlessName: "Vocabulario sin fin",
+    endlessNameDeEn: "Endless vocabulary",
+    preciosName: "Precios al oído",
+    preciosNameDeEn: "Prices by ear",
+    spickzettelName: "Supervivencia",
+    spickzettelNameDeEn: "Emergency phrases",
+    comprasName: "Lista de compras",
+    comprasNameDeEn: "Shopping list",
+    cuerpoName: "El Cuerpo",
+    cuerpoNameDeEn: "The body",
+    yestoName: "¿Y esto?",
+    yestoNameDeEn: "What's this?",
+    frasesName: "Frases flexibles",
+    frasesNameDeEn: "Sentence builder",
+    subPreciosDeEn: "Hear prices & type the number – from small change to big sums",
+    subComprasDeEn: "Supermarket, clothes, pharmacy – practise shopping in English",
+    subCuerpoDeEn: "Tap body parts and learn the English word",
+    subYestoDeEn: "Guess the picture: 3-2-1 – what's it called in English?",
+    cuerpoIntroDeEn: "The human body in English – as a rotatable 3D model. Drag the figure to rotate and tap a body part: then the English word appears and is read aloud.",
+    comprasIntroDeEn: "Your travel shopping list in English. Pick a section and tap a word – then the English word appears with two ready-made questions for the shop (whether they have it and where to find it), and everything is read aloud. Use the box on the left to tick off what you've done – and undo it if needed. If you like, test yourself afterwards in the short quiz.",
+    discoverIntroDeEn: "Play, match, look things up – English beyond the cards.",
+    prcIntroDeEn: "Hear a price in English and type the number. Pick the currency and how big the amounts should get – from small change to big sums.",
+    cuerpoHintDeEn: "👆 Tap a point on the figure – then the English word appears and is read aloud.",
+    comprasSolutionDeEn: (p) => `Correct: <b lang="en">${p.es}</b>`,
 
     // Bebidas AM/PM (morning/evening drink per country)
     bebHint: "Tap to switch",
@@ -3071,6 +3139,10 @@
   // übrigen Feature-Namen); übersetzt wird nur der deutsche Begleittext.
   i18n.register("favorites", {
     title: "Mi léxico",
+    // HelloAbroad (de-en): der spanische Markenname „Mi léxico" hat für ein
+    // Reiseenglisch-50+-Publikum keinen Bezug – hier der deutsche Name (greift via
+    // i18n.js deEnTrack in Kachel UND Screen-Kopfzeile).
+    titleDeEn: "Meine Vokabeln",
     intro: "Dein persönliches Lexikon: merke dir Wörter und Sätze, die für dich wichtig sind – zum schnellen Nachsehen, auch in Stresssituationen. Tippe auf den Stern, um etwas hinzuzufügen.",
     addCap: "Eigenen Eintrag hinzufügen",
     addDe: "Deutsch (Bedeutung)",
@@ -3113,6 +3185,7 @@
     copied: "Liste in die Zwischenablage kopiert.",
   }, {
     title: "Mi léxico",
+    titleDeEn: "My vocabulary",
     intro: "Your personal lexicon: save the words and phrases that matter to you – for quick reference, even in stressful moments. Tap the star to add something.",
     addCap: "Add your own entry",
     addDe: "English (meaning)",
