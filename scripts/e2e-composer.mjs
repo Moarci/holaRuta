@@ -132,12 +132,40 @@ async function main() {
     await page.screenshot({ path: path.join(SHOTS, "composer-step1.png"), fullPage: true });
 
     // Dedup-Kartenzahl: „Komplett: Kolumbien" (Plan + Pre-Arrival + Notfall + Geld)
-    // teilt Karten – die Anzeige muss die VEREINIGUNG zeigen (69), nicht die Summe (90).
+    // teilt Karten – die Anzeige muss die VEREINIGUNG zeigen, nicht die Rohsumme.
+    // Beide Werte aus den echten App-Daten ableiten, damit legitime Korpus-
+    // Erweiterungen nicht nur wegen eines veralteten Zahlen-Literals rot werden.
     await page.fill("#cmp-search", "Kolumbien");
     await page.waitForSelector('[data-action="composer-bundle"][data-bundle="komplett-colombia"]');
     await page.click('[data-action="composer-bundle"][data-bundle="komplett-colombia"]');
     const dedup = await page.$eval(".cmp-foot__count", (el) => el.textContent);
-    check("Kartenzahl dedupliziert (69 Karten, nicht 90)", /69 Karten/.test(dedup) && !/90/.test(dedup), dedup);
+    const dedupCounts = await page.evaluate(() => {
+      const data = window.SC.data;
+      const bundle = data.BUNDLES.find((b) => b.id === "komplett-colombia");
+      const idsFor = (item) => {
+        if (item.kind === "pretrip") {
+          const plan = data.PRETRIP.find((p) => p.scope === item.scope);
+          return plan ? plan.days.flatMap((day) => day.cardIds || []) : [];
+        }
+        if (item.kind === "preset") {
+          const preset = data.PRESETS.find((p) => p.id === item.scope);
+          return preset ? preset.cardIds || [] : [];
+        }
+        return data.CARDS.filter((card) => card.cat === item.scope).map((card) => card.id);
+      };
+      const groups = bundle.items.map(idsFor);
+      return {
+        union: new Set(groups.flat()).size,
+        sum: groups.reduce((total, ids) => total + new Set(ids).size, 0),
+      };
+    });
+    check(
+      "Kartenzahl dedupliziert (Vereinigung statt Summe)",
+      dedupCounts.union < dedupCounts.sum &&
+        dedup.includes(`${dedupCounts.union} Karten`) &&
+        !dedup.includes(`${dedupCounts.sum} Karten`),
+      `${dedup} · erwartet: ${dedupCounts.union} statt ${dedupCounts.sum}`,
+    );
     await page.click('[data-action="composer-clear"]');
     await page.fill("#cmp-search", "");
     check("Tab-Leiste bleibt bei Suche erhalten", (await page.$$eval(".cmp-tab", (t) => t.length)) === 4);
