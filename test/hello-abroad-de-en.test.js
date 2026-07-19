@@ -105,9 +105,9 @@ test("Matcher: ENGLISCHES card.alt (loc-Karte) bleibt auch in de-en gültig", ()
 });
 
 // ================= (2) Aussprache: englische Hilfe statt spanischem Tipp =============
-// In de-en tragen die (Reise-)Karten von basics/talk eine ENGLISCHE Aussprachehilfe
-// (card.enPron, z. B. "Hello" → "he-LOU"). Der spanische card.tip ("OH-la") darf NIE
-// erscheinen. Der Study-Screen zeigt im de-en-Track also ausschließlich enPron-Werte.
+// In de-en tragen ALLE Reise-Karten eine ENGLISCHE Aussprachehilfe (card.enPron,
+// z. B. "Hello" → "he-LOU"). Der spanische card.tip ("OH-la") darf NIE erscheinen.
+// Der Study-Screen zeigt im de-en-Track also ausschließlich enPron-Werte.
 function drainStudyTips(edition) {
   const root = freshApp(edition);
   const d = makeDriver(root);
@@ -146,6 +146,14 @@ test("Gegenprobe: de-es zeigt weiterhin die SPANISCHE Lautschrift", () => {
   const esTips = new Set(data.CARDS.filter((c) => !/^loc-/.test(c.id) && c.tip).map((c) => normTip(c.tip)));
   assert.ok(shown.length > 0, "es erscheinen Tipps im de-es-Track");
   assert.ok(shown.some((t) => esTips.has(t)), "mindestens ein gezeigter Tipp ist die spanische Lautschrift");
+});
+
+test("Aussprache-Abdeckung: JEDE HelloAbroad-Karte hat eine englische Aussprachehilfe", () => {
+  freshApp("hello-abroad");
+  const { data, config } = window.SC;
+  const allow = config.categoryAllowlist || [];
+  const missing = data.CARDS.filter((c) => allow.indexOf(c.cat) >= 0 && !(typeof c.enPron === "string" && c.enPron.trim()));
+  assert.equal(missing.length, 0, `Karten ohne enPron: ${missing.map((c) => c.id).join(", ")}`);
 });
 
 // ============================ (3) Geschlechts-Abfrage ============================
