@@ -334,6 +334,14 @@
   const cardNativeField = () => (trk() && trk().cardNativeLang && trk().cardNativeLang()) || (i18n ? i18n.getLang() : "de");
   // Locals-Track aktiv? (Spanisch lernt Englisch.)
   const isLocals = () => { const t = trk(); return !!(t && t.id && t.id() === "es-en"); };
+  // HelloAbroad-Track aktiv? (Deutsch lernt Reiseenglisch.)
+  const isDeEn = () => { const t = trk(); return !!(t && t.id && t.id() === "de-en"); };
+  // Das Reiseziel (Countdown/Tagespensum) und die SPANISCH-Einstufungstests
+  // (Ruta-Check + Nivel-Test) ergeben nur im Reise-Spanisch-Track (de-es) Sinn.
+  // Für Locals (es-en) UND HelloAbroad (de-en) sind sie fehl am Platz – ein
+  // Englisch-Einstufungstest existiert nicht, und das Ziel-Setup stammt aus der
+  // Spanisch-Lernversion. Daher überall (Onboarding, Dashboard, Profil) aus.
+  const hidesTripAndTests = () => isLocals() || isDeEn();
   // Kategorie-Filter fürs Lernen-Tab/Suche/Editor/Stats (siehe config.js
   // categoryAllowlist). null/unset -> alles erlaubt (unverändertes Verhalten
   // für jede bestehende Edition ohne categoryAllowlist).
@@ -556,7 +564,7 @@
   }
 
   function assessmentResumeVM() {
-    if (isLocals()) return null; // spanischer Test -> im Locals-Track ausgeblendet
+    if (hidesTripAndTests()) return null; // spanischer Test -> im Locals-/HelloAbroad-Track aus
     const prog = liveAssessmentProgress();
     if (!prog) return null;
     const variant = prog.variant === "extremo" ? "extremo" : "standard";
@@ -681,10 +689,10 @@
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
 
-      // Einstufungstests sind SPANISCH-Instrumente -> im Locals-Track ausblenden.
-      hasPlacement: !!placement && !isLocals(), // Ruta-Check (Einstufungstest)
+      // Einstufungstests sind SPANISCH-Instrumente -> im Locals- und HelloAbroad-Track ausblenden.
+      hasPlacement: !!placement && !hidesTripAndTests(), // Ruta-Check (Einstufungstest)
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
-      hasAssessment: !!assessment && !isLocals(), // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
+      hasAssessment: !!assessment && !hidesTripAndTests(), // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
@@ -709,8 +717,8 @@
       speechRate: settings.speechRate || 0.95, // gewähltes Sprechtempo (Default normal)
       celebrateSound: !!settings.celebrateSound, // Belohnungs-Sound an/aus (Default aus)
       rutaDone: !!(gamestats.rutaDays && gamestats.rutaDays[dayKey(Date.now())]), // Ruta del día heute schon gelaufen?
-      trip: isLocals() ? null : tripGoalVM(overall), // Trip-Ziel-Karte (Reise; im Locals-Track aus)
-      showTrip: !isLocals(),     // Trip-Bereich (inkl. „Ziel setzen"-Leerzustand) nur im Reise-Track
+      trip: hidesTripAndTests() ? null : tripGoalVM(overall), // Trip-Ziel-Karte (nur Reise-Spanisch-Track)
+      showTrip: !hidesTripAndTests(),     // Trip-Bereich (inkl. „Ziel setzen"-Leerzustand) nur im Reise-Track
       tripEdit: state.tripEdit, // Formular aufgeklappt?
       tripRouteOpen: state.tripRouteOpen !== false, // Route-Zeitleiste auf-/eingeklappt
       tripSwitchOpen: !!state.tripSwitchOpen,        // Schnellwechsel-Chips auf-/eingeklappt
@@ -4415,10 +4423,10 @@
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
-    // Locals-Track: der Ruta-Check ist ein SPANISCH-Einstufungstest und damit für
-    // Englisch-Lernende inhaltlich sinnlos -> überspringen (aus dem Onboarding heraus
-    // sauber abschließen, sonst no-op). So landet ein neuer Locals-Nutzer direkt im Dashboard.
-    if (isLocals()) { if (fromOnboarding) finishOnboarding(); return; }
+    // Locals- & HelloAbroad-Track: der Ruta-Check ist ein SPANISCH-Einstufungstest und
+    // damit für Englisch-Lernende inhaltlich sinnlos -> überspringen (aus dem Onboarding
+    // heraus sauber abschließen, sonst no-op). So landet ein neuer Nutzer direkt im Dashboard.
+    if (hidesTripAndTests()) { if (fromOnboarding) finishOnboarding(); return; }
     // Schutz, falls das placement-Modul nicht geladen ist (z. B. Edition-Build /
     // Offline-Erstaufruf): nicht crashen. Aus dem Onboarding heraus stattdessen
     // sauber abschließen, sonst einfach nichts tun. (Sonst würde unten
@@ -4669,7 +4677,7 @@
 
   function openAssessment() {
     dismissBadgeToast();
-    if (isLocals()) return; // spanischer Nivel-Test -> im Locals-Track nicht verfügbar
+    if (hidesTripAndTests()) return; // spanischer Nivel-Test -> im Locals-/HelloAbroad-Track nicht verfügbar
     if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
     // Läuft noch ein unabgeschlossener Test (z. B. nach versehentlichem Zurück
     // oder Reload)? Dann nahtlos fortsetzen statt von vorn zu beginnen.
@@ -5213,9 +5221,10 @@
       showNotice(t("home.onboardProfileInvalid"));
       return;
     }
-    // Locals-Track: der „Reiseziel"-Schritt ist reise-spezifisch und ergibt für
-    // Einheimische keinen Sinn -> Onboarding nach dem Profil direkt abschließen.
-    if (isLocals()) { buzz(8); finishOnboarding(); return; }
+    // Locals- & HelloAbroad-Track: der „Reiseziel"-Schritt (Countdown/Tagespensum)
+    // stammt aus der Reise-Spanisch-Version und ergibt hier keinen Sinn -> Onboarding
+    // nach dem Profil direkt abschließen (kein Reiseziel, kein Ruta-Check).
+    if (hidesTripAndTests()) { buzz(8); finishOnboarding(); return; }
     state.onboardStep = "trip";
     trackEvent("onboarding_step", { step: "trip", n: 2 });
     buzz(8);
