@@ -309,11 +309,19 @@ test("HelloAbroad-Track: groups()/evaluate/byId liefern die de-en Badge-Welt", (
       assert.ok(!has(gone), `${gone} im de-en-Track ausgeblendet`);
     }
     // KEIN Spanisch/LatAm-Leck in der gesamten aktiven Welt (Namen, Beschreibungen,
-    // Gruppen-Labels). Verriegelt die Neubetextung.
-    const spanishOrLatam = /Español|¿|Peso|Taco|LatAm|Lateinamerika|Primer|oído|Bandera|Sudamérica|Centroamérica|Reise-Spanisch|travel Spanish|spoken Spanish|Otra vez|Modo hostal|Definiciones|Construcción|Constructor|Cuerpo completo|la cabeza|Ruta/;
-    const blob = badges.groups().map((g) => `${g.label} ${g.labelEn}`).join(" ") + " " +
-      de.map((b) => `${b.name} ${b.nameEn} ${b.description || ""} ${b.descriptionEn || ""} ${b.unlockedText || ""} ${b.unlockedTextEn || ""}`).join(" ");
-    assert.ok(!spanishOrLatam.test(blob), "kein Spanisch/LatAm-Wording im de-en-Track");
+    // Gruppen-Labels). Struktureller Wächter statt Wort-Denylist: (a) eindeutig
+    // spanische Zeichen (ñ ¿ ¡) und nur im Spanischen (nicht Deutsch/Englisch)
+    // vorkommende Akzentvokale á í ó ú; (b) ein paar LatAm-/Marken-Wörter, die ohne
+    // Sonderzeichen durchrutschen würden. So fängt der Test auch KÜNFTIGE Einträge.
+    const spanishChars = /[ñ¿¡áíóú]/i;
+    const spanishOrLatam = /\bLatAm\b|Lateinamerika|Sudamérica|Centroam|Reise-Spanisch|travel Spanish|spoken Spanish|Modo hostal|Definiciones|\bRuta\b/;
+    const strings = badges.groups().flatMap((g) => [g.label, g.labelEn]).concat(
+      de.flatMap((b) => [b.name, b.nameEn, b.description, b.descriptionEn, b.unlockedText, b.unlockedTextEn]),
+    ).filter(Boolean);
+    for (const s of strings) {
+      assert.ok(!spanishChars.test(s), `Spanisches Sonderzeichen im de-en-Track: „${s}"`);
+      assert.ok(!spanishOrLatam.test(s), `Spanisch/LatAm-Wording im de-en-Track: „${s}"`);
+    }
   } finally {
     if (prev === undefined) delete window.SC.track; else window.SC.track = prev;
   }
