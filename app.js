@@ -337,11 +337,18 @@
   const _localsCats = () => (window.SC && window.SC.dataLocals && window.SC.dataLocals.CATEGORIES) || [];
   const localsCatSet = () => new Set(_localsCats().map((c) => c.id));
   const localsGroupSet = () => new Set(_localsCats().map((c) => c.group));
-  // Locals-Karte? (Eigener Korpus aus data.locals.js, Präfix "loc-".) Im Locals-Track
-  // tragen nur diese einen ENGLISCHEN Aussprache-Tipp; die Reise-Karten tragen einen
-  // SPANISCHEN Tipp (+ deutschen Klammertext), der dort fehl am Platz wäre.
+  // Aussprache-Tipp der Karte – aber nur, wenn er zur GELERNTEN Sprache passt.
+  // loc-Karten (data.locals.js) tragen einen ENGLISCHEN Tipp; alle übrigen (Reise-)
+  // Karten tragen einen SPANISCHEN Tipp (+ deutschen Klammertext). Ein Reise-Tipp ist
+  // die Aussprache des SPANISCHEN Wortes und wäre überall dort falsch, wo nicht
+  // Spanisch gelernt wird – also im Locals-Track (es-en) UND in HelloAbroad (de-en,
+  // learnLang "en"). Der frühere isLocals()-Guard deckte nur es-en ab und ließ die
+  // spanischen Tipps in de-en fälschlich stehen (z. B. "Hello" → "OH-la"): daher jetzt
+  // generisch über learnLang. Eigene Nutzer-Karten (keine "loc-"-ID) bleiben im
+  // en-Track ohne Tipp – wie schon bisher im Locals-Track.
   const tipFor = (card) => {
-    if (isLocals() && !(card && card.id && card.id.indexOf("loc-") === 0)) return null;
+    const isReiseCard = !(card && card.id && card.id.indexOf("loc-") === 0);
+    if (isReiseCard && learnField() !== "es") return null;
     return (card && card.tip) || null;
   };
   const cardNative = (o) => {
