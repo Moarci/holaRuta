@@ -101,6 +101,26 @@ test("HelloAbroad-Shortcuts: für de und en lokalisiert; Icons existieren + im P
   }
 });
 
+// PNG-Maße aus dem IHDR lesen (Bytes 16–24, Big-Endian) – dependency-frei.
+function pngSize(file) {
+  const b = fs.readFileSync(file);
+  return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
+}
+
+test("HelloAbroad-Manifest: jeder Screenshot existiert und passt zur deklarierten size", () => {
+  const shots = manifest.screenshots || [];
+  assert.ok(shots.length >= 3, `zu wenige Screenshots (${shots.length})`);
+  for (const s of shots) {
+    const ref = normalize(s.src);
+    const file = path.join(SRC, ref);
+    assert.ok(fs.existsSync(file), `Screenshot "${ref}" existiert nicht (scripts/hello-abroad-shots.mjs)`);
+    const [dw, dh] = String(s.sizes || "").split("x").map(Number);
+    const { w, h } = pngSize(file);
+    assert.equal(`${w}x${h}`, `${dw}x${dh}`,
+      `Screenshot "${ref}": echte Maße ${w}x${h} ≠ deklarierte sizes ${dw}x${dh}`);
+  }
+});
+
 test("HelloAbroad: OG-Vorschaubilder existieren (1200×630 + 1080×1080)", () => {
   for (const f of ["og-image-hello-abroad.png", "og-image-square-hello-abroad.png"]) {
     assert.ok(fs.existsSync(path.join(SRC, f)), `${f} fehlt (tools/og-image.js rendern)`);

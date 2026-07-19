@@ -14,6 +14,29 @@
   "categories": ["education", "travel"],
   "launch_handler": { "client_mode": "navigate-existing" },
   "handle_links": "preferred",
+  "screenshots": [
+    {
+      "src": "docs/screenshots/hello-abroad-study.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lernkarte – Frage auf Deutsch, Antwort auf Englisch"
+    },
+    {
+      "src": "docs/screenshots/hello-abroad-home.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Themen – die Reisebereiche zum Lernen"
+    },
+    {
+      "src": "docs/screenshots/hello-abroad-stats.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Fortschritt und Statistik"
+    }
+  ],
   "icons": [
     { "src": "icon-192-hello-abroad.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icon-512-hello-abroad.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
