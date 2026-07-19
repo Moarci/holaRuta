@@ -359,5 +359,5 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.logistica = { INTRO, INTRO_EN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
+  window.SC.logistica = { INTRO, INTRO_EN, INTRO_DEEN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
 })();
