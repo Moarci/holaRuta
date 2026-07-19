@@ -2,8 +2,8 @@
 /*
  * scripts/e2e/suites/p1-landing-b2b.mjs — Blackbox-Smoke der B2B-Landing-Pages.
  *
- * Fünf Vertriebsseiten (Revenue): Hostel, Locals, Sprachschulen, Reiseanbieter,
- * Preview. Pro Seite: lädt fehlerfrei, hat Titel + H1, mindestens einen CTA/
+ * Vertriebs- und Track-Landings: Hostel, Locals, Sprachschulen, Reiseanbieter,
+ * HelloAbroad und Preview. Pro Seite: lädt fehlerfrei, hat Titel + H1, mindestens einen CTA/
  * Kontakt-Link, ein <meta name="description">. Rein statisch, kein App-State.
  *
  *   node scripts/e2e/suites/p1-landing-b2b.mjs
@@ -15,6 +15,7 @@ const PAGES = [
   "landing-locals.html",
   "landing-schule.html",
   "landing-reiseanbieter.html",
+  "hello-abroad/",
   "landing-preview.html",
 ];
 
@@ -43,7 +44,7 @@ await process.exit(await runSuite("Landing (B2B)", async ({ browser, suite }) =>
       // CTA = App-Einstieg (index.html, ./, ?start=, #app) ODER Vertriebskontakt.
       const hasCta = info.links.some((h) => /mailto:|tel:|index\.html|\?start=|#app|contact|kontakt|wa\.me|calendly/i.test(h || "") || /^\.?\/(\?|$)/.test(h || ""));
 
-      check(`${file}: Titel + H1 vorhanden`, /HolaRuta/i.test(info.title) && info.h1.trim().length > 0, `title="${info.title}"`);
+      check(`${file}: Titel + H1 vorhanden`, /HolaRuta|HelloAbroad/i.test(info.title) && info.h1.trim().length > 0, `title="${info.title}"`);
       check(`${file}: Inhalt gerendert (Body-Text)`, info.bodyLen > 200, `len=${info.bodyLen}`);
       check(`${file}: CTA/Kontakt-Link vorhanden`, hasCta, `links=${info.links.length}`);
       check(`${file}: keine Console-/Page-Fehler`, appErrs(errs).length === 0, appErrs(errs).join(" | "));

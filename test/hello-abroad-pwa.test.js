@@ -127,15 +127,22 @@ test("HelloAbroad: OG-Vorschaubilder existieren (1200×630 + 1080×1080)", () =>
   }
 });
 
-test("HelloAbroad-Redirect: eigene OG-Vorschau + Canonical auf die Edition", () => {
+test("HelloAbroad-Landing: eigene Marke, SEO und eindeutiger App-Einstieg", () => {
   const html = read("hello-abroad/index.html");
   assert.ok(/property="og:image"[^>]*og-image-hello-abroad\.png/.test(html)
     || /og-image-hello-abroad\.png/.test(html),
     "hello-abroad/index.html referenziert das HelloAbroad-OG-Bild nicht");
-  assert.ok(/rel="canonical"[^>]*edition=hello-abroad/.test(html),
-    "hello-abroad/index.html: Canonical muss auf ?edition=hello-abroad zeigen");
+  assert.ok(/rel="canonical"[^>]*\/hello-abroad\//.test(html),
+    "hello-abroad/index.html: Canonical muss auf die saubere Marketing-URL zeigen");
   assert.ok(/property="og:title"[^>]*HelloAbroad/.test(html),
     "hello-abroad/index.html: og:title sollte HelloAbroad benennen");
+  assert.ok(!/http-equiv="refresh"/i.test(html),
+    "hello-abroad/index.html darf Besucher nicht mehr sofort an der Landing vorbeileiten");
+  assert.ok(/edition=hello-abroad(?:&amp;|&)start=onboarding/.test(html),
+    "HelloAbroad-Landing braucht einen eindeutigen Einstieg ins Editions-Onboarding");
+  for (const lang of ["de", "en", "x-default"]) {
+    assert.ok(new RegExp(`hreflang="${lang}"`).test(html), `hreflang ${lang} fehlt`);
+  }
 });
 
 test("HelloAbroad: Installationsanleitung + QR existieren und werden in dist/ kopiert", () => {
@@ -146,6 +153,8 @@ test("HelloAbroad: Installationsanleitung + QR existieren und werden in dist/ ko
   for (const f of [
     "og-image-hello-abroad.png", "og-image-square-hello-abroad.png",
     "docs/anleitungen/hello-abroad.html", "docs/anleitungen/qr-hello-abroad.svg",
+    "docs/landing/hello-abroad-home.webp", "docs/landing/hello-abroad-study.webp",
+    "docs/landing/hello-abroad-stats.webp",
   ]) {
     assert.ok(build.includes(`"${f}"`), `build.js kopiert "${f}" nicht nach dist/`);
   }

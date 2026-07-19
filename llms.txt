@@ -5,6 +5,7 @@
 - App: https://moarci.github.io/holaRuta/
 - Über HolaRuta: https://moarci.github.io/holaRuta/landing.html
 - HolaRuta · Inglés (Locals): https://moarci.github.io/holaRuta/landing-locals.html
+- HelloAbroad · Reiseenglisch (DE→EN): https://moarci.github.io/holaRuta/hello-abroad/
 
 ## Deutsch
 

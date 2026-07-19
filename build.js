@@ -248,8 +248,7 @@ function buildDist() {
   for (const extra of [
     "og-image.png",
     "og-image-square.png",
-    // HelloAbroad-Edition (DE-EN): eigene Social-Vorschau, von hello-abroad/index.html
-    // (Redirect) als absolute og:image-URL referenziert – muss in dist/ liegen.
+    // HelloAbroad-Edition (DE-EN): eigene Social-Vorschau für die Marketing-Landing.
     "og-image-hello-abroad.png",
     "og-image-square-hello-abroad.png",
     "landing.html",
@@ -268,6 +267,11 @@ function buildDist() {
     "docs/landing/locals-home.webp",
     "docs/landing/locals-study.webp",
     "docs/landing/locals-stats.webp",
+    // Eigenständige HelloAbroad-Landing unter /hello-abroad/ zeigt die echte
+    // DE→EN-App statt der spanischen Standard-Screenshots.
+    "docs/landing/hello-abroad-home.webp",
+    "docs/landing/hello-abroad-study.webp",
+    "docs/landing/hello-abroad-stats.webp",
     // Zielgruppenspezifische B2B-Landings (DE/EN/ES) – teilen sich styles.css/
     // landing.css und das Beispielkarten-Karussell (landing-carousel.js).
     "landing-schule.html",
@@ -287,11 +291,8 @@ function buildDist() {
     "docs/anleitungen/hello-abroad.html",
     "docs/anleitungen/qr-hello-abroad.svg",
     "docs/pitch/weroad-colombia.html",
-    // Shareable Redirect-URLs (?edition=… fest verdrahtet, per README/Poster
-    // verlinkt): fehlten bisher hier und landeten dadurch NIE in dist/ – die
-    // Links gaben in Produktion 404, obwohl sie lokal (Datei direkt geöffnet)
-    // funktionierten. en/ = ingles-pro (Locals-Schule), hello-abroad/ = die
-    // HelloAbroad-Edition (siehe editions/registry.js appUrl).
+    // Shareable Pfade: en/ bleibt ein Editions-Redirect; hello-abroad/ ist die
+    // eigenständige DE→EN-Marketing-Landing mit App-CTA.
     "en/index.html",
     "hello-abroad/index.html",
     // SEO/GEO: Sitemap + robots + llms.txt (von Landing/Suche/KI-Crawlern

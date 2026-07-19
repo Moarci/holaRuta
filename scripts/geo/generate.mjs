@@ -29,6 +29,7 @@ const STATIC_PAGES = [
   { loc: "/landing-hostel.html", priority: "0.6", changefreq: "monthly" },
   { loc: "/landing-reiseanbieter.html", priority: "0.6", changefreq: "monthly" },
   { loc: "/landing-locals.html", priority: "0.6", changefreq: "monthly" },
+  { loc: "/hello-abroad/", priority: "0.8", changefreq: "monthly" },
 ];
 
 const PAGE_TYPE_PRIORITY = { hub: "0.8", country: "0.7", city: "0.7", situation: "0.6", theme: "0.6", pillar: "0.8" };
@@ -173,6 +174,7 @@ function renderLlmsTxt(pages) {
     `- App: ${BASE_URL}/`,
     `- Über HolaRuta: ${BASE_URL}/landing.html`,
     `- HolaRuta · Inglés (Locals): ${BASE_URL}/landing-locals.html`,
+    `- HelloAbroad · Reiseenglisch (DE→EN): ${BASE_URL}/hello-abroad/`,
     "",
     ...renderLlmsLocaleSection(de, "Deutsch"),
     ...renderLlmsLocaleSection(en, "English"),

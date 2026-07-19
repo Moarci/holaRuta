@@ -1,56 +1,442 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1F4A4E" />
   <title>HelloAbroad – Reiseenglisch für echte Situationen</title>
-  <meta name="description" content="Reiseenglisch auffrischen für unterwegs – Karteikarten mit Spaced Repetition für Flughafen, Hotel, Restaurant, Einkaufen und Notfall. Offline, ohne Konto, kostenlos." />
-  <!-- Einfache, teilbare URL für HelloAbroad. Leitet auf die App mit der
-       Edition "hello-abroad" weiter. Reiner Redirect: die App selbst liegt
-       unter ../ (relative Asset-Pfade bleiben intakt). Bewusst OHNE
-       Inline-Skript: der Meta-Refresh mit 0s erledigt die Weiterleitung und
-       erlaubt eine CSP mit script-src 'none'. -->
-  <link rel="canonical" href="../?edition=hello-abroad" />
-  <meta name="robots" content="noindex, follow" />
+  <meta name="description" content="Über 400 Reiseenglisch-Karten für Flughafen, Hotel, Restaurant, Orientierung und Notfälle. Mit Audio und Wiederholsystem, offline, ohne Konto und kostenlos." />
+  <link rel="canonical" href="https://moarci.github.io/holaRuta/hello-abroad/" />
+  <link rel="alternate" hreflang="de" href="https://moarci.github.io/holaRuta/hello-abroad/?lang=de" />
+  <link rel="alternate" hreflang="en" href="https://moarci.github.io/holaRuta/hello-abroad/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://moarci.github.io/holaRuta/hello-abroad/" />
 
-  <!-- Social-Vorschau (Open Graph + Twitter): so erscheint der geteilte
-       /hello-abroad/-Link in WhatsApp, Signal, Facebook, LinkedIn & Co. Eigene
-       HelloAbroad-Marke (Petrol, Reiseenglisch) statt der HolaRuta-Vorschau.
-       Absolute URLs, weil Crawler relative Pfade nicht auflösen. Die Bilder
-       liegen im Repo-Root und werden aus der Marke erzeugt (tools/og-image.js).
-       Crawler lesen nur das rohe HTML – die strenge CSP unten (die den Redirect
-       hart absichert) betrifft sie nicht. -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HelloAbroad" />
   <meta property="og:locale" content="de_DE" />
+  <meta property="og:locale:alternate" content="en_US" />
   <meta property="og:url" content="https://moarci.github.io/holaRuta/hello-abroad/" />
   <meta property="og:title" content="HelloAbroad – Reiseenglisch für echte Situationen" />
-  <meta property="og:description" content="Karteikarten mit Spaced Repetition für Flughafen, Hotel, Restaurant, Einkaufen & Notfall. Offline, ohne Konto, kostenlos." />
+  <meta property="og:description" content="Englisch für Flughafen, Hotel, Restaurant und Notfälle. Mit Audio, offline, ohne Konto und kostenlos." />
   <meta property="og:image" content="https://moarci.github.io/holaRuta/og-image-hello-abroad.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="HelloAbroad – Reiseenglisch für echte Situationen. Beispielkarte: „Was kostet das?“ → „How much is it?“" />
+  <meta property="og:image:alt" content="HelloAbroad – Reiseenglisch für echte Situationen. Was kostet das? – How much is it?" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="HelloAbroad – Reiseenglisch für echte Situationen" />
-  <meta name="twitter:description" content="Karteikarten mit Spaced Repetition für Flughafen, Hotel, Restaurant, Einkaufen & Notfall. Offline, ohne Konto, kostenlos." />
+  <meta name="twitter:description" content="Englisch für Flughafen, Hotel, Restaurant und Notfälle. Mit Audio, offline und kostenlos." />
   <meta name="twitter:image" content="https://moarci.github.io/holaRuta/og-image-hello-abroad.png" />
   <meta name="twitter:image:alt" content="HelloAbroad – Reiseenglisch für echte Situationen." />
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'; script-src 'none'" />
-  <meta http-equiv="refresh" content="0; url=../?edition=hello-abroad" />
+  <link rel="icon" href="../icon-hello-abroad.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../icon-180-hello-abroad.png" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../fonts/bricolage-grotesque-600-800-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../fonts/instrument-sans-400-700-latin.woff2" />
+  <script>
+    (function () {
+      document.documentElement.classList.add("js");
+      try {
+        var s = JSON.parse(localStorage.getItem("spanischcard.settings.v1") || "{}");
+        var t = (s.theme === "dark" || s.theme === "light") ? s.theme
+          : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.content = t === "dark" ? "#0D2426" : "#1F4A4E";
+      } catch (e) { document.documentElement.dataset.theme = "light"; }
+    })();
+  </script>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../landing.css" />
   <style>
-    html, body { height: 100%; margin: 0; }
-    body { display: grid; place-items: center; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-           background: #1F4A4E; color: #fff; text-align: center; padding: 1.5rem; }
-    a { color: #fff; }
+    :root {
+      --brand: #2F6B70;
+      --brand-ink: #1F4A4E;
+      --brand-ink-on-dark: #9ED4D6;
+      --accent: #2F6B70;
+    }
+    :root[data-theme="dark"] {
+      --brand: #69AEB1;
+      --brand-ink: #9ED4D6;
+      --accent: #4D9296;
+    }
+    .ha-logo-img { width: 100%; height: 100%; display: block; }
+    .ha-areas .lp-hook { min-height: 156px; }
+    .ha-icon { font-size: 1.45rem; line-height: 1; }
+    .ha-guide { margin-top: var(--space-3); text-align: center; }
+    .ha-guide a { font-weight: 800; }
+    .ha-card-answer { font-size: clamp(1.7rem, 4vw, 2.35rem); }
   </style>
+  <script src="../landing-carousel.js" defer></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="no-referrer" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "HelloAbroad",
+    "description": "Reiseenglisch für echte Situationen: über 400 Karteikarten mit Audio und Spaced Repetition. Offline, ohne Konto und kostenlos.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "url": "https://moarci.github.io/holaRuta/hello-abroad/",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+  }
+  </script>
 </head>
 <body>
-  <!-- Sichtbarer Fallback, falls der Meta-Refresh nicht greift (Reader-Modus o.ä.). -->
+  <a href="#hero" class="lp-skip" data-i18n="skip">Zum Inhalt springen</a>
+  <div class="lp-topstripe"></div>
+
+  <header class="lp-header" id="lpHeader">
+    <div class="lp-wrap lp-header__inner">
+      <a class="lp-logo" href="../?edition=hello-abroad" aria-label="HelloAbroad App öffnen" data-i18n-aria="logo.open">
+        <span class="lp-logo__mark" aria-hidden="true"><img class="ha-logo-img" src="../icon-hello-abroad.svg" alt="" /></span>
+        <span class="lp-logo__name">Hello<span>Abroad</span></span>
+      </a>
+      <span class="lp-header__spacer"></span>
+      <div class="lp-header__tools">
+        <div class="lp-langtoggle" role="group" aria-label="Sprache / Language">
+          <button class="lp-langbtn" data-lang="de" aria-pressed="true">DE</button>
+          <button class="lp-langbtn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button class="lp-iconbtn" id="lpTheme" data-i18n-aria="theme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">🌙</button>
+        <a class="lp-cta lp-cta--sm lp-cta--accent lp-header__cta" href="../?edition=hello-abroad&amp;start=onboarding" data-i18n="nav.start">Kostenlos starten</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="lp-audnav" aria-label="Seitenbereiche" data-i18n-aria="nav.aria">
+    <div class="lp-wrap lp-audnav__inner">
+      <span class="lp-audnav__label" data-i18n="nav.label">Entdecken</span>
+      <a class="lp-audchip" href="#features" data-i18n="nav.features">Vorteile</a>
+      <a class="lp-audchip" href="#situationen" data-i18n="nav.areas">Reisesituationen</a>
+      <a class="lp-audchip" href="#how" data-i18n="nav.how">So geht’s</a>
+      <a class="lp-audchip" href="#install" data-i18n="nav.install">Installieren</a>
+    </div>
+  </nav>
+
   <main>
-    <p>HelloAbroad</p>
-    <p><a href="../?edition=hello-abroad">Öffnen / Open →</a></p>
+    <section class="lp-hero" id="hero">
+      <div class="lp-hero__mesh" aria-hidden="true"></div>
+      <div class="lp-wrap lp-hero__grid">
+        <div class="lp-hero__copy">
+          <p class="lp-eyebrow" data-reveal style="--i:0" data-i18n="hero.eyebrow">REISEENGLISCH, DAS MITKOMMT</p>
+          <h1 data-reveal style="--i:1" data-i18n="hero.h1">Englisch, das <span class="lp-hl">mit dir reist.</span></h1>
+          <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Die Sätze für Flughafen, Hotel, Restaurant und Notfälle – in klaren 5-Minuten-Runden, mit Audio und ohne Schulbuchstress.</p>
+          <div class="lp-hero__cta" data-reveal style="--i:3">
+            <a class="lp-cta lp-cta--lg lp-cta--accent" href="../?edition=hello-abroad&amp;start=onboarding" data-i18n="hero.cta">Kostenlos starten →</a>
+            <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">So funktioniert’s</a>
+          </div>
+          <div class="lp-trust">
+            <div class="lp-trust__item" data-reveal style="--i:4;--accent:#2F6B70">
+              <span class="lp-trust__ico ha-icon" aria-hidden="true">▤</span>
+              <div class="lp-trust__data"><span class="lp-trust__num">400+</span><span class="lp-trust__label" data-i18n="trust.cards">Reisekarten</span></div>
+            </div>
+            <div class="lp-trust__item" data-reveal style="--i:5;--accent:#C98524">
+              <span class="lp-trust__ico ha-icon" aria-hidden="true">✈</span>
+              <div class="lp-trust__data"><span class="lp-trust__num" data-count="10">10</span><span class="lp-trust__label" data-i18n="trust.areas">Situationen</span></div>
+            </div>
+            <div class="lp-trust__item" data-reveal style="--i:6;--accent:#3F7355">
+              <span class="lp-trust__ico ha-icon" aria-hidden="true">◉</span>
+              <div class="lp-trust__data"><span class="lp-trust__num" data-count="3">3</span><span class="lp-trust__label" data-i18n="trust.modes">Lernmodi</span></div>
+            </div>
+            <div class="lp-trust__item" data-reveal style="--i:7;--accent:#7D4A8E">
+              <span class="lp-trust__ico ha-icon" aria-hidden="true">✓</span>
+              <div class="lp-trust__data"><span class="lp-trust__num">0&nbsp;€</span><span class="lp-trust__label" data-i18n="trust.free">offline · ohne Konto</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-cardcol" data-reveal style="--i:2">
+          <div class="lp-herophone" aria-hidden="true">
+            <div class="lp-phone__screen">
+              <div class="lp-phone__notch"></div><div class="lp-phone__stripe"></div>
+              <img class="lp-phone__img" src="../docs/landing/hello-abroad-home.webp" width="440" height="956" loading="lazy" alt="" />
+            </div>
+          </div>
+          <div class="lp-carousel" id="lpCar" aria-roledescription="carousel" aria-label="Englische Beispielkarten" data-i18n-aria="carousel.aria">
+            <div class="lp-carousel__viewport">
+              <div class="lp-slide is-active">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="0" aria-pressed="false" data-i18n-aria="card.flip" aria-label="Karte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex1.cat">BEZAHLEN</span><span class="lvl-badge">A1 · Easy</span>
+                        <div class="face__word" data-i18n="ex1.q">Was kostet das?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#2F6B70">
+                        <span class="face__cat" data-i18n="ex1.cat">BEZAHLEN</span><span class="lvl-badge lvl-badge--on">A1 · Easy</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" data-i18n-aria="ctx.show" aria-label="Kontext anzeigen" aria-expanded="false" aria-controls="haCtx1">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" data-spk="How much is it?" data-spk-lang="en-US" data-i18n-aria="card.speak" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word ha-card-answer" lang="en">How much is it?</div>
+                        <span class="face__hint" data-i18n="card.back">Zurückdrehen</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="context-panel lp-ctxpanel" id="haCtx1" hidden>
+                    <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du den Satz</h3>
+                    <p class="context-panel__situation" data-i18n="ex1.sit">Im Geschäft, am Markt oder am Ticketschalter.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide" aria-hidden="true">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="-1" aria-pressed="false" data-i18n-aria="card.flip" aria-label="Karte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex2.cat">FLUGHAFEN</span><span class="lvl-badge">A2 · Medium</span>
+                        <div class="face__word" data-i18n="ex2.q">Wo ist die Gepäckausgabe?</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#C98524">
+                        <span class="face__cat" data-i18n="ex2.cat">FLUGHAFEN</span><span class="lvl-badge lvl-badge--on">A2 · Medium</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" tabindex="-1" data-i18n-aria="ctx.show" aria-label="Kontext anzeigen" aria-expanded="false" aria-controls="haCtx2">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" tabindex="-1" data-spk="Where is baggage claim?" data-spk-lang="en-US" data-i18n-aria="card.speak" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word ha-card-answer" lang="en">Where is baggage claim?</div>
+                        <span class="face__hint" data-i18n="card.back">Zurückdrehen</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="context-panel lp-ctxpanel" id="haCtx2" hidden>
+                    <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du den Satz</h3>
+                    <p class="context-panel__situation" data-i18n="ex2.sit">Nach der Landung, bevor du den Flughafen verlässt.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lp-slide" aria-hidden="true">
+                <div class="lp-cardtilt">
+                  <div class="flip" role="button" tabindex="-1" aria-pressed="false" data-i18n-aria="card.flip" aria-label="Karte umdrehen">
+                    <div class="flip__inner">
+                      <div class="face face--front">
+                        <span class="face__cat" data-i18n="ex3.cat">GESUNDHEIT</span><span class="lvl-badge">A2 · Medium</span>
+                        <div class="face__word" data-i18n="ex3.q">Ich brauche einen Arzt.</div>
+                        <span class="face__hint" data-i18n="card.hint">Zum Umdrehen tippen</span>
+                      </div>
+                      <div class="face face--back" style="--from:#3F7355">
+                        <span class="face__cat" data-i18n="ex3.cat">GESUNDHEIT</span><span class="lvl-badge lvl-badge--on">A2 · Medium</span>
+                        <button class="cardbtn cardbtn--ctx is-on" type="button" tabindex="-1" data-i18n-aria="ctx.show" aria-label="Kontext anzeigen" aria-expanded="false" aria-controls="haCtx3">🧭</button>
+                        <button class="cardbtn cardbtn--speak is-on" type="button" tabindex="-1" data-spk="I need a doctor." data-spk-lang="en-US" data-i18n-aria="card.speak" aria-label="Antwort vorlesen">🔊</button>
+                        <div class="face__word ha-card-answer" lang="en">I need a doctor.</div>
+                        <span class="face__hint" data-i18n="card.back">Zurückdrehen</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="context-panel lp-ctxpanel" id="haCtx3" hidden>
+                    <h3 class="context-panel__title" data-i18n="ctx.title">🧭 So nutzt du den Satz</h3>
+                    <p class="context-panel__situation" data-i18n="ex3.sit">Im Hotel, in der Apotheke oder im Notfall.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lp-dots" id="lpDots" role="group" aria-label="Beispiel auswählen" data-i18n-aria="carousel.choose">
+            <button class="lp-dot is-active" type="button" aria-current="true" aria-label="Beispiel 1"></button>
+            <button class="lp-dot" type="button" aria-label="Beispiel 2"></button>
+            <button class="lp-dot" type="button" aria-label="Beispiel 3"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-section--card" id="features">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="feat.eyebrow">LERNEN OHNE UMWEGE</p>
+        <h2 class="lp-h2" data-reveal data-i18n="feat.title">Für die Reise gemacht. Nicht für die nächste Prüfung.</h2>
+        <p class="lp-lead" data-reveal data-i18n="feat.lead">HelloAbroad konzentriert sich auf das, was unterwegs Sicherheit gibt: verstehen, antworten und den richtigen Satz im richtigen Moment finden.</p>
+        <div class="lp-features__grid">
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="feature.flip" aria-label="Vorteil umdrehen" style="--i:0;--accent:#2F6B70;--from:#2F6B70">
+            <div class="flip__inner"><div class="face face--front lp-feat__teaser"><span class="lp-feat__icon ha-icon">↻</span><h3 class="lp-feat__title" data-i18n="feat.srs.t">Bleibt im Kopf</h3><span class="lp-feat__flip" data-i18n="feat.flip">↺ mehr</span></div><div class="face face--back lp-feat__detail"><span class="lp-feat__icon ha-icon">↻</span><h3 class="lp-feat__title" data-i18n="feat.srs.t">Bleibt im Kopf</h3><p class="lp-feat__body" data-i18n="feat.srs.b">Das Wiederholsystem zeigt dir einen Satz genau dann wieder, wenn er zu verblassen beginnt.</p></div></div>
+          </article>
+          <article class="lp-feat flip is-flipped" data-reveal role="button" tabindex="0" aria-pressed="true" data-i18n-aria="feature.flip" aria-label="Vorteil umdrehen" style="--i:1;--accent:#C98524;--from:#C98524">
+            <div class="flip__inner"><div class="face face--front lp-feat__teaser"><span class="lp-feat__icon ha-icon">🔊</span><h3 class="lp-feat__title" data-i18n="feat.audio.t">Hören und nachsprechen</h3><span class="lp-feat__flip" data-i18n="feat.flip">↺ mehr</span></div><div class="face face--back lp-feat__detail"><span class="lp-feat__icon ha-icon">🔊</span><h3 class="lp-feat__title" data-i18n="feat.audio.t">Hören und nachsprechen</h3><p class="lp-feat__body" data-i18n="feat.audio.b">Jede englische Antwort lässt sich vorlesen – ruhig, deutlich und jederzeit wiederholbar.</p></div></div>
+          </article>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="feature.flip" aria-label="Vorteil umdrehen" style="--i:2;--accent:#3F7355;--from:#3F7355">
+            <div class="flip__inner"><div class="face face--front lp-feat__teaser"><span class="lp-feat__icon ha-icon">⌁</span><h3 class="lp-feat__title" data-i18n="feat.offline.t">Auch ohne Netz</h3><span class="lp-feat__flip" data-i18n="feat.flip">↺ mehr</span></div><div class="face face--back lp-feat__detail"><span class="lp-feat__icon ha-icon">⌁</span><h3 class="lp-feat__title" data-i18n="feat.offline.t">Auch ohne Netz</h3><p class="lp-feat__body" data-i18n="feat.offline.b">Einmal geladen, funktioniert die App im Flugzeug, im Zug und überall mit schlechtem Empfang.</p></div></div>
+          </article>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="feature.flip" aria-label="Vorteil umdrehen" style="--i:0;--accent:#7D4A8E;--from:#7D4A8E">
+            <div class="flip__inner"><div class="face face--front lp-feat__teaser"><span class="lp-feat__icon ha-icon">✎</span><h3 class="lp-feat__title" data-i18n="feat.modes.t">So lernen, wie es passt</h3><span class="lp-feat__flip" data-i18n="feat.flip">↺ mehr</span></div><div class="face face--back lp-feat__detail"><span class="lp-feat__icon ha-icon">✎</span><h3 class="lp-feat__title" data-i18n="feat.modes.t">So lernen, wie es passt</h3><p class="lp-feat__body" data-i18n="feat.modes.b">Karte ansehen, Antwort selbst schreiben oder nur hören – du bestimmst Tempo und Modus.</p></div></div>
+          </article>
+          <article class="lp-feat flip is-flipped" data-reveal role="button" tabindex="0" aria-pressed="true" data-i18n-aria="feature.flip" aria-label="Vorteil umdrehen" style="--i:1;--accent:#B5483A;--from:#B5483A">
+            <div class="flip__inner"><div class="face face--front lp-feat__teaser"><span class="lp-feat__icon ha-icon">⌕</span><h3 class="lp-feat__title" data-i18n="feat.search.t">Im Moment griffbereit</h3><span class="lp-feat__flip" data-i18n="feat.flip">↺ mehr</span></div><div class="face face--back lp-feat__detail"><span class="lp-feat__icon ha-icon">⌕</span><h3 class="lp-feat__title" data-i18n="feat.search.t">Im Moment griffbereit</h3><p class="lp-feat__body" data-i18n="feat.search.b">Suche deutsch oder englisch und finde den benötigten Satz, ohne durch Kapitel zu blättern.</p></div></div>
+          </article>
+          <article class="lp-feat flip" data-reveal role="button" tabindex="0" aria-pressed="false" data-i18n-aria="feature.flip" aria-label="Vorteil umdrehen" style="--i:2;--accent:#2F6B70;--from:#2F6B70">
+            <div class="flip__inner"><div class="face face--front lp-feat__teaser"><span class="lp-feat__icon ha-icon">◇</span><h3 class="lp-feat__title" data-i18n="feat.private.t">Privat und kostenlos</h3><span class="lp-feat__flip" data-i18n="feat.flip">↺ mehr</span></div><div class="face face--back lp-feat__detail"><span class="lp-feat__icon ha-icon">◇</span><h3 class="lp-feat__title" data-i18n="feat.private.t">Privat und kostenlos</h3><p class="lp-feat__body" data-i18n="feat.private.b">Kein Konto, keine Werbung. Dein Lernfortschritt bleibt auf deinem Gerät.</p></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-section--wash ha-areas" id="situationen">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="areas.eyebrow">VON DER LANDUNG BIS ZUR HEIMREISE</p>
+        <h2 class="lp-h2" data-reveal data-i18n="areas.title">Zehn Situationen, in denen ein Satz den Unterschied macht.</h2>
+        <p class="lp-lead" data-reveal data-i18n="areas.lead">Über 400 Karten, sinnvoll gebündelt – damit du nicht „Englisch allgemein“, sondern für deine nächste Reise lernst.</p>
+        <div class="lp-hooks">
+          <article class="lp-hook" data-reveal style="--i:0;--accent:#2F6B70"><span class="lp-hook__ico">👋</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.1.k">Ankommen</span><h3 class="lp-hook__title" data-i18n="area.1.t">Grundlagen</h3><p class="lp-hook__text" data-i18n="area.1.b">Begrüßen, bedanken, nachfragen und um Hilfe bitten.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:1;--accent:#7D4A8E"><span class="lp-hook__ico">💬</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.2.k">Begegnen</span><h3 class="lp-hook__title" data-i18n="area.2.t">Smalltalk</h3><p class="lp-hook__text" data-i18n="area.2.b">Sich vorstellen, ins Gespräch kommen und freundlich verabschieden.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:0;--accent:#C98524"><span class="lp-hook__ico">✈️</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.3.k">Abflug und Landung</span><h3 class="lp-hook__title" data-i18n="area.3.t">Flughafen und Gepäck</h3><p class="lp-hook__text" data-i18n="area.3.b">Check-in, Sicherheitskontrolle, Gate, Verspätung und verlorenes Gepäck.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:1;--accent:#B5483A"><span class="lp-hook__ico">🛂</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.4.k">Einreisen</span><h3 class="lp-hook__title" data-i18n="area.4.t">Pass- und Grenzkontrolle</h3><p class="lp-hook__text" data-i18n="area.4.b">Reisezweck, Aufenthaltsdauer, Adresse und Rückflug erklären.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:0;--accent:#3F7355"><span class="lp-hook__ico">🛏️</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.5.k">Übernachten</span><h3 class="lp-hook__title" data-i18n="area.5.t">Hotel und Unterkunft</h3><p class="lp-hook__text" data-i18n="area.5.b">Reservierung, Check-in, Frühstück, Wünsche und Probleme im Zimmer.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:1;--accent:#C98524"><span class="lp-hook__ico">🍽️</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.6.k">Genießen</span><h3 class="lp-hook__title" data-i18n="area.6.t">Essen und Trinken</h3><p class="lp-hook__text" data-i18n="area.6.b">Tisch bestellen, Speisekarte verstehen, Allergien nennen und bezahlen.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:0;--accent:#7D4A8E"><span class="lp-hook__ico">💳</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.7.k">Besorgen</span><h3 class="lp-hook__title" data-i18n="area.7.t">Einkaufen und Bezahlen</h3><p class="lp-hook__text" data-i18n="area.7.b">Preis, Größe, Karte oder Bargeld, Bankautomat und Wechselgeld.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:1;--accent:#2F6B70"><span class="lp-hook__ico">🧭</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.8.k">Weiterkommen</span><h3 class="lp-hook__title" data-i18n="area.8.t">Transport und Orientierung</h3><p class="lp-hook__text" data-i18n="area.8.b">Taxi, Bus und Bahn nehmen, Tickets kaufen und nach dem Weg fragen.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:0;--accent:#B5483A"><span class="lp-hook__ico">🚗</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.9.k">Selbst fahren</span><h3 class="lp-hook__title" data-i18n="area.9.t">Mietwagen und Tankstelle</h3><p class="lp-hook__text" data-i18n="area.9.b">Übernahme, Versicherung, Tanken, Panne und Rückgabe meistern.</p></div></article>
+          <article class="lp-hook" data-reveal style="--i:1;--accent:#3F7355"><span class="lp-hook__ico">🩺</span><div class="lp-hook__body"><span class="lp-hook__kicker" data-i18n="area.10.k">Sicher bleiben</span><h3 class="lp-hook__title" data-i18n="area.10.t">Gesundheit und Notfälle</h3><p class="lp-hook__text" data-i18n="area.10.b">Beschwerden erklären, Apotheke finden und im Notfall Hilfe holen.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="lp-section" id="how">
+      <div class="lp-wrap">
+        <div class="lp-rule" data-reveal></div>
+        <p class="lp-eyebrow" data-reveal data-i18n="how.eyebrow">SO EINFACH GEHT’S</p>
+        <h2 class="lp-h2" data-reveal data-i18n="how.title">Drei Schritte. Fünf Minuten. Ein gutes Gefühl.</h2>
+        <div class="lp-how__grid">
+          <div class="lp-steps">
+            <article class="lp-step is-active" data-reveal style="--i:0;--accent:#2F6B70" data-step="1"><span class="lp-step__num">1</span><div class="lp-step__main"><span class="lp-step__kicker" data-i18n="how.1.k">AUSWÄHLEN</span><h3 class="lp-step__title" data-i18n="how.1.t">Was steht als Nächstes an?</h3><p class="lp-step__body" data-i18n="how.1.b">Wähle Flughafen, Hotel, Restaurant oder eine andere Reisesituation.</p></div><div class="lp-step__shot"><img src="../docs/landing/hello-abroad-home.webp" width="440" height="956" loading="lazy" alt="HelloAbroad Themenübersicht" /></div></article>
+            <article class="lp-step" data-reveal style="--i:1;--accent:#C98524" data-step="2"><span class="lp-step__num">2</span><div class="lp-step__main"><span class="lp-step__kicker" data-i18n="how.2.k">ÜBEN</span><h3 class="lp-step__title" data-i18n="how.2.t">Karte ansehen, hören, antworten</h3><p class="lp-step__body" data-i18n="how.2.b">Deutsch vorne, Englisch hinten. Höre die Aussprache und sprich den Satz nach.</p></div><div class="lp-step__shot"><img src="../docs/landing/hello-abroad-study.webp" width="440" height="956" loading="lazy" alt="HelloAbroad englische Lernkarte" /></div></article>
+            <article class="lp-step" data-reveal style="--i:2;--accent:#3F7355" data-step="3"><span class="lp-step__num">3</span><div class="lp-step__main"><span class="lp-step__kicker" data-i18n="how.3.k">DRANBLEIBEN</span><h3 class="lp-step__title" data-i18n="how.3.t">Nur wiederholen, was noch fehlt</h3><p class="lp-step__body" data-i18n="how.3.b">HelloAbroad merkt sich deinen Stand und plant die nächste kurze Runde.</p></div><div class="lp-step__shot"><img src="../docs/landing/hello-abroad-stats.webp" width="440" height="956" loading="lazy" alt="HelloAbroad Lernfortschritt" /></div></article>
+          </div>
+          <div class="lp-phone" aria-hidden="true"><div class="lp-phone__screen"><div class="lp-phone__notch"></div><div class="lp-phone__stripe"></div><img class="lp-phone__img" id="lpPhoneImg" src="../docs/landing/hello-abroad-home.webp" width="440" height="956" loading="lazy" alt="" /></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-section--wash" id="install">
+      <div class="lp-wrap">
+        <div class="lp-rule lp-rule--center" data-reveal></div>
+        <p class="lp-eyebrow" style="text-align:center" data-reveal data-i18n="install.eyebrow">IMMER GRIFFBEREIT</p>
+        <h2 class="lp-h2" style="margin-inline:auto;text-align:center;max-width:28ch" data-reveal data-i18n="install.title">Wie eine App. Ohne App-Store.</h2>
+        <div class="lp-install__grid">
+          <article class="lp-installcard" data-reveal style="--i:0"><span class="lp-installcard__plat">🤖 <span data-i18n="install.android">Android</span></span><ol><li data-i18n="install.a1">HelloAbroad in Chrome öffnen.</li><li data-i18n="install.a2">Im Menü „Zum Startbildschirm hinzufügen“ wählen.</li><li data-i18n="install.a3">Vom Homescreen starten – auch offline.</li></ol><p class="lp-installcard__note" data-i18n="install.note">Kein Konto. Keine Werbung. Keine Kosten.</p></article>
+          <article class="lp-installcard" data-reveal style="--i:1"><span class="lp-installcard__plat">🍎 <span data-i18n="install.ios">iPhone (Safari)</span></span><ol><li data-i18n="install.i1">HelloAbroad in Safari öffnen.</li><li data-i18n="install.i2">Teilen und dann „Zum Home-Bildschirm“ antippen.</li><li data-i18n="install.i3">Das neue HelloAbroad-Symbol öffnen.</li></ol><p class="lp-installcard__note" data-i18n="install.note">Kein Konto. Keine Werbung. Keine Kosten.</p></article>
+        </div>
+        <div class="lp-install__cta" data-reveal><a class="lp-cta lp-cta--lg lp-cta--accent" href="../?edition=hello-abroad&amp;start=onboarding" data-i18n="install.cta">Jetzt im Browser starten →</a></div>
+        <p class="ha-guide" data-reveal><a href="../docs/anleitungen/hello-abroad.html" data-i18n="install.guide">Ausführliche Installationsanleitung ansehen</a></p>
+        <div class="lp-faq">
+          <details data-reveal><summary data-i18n="faq.1.q">Brauche ich ständig Internet?</summary><div class="lp-faq__body" data-i18n="faq.1.a">Nein. Nach dem ersten Laden kannst du deine Karten auch im Flugzeug oder bei schlechtem Empfang üben.</div></details>
+          <details data-reveal><summary data-i18n="faq.2.q">Ist HelloAbroad wirklich kostenlos?</summary><div class="lp-faq__body" data-i18n="faq.2.a">Ja. Ohne Werbung, In-App-Käufe oder versteckte Testphase.</div></details>
+          <details data-reveal><summary data-i18n="faq.3.q">Welche Art Englisch lerne ich?</summary><div class="lp-faq__body" data-i18n="faq.3.a">Verständliches, international brauchbares Reiseenglisch mit englischer Sprachausgabe – keine Grammatiklektionen ohne Reisebezug.</div></details>
+          <details data-reveal><summary data-i18n="faq.4.q">Muss ich ein Konto anlegen?</summary><div class="lp-faq__body" data-i18n="faq.4.a">Nein. Dein Fortschritt bleibt lokal auf deinem Gerät. Cloud-Synchronisierung ist optional.</div></details>
+          <details data-reveal><summary data-i18n="faq.5.q">Ist die Bedienung kompliziert?</summary><div class="lp-faq__body" data-i18n="faq.5.a">Nein. Große Bedienelemente, ruhige Ansichten und kurze Runden führen dich Schritt für Schritt.</div></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-final" id="start">
+      <div class="lp-final__aura" aria-hidden="true"></div>
+      <div class="lp-wrap">
+        <p class="lp-final__eyebrow" data-reveal data-i18n="final.eyebrow">DIE NÄCHSTE REISE KOMMT</p>
+        <h2 class="lp-h2" data-reveal data-i18n="final.title">Mach dich verständlich. Und fühl dich unterwegs sicherer.</h2>
+        <p class="lp-final__sub" data-reveal data-i18n="final.sub">Über 400 Reise-Karten, mit Audio und Wiederholsystem. In 30 Sekunden startklar.</p>
+        <div class="lp-final__stats" data-reveal>
+          <div class="lp-final__stat"><span class="lp-final__num">400+</span><span class="lp-final__lbl" data-i18n="trust.cards">Reisekarten</span></div>
+          <div class="lp-final__stat"><span class="lp-final__num">10</span><span class="lp-final__lbl" data-i18n="trust.areas">Situationen</span></div>
+          <div class="lp-final__stat"><span class="lp-final__num">30 s</span><span class="lp-final__lbl" data-i18n="final.ready">startklar</span></div>
+          <div class="lp-final__stat"><span class="lp-final__num">0 €</span><span class="lp-final__lbl" data-i18n="final.forever">dauerhaft</span></div>
+        </div>
+        <div data-reveal><a class="lp-cta lp-cta--lg lp-cta--onbrand" href="../?edition=hello-abroad&amp;start=onboarding" data-i18n="final.cta">HelloAbroad kostenlos starten →</a></div>
+      </div>
+    </section>
   </main>
+
+  <footer class="lp-footer">
+    <div class="lp-footer__top"></div>
+    <div class="lp-wrap">
+      <div class="lp-footer__grid">
+        <div>
+          <a class="lp-logo" href="../?edition=hello-abroad" aria-label="HelloAbroad App öffnen" data-i18n-aria="logo.open"><span class="lp-logo__mark" aria-hidden="true"><img class="ha-logo-img" src="../icon-hello-abroad.svg" alt="" /></span><span class="lp-logo__name" style="color:var(--cream)">Hello<span>Abroad</span></span></a>
+          <p class="lp-footer__blurb" data-i18n="footer.blurb">Reiseenglisch für echte Situationen – klar, praktisch, offline und kostenlos.</p>
+          <div class="lp-footer__chips" aria-hidden="true"><span class="lp-footer__chip">check-in</span><span class="lp-footer__chip">baggage</span><span class="lp-footer__chip">please</span><span class="lp-footer__chip">help</span></div>
+        </div>
+        <div><h4 data-i18n="footer.app">App</h4><ul><li><a href="../?edition=hello-abroad" data-i18n="footer.open">App öffnen</a></li><li><a href="../?edition=hello-abroad&amp;start=onboarding" data-i18n="footer.start">Kostenlos starten</a></li><li><a href="../docs/anleitungen/hello-abroad.html" data-i18n="footer.guide">Installationsanleitung</a></li></ul></div>
+        <div><h4 data-i18n="footer.more">Mehr</h4><ul><li><a href="#features" data-i18n="nav.features">Vorteile</a></li><li><a href="#situationen" data-i18n="nav.areas">Reisesituationen</a></li><li><a href="#how" data-i18n="nav.how">So geht’s</a></li><li><a href="#install" data-i18n="nav.install">Installieren</a></li></ul></div>
+      </div>
+      <div class="lp-footer__credit"><span>© <span id="lpYear">2026</span> HelloAbroad</span><span data-i18n="footer.credit">Für entspannteres Reisen gebaut.</span></div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+      var I18N = {
+        de: {
+          "logo.open":"HelloAbroad App öffnen","nav.aria":"Seitenbereiche","carousel.aria":"Englische Beispielkarten","carousel.choose":"Beispiel auswählen",
+          "_title":"HelloAbroad – Reiseenglisch für echte Situationen",
+          "_desc":"Über 400 Reiseenglisch-Karten für Flughafen, Hotel, Restaurant, Orientierung und Notfälle. Mit Audio und Wiederholsystem, offline, ohne Konto und kostenlos.",
+          "skip":"Zum Inhalt springen","theme":"Hell/Dunkel umschalten","nav.start":"Kostenlos starten","nav.label":"Entdecken","nav.features":"Vorteile","nav.areas":"Reisesituationen","nav.how":"So geht’s","nav.install":"Installieren",
+          "hero.eyebrow":"REISEENGLISCH, DAS MITKOMMT","hero.h1":"Englisch, das <span class=\"lp-hl\">mit dir reist.</span>","hero.sub":"Die Sätze für Flughafen, Hotel, Restaurant und Notfälle – in klaren 5-Minuten-Runden, mit Audio und ohne Schulbuchstress.","hero.cta":"Kostenlos starten →","hero.cta2":"So funktioniert’s",
+          "trust.cards":"Reisekarten","trust.areas":"Situationen","trust.modes":"Lernmodi","trust.free":"offline · ohne Konto",
+          "card.flip":"Karte umdrehen","card.speak":"Antwort vorlesen","card.hint":"Zum Umdrehen tippen","card.back":"Zurückdrehen","ctx.show":"Kontext anzeigen","ctx.title":"🧭 So nutzt du den Satz",
+          "ex1.cat":"BEZAHLEN","ex1.q":"Was kostet das?","ex1.sit":"Im Geschäft, am Markt oder am Ticketschalter.","ex2.cat":"FLUGHAFEN","ex2.q":"Wo ist die Gepäckausgabe?","ex2.sit":"Nach der Landung, bevor du den Flughafen verlässt.","ex3.cat":"GESUNDHEIT","ex3.q":"Ich brauche einen Arzt.","ex3.sit":"Im Hotel, in der Apotheke oder im Notfall.",
+          "feat.eyebrow":"LERNEN OHNE UMWEGE","feat.title":"Für die Reise gemacht. Nicht für die nächste Prüfung.","feat.lead":"HelloAbroad konzentriert sich auf das, was unterwegs Sicherheit gibt: verstehen, antworten und den richtigen Satz im richtigen Moment finden.","feature.flip":"Vorteil umdrehen","feat.flip":"↺ mehr",
+          "feat.srs.t":"Bleibt im Kopf","feat.srs.b":"Das Wiederholsystem zeigt dir einen Satz genau dann wieder, wenn er zu verblassen beginnt.","feat.audio.t":"Hören und nachsprechen","feat.audio.b":"Jede englische Antwort lässt sich vorlesen – ruhig, deutlich und jederzeit wiederholbar.","feat.offline.t":"Auch ohne Netz","feat.offline.b":"Einmal geladen, funktioniert die App im Flugzeug, im Zug und überall mit schlechtem Empfang.","feat.modes.t":"So lernen, wie es passt","feat.modes.b":"Karte ansehen, Antwort selbst schreiben oder nur hören – du bestimmst Tempo und Modus.","feat.search.t":"Im Moment griffbereit","feat.search.b":"Suche deutsch oder englisch und finde den benötigten Satz, ohne durch Kapitel zu blättern.","feat.private.t":"Privat und kostenlos","feat.private.b":"Kein Konto, keine Werbung. Dein Lernfortschritt bleibt auf deinem Gerät.",
+          "areas.eyebrow":"VON DER LANDUNG BIS ZUR HEIMREISE","areas.title":"Zehn Situationen, in denen ein Satz den Unterschied macht.","areas.lead":"Über 400 Karten, sinnvoll gebündelt – damit du nicht „Englisch allgemein“, sondern für deine nächste Reise lernst.",
+          "area.1.k":"Ankommen","area.1.t":"Grundlagen","area.1.b":"Begrüßen, bedanken, nachfragen und um Hilfe bitten.","area.2.k":"Begegnen","area.2.t":"Smalltalk","area.2.b":"Sich vorstellen, ins Gespräch kommen und freundlich verabschieden.","area.3.k":"Abflug und Landung","area.3.t":"Flughafen und Gepäck","area.3.b":"Check-in, Sicherheitskontrolle, Gate, Verspätung und verlorenes Gepäck.","area.4.k":"Einreisen","area.4.t":"Pass- und Grenzkontrolle","area.4.b":"Reisezweck, Aufenthaltsdauer, Adresse und Rückflug erklären.","area.5.k":"Übernachten","area.5.t":"Hotel und Unterkunft","area.5.b":"Reservierung, Check-in, Frühstück, Wünsche und Probleme im Zimmer.","area.6.k":"Genießen","area.6.t":"Essen und Trinken","area.6.b":"Tisch bestellen, Speisekarte verstehen, Allergien nennen und bezahlen.","area.7.k":"Besorgen","area.7.t":"Einkaufen und Bezahlen","area.7.b":"Preis, Größe, Karte oder Bargeld, Bankautomat und Wechselgeld.","area.8.k":"Weiterkommen","area.8.t":"Transport und Orientierung","area.8.b":"Taxi, Bus und Bahn nehmen, Tickets kaufen und nach dem Weg fragen.","area.9.k":"Selbst fahren","area.9.t":"Mietwagen und Tankstelle","area.9.b":"Übernahme, Versicherung, Tanken, Panne und Rückgabe meistern.","area.10.k":"Sicher bleiben","area.10.t":"Gesundheit und Notfälle","area.10.b":"Beschwerden erklären, Apotheke finden und im Notfall Hilfe holen.",
+          "how.eyebrow":"SO EINFACH GEHT’S","how.title":"Drei Schritte. Fünf Minuten. Ein gutes Gefühl.","how.1.k":"AUSWÄHLEN","how.1.t":"Was steht als Nächstes an?","how.1.b":"Wähle Flughafen, Hotel, Restaurant oder eine andere Reisesituation.","how.2.k":"ÜBEN","how.2.t":"Karte ansehen, hören, antworten","how.2.b":"Deutsch vorne, Englisch hinten. Höre die Aussprache und sprich den Satz nach.","how.3.k":"DRANBLEIBEN","how.3.t":"Nur wiederholen, was noch fehlt","how.3.b":"HelloAbroad merkt sich deinen Stand und plant die nächste kurze Runde.",
+          "install.eyebrow":"IMMER GRIFFBEREIT","install.title":"Wie eine App. Ohne App-Store.","install.android":"Android","install.ios":"iPhone (Safari)","install.a1":"HelloAbroad in Chrome öffnen.","install.a2":"Im Menü „Zum Startbildschirm hinzufügen“ wählen.","install.a3":"Vom Homescreen starten – auch offline.","install.i1":"HelloAbroad in Safari öffnen.","install.i2":"Teilen und dann „Zum Home-Bildschirm“ antippen.","install.i3":"Das neue HelloAbroad-Symbol öffnen.","install.note":"Kein Konto. Keine Werbung. Keine Kosten.","install.cta":"Jetzt im Browser starten →","install.guide":"Ausführliche Installationsanleitung ansehen",
+          "faq.1.q":"Brauche ich ständig Internet?","faq.1.a":"Nein. Nach dem ersten Laden kannst du deine Karten auch im Flugzeug oder bei schlechtem Empfang üben.","faq.2.q":"Ist HelloAbroad wirklich kostenlos?","faq.2.a":"Ja. Ohne Werbung, In-App-Käufe oder versteckte Testphase.","faq.3.q":"Welche Art Englisch lerne ich?","faq.3.a":"Verständliches, international brauchbares Reiseenglisch mit englischer Sprachausgabe – keine Grammatiklektionen ohne Reisebezug.","faq.4.q":"Muss ich ein Konto anlegen?","faq.4.a":"Nein. Dein Fortschritt bleibt lokal auf deinem Gerät. Cloud-Synchronisierung ist optional.","faq.5.q":"Ist die Bedienung kompliziert?","faq.5.a":"Nein. Große Bedienelemente, ruhige Ansichten und kurze Runden führen dich Schritt für Schritt.",
+          "final.eyebrow":"DIE NÄCHSTE REISE KOMMT","final.title":"Mach dich verständlich. Und fühl dich unterwegs sicherer.","final.sub":"Über 400 Reise-Karten, mit Audio und Wiederholsystem. In 30 Sekunden startklar.","final.ready":"startklar","final.forever":"dauerhaft","final.cta":"HelloAbroad kostenlos starten →",
+          "footer.blurb":"Reiseenglisch für echte Situationen – klar, praktisch, offline und kostenlos.","footer.app":"App","footer.open":"App öffnen","footer.start":"Kostenlos starten","footer.guide":"Installationsanleitung","footer.more":"Mehr","footer.credit":"Für entspannteres Reisen gebaut."
+        },
+        en: {
+          "logo.open":"Open the HelloAbroad app","nav.aria":"Page sections","carousel.aria":"English example cards","carousel.choose":"Choose an example",
+          "_title":"HelloAbroad – practical English for real travel",
+          "_desc":"More than 400 travel-English cards for airports, hotels, restaurants, directions and emergencies. With audio and spaced repetition, offline, no account and free.",
+          "skip":"Skip to content","theme":"Switch light/dark","nav.start":"Start for free","nav.label":"Explore","nav.features":"Benefits","nav.areas":"Travel situations","nav.how":"How it works","nav.install":"Install",
+          "hero.eyebrow":"TRAVEL ENGLISH THAT COMES WITH YOU","hero.h1":"English that <span class=\"lp-hl\">travels with you.</span>","hero.sub":"The phrases you need at the airport, hotel, restaurant and in an emergency – in calm five-minute rounds, with audio and no textbook stress.","hero.cta":"Start for free →","hero.cta2":"See how it works",
+          "trust.cards":"travel cards","trust.areas":"situations","trust.modes":"study modes","trust.free":"offline · no account",
+          "card.flip":"Flip card","card.speak":"Read answer aloud","card.hint":"Tap to reveal","card.back":"Flip back","ctx.show":"Show context","ctx.title":"🧭 When to use it",
+          "ex1.cat":"PAYING","ex1.q":"Was kostet das?","ex1.sit":"In a shop, at a market or at the ticket counter.","ex2.cat":"AIRPORT","ex2.q":"Wo ist die Gepäckausgabe?","ex2.sit":"After landing, before you leave the airport.","ex3.cat":"HEALTH","ex3.q":"Ich brauche einen Arzt.","ex3.sit":"At your hotel, in a pharmacy or in an emergency.",
+          "feat.eyebrow":"LEARN WITHOUT THE DETOUR","feat.title":"Made for travel. Not for your next exam.","feat.lead":"HelloAbroad focuses on what gives you confidence on the road: understanding, replying and finding the right phrase at the right moment.","feature.flip":"Flip benefit","feat.flip":"↺ more",
+          "feat.srs.t":"Stays in your head","feat.srs.b":"Spaced repetition brings a phrase back just as it starts to fade.","feat.audio.t":"Listen and repeat","feat.audio.b":"Hear every English answer clearly and repeat it as often as you like.","feat.offline.t":"Works offline","feat.offline.b":"Once loaded, the app works on the plane, on the train and wherever reception is poor.","feat.modes.t":"Learn your way","feat.modes.b":"Flip a card, type the answer or simply listen – you choose the pace and mode.","feat.search.t":"Ready when you need it","feat.search.b":"Search in German or English and find the phrase without leafing through chapters.","feat.private.t":"Private and free","feat.private.b":"No account and no ads. Your progress stays on your device.",
+          "areas.eyebrow":"FROM TOUCHDOWN TO THE JOURNEY HOME","areas.title":"Ten situations where one phrase makes all the difference.","areas.lead":"More than 400 cards, grouped with purpose – so you learn for your next trip, not “English in general”.",
+          "area.1.k":"Arrive","area.1.t":"Essentials","area.1.b":"Say hello, thank people, ask again and ask for help.","area.2.k":"Connect","area.2.t":"Small talk","area.2.b":"Introduce yourself, start a conversation and say goodbye naturally.","area.3.k":"Take off and land","area.3.t":"Airport and baggage","area.3.b":"Check-in, security, gates, delays and missing baggage.","area.4.k":"Enter the country","area.4.t":"Passport and border control","area.4.b":"Explain your reason for travel, length of stay, address and return flight.","area.5.k":"Stay","area.5.t":"Hotel and accommodation","area.5.b":"Reservations, check-in, breakfast, requests and room problems.","area.6.k":"Enjoy","area.6.t":"Food and drink","area.6.b":"Book a table, understand the menu, mention allergies and pay.","area.7.k":"Shop","area.7.t":"Shopping and paying","area.7.b":"Prices, sizes, cards or cash, cash machines and change.","area.8.k":"Get around","area.8.t":"Transport and directions","area.8.b":"Take a taxi, bus or train, buy tickets and ask the way.","area.9.k":"Drive","area.9.t":"Rental cars and fuel","area.9.b":"Pick-up, insurance, refuelling, breakdowns and return.","area.10.k":"Stay safe","area.10.t":"Health and emergencies","area.10.b":"Describe symptoms, find a pharmacy and get help in an emergency.",
+          "how.eyebrow":"IT REALLY IS THIS SIMPLE","how.title":"Three steps. Five minutes. More confidence.","how.1.k":"CHOOSE","how.1.t":"What comes next?","how.1.b":"Pick the airport, hotel, restaurant or another travel situation.","how.2.k":"PRACTISE","how.2.t":"Look, listen and answer","how.2.b":"German on the front, English on the back. Hear the phrase and say it aloud.","how.3.k":"KEEP GOING","how.3.t":"Repeat only what still needs work","how.3.b":"HelloAbroad remembers your progress and plans the next short round.",
+          "install.eyebrow":"ALWAYS TO HAND","install.title":"Like an app. Without the app store.","install.android":"Android","install.ios":"iPhone (Safari)","install.a1":"Open HelloAbroad in Chrome.","install.a2":"Choose “Add to Home screen” from the menu.","install.a3":"Launch it from your Home screen – even offline.","install.i1":"Open HelloAbroad in Safari.","install.i2":"Tap Share, then “Add to Home Screen”.","install.i3":"Open the new HelloAbroad icon.","install.note":"No account. No ads. No charge.","install.cta":"Start in your browser →","install.guide":"View the full installation guide",
+          "faq.1.q":"Do I need internet all the time?","faq.1.a":"No. After the first load, you can practise on the plane or anywhere with poor reception.","faq.2.q":"Is HelloAbroad really free?","faq.2.a":"Yes. No ads, in-app purchases or hidden trial period.","faq.3.q":"What kind of English will I learn?","faq.3.a":"Clear, internationally useful travel English with English audio – no grammar lessons without a travel purpose.","faq.4.q":"Do I need an account?","faq.4.a":"No. Your progress stays locally on your device. Cloud synchronisation is optional.","faq.5.q":"Is it complicated to use?","faq.5.a":"No. Large controls, calm screens and short rounds guide you step by step.",
+          "final.eyebrow":"YOUR NEXT TRIP IS COMING","final.title":"Make yourself understood. And feel more confident on the road.","final.sub":"More than 400 travel cards, with audio and spaced repetition. Ready in 30 seconds.","final.ready":"to get ready","final.forever":"forever","final.cta":"Start HelloAbroad for free →",
+          "footer.blurb":"Travel English for real situations – clear, practical, offline and free.","footer.app":"App","footer.open":"Open app","footer.start":"Start for free","footer.guide":"Installation guide","footer.more":"More","footer.credit":"Built for easier, more confident travel."
+        }
+      };
+      var HTML_KEYS = {"hero.h1":true};
+      var LANG_KEY = "helloabroad.landing.lang";
+      function setLang(lang) {
+        if (!I18N[lang]) lang = "de";
+        var d = I18N[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dataset.lang = lang;
+        document.title = d._title;
+        var meta = document.querySelector('meta[name="description"]'); if (meta) meta.content = d._desc;
+        var ogl = document.querySelector('meta[property="og:locale"]'); if (ogl) ogl.content = lang === "en" ? "en_US" : "de_DE";
+        document.querySelectorAll("[data-i18n]").forEach(function (n) { var k=n.dataset.i18n; if (!(k in d)) return; if (HTML_KEYS[k]) n.innerHTML=d[k]; else n.textContent=d[k]; });
+        document.querySelectorAll("[data-i18n-aria]").forEach(function (n) { var k=n.dataset.i18nAria; if (!(k in d)) return; n.setAttribute("aria-label",d[k]); if(n.hasAttribute("title")) n.title=d[k]; });
+        document.querySelectorAll(".lp-langbtn").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.lang === lang ? "true" : "false"); });
+        try { localStorage.setItem(LANG_KEY,lang); } catch(e) {}
+      }
+      var urlLang=null,saved=null; try{urlLang=new URLSearchParams(location.search).get("lang");saved=localStorage.getItem(LANG_KEY);}catch(e){}
+      var browser=(navigator.language||"de").toLowerCase();
+      setLang(urlLang==="de"||urlLang==="en"?urlLang:(saved==="de"||saved==="en"?saved:(browser.indexOf("en")===0?"en":"de")));
+      document.querySelectorAll(".lp-langbtn").forEach(function(b){b.addEventListener("click",function(){setLang(b.dataset.lang);});});
+
+      var year=document.getElementById("lpYear"); if(year) year.textContent=new Date().getFullYear();
+      var themeBtn=document.getElementById("lpTheme");
+      function syncTheme(){if(themeBtn)themeBtn.textContent=document.documentElement.dataset.theme==="dark"?"☀️":"🌙";}
+      syncTheme();
+      if(themeBtn)themeBtn.addEventListener("click",function(){var next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=next==="dark"?"#0D2426":"#1F4A4E";syncTheme();try{var s=JSON.parse(localStorage.getItem("spanischcard.settings.v1")||"{}");s.theme=next;localStorage.setItem("spanischcard.settings.v1",JSON.stringify(s));}catch(e){}});
+
+      var reduce=matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var reveal=document.querySelectorAll("[data-reveal]");
+      if(reduce||!("IntersectionObserver" in window))reveal.forEach(function(n){n.classList.add("is-in");});
+      else{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("is-in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -10% 0px",threshold:.05});reveal.forEach(function(n){io.observe(n);});}
+      document.querySelectorAll(".lp-feat.flip").forEach(function(f){function flip(){var on=f.classList.toggle("is-flipped");f.setAttribute("aria-pressed",on?"true":"false");}f.addEventListener("click",flip);f.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});});
+      var phone=document.getElementById("lpPhoneImg");
+      var shots={"1":"../docs/landing/hello-abroad-home.webp","2":"../docs/landing/hello-abroad-study.webp","3":"../docs/landing/hello-abroad-stats.webp"};
+      document.querySelectorAll(".lp-step[data-step]").forEach(function(st){st.addEventListener("click",function(){document.querySelectorAll(".lp-step[data-step]").forEach(function(x){x.classList.toggle("is-active",x===st);});if(phone)phone.src=shots[st.dataset.step];});});
+    })();
+  </script>
 </body>
 </html>
