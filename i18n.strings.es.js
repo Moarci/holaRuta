@@ -224,6 +224,7 @@
     onboardWelcomeIntro: "Cuéntanos cómo te llamamos —nombre y género. Puedes cambiarlo cuando quieras en tu perfil.",
     onboardNext: "Siguiente",
     onboardProfileInvalid: "Escribe tu nombre y elige un género.",
+    onboardNameInvalid: "Escribe tu nombre.",
   });
 
   // ---------- search ----------

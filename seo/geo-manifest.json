@@ -5842,11 +5842,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Grundlagen: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "Diese 21 Sätze und Wörter brauchst du auf Spanisch für „Grundlagen\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus."
+      "description": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Grundlagen\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus."
     },
     "h1": "Grundlagen: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Grundlagen auf Reisen?",
-    "intro": "Diese 21 Sätze und Wörter brauchst du auf Spanisch für „Grundlagen\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus.",
+    "intro": "Diese 24 Sätze und Wörter brauchst du auf Spanisch für „Grundlagen\" unterwegs in Lateinamerika – direkt aus dem echten HolaRuta-Kartenkorpus.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -5871,7 +5871,10 @@
           "„Necesito un médico\" — Ich brauche einen Arzt",
           "„Llame a la policía\" — Rufen Sie die Polizei",
           "„Estoy perdido/a\" — Ich habe mich verlaufen",
-          "„la farmacia\" — Apotheke"
+          "„la farmacia\" — Apotheke",
+          "„¿Puede repetirlo, por favor?\" — Können Sie das bitte wiederholen?",
+          "„¿Puede escribirlo?\" — Können Sie es aufschreiben?",
+          "„¿Cómo se dice ... en inglés?\" — Wie sagt man ... auf Englisch?"
         ]
       }
     ],
@@ -5886,7 +5889,7 @@
       },
       {
         "question": "Welche Spanisch-Sätze brauche ich für Grundlagen auf Reisen?",
-        "answer": "Für „Grundlagen\" hat HolaRuta 21 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
+        "answer": "Für „Grundlagen\" hat HolaRuta 24 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
       },
       {
         "question": "Warum sollte ich Grundlagen-Vokabeln vor der Reise lernen?",
@@ -6213,11 +6216,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Hotel: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "„Hotel\" auf Spanisch: 23 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika."
+      "description": "„Hotel\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika."
     },
     "h1": "Hotel: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Hotel auf Reisen?",
-    "intro": "„Hotel\" auf Spanisch: 23 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika.",
+    "intro": "„Hotel\" auf Spanisch: 24 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -6244,7 +6247,8 @@
           "„¿Pueden limpiar la habitación?\" — Können Sie das Zimmer sauber machen?",
           "„¿Puedo hacer el check-out más tarde?\" — Kann ich später auschecken?",
           "„El baño está tapado\" — Die Toilette ist verstopft",
-          "„Tengo mucho frío / calor\" — Mir ist zu kalt / zu warm"
+          "„Tengo mucho frío / calor\" — Mir ist zu kalt / zu warm",
+          "„¿Hay ascensor?\" — Gibt es einen Aufzug?"
         ]
       }
     ],
@@ -6259,7 +6263,7 @@
       },
       {
         "question": "Welche Spanisch-Sätze brauche ich für Hotel auf Reisen?",
-        "answer": "Für „Hotel\" hat HolaRuta 23 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
+        "answer": "Für „Hotel\" hat HolaRuta 24 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
       },
       {
         "question": "Warum sollte ich Hotel-Vokabeln vor der Reise lernen?",
@@ -6753,11 +6757,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Notfall: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "„Notfall\" auf Spanisch: 15 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika."
+      "description": "„Notfall\" auf Spanisch: 18 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika."
     },
     "h1": "Notfall: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Notfall auf Reisen?",
-    "intro": "„Notfall\" auf Spanisch: 15 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika.",
+    "intro": "„Notfall\" auf Spanisch: 18 praxiserprobte Sätze und Wörter aus dem HolaRuta-Kartenkorpus, gezielt für unterwegs in Lateinamerika.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -6776,7 +6780,10 @@
           "„mi pasaporte\" — mein Reisepass",
           "„mi celular\" — mein Handy",
           "„¿Puede ayudarme?\" — Können Sie mir helfen?",
-          "„¿Dónde está la farmacia más cercana?\" — Wo ist die nächste Apotheke?"
+          "„¿Dónde está la farmacia más cercana?\" — Wo ist die nächste Apotheke?",
+          "„¿Dónde está el hospital más cercano?\" — Wo ist das nächste Krankenhaus?",
+          "„Tengo dolor en el pecho\" — Ich habe Schmerzen in der Brust",
+          "„Tengo un problema del corazón\" — Ich habe ein Herzleiden"
         ]
       }
     ],
@@ -6791,7 +6798,7 @@
       },
       {
         "question": "Welche Spanisch-Sätze brauche ich für Notfall auf Reisen?",
-        "answer": "Für „Notfall\" hat HolaRuta 15 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
+        "answer": "Für „Notfall\" hat HolaRuta 18 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
       },
       {
         "question": "Warum sollte ich Notfall-Vokabeln vor der Reise lernen?",
@@ -8467,7 +8474,7 @@
           "„Soy de Alemania\" — Ich komme aus Deutschland",
           "„Estoy de vacaciones\" — Ich bin im Urlaub",
           "„Estoy de paso\" — Ich bin auf der Durchreise",
-          "„¡Qué chévere! / ¡Bacán!\" — Cool! / Super! (LatAm)",
+          "„¡Qué chévere! / ¡Bacán!\" — Cool! / Super!",
           "„No hay problema\" — Kein Problem",
           "„Claro / Exacto\" — Genau / Klar",
           "„Quizás / Tal vez\" — Vielleicht",
@@ -8822,11 +8829,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Flughafen & Gepäck: Spanisch-Sätze für unterwegs | HolaRuta",
-      "description": "Für „Flughafen & Gepäck\" unterwegs in Lateinamerika reichen diese 18 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine…"
+      "description": "Für „Flughafen & Gepäck\" unterwegs in Lateinamerika reichen diese 21 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine…"
     },
     "h1": "Flughafen & Gepäck: Spanisch-Sätze für unterwegs",
     "question": "Welche Spanisch-Sätze brauche ich für Flughafen & Gepäck auf Reisen?",
-    "intro": "Für „Flughafen & Gepäck\" unterwegs in Lateinamerika reichen diese 18 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln.",
+    "intro": "Für „Flughafen & Gepäck\" unterwegs in Lateinamerika reichen diese 21 Sätze und Wörter – reales Vokabular aus dem HolaRuta-Kartenkorpus, keine Lehrbuch-Floskeln.",
     "sections": [
       {
         "heading": "Wörter & Sätze",
@@ -8848,7 +8855,10 @@
           "„Los líquidos deben ir en una bolsa transparente\" — Flüssigkeiten müssen in einen durchsichtigen Beutel",
           "„¿Tengo que quitarme los zapatos?\" — Muss ich die Schuhe ausziehen?",
           "„Tengo un vuelo de conexión\" — Ich habe einen Anschlussflug",
-          "„¿Dónde está la salida?\" — Wo ist der Ausgang?"
+          "„¿Dónde está la salida?\" — Wo ist der Ausgang?",
+          "„¿El vuelo sale a tiempo?\" — Ist der Flug pünktlich?",
+          "„¿Dónde está la banda de equipaje?\" — Wo ist die Gepäckausgabe?",
+          "„Necesito asistencia en silla de ruedas\" — Ich brauche einen Rollstuhl-Service"
         ]
       }
     ],
@@ -8863,7 +8873,7 @@
       },
       {
         "question": "Welche Spanisch-Sätze brauche ich für Flughafen & Gepäck auf Reisen?",
-        "answer": "Für „Flughafen & Gepäck\" hat HolaRuta 18 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
+        "answer": "Für „Flughafen & Gepäck\" hat HolaRuta 21 praxisnahe Sätze und Wörter zusammengestellt, mit denen du dich in echten Situationen unterwegs verständigst."
       },
       {
         "question": "Warum sollte ich Flughafen & Gepäck-Vokabeln vor der Reise lernen?",
@@ -15220,11 +15230,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Basics: Spanish phrases for travel | HolaRuta",
-      "description": "These 21 words and phrases cover \"Basics\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard…"
+      "description": "These 24 words and phrases cover \"Basics\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard…"
     },
     "h1": "Basics: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Basics while travelling?",
-    "intro": "These 21 words and phrases cover \"Basics\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard corpus.",
+    "intro": "These 24 words and phrases cover \"Basics\" in Spanish for travel across Latin America — real, situation-tested vocabulary from the HolaRuta flashcard corpus.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -15249,7 +15259,10 @@
           "„Necesito un médico\" — I need a doctor",
           "„Llame a la policía\" — Call the police",
           "„Estoy perdido/a\" — I'm lost",
-          "„la farmacia\" — pharmacy"
+          "„la farmacia\" — pharmacy",
+          "„¿Puede repetirlo, por favor?\" — Could you repeat that, please?",
+          "„¿Puede escribirlo?\" — Could you write it down?",
+          "„¿Cómo se dice ... en inglés?\" — How do you say ... in English?"
         ]
       }
     ],
@@ -15264,7 +15277,7 @@
       },
       {
         "question": "What Spanish phrases do I need for Basics while travelling?",
-        "answer": "For \"Basics\", HolaRuta has put together 21 practical words and phrases so you can communicate in real situations on the road."
+        "answer": "For \"Basics\", HolaRuta has put together 24 practical words and phrases so you can communicate in real situations on the road."
       },
       {
         "question": "Why should I learn Basics vocabulary before the trip?",
@@ -15421,7 +15434,7 @@
           "„la comida\" — the food",
           "„Tengo hambre\" — I'm hungry",
           "„el menú / la carta\" — the menu",
-          "„La cuenta, por favor\" — The bill, please",
+          "„La cuenta, por favor\" — The check, please",
           "„Soy vegetariano/a\" — I'm vegetarian",
           "„sin carne\" — without meat",
           "„pan\" — bread",
@@ -15434,7 +15447,7 @@
           "„el almuerzo\" — the lunch",
           "„la cena\" — the dinner",
           "„¿Qué me recomienda?\" — What do you recommend?",
-          "„Para llevar\" — To take away",
+          "„Para llevar\" — To go",
           "„Tengo una alergia\" — I have an allergy",
           "„verduras\" — vegetables",
           "„arroz\" — rice",
@@ -15591,11 +15604,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Hotel: Spanish phrases for travel | HolaRuta",
-      "description": "\"Hotel\" in Spanish, for real travel situations: 23 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America."
+      "description": "\"Hotel\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America."
     },
     "h1": "Hotel: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Hotel while travelling?",
-    "intro": "\"Hotel\" in Spanish, for real travel situations: 23 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America.",
+    "intro": "\"Hotel\" in Spanish, for real travel situations: 24 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -15621,8 +15634,9 @@
           "„Necesito otra toalla\" — I need another towel",
           "„¿Pueden limpiar la habitación?\" — Can you clean the room?",
           "„¿Puedo hacer el check-out más tarde?\" — Can I check out later?",
-          "„El baño está tapado\" — The toilet is blocked",
-          "„Tengo mucho frío / calor\" — I'm too cold / too hot"
+          "„El baño está tapado\" — The toilet is clogged",
+          "„Tengo mucho frío / calor\" — I'm too cold / too hot",
+          "„¿Hay ascensor?\" — Is there an elevator?"
         ]
       }
     ],
@@ -15637,7 +15651,7 @@
       },
       {
         "question": "What Spanish phrases do I need for Hotel while travelling?",
-        "answer": "For \"Hotel\", HolaRuta has put together 23 practical words and phrases so you can communicate in real situations on the road."
+        "answer": "For \"Hotel\", HolaRuta has put together 24 practical words and phrases so you can communicate in real situations on the road."
       },
       {
         "question": "Why should I learn Hotel vocabulary before the trip?",
@@ -15877,9 +15891,9 @@
           "„¿Cuánto cuesta el viaje?\" — How much is the trip?",
           "„¿Está lejos?\" — Is it far?",
           "„¿Qué tan lejos está?\" — How far is it?",
-          "„la gasolinera\" — the petrol station",
-          "„la gasolina / la bencina\" — the petrol",
-          "„el auto de alquiler\" — the hire car",
+          "„la gasolinera\" — the gas station",
+          "„la gasolina / la bencina\" — the gas",
+          "„el auto de alquiler\" — the rental car",
           "„¿Dónde me bajo?\" — Where do I get off?",
           "„la próxima parada\" — the next bus stop",
           "„Lléveme a esta dirección\" — Take me to this address",
@@ -15970,7 +15984,7 @@
           "„¿Hay descuento?\" — Is there a discount?",
           "„más barato\" — cheaper",
           "„¿Me lo puedo probar?\" — Can I try it on?",
-          "„¿Dónde está la caja?\" — Where's the till?",
+          "„¿Dónde está la caja?\" — Where's the checkout?",
           "„abierto / cerrado\" — open / closed",
           "„un kilo\" — a kilo",
           "„medio kilo\" — half a kilo",
@@ -15979,7 +15993,7 @@
           "„¿Tiene algo más barato?\" — Do you have anything cheaper?",
           "„Me da ..., por favor\" — Give me ..., please",
           "„Quiero este vestido\" — I'd like this dress",
-          "„¿Lo tiene en otro color?\" — Do you have it in another colour?",
+          "„¿Lo tiene en otro color?\" — Do you have it in another color?",
           "„una talla más grande / más chica\" — one size bigger / smaller",
           "„¿Me lo deja más barato?\" — Can you do a better price?",
           "„¿Me hace un descuento?\" — Can you give me a discount?"
@@ -16059,14 +16073,14 @@
           "„con tarjeta\" — by card",
           "„en efectivo\" — cash / in cash",
           "„¿Aceptan tarjeta?\" — Do you accept cards?",
-          "„el cajero (automático)\" — the cash machine",
+          "„el cajero (automático)\" — the ATM",
           "„el vuelto / el cambio\" — the change",
           "„¿Tiene sencillo?\" — Do you have it in small change? (coins)",
           "„el recibo / la boleta\" — the receipt",
           "„el dinero / la plata\" — the money",
           "„gratis\" — free of charge",
           "„cambiar dinero\" — to change money",
-          "„la casa de cambio\" — the bureau de change",
+          "„la casa de cambio\" — the currency exchange",
           "„¿Está bien el vuelto?\" — Is the change right?"
         ]
       }
@@ -16131,11 +16145,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Emergency: Spanish phrases for travel | HolaRuta",
-      "description": "\"Emergency\" in Spanish, for real travel situations: 15 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America."
+      "description": "\"Emergency\" in Spanish, for real travel situations: 18 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America."
     },
     "h1": "Emergency: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Emergency while travelling?",
-    "intro": "\"Emergency\" in Spanish, for real travel situations: 15 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America.",
+    "intro": "\"Emergency\" in Spanish, for real travel situations: 18 words and phrases from the HolaRuta flashcard corpus, built for getting around Latin America.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -16154,7 +16168,10 @@
           "„mi pasaporte\" — my passport",
           "„mi celular\" — my phone",
           "„¿Puede ayudarme?\" — Can you help me?",
-          "„¿Dónde está la farmacia más cercana?\" — Where's the nearest pharmacy?"
+          "„¿Dónde está la farmacia más cercana?\" — Where's the nearest pharmacy?",
+          "„¿Dónde está el hospital más cercano?\" — Where is the nearest hospital?",
+          "„Tengo dolor en el pecho\" — I have chest pain",
+          "„Tengo un problema del corazón\" — I have a heart condition"
         ]
       }
     ],
@@ -16169,7 +16186,7 @@
       },
       {
         "question": "What Spanish phrases do I need for Emergency while travelling?",
-        "answer": "For \"Emergency\", HolaRuta has put together 15 practical words and phrases so you can communicate in real situations on the road."
+        "answer": "For \"Emergency\", HolaRuta has put together 18 practical words and phrases so you can communicate in real situations on the road."
       },
       {
         "question": "Why should I learn Emergency vocabulary before the trip?",
@@ -17369,14 +17386,14 @@
         "bullets": [
           "„¿Dónde está la farmacia más cercana?\" — Where is the nearest pharmacy?",
           "„Necesito un analgésico.\" — I need a painkiller.",
-          "„¿Tiene algo para la diarrea?\" — Do you have something for diarrhoea?",
+          "„¿Tiene algo para la diarrea?\" — Do you have something for diarrhea?",
           "„Tengo fiebre.\" — I have a fever.",
           "„Estoy resfriado.\" — I have a cold.",
           "„Tengo náuseas.\" — I feel nauseous.",
           "„Necesito protector solar.\" — I need sunscreen.",
-          "„¿Tiene una curita?\" — Do you have a plaster?",
+          "„¿Tiene una curita?\" — Do you have a Band-Aid?",
           "„Necesito ver a un médico.\" — I need to see a doctor.",
-          "„¿Hay una farmacia de turno por aquí?\" — Is there a duty pharmacy here?",
+          "„¿Hay una farmacia de turno por aquí?\" — Is there a 24-hour pharmacy here?",
           "„Necesito algo para el estómago.\" — I need something for my stomach.",
           "„¿Tiene suero oral?\" — Do you have oral rehydration salts?",
           "„Me duele la garganta.\" — I have a sore throat.",
@@ -17388,7 +17405,7 @@
           "„¿Cada cuántas horas lo tomo?\" — How often do I have to take this?",
           "„Me duele una muela.\" — I have a toothache.",
           "„Necesito este medicamento sin receta.\" — I need this medicine without a prescription.",
-          "„Me duele aquí, desde hace dos días.\" — It hurts here, for two days now.",
+          "„Me duele aquí, desde hace dos días.\" — It's been hurting here for two days.",
           "„Necesito una factura para el seguro.\" — I need a receipt for my insurance.",
           "„¿Se puede tomar el agua de la llave?\" — Is the tap water safe to drink?"
         ]
@@ -17843,9 +17860,9 @@
           "„¿Cómo estás? / ¿Qué tal?\" — How are you?",
           "„Bien, gracias\" — Good, thanks",
           "„Soy de Alemania\" — I'm from Germany",
-          "„Estoy de vacaciones\" — I'm on holiday",
+          "„Estoy de vacaciones\" — I'm on vacation",
           "„Estoy de paso\" — I'm just passing through",
-          "„¡Qué chévere! / ¡Bacán!\" — Cool! / Great! (LatAm)",
+          "„¡Qué chévere! / ¡Bacán!\" — Cool! / Great!",
           "„No hay problema\" — No problem",
           "„Claro / Exacto\" — Exactly / Sure",
           "„Quizás / Tal vez\" — Maybe",
@@ -18130,7 +18147,7 @@
           "„No tengo nada que declarar\" — I have nothing to declare",
           "„¿Dónde firmo?\" — Where do I sign?",
           "„el formulario\" — the form",
-          "„¿Hay un cajero por aquí?\" — Is there a cash machine here?",
+          "„¿Hay un cajero por aquí?\" — Is there an ATM here?",
           "„El cajero se tragó mi tarjeta\" — The machine swallowed my card",
           "„Mi tarjeta no funciona\" — My card isn't working",
           "„El cajero no entrega efectivo\" — The machine isn't dispensing cash",
@@ -18200,11 +18217,11 @@
     "schemaType": "LearningResource",
     "meta": {
       "title": "Airport & Luggage: Spanish phrases for travel | HolaRuta",
-      "description": "18 field-tested Spanish words and phrases for \"Airport & Luggage\" — no textbook filler, just what you'll actually need on the road in Latin America."
+      "description": "21 field-tested Spanish words and phrases for \"Airport & Luggage\" — no textbook filler, just what you'll actually need on the road in Latin America."
     },
     "h1": "Airport & Luggage: Spanish phrases for travel",
     "question": "What Spanish phrases do I need for Airport & Luggage while travelling?",
-    "intro": "18 field-tested Spanish words and phrases for \"Airport & Luggage\" — no textbook filler, just what you'll actually need on the road in Latin America.",
+    "intro": "21 field-tested Spanish words and phrases for \"Airport & Luggage\" — no textbook filler, just what you'll actually need on the road in Latin America.",
     "sections": [
       {
         "heading": "Words & phrases",
@@ -18218,7 +18235,7 @@
           "„El vuelo está retrasado\" — The flight is delayed",
           "„Perdí mi vuelo de conexión\" — I missed my connecting flight",
           "„Mi maleta no llegó\" — My suitcase didn't arrive",
-          "„Facturé esta mochila y no apareció\" — I checked in this backpack and it didn't show up",
+          "„Facturé esta mochila y no apareció\" — I checked this backpack and it didn't show up",
           "„¿Dónde reporto el equipaje perdido?\" — Where do I report lost luggage?",
           "„Aquí está mi talón de equipaje\" — Here's my baggage tag",
           "„¿Me lo pueden enviar al hotel?\" — Can you send it to my hotel?",
@@ -18226,7 +18243,10 @@
           "„Los líquidos deben ir en una bolsa transparente\" — Liquids must go in a clear bag",
           "„¿Tengo que quitarme los zapatos?\" — Do I need to take off my shoes?",
           "„Tengo un vuelo de conexión\" — I have a connecting flight",
-          "„¿Dónde está la salida?\" — Where is the exit?"
+          "„¿Dónde está la salida?\" — Where is the exit?",
+          "„¿El vuelo sale a tiempo?\" — Is the flight on time?",
+          "„¿Dónde está la banda de equipaje?\" — Where is the baggage claim?",
+          "„Necesito asistencia en silla de ruedas\" — I need wheelchair assistance"
         ]
       }
     ],
@@ -18241,7 +18261,7 @@
       },
       {
         "question": "What Spanish phrases do I need for Airport & Luggage while travelling?",
-        "answer": "For \"Airport & Luggage\", HolaRuta has put together 18 practical words and phrases so you can communicate in real situations on the road."
+        "answer": "For \"Airport & Luggage\", HolaRuta has put together 21 practical words and phrases so you can communicate in real situations on the road."
       },
       {
         "question": "Why should I learn Airport & Luggage vocabulary before the trip?",
@@ -18506,9 +18526,9 @@
           "„el mapa\" — the map",
           "„¿Dónde está la escuela?\" — Where's the school?",
           "„¿Dónde queda el hostal?\" — Where's the hostel?",
-          "„¿Cómo llego al centro?\" — How do I get to the centre?",
+          "„¿Cómo llego al centro?\" — How do I get to the center?",
           "„¿Puede decirme cómo llegar?\" — Can you tell me how to get there?",
-          "„¿Dónde hay un cajero?\" — Where is there a cash machine?",
+          "„¿Dónde hay un cajero?\" — Where is there an ATM?",
           "„¿Está lejos o cerca?\" — Is it far or near?",
           "„¿A cuántas cuadras está?\" — How many blocks away is it?"
         ]
@@ -18766,11 +18786,11 @@
     "schemaType": "SoftwareApplication",
     "meta": {
       "title": "Was ist HolaRuta? | HolaRuta",
-      "description": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2311 Karteikarten mit Spaced Repetition für…"
+      "description": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2327 Karteikarten mit Spaced Repetition für…"
     },
     "h1": "Was ist HolaRuta?",
     "question": "Was ist HolaRuta?",
-    "intro": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2311 Karteikarten mit Spaced Repetition für Situationen wie Bus, Hotel, Essen, Geld, Notfall und Smalltalk, komplett offline nutzbar und ohne Konto.",
+    "intro": "HolaRuta ist eine kostenlose Lernkarten-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: 2327 Karteikarten mit Spaced Repetition für Situationen wie Bus, Hotel, Essen, Geld, Notfall und Smalltalk, komplett offline nutzbar und ohne Konto.",
     "sections": [
       {
         "heading": "Für wen ist HolaRuta?",
@@ -18809,7 +18829,7 @@
       },
       {
         "question": "Wie viele Karteikarten hat HolaRuta?",
-        "answer": "HolaRuta enthält 2311 Karteikarten in 73 Kategorien, sortiert nach vier Schwierigkeitsstufen (A1 bis B2)."
+        "answer": "HolaRuta enthält 2327 Karteikarten in 73 Kategorien, sortiert nach vier Schwierigkeitsstufen (A1 bis B2)."
       }
     ],
     "internalLinks": {
@@ -19092,11 +19112,11 @@
     "schemaType": "SoftwareApplication",
     "meta": {
       "title": "What is HolaRuta? | HolaRuta",
-      "description": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2311 flashcards with spaced repetition for situations like…"
+      "description": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2327 flashcards with spaced repetition for situations like…"
     },
     "h1": "What is HolaRuta?",
     "question": "What is HolaRuta?",
-    "intro": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2311 flashcards with spaced repetition for situations like buses, hotels, food, money, emergencies and small talk, fully usable offline and without an account.",
+    "intro": "HolaRuta is a free flashcard PWA for travel Spanish while backpacking through Latin America: 2327 flashcards with spaced repetition for situations like buses, hotels, food, money, emergencies and small talk, fully usable offline and without an account.",
     "sections": [
       {
         "heading": "Who is HolaRuta for?",
@@ -19135,7 +19155,7 @@
       },
       {
         "question": "How many flashcards does HolaRuta have?",
-        "answer": "HolaRuta contains 2311 flashcards across 73 categories, sorted into four difficulty levels (A1 to B2)."
+        "answer": "HolaRuta contains 2327 flashcards across 73 categories, sorted into four difficulty levels (A1 to B2)."
       }
     ],
     "internalLinks": {
