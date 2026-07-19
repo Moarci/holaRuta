@@ -608,7 +608,7 @@
       ],
       tipsDeEn: [
         "Leg dir vorab 3–4 lockere „Never have I ever…“-Sätze auf Englisch zurecht – wer flüssig dran ist, gibt der Runde den Ton an.",
-        "Reise-Themen ziehen immer („Never have I ever slept at an airport“) – sie bringen Geschichten und neue Bekanntschaften.",
+        "Reise-Themen ziehen immer („Never have I ever slept in an airport“) – sie bringen Geschichten und neue Bekanntschaften.",
         "Bei „truth or dare“ machbare Mini-Aufgaben vorschlagen – so bleibt die Runde locker und alle machen mit.",
         "Hör genau zu: Die Antworten sind die besten Gesprächsaufhänger für danach – dein eigentlicher Vorteil im Hostel.",
       ],
@@ -736,7 +736,7 @@
       title: "Stimmung & Eisbrecher (mit Respekt)",
       titleEn: "Vibe & icebreakers (with respect)",
       items: [
-        { es: "¿Jugamos algo para romper el hielo?", de: "Spielen wir was zum Auflockern?", en: "Shall we play an icebreaker?" },
+        { es: "¿Jugamos algo para romper el hielo?", de: "Spielen wir was zum Auflockern?", en: "Shall we play a game to break the ice?" },
         { es: "Yo no bebo, ¿jugamos sin alcohol?", de: "Ich trinke nicht – ohne Alkohol?", en: "I don't drink – can we play without alcohol?" },
         { es: "El que pierde, reparte.", de: "Wer verliert, gibt die Karten.", en: "Whoever loses deals." },
         { es: "Sin presión, solo por diversión.", de: "Ohne Druck, nur zum Spaß.", en: "No pressure, just for fun." },

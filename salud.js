@@ -339,7 +339,7 @@
       titleEn: "Ordering more healthily",
       items: [
         { es: "¿Tiene algo vegetariano?", de: "Haben Sie etwas Vegetarisches?", en: "Do you have anything vegetarian?" },
-        { es: "¿Me lo puede hacer a la plancha, no frito?", de: "Können Sie es mir gegrillt machen, nicht frittiert?", en: "Could you do it grilled for me, not fried?" },
+        { es: "¿Me lo puede hacer a la plancha, no frito?", de: "Können Sie es mir gegrillt machen, nicht frittiert?", en: "Could I have it grilled instead of fried?" },
         { es: "Con ensalada, por favor.", de: "Mit Salat, bitte.", en: "With salad, please." },
         { es: "Sin azúcar, por favor.", de: "Ohne Zucker, bitte.", en: "Without sugar, please." },
         { es: "¿Qué lleva este plato?", de: "Was ist in diesem Gericht?", en: "What's in this dish?" },
@@ -355,7 +355,7 @@
         { es: "¿Tienen clases de yoga aquí?", de: "Bietet ihr hier Yoga-Kurse an?", en: "Do you have yoga classes here?" },
         { es: "¿Hay un gimnasio cerca?", de: "Gibt es ein Fitnessstudio in der Nähe?", en: "Is there a gym nearby?" },
         { es: "¿Venden pase por un día?", de: "Verkauft ihr einen Tagespass?", en: "Do you sell a day pass?" },
-        { es: "¿Cuánto cuesta la entrada por un día?", de: "Wie viel kostet der Tageseintritt?", en: "How much is entry for one day?" },
+        { es: "¿Cuánto cuesta la entrada por un día?", de: "Wie viel kostet der Tageseintritt?", en: "How much is it for one day?" },
         { es: "¿Puedo entrenar hoy sin ser socio?", de: "Kann ich heute trainieren, ohne Mitglied zu sein?", en: "Can I train today without being a member?" },
       ],
     },

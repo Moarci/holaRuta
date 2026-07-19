@@ -766,7 +766,7 @@
       explanationDe: "„to keep up with something“ = mit etwas Schritt halten / auf dem Laufenden bleiben." },
     { id: "as_re_b2a", block: "reaction", skill: "reaction", level: "B2", type: "mc",
       promptDe: "Du willst höflich widersprechen, ohne unhöflich zu wirken. Was passt am besten?",
-      options: ["You're wrong!", "I see your point, but I'm not entirely sure I agree.", "No, that's not how it is.", "You're not right at all."],
+      options: ["You're wrong!", "I see your point, but I'm not entirely sure I agree.", "No, that's not how it is.", "You couldn't be more wrong."],
       correctIndex: 1, expectedTimeSec: 15,
       explanationDe: "„I see your point, but I'm not entirely sure I agree“ = diplomatischer, abgewogener Widerspruch." },
     { id: "as_rd_b2a", block: "reading", skill: "reading", level: "B2", type: "mc",

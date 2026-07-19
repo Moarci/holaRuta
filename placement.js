@@ -364,7 +364,7 @@
     // --- Block 6: Freie Antwort (kurz schreiben; groß-/kleinschreib-/satzzeichentolerant) ---
     { id: "pt_fr_001", block: "free", skill: "free", level: "A1", type: "free",
       promptDe: "Schreib auf Englisch: Ich möchte einen Kaffee.",
-      accept: ["i want a coffee", "i would like a coffee", "a coffee please", "can i have a coffee", "can i have a coffee please", "i want a coffee please"], solutionEs: "I'd like a coffee.", expectedTimeSec: 14,
+      accept: ["i want a coffee", "i would like a coffee", "i'd like a coffee", "a coffee please", "can i have a coffee", "can i have a coffee please", "i want a coffee please"], solutionEs: "I'd like a coffee.", expectedTimeSec: 14,
       explanationDe: "„I'd like a coffee.“ = Ich möchte einen Kaffee. (Groß-/Kleinschreibung/Satzzeichen egal)" },
     { id: "pt_fr_002", block: "free", skill: "free", level: "A2", type: "free",
       promptDe: "Schreib auf Englisch die Frage: Wie viel kostet das?",

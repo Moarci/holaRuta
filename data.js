@@ -3543,7 +3543,7 @@
     { id: "qf05", set: "comida", es: "la verdura",  de: "Gemüse", en: "vegetables",      icon: "🥦", def: "Alimento que viene de las plantas, como la lechuga o la zanahoria.", defEn: "Food that comes from plants, such as carrots, lettuce or broccoli." },
     { id: "qf06", set: "comida", es: "la carne",    de: "Fleisch", en: "Meat",     icon: "🥩", def: "Alimento que viene de animales como la vaca, el cerdo o el pollo.", defEn: "Food that comes from animals such as cows, pigs or chickens." },
     { id: "qf07", set: "comida", es: "el pan",      de: "Brot", en: "bread",        icon: "🍞", def: "Alimento hecho de harina que se hornea.", defEn: "A basic food made from flour and baked in an oven." },
-    { id: "qf08", set: "comida", es: "el agua",     de: "Wasser", en: "water",      icon: "💧", def: "Bebida sin color ni sabor, esencial para vivir.", defEn: "A clear drink with no colour or taste that everyone needs to live." },
+    { id: "qf08", set: "comida", es: "el agua",     de: "Wasser", en: "water",      icon: "💧", def: "Bebida sin color ni sabor, esencial para vivir.", defEn: "A clear drink with no taste or smell that everyone needs to live." },
     { id: "qf09", set: "comida", es: "el café",     de: "Kaffee", en: "coffee",      icon: "☕", def: "Bebida caliente y oscura que muchos toman por la mañana.", defEn: "A hot, dark drink that many people have in the morning." },
     { id: "qf10", set: "comida", es: "el postre",   de: "Nachtisch", en: "Dessert",   icon: "🍰", def: "Comida dulce que se come al final, como el pastel o el helado.", defEn: "A sweet dish eaten at the end of a meal, such as cake or ice cream." },
   ];

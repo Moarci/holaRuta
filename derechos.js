@@ -326,7 +326,7 @@
       titleEn: "Help & emergency",
       items: [
         { es: "Necesito ayuda, por favor.", de: "Ich brauche Hilfe, bitte.", en: "I need help, please." },
-        { es: "Quiero hacer una denuncia.", de: "Ich möchte Anzeige erstatten.", en: "I want to file a report." },
+        { es: "Quiero hacer una denuncia.", de: "Ich möchte Anzeige erstatten.", en: "I'd like to file a report." },
         { es: "Me robaron mis cosas.", de: "Mir wurden meine Sachen gestohlen.", en: "My things were stolen." },
         { es: "¿Dónde está la estación de policía?", de: "Wo ist die Polizeiwache?", en: "Where is the police station?" },
         { es: "Por favor, avise a mi embajada.", de: "Bitte benachrichtigen Sie meine Botschaft.", en: "Please notify my embassy." },
