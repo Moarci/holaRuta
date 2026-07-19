@@ -25,9 +25,12 @@
     const juegos = ctx.juegos;
     if (!juegos) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
     const en = ctx.i18n && ctx.i18n.getLang() === "en";
+    const deEn = !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
     const loc = (v) => (ctx.i18n ? ctx.i18n.localizeDeep(v) : v);
     return {
-      intro: (en && juegos.INTRO_EN) ? juegos.INTRO_EN : juegos.INTRO,
+      intro: deEn && juegos.INTRO_DEEN ? juegos.INTRO_DEEN
+           : (en && juegos.INTRO_EN) ? juegos.INTRO_EN
+           : juegos.INTRO,
       topics: loc(juegos.TOPICS || []),
       phrases: loc(juegos.PHRASES || []),
       glossary: loc(juegos.GLOSSARY || []),
@@ -38,7 +41,7 @@
   // ----- Render -----
   function renderJuegos(vm) {
     return moduleSheet(vm, {
-      icon: "lc:dices", title: "Juegos de viaje", cat: "juegos",
+      icon: "lc:dices", title: ctx.i18n.t("discover.juegosName"), cat: "juegos",
       favPhrases: ctx.isFavorite, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.jgTips", headPhrases: "discover.jgPhrases",
       headWords: "discover.jgWords", headChecklist: "discover.jgChecklist",

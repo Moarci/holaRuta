@@ -22,6 +22,10 @@
   // dialogos-game). Die spanische Definition bleibt in beiden Tracks die Frage;
   // gewählt wird das Wort in der gelernten Sprache.
   const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
+  // HelloAbroad-Track (de-en): englische Definition als Frage, englischer Begriff
+  // als Lösung mit deutscher Übersetzung darunter. NUR über die Track-id erkennbar
+  // (es-en hat dieselbe learnLang "en", bleibt aber unverändert spanisch).
+  const isDeEn = () => !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
 
   // ----- Daten-Helfer -----
   const quizSetById = (id) => ctx.data.QUIZ_SETS.find((s) => s.id === id) || null;
@@ -43,24 +47,25 @@
     return {
       sets: data.QUIZ_SETS.map((s) => {
         const lvl = levelById(s.lvl);
-        return { id: s.id, label: s.label, icon: s.icon, intro: natk(s, "intro"),
+        return { id: s.id, label: natk(s, "label"), icon: s.icon, intro: natk(s, "intro"),
           count: quizDefsForSet(s.id).length, lvlShort: lvl ? lvl.short : "" };
       }),
     };
   }
 
   function quizVM() {
-    const { state, nat } = ctx;
+    const { state, nat, natk } = ctx;
     const q = state.quiz;
     const set = quizSetById(q.setId);
     const def = quizDefById(q.queue[q.idx]);
     const answered = q.selected !== null;
     const ll = trackLearnLang();
+    const deEn = isDeEn();
     // Primärzeile = gelerntes Wort (Reise: spanisch, Locals: englisch); die
-    // Sekundärzeile zeigt die andere Seite (Locals: das spanische Wort, Reise:
-    // die muttersprachliche Übersetzung).
+    // Sekundärzeile zeigt die andere Seite (es-en: das spanische Wort, sonst:
+    // die muttersprachliche Übersetzung – auf de-en also die deutsche).
     const primary = (o) => (ll === "en" ? o.en : o.es) || "";
-    const secondary = (o) => (ll === "en" ? o.es : nat(o)) || "";
+    const secondary = (o) => (deEn ? nat(o) : (ll === "en" ? o.es : nat(o))) || "";
     const options = q.options.map((o) => ({
       id: o.id, es: primary(o), de: secondary(o), icon: o.icon,
       // Zustand fürs Einfärben: vor der Antwort neutral, danach Lösung grün,
@@ -71,12 +76,13 @@
         : "dim",
     }));
     return {
-      setLabel: set ? set.label : "",
+      setLabel: set ? natk(set, "label") : "",
       setIcon: set ? set.icon : "🧩",
       lang: ll,
+      defLang: deEn ? "en" : "es",
       position: q.idx,
       total: q.total,
-      definition: def.def,
+      definition: deEn && def.defEn ? def.defEn : def.def,
       options,
       answered,
       isCorrect: q.selected === def.id,
@@ -90,7 +96,7 @@
     const q = ctx.state.quiz;
     const set = quizSetById(q.setId);
     return {
-      setLabel: set ? set.label : "",
+      setLabel: set ? ctx.natk(set, "label") : "",
       setIcon: set ? set.icon : "🧩",
       correct: q.correct,
       total: q.total,
@@ -173,7 +179,7 @@
       .join("");
     return `
       <section class="screen">
-        ${hmTopbar(`${renderIcon("lc:puzzle")} Definiciones`, "home")}
+        ${hmTopbar(`${renderIcon("lc:puzzle")} ${esc(t("discover.definicionesName"))}`, "home")}
         <p class="hm-intro">${esc(t("discover.quizSetupIntro"))}</p>
         ${moduleShareBtn("definiciones")}
         <div class="hm-scenes">${list}</div>
@@ -219,7 +225,7 @@
         <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
         <div class="quiz-def">
           <span class="quiz-def__cap">${esc(t("discover.quizDefinicion"))}</span>
-          <p class="quiz-def__text" lang="es">${esc(vm.definition)}</p>
+          <p class="quiz-def__text" lang="${esc(vm.defLang)}">${esc(vm.definition)}</p>
         </div>
         <div class="quiz-opts">${options}</div>
         ${feedback}

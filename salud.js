@@ -39,6 +39,13 @@
     "protect yourself from sun and altitude, head out prepared on trips, and keep " +
     "moving. First the tips, then the phrases for shopping, ordering and the pharmacy.";
 
+  const INTRO_DEEN =
+    "Gesund und fit zu bleiben hält dich länger unterwegs: ausgewogen essen " +
+    "(nicht nur Fish & Chips und Fast Food), genug und günstig trinken, den Bauch " +
+    "in Ruhe lassen, dich vor Sonne und Wetter schützen, auf Ausflügen vorbereitet " +
+    "sein und in Bewegung bleiben. Erst die Tipps, dann die Sätze fürs Einkaufen, " +
+    "Bestellen und die Apotheke.";
+
   // ---------- Erklärung: gesund & fit unterwegs (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
@@ -60,6 +67,13 @@
         "Fibre for digestion: oats, beans, wholegrains, fruit with the skin on.",
         "With street food, go for well-cooked stalls with plenty of custom (fresh = safer).",
         "Look for variety: not the same fried thing every day.",
+      ],
+      dosDeEn: [
+        "Protein gezielt einbauen: Eier, Bohnen (beans), Hähnchen, Fisch, Linsen, Thunfisch aus der Dose.",
+        "Obst & Gemüse frisch vom Markt oder Supermarkt – oft günstig und voller Vitamine.",
+        "Ballaststoffe für die Verdauung: Haferflocken, Bohnen, Vollkorn, Obst mit Schale.",
+        "Bei Takeaway und Imbiss auf gut Durchgebratenes und viel Andrang achten (frisch = sicherer).",
+        "Abwechslung suchen: nicht jeden Tag dasselbe Frittierte.",
       ],
       donts: [
         "Nicht tagelang nur Reis, Weißbrot und Frittiertes essen.",
@@ -92,6 +106,13 @@
         "Bring protein powder, oats and nuts from home or buy them locally and keep them in your locker.",
         "A collapsible cup and a spork in your pack are all the „kitchen“ you need.",
       ],
+      dosDeEn: [
+        "Basis: Haferflocken (oats) + heißes Wasser (Wasserkocher/Mikrowelle) – fertig in 2 Minuten.",
+        "Proteinpulver unterrühren, dazu Banane/Obst, Erdnussbutter, Nüsse oder Samen.",
+        "Kein heißes Wasser? Overnight Oats: Haferflocken über Nacht in Milch/Wasser quellen lassen.",
+        "Proteinpulver, Haferflocken und Nüsse von zu Hause mitbringen oder vor Ort kaufen und im Locker lagern.",
+        "Ein faltbarer Becher und ein Spork im Gepäck genügen als „Küche“.",
+      ],
       donts: [
         "Nicht täglich nur süßes Café-Frühstück (Gebäck + Saft) – wenig Protein, viel Zucker.",
         "Keine ganze Küchenausrüstung schleppen – minimal reicht völlig.",
@@ -109,12 +130,20 @@
       titleEn: "Drink enough – cheap & with flavour",
       intro: "Bei Hitze und Höhe viel trinken. Günstiges (sicheres) Wasser aufpeppen statt teure Softdrinks: Zero-Sirup bringt Abwechslung, Elektrolytpulver gleicht das Schwitzen aus – beides spart Geld und schmeckt.",
       introEn: "Drink plenty in heat and at altitude. Jazz up cheap (safe) water instead of pricey soft drinks: Zero syrup adds variety, electrolyte powder makes up for sweating – both save money and taste good.",
+      introDeEn: "Bei Hitze und auf langen Wanderungen viel trinken. Günstiges Leitungswasser aufpeppen statt teure Softdrinks: Zero-Sirup bringt Abwechslung, Elektrolytpulver gleicht das Schwitzen aus – beides spart Geld und schmeckt.",
       dos: [
         "Große, wiederbefüllbare Flasche dabei – nachfüllen statt ständig kaufen.",
         "Zero-/zuckerfreier Sirup oder Geschmackstropfen: günstiges Wasser, viel Abwechslung, du trinkst mehr.",
         "Elektrolytpulver/-tabletten (suero / sales) bei Hitze, Schwitzen oder nach Durchfall – gleicher Kosten- und Geschmacksvorteil wie Sirup.",
         "Wo Leitungswasser unsicher ist: abkochen, filtern, mit Tabletten/UV entkeimen oder Flaschenwasser.",
         "In Höhe und Hitze trinken, bevor der Durst kommt.",
+      ],
+      dosDeEn: [
+        "Große, wiederbefüllbare Flasche dabei – nachfüllen statt ständig kaufen.",
+        "Zero-/zuckerfreier Sirup oder Geschmackstropfen: günstiges Wasser, viel Abwechslung, du trinkst mehr.",
+        "Elektrolytpulver/-tabletten (electrolytes / rehydration salts) bei Hitze, Schwitzen oder nach Durchfall – gleicher Kosten- und Geschmacksvorteil wie Sirup.",
+        "In UK, Irland, den USA, Kanada und Australien ist Leitungswasser meist sicher – wo nicht (abgelegene Touren), abkochen, filtern oder Flaschenwasser.",
+        "Auf Wanderungen und bei Hitze trinken, bevor der Durst kommt.",
       ],
       dosEn: [
         "Carry a big, refillable bottle – top it up instead of buying again and again.",
@@ -154,6 +183,13 @@
         "A small first-aid kit: „algo para la diarrea“, rehydration salts, maybe probiotics.",
         "Manzanilla (chamomile) or ginger tea settles the stomach.",
       ],
+      dosDeEn: [
+        "Ballaststoffe (Haferflocken, Obst, Bohnen) für eine geregelte Verdauung.",
+        "Hände waschen oder Desinfektionsgel vor dem Essen; Obst schälen oder mit sicherem Wasser waschen.",
+        "Bei Durchfall: viel trinken + Elektrolyte (electrolytes) – Flüssigkeit ist wichtiger als „Stopfen“.",
+        "Kleine Reiseapotheke: etwas gegen Durchfall (something for diarrhoea), Rehydratationssalze, ggf. Probiotika.",
+        "Kamillen- oder Ingwertee beruhigt den Magen.",
+      ],
       donts: [
         "Bei Durchfall nicht das Trinken vergessen – Austrocknung ist die eigentliche Gefahr.",
         "Rohes/ungewaschenes Gemüse und Eiswürfel aus unsicherem Wasser meiden.",
@@ -171,10 +207,17 @@
       titleEn: "Sun, altitude & mosquitoes",
       intro: "Näher am Äquator und oft in Höhe unterschätzt man Sonne und dünne Luft leicht. Und Mücken übertragen mancherorts Dengue oder Malaria.",
       introEn: "Closer to the equator and often at altitude, it's easy to underestimate the sun and the thin air. And in some places mosquitoes carry dengue or malaria.",
+      introDeEn: "In Australien und Neuseeland ist die Sonne besonders stark, und im tropischen Norden übertragen Mücken mancherorts Dengue. Auch in den Bergen (Rocky Mountains, Hochland) unterschätzt man Sonne und dünne Luft leicht.",
       dos: [
         "Sonnencreme (protector solar) und Kopfbedeckung, auch bei Bewölkung und in der Höhe.",
         "In der Höhe (Cusco, La Paz) langsam akklimatisieren: viel Wasser, Coca-Tee, die ersten Tage ruhig.",
         "Mückenschutz (repelente) in Dengue-/Malariagebieten, lange Kleidung in der Dämmerung.",
+        "Genug Schlaf: Ohrstöpsel und Schlafmaske im Dorm – das Immunsystem dankt es dir.",
+      ],
+      dosDeEn: [
+        "Sonnencreme (sunscreen) und Kopfbedeckung, auch bei Bewölkung – in Australien ist die UV-Strahlung extrem.",
+        "In den Bergen langsam akklimatisieren: viel Wasser, die ersten Tage ruhig angehen.",
+        "Mückenschutz (insect repellent) im tropischen Norden (z. B. Queensland), lange Kleidung in der Dämmerung.",
         "Genug Schlaf: Ohrstöpsel und Schlafmaske im Dorm – das Immunsystem dankt es dir.",
       ],
       dosEn: [
@@ -186,6 +229,11 @@
       donts: [
         "Höhenkrankheit (soroche) nicht überspielen – bei starken Symptomen wieder runter.",
         "Mittagssonne und Sonnenbrand nicht unterschätzen, gerade auf dem Wasser und in Höhe.",
+        "Nicht jede Nacht durchfeiern – Schlafmangel macht anfällig für jeden Infekt.",
+      ],
+      dontsDeEn: [
+        "Höhenkrankheit nicht überspielen – bei starken Symptomen wieder tiefer.",
+        "Mittagssonne und Sonnenbrand nicht unterschätzen, gerade am Strand und in den Bergen.",
         "Nicht jede Nacht durchfeiern – Schlafmangel macht anfällig für jeden Infekt.",
       ],
       dontsEn: [
@@ -279,9 +327,9 @@
         { es: "¿Tienen huevos?", de: "Haben Sie Eier?", en: "Do you have eggs?" },
         { es: "Quiero algo con proteína.", de: "Ich möchte etwas mit Protein.", en: "I'd like something with protein." },
         { es: "¿Venden frutos secos?", de: "Verkaufen Sie Nüsse?", en: "Do you sell nuts?" },
-        { es: "¿Dónde hay agua en botella grande?", de: "Wo gibt es Wasser in großer Flasche?", en: "Where is there water in a big bottle?" },
+        { es: "¿Dónde hay agua en botella grande?", de: "Wo gibt es Wasser in großer Flasche?", en: "Where can I find a large bottle of water?" },
         { es: "¿Tienen leche que no necesite frío?", de: "Haben Sie Milch, die keine Kühlung braucht? (H-Milch)", en: "Do you have milk that doesn't need refrigerating? (UHT)" },
-        { es: "¿Esta agua es potable?", de: "Ist dieses Wasser trinkbar?", en: "Is this water drinkable?" },
+        { es: "¿Esta agua es potable?", de: "Ist dieses Wasser trinkbar?", en: "Is this water safe to drink?" },
       ],
     },
     {
@@ -291,7 +339,7 @@
       titleEn: "Ordering more healthily",
       items: [
         { es: "¿Tiene algo vegetariano?", de: "Haben Sie etwas Vegetarisches?", en: "Do you have anything vegetarian?" },
-        { es: "¿Me lo puede hacer a la plancha, no frito?", de: "Können Sie es mir gegrillt machen, nicht frittiert?", en: "Could you do it grilled for me, not fried?" },
+        { es: "¿Me lo puede hacer a la plancha, no frito?", de: "Können Sie es mir gegrillt machen, nicht frittiert?", en: "Could I have it grilled instead of fried?" },
         { es: "Con ensalada, por favor.", de: "Mit Salat, bitte.", en: "With salad, please." },
         { es: "Sin azúcar, por favor.", de: "Ohne Zucker, bitte.", en: "Without sugar, please." },
         { es: "¿Qué lleva este plato?", de: "Was ist in diesem Gericht?", en: "What's in this dish?" },
@@ -307,7 +355,7 @@
         { es: "¿Tienen clases de yoga aquí?", de: "Bietet ihr hier Yoga-Kurse an?", en: "Do you have yoga classes here?" },
         { es: "¿Hay un gimnasio cerca?", de: "Gibt es ein Fitnessstudio in der Nähe?", en: "Is there a gym nearby?" },
         { es: "¿Venden pase por un día?", de: "Verkauft ihr einen Tagespass?", en: "Do you sell a day pass?" },
-        { es: "¿Cuánto cuesta la entrada por un día?", de: "Wie viel kostet der Tageseintritt?", en: "How much is entry for one day?" },
+        { es: "¿Cuánto cuesta la entrada por un día?", de: "Wie viel kostet der Tageseintritt?", en: "How much is it for one day?" },
         { es: "¿Puedo entrenar hoy sin ser socio?", de: "Kann ich heute trainieren, ohne Mitglied zu sein?", en: "Can I train today without being a member?" },
       ],
     },
@@ -362,12 +410,12 @@
   // ---------- „Gesund-unterwegs-Kit": kleine Packliste (Icon + Sache + Warum) ----------
   const CHECKLIST = [
     { icon: "lc:soup", item: "Haferflocken & Proteinpulver", itemEn: "Oats & protein powder", why: "Schnelles, sattmachendes Frühstück ganz ohne Küche – Porridge in 2 Minuten.", whyEn: "A quick, filling breakfast with no kitchen at all – porridge in 2 minutes." },
-    { icon: "lc:utensils-crossed", item: "Elektrolytpulver (suero)", itemEn: "Electrolyte powder (suero)", why: "Gleicht Schwitzen und Durchfall aus – günstiger und gesünder als Softdrinks.", whyEn: "Makes up for sweating and diarrhoea – cheaper and healthier than soft drinks." },
+    { icon: "lc:utensils-crossed", item: "Elektrolytpulver (suero)", itemEn: "Electrolyte powder (suero)", itemDeEn: "Elektrolytpulver (electrolytes)", why: "Gleicht Schwitzen und Durchfall aus – günstiger und gesünder als Softdrinks.", whyEn: "Makes up for sweating and diarrhoea – cheaper and healthier than soft drinks." },
     { icon: "lc:droplets", item: "Zero-Sirup / Geschmackstropfen", itemEn: "Zero syrup / flavour drops", why: "Günstiges Wasser mit Geschmack – mehr Abwechslung, du trinkst mehr.", whyEn: "Cheap water with flavour – more variety, and you drink more." },
     { icon: "lc:droplet", item: "Wiederbefüllbare Flasche (+ Filter)", itemEn: "Refillable bottle (+ filter)", why: "Nachfüllen statt kaufen; Filter oder Tabletten, wo das Wasser unsicher ist.", whyEn: "Refill instead of buying; a filter or tablets where the water isn't safe." },
     { icon: "lc:utensils", item: "Spork & Faltbecher", itemEn: "Spork & collapsible cup", why: "Deine Mini-Küche fürs Hostel – mehr braucht Porridge nicht.", whyEn: "Your mini-kitchen for the hostel – porridge needs no more than this." },
-    { icon: "lc:pill", item: "Bauch-Set", itemEn: "Stomach kit", why: "„Algo para la diarrea“, Rehydratationssalze und ggf. Probiotika für den Notfall.", whyEn: "„Algo para la diarrea“, rehydration salts and maybe probiotics for emergencies." },
-    { icon: "lc:spray-can", item: "Sonnencreme & Repelente", itemEn: "Sunscreen & repellent", why: "Schutz vor Sonne (auch in der Höhe) und vor Mücken in Dengue-/Malariagebieten.", whyEn: "Protection from the sun (also at altitude) and from mosquitoes in dengue/malaria areas." },
+    { icon: "lc:pill", item: "Bauch-Set", itemEn: "Stomach kit", why: "„Algo para la diarrea“, Rehydratationssalze und ggf. Probiotika für den Notfall.", whyEn: "„Algo para la diarrea“, rehydration salts and maybe probiotics for emergencies.", whyDeEn: "Etwas gegen Durchfall (something for diarrhoea), Rehydratationssalze und ggf. Probiotika für den Notfall." },
+    { icon: "lc:spray-can", item: "Sonnencreme & Repelente", itemEn: "Sunscreen & repellent", itemDeEn: "Sonnencreme & Mückenschutz (repellent)", why: "Schutz vor Sonne (auch in der Höhe) und vor Mücken in Dengue-/Malariagebieten.", whyEn: "Protection from the sun (also at altitude) and from mosquitoes in dengue/malaria areas.", whyDeEn: "Schutz vor Sonne (in Australien besonders stark) und vor Mücken im tropischen Norden." },
     { icon: "lc:bean", item: "Nüsse & Obst als Snack", itemEn: "Nuts & fruit as a snack", why: "Protein, Ballaststoffe und Vitamine für unterwegs statt Chips.", whyEn: "Protein, fibre and vitamins on the go instead of crisps." },
     { icon: "lc:candy", item: "Zucker-Snack (Riegel/Traubenzucker)", itemEn: "Sugary snack (bar/glucose)", why: "Rettet den Kreislauf auf Ausflügen, wo oft kein Shop in der Nähe ist.", whyEn: "Saves your circulation on trips where there's often no shop nearby." },
     { icon: "lc:sandwich", item: "Eigener Proviant", itemEn: "Your own provisions", why: "Auch bei „Verpflegung inklusive“ weißt du nie, was und wann – ein Snack rettet den teuren Ausflug.", whyEn: "Even with „meals included“ you never know what or when – a snack saves the pricey trip." },
@@ -376,5 +424,5 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.salud = { INTRO, INTRO_EN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
+  window.SC.salud = { INTRO, INTRO_EN, INTRO_DEEN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
 })();

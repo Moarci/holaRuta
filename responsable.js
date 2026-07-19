@@ -33,6 +33,12 @@
     "leaves places the way you'd like to find them. First the habits, then the phrases " +
     "to put them into practice in Spanish.";
 
+  const INTRO_DEEN =
+    "Reisen hinterlässt Spuren – im besten Fall nur Fußabdrücke. Müll mitnehmen, " +
+    "lokal kaufen, Plastik vermeiden und Natur wie Kultur respektieren: Das reist " +
+    "günstiger, näher dran und lässt Orte so zurück, wie du sie gern vorfindest. " +
+    "Erst die Gewohnheiten, dann die Sätze, um sie auch auf Englisch umzusetzen.";
+
   // ---------- Erklärung: leichter Fußabdruck (aufklappbar, Knigge-Stil) ----------
   const TOPICS = [
     {
@@ -94,9 +100,20 @@
         "Book local guides and small tour operators.",
         "Pay fairly – when haggling, don't squeeze out the last centavo.",
       ],
+      dosDeEn: [
+        "In Familienlokalen, Pubs und auf Wochenmärkten essen statt in Ketten.",
+        "Handgemachtes direkt bei den Kunsthandwerker:innen kaufen.",
+        "Lokale Guides und kleine Touranbieter buchen.",
+        "Fair zahlen und dort Trinkgeld geben, wo es üblich ist.",
+      ],
       donts: [
         "Nicht nur internationale Ketten ansteuern, wenn es lokale Optionen gibt.",
         "Kunsthandwerk nicht auf den letzten Peso herunterhandeln.",
+        "Keine Produkte aus geschützten Tieren/Pflanzen kaufen (Muscheln, Felle, Korallen).",
+      ],
+      dontsDeEn: [
+        "Nicht nur internationale Ketten ansteuern, wenn es lokale Optionen gibt.",
+        "Selbstgemachtes nicht bis auf den letzten Penny herunterhandeln.",
         "Keine Produkte aus geschützten Tieren/Pflanzen kaufen (Muscheln, Felle, Korallen).",
       ],
       dontsEn: [
@@ -135,6 +152,12 @@
         "Use a filter, Steripen or tablets where tap water isn't safe.",
         "Carry your own cloth bag and decline plastic bags.",
         "Skip the straw/plastic cutlery: „sin pitillo, por favor“.",
+      ],
+      dosDeEn: [
+        "Mehrwegflasche auffüllen: Leitungswasser ist in den meisten englischsprachigen Ländern trinkbar, Cafés und Pubs füllen gern nach.",
+        "Wo du unsicher bist, hilft eine Trinkflasche mit Filteraufsatz.",
+        "Eigene Stofftasche dabeihaben und Plastiktüten ablehnen – vielerorts kosten sie ohnehin extra.",
+        "Auf Strohhalm und Einwegbesteck verzichten: „No straw, please“.",
       ],
       donts: [
         "Nicht täglich neue Einwegflaschen kaufen, wenn Auffüllen geht.",
@@ -177,10 +200,21 @@
         "Dress appropriately and stay quiet in villages and sacred places.",
         "Decline offers that put animals on display.",
       ],
+      dosDeEn: [
+        "Wildtiere aus der Distanz beobachten, nicht füttern oder anfassen.",
+        "Vor Porträtfotos fragen: „May I take a photo?“",
+        "In Dörfern und an heiligen Orten angemessen kleiden und leise sein.",
+        "Angebote ablehnen, bei denen Tiere zur Schau gestellt werden.",
+      ],
       donts: [
         "Keine Selfies mit gefangenen Wildtieren (Faultiere, Affen) – das fördert Tierleid.",
         "Menschen nicht ungefragt fotografieren.",
         "Keine heiligen Stätten betreten oder berühren, wo es nicht erlaubt ist.",
+      ],
+      dontsDeEn: [
+        "Keine Selfies mit angeketteten oder gefangenen Tieren, die als Fotomotiv angeboten werden – das fördert Tierleid.",
+        "Menschen nicht ungefragt fotografieren.",
+        "Keine heiligen oder geschützten Stätten betreten oder berühren, wo es nicht erlaubt ist.",
       ],
       dontsEn: [
         "No selfies with captive wild animals (sloths, monkeys) – it fuels animal suffering.",
@@ -260,6 +294,12 @@
         "Plan routes sensibly instead of flying back and forth several times.",
         "Prefer carpools and shared tours.",
       ],
+      dosDeEn: [
+        "Wo möglich Zug oder Fernbus statt Inlandsflug nehmen – in Großbritannien und Irland kommst du fast überall per Bahn hin.",
+        "In der Stadt zu Fuß gehen, das Rad oder öffentliche Verkehrsmittel nutzen.",
+        "Strecken sinnvoll planen, statt mehrmals hin- und herzufliegen.",
+        "Fahrgemeinschaften und geteilte Touren bevorzugen.",
+      ],
       donts: [
         "Nicht für jede kurze Strecke fliegen, wenn der Bus es auch tut.",
         "Keinen Motor laufen lassen und keine Quads durch sensible Natur jagen.",
@@ -308,7 +348,7 @@
       titleEn: "Buying local",
       items: [
         { es: "¿Esto es hecho a mano?", de: "Ist das handgemacht?", en: "Is this handmade?" },
-        { es: "¿Es de aquí, de la zona?", de: "Ist das von hier aus der Region?", en: "Is it from here, local?" },
+        { es: "¿Es de aquí, de la zona?", de: "Ist das von hier aus der Region?", en: "Is it local, from around here?" },
         { es: "¿Me recomienda un lugar local para comer?", de: "Können Sie mir ein lokales Lokal zum Essen empfehlen?", en: "Can you recommend a local place to eat?" },
         { es: "¿El guía es de la comunidad?", de: "Ist der Guide aus der Gemeinde?", en: "Is the guide from the community?" },
       ],
@@ -335,7 +375,7 @@
         { es: "¿Puedo llegar a pie o en bici?", de: "Komme ich zu Fuß oder mit dem Rad hin?", en: "Can I get there on foot or by bike?" },
         { es: "¿El tour es de una empresa local?", de: "Ist die Tour von einem lokalen Anbieter?", en: "Is the tour run by a local company?" },
         { es: "¿Puedo compartir el taxi?", de: "Kann ich mir das Taxi teilen?", en: "Can I share the taxi?" },
-        { es: "¿Hay transporte público hasta allá?", de: "Gibt es öffentliche Verkehrsmittel dorthin?", en: "Is there public transport out there?" },
+        { es: "¿Hay transporte público hasta allá?", de: "Gibt es öffentliche Verkehrsmittel dorthin?", en: "Is there public transport to get there?" },
       ],
     },
   ];
@@ -347,7 +387,7 @@
     { es: "la botella reutilizable", de: "die Mehrwegflasche", en: "the reusable bottle" },
     { es: "rellenar", de: "auffüllen", en: "to refill" },
     { es: "la bolsa de tela", de: "die Stofftasche", en: "the cloth bag" },
-    { es: "el pitillo", de: "der Strohhalm (CO; popote in MX)", en: "the straw (CO; popote in MX)" },
+    { es: "el pitillo", de: "der Strohhalm (CO; popote in MX)", en: "the straw" },
     { es: "hecho a mano", de: "handgemacht", en: "handmade" },
     { es: "local", de: "lokal, von hier", en: "local, from here" },
     { es: "la comunidad", de: "die Gemeinde / Gemeinschaft", en: "the community" },
@@ -409,5 +449,5 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.responsable = { INTRO, INTRO_EN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
+  window.SC.responsable = { INTRO, INTRO_EN, INTRO_DEEN, TOPICS, PHRASES, GLOSSARY, CHECKLIST };
 })();

@@ -58,7 +58,11 @@
 
   // ----- Render -----
   function renderKnigge(vm) {
-    const selector = countryPicker(vm.groups);
+    // HelloAbroad (de-en): englischsprachige Reiseziele. Der geteilte
+    // LatAm-Länderpicker und die landesspezifischen Akzente (Spanisch-Länder)
+    // sind hier irrelevant und werden ausgeblendet.
+    const deEn = !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
+    const selector = deEn ? "" : countryPicker(vm.groups);
 
     const countryName = vm.country ? vm.country.name : "";
 
@@ -74,7 +78,7 @@
     const block = (tp, i) => {
       const dos = liList(tp.dos, "knigge-do", "✅");
       const donts = liList(tp.donts, "knigge-dont", "🚫");
-      const accent = tp.accent
+      const accent = (!deEn && tp.accent)
         ? `<div class="knigge-accent">${renderIcon("lc:lightbulb")} <strong>${esc(window.t("discover.kniggeAccentIn", { country: countryName }))}</strong> ${esc(tp.accent)}</div>`
         : "";
       return `
@@ -100,7 +104,9 @@
       <section class="screen">
         ${kniggeTopbar()}
         ${selector}
-        <p class="pageintro">${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.</p>
+        <p class="pageintro">${deEn
+          ? "Wie du dich unterwegs richtig verhältst – im Hostel, in Bus &amp; Bahn, in Gruppen und gegenüber der lokalen Kultur. Allgemeine Faustregeln, im Zweifel zählt die Hausordnung vor Ort."
+          : `${t("discover.kniggeIntroPre")}${countryName ? esc(t("discover.kniggeIntroFor", { country: countryName })) : ""}.`}</p>
         ${moduleShareBtn("knigge")}
         ${topics}
       </section>`;
@@ -110,7 +116,7 @@
     return `
       <div class="topbar">
         <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">${renderIcon("lc:compass")} Etiqueta de viaje</div>
+        <div class="topbar__title">${renderIcon("lc:compass")} ${esc(t("discover.kniggeName"))}</div>
         <span></span>
       </div>`;
   }

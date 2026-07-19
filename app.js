@@ -700,10 +700,15 @@
       hasBebidas: !!(bebidas && countries), // Bebidas AM/PM (braucht Länderliste)
       hasYesto: !!(yesto && yesto.THEMES && yesto.THEMES.length), // „¿Y esto?“ Bild-Vokabel-Modus
 
-      // Einstufungstests sind SPANISCH-Instrumente -> im Locals- und HelloAbroad-Track ausblenden.
-      hasPlacement: !!placement && !hidesTripAndTests(), // Ruta-Check (Einstufungstest)
+      // Der kurze Einstufungs-Check trägt seit dem de-en-Ausbau einen eigenen
+      // ENGLISCHEN Fragenkatalog (placement.js QUESTIONS_EN, track-gewählt), daher im
+      // HelloAbroad-Track (de-en) sichtbar; nur der Locals-Track blendet ihn aus.
+      hasPlacement: !!placement && !isLocals(), // Ruta-Check / Einstufungs-Check
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
-      hasAssessment: !!assessment && !hidesTripAndTests(), // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
+      // Der ausführliche Nivel-Test trägt seit dem de-en-Ausbau ebenfalls einen
+      // eigenen ENGLISCHEN Fragenkatalog (assessment.js QUESTIONS_EN, track-gewählt),
+      // daher im HelloAbroad-Track (de-en) sichtbar; nur der Locals-Track blendet ihn aus.
+      hasAssessment: !!assessment && !isLocals(), // HolaRuta Nivel-Test / Niveau-Test
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,
@@ -7044,20 +7049,20 @@
   // Salud): ein Thema mit seinen DOs/Don'ts als teilbares Bild „zum Versenden".
   // kicker/icon/accent passen zur jeweiligen Kategorie-Kachel (siehe FEATURES).
   const TIPS_META = {
-    knigge:    { kicker: "Etiqueta de viaje", icon: "🧭", accent: ["#3F6B8E", "#6B4FA8"] },
+    knigge:    { kicker: "Etiqueta de viaje", kickerKey: "discover.kniggeName", icon: "🧭", accent: ["#3F6B8E", "#6B4FA8"] },
     regatear:  { kicker: "Regatear",          icon: "🤝", accent: ["#B97C24", "#3F7355"] },
-    logistica: { kicker: "Logística de viaje", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
-    salud:     { kicker: "Salud y energía",   icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
+    logistica: { kicker: "Logística de viaje", kickerKey: "discover.logisticaName", icon: "🧳", accent: ["#2F6B70", "#B97C24"] },
+    salud:     { kicker: "Salud y energía",   kickerKey: "discover.saludName", icon: "🥗", accent: ["#2F8E5B", "#76954E"] },
     jerga:     { kicker: "Jerga colombiana",  icon: "🗣️", accent: ["#C25A45", "#B97C24"] },
-    derechos:  { kicker: "Conoce tus derechos", icon: "⚖️", accent: ["#3F5BA8", "#5A4FA8"] },
-    responsable: { kicker: "Viaja responsable", icon: "🌱", accent: ["#3F7355", "#5E7D3A"] },
-    fotos:     { kicker: "Fotos y videos",    icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
+    derechos:  { kicker: "Conoce tus derechos", kickerKey: "discover.derechosName", icon: "⚖️", accent: ["#3F5BA8", "#5A4FA8"] },
+    responsable: { kicker: "Viaja responsable", kickerKey: "discover.responsableName", icon: "🌱", accent: ["#3F7355", "#5E7D3A"] },
+    fotos:     { kicker: "Fotos y videos",    kickerKey: "discover.fotosName", icon: "📸", accent: ["#C25A45", "#5A4FA8"] },
     flirt:     { kicker: "Coqueteo y romance", icon: "💘", accent: ["#D24A77", "#B05AA8"] },
     bailar:    { kicker: "Bailar",            icon: "💃", accent: ["#C0392B", "#5A3FB8"] },
     cafe:      { kicker: "Café de la región", icon: "☕", accent: ["#6F4A2E", "#B97C24"] },
     "med-ciudad": { kicker: "Descubre Medellín", icon: "🚡", accent: ["#2F8E5B", "#1F6B44"] },
     "med-paisa":  { kicker: "Cultura y sabor paisa", icon: "💐", accent: ["#B97C24", "#C2502E"] },
-    juegos:    { kicker: "Juegos de viaje",   icon: "🎲", accent: ["#C44536", "#2E7D9A"] },
+    juegos:    { kicker: "Juegos de viaje",   kickerKey: "discover.juegosName", icon: "🎲", accent: ["#C44536", "#2E7D9A"] },
     banderas:  { kicker: "Banderas",          icon: "🚩", accent: ["#C0392B", "#2E6E86"] },
   };
 
@@ -7087,10 +7092,11 @@
       .concat((o.donts || []).map((text) => ({ mark: "🚫", text })))
       .concat((o.tips || []).map((text) => ({ mark: "💡", text })));
     buzz(12);
+    const kicker = meta.kickerKey ? t(meta.kickerKey) : meta.kicker;
     share.shareImage("tips", {
-      kicker: meta.kicker,
+      kicker,
       icon: meta.icon,
-      title: o.title || o.name || meta.kicker,
+      title: o.title || o.name || kicker,
       intro: o.intro || "",
       lines,
       accent: meta.accent,
@@ -7132,35 +7138,35 @@
   // icon = Inhalts-Emoji fürs Sharepic (auf Canvas gemalt); lc = "lc:"-Token fürs
   // UI-Chrome (Mi-léxico-Gruppen), gespiegelt aus den FEATURES-Kacheln in ui.js.
   const MODULE_SHARE = {
-    "ruta-check":  { icon: "🎯", lc: "lc:target",          title: "HolaRuta-Check",      sub: "discover.subPlacement",     accent: ["#2E6E86", "#C2502E"] },
-    "nivel-test":  { icon: "📋", lc: "lc:clipboard-list",  title: "HolaRuta Nivel-Test", sub: "discover.subAssessment",    accent: ["#3F5BA8", "#2E6E86"] },
-    supervivencia: { icon: "🆘", lc: "lc:life-buoy",       title: "Supervivencia",       sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
+    "ruta-check":  { icon: "🎯", lc: "lc:target",          title: "HolaRuta-Check",      titleKey: "discover.placementName",   sub: "discover.subPlacement",     accent: ["#2E6E86", "#C2502E"] },
+    "nivel-test":  { icon: "📋", lc: "lc:clipboard-list",  title: "HolaRuta Nivel-Test", titleKey: "discover.assessmentName",  sub: "discover.subAssessment",    accent: ["#3F5BA8", "#2E6E86"] },
+    supervivencia: { icon: "🆘", lc: "lc:life-buoy",       title: "Supervivencia",       titleKey: "discover.spickzettelName", sub: "discover.subSupervivencia", accent: ["#B5302A", "#CE463E"] },
     hostel:        { icon: "🛏️", lc: "lc:bed",             title: "Modo hostal",         sub: "discover.subHostel",        accent: ["#C25A45", "#8E4FA8"] },
-    definiciones:  { icon: "🧩", lc: "lc:puzzle",          title: "Definiciones",         sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
-    frases:        { icon: "🧱", lc: "lc:blocks",          title: "Frases flexibles",     sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
+    definiciones:  { icon: "🧩", lc: "lc:puzzle",          title: "Definiciones",         titleKey: "discover.definicionesName", sub: "discover.subDefiniciones",  accent: ["#3F7355", "#2F6B70"] },
+    frases:        { icon: "🧱", lc: "lc:blocks",          title: "Frases flexibles",     titleKey: "discover.frasesName",  sub: "discover.subFrases",        accent: ["#7048E8", "#5A3FB8"] },
     dialogos:      { icon: "💬", lc: "lc:message-circle",  title: "Diálogos",             sub: "discover.subDialogos",      accent: ["#9B5A8C", "#5A4FA8"] },
     regatear:      { icon: "🤝", lc: "lc:handshake",       title: "Regatear",             sub: "discover.subRegatear",      accent: ["#B97C24", "#3F7355"] },
-    precios:       { icon: "💵", lc: "lc:banknote",        title: "Precios al oído",      sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
-    cuerpo:        { icon: "🧍", lc: "lc:person-standing", title: "El Cuerpo",            sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
-    compras:       { icon: "🛒", lc: "lc:shopping-cart",   title: "Lista de compras",     sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
-    yesto:         { icon: "👀", lc: "lc:eye",             title: "¿Y esto?",              sub: "discover.subYesto",         accent: ["#C2502E", "#E9A23B"] },
+    precios:       { icon: "💵", lc: "lc:banknote",        title: "Precios al oído",      titleKey: "discover.preciosName", sub: "discover.subPrecios",       accent: ["#5E7D3A", "#76954E"] },
+    cuerpo:        { icon: "🧍", lc: "lc:person-standing", title: "El Cuerpo",            titleKey: "discover.cuerpoName",  sub: "discover.subCuerpo",        accent: ["#2E6E86", "#7D4A8E"] },
+    compras:       { icon: "🛒", lc: "lc:shopping-cart",   title: "Lista de compras",     titleKey: "discover.comprasName", sub: "discover.subCompras",       accent: ["#3F7355", "#B97C24"] },
+    yesto:         { icon: "👀", lc: "lc:eye",             title: "¿Y esto?",              titleKey: "discover.yestoName",  sub: "discover.subYesto",         accent: ["#C2502E", "#E9A23B"] },
     conjugacion:   { icon: "🔁", lc: "lc:repeat",          title: "Conjugación",          sub: "discover.subConjugacion",   accent: ["#4C5FA8", "#2B7A78"] },
     tiempos:       { icon: "⏳", lc: "lc:hourglass",       title: "Tiempos",              sub: "discover.subTiempos",       accent: ["#3E7CA8", "#5A9BC4"] },
     paises:        { icon: "🌎", lc: "lc:globe",           title: "Países y culturas",    sub: "discover.subInfo",          accent: ["#B97C24", "#C2502E"] },
-    knigge:        { icon: "🧭", lc: "lc:compass",         title: "Etiqueta de viaje",    sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
-    logistica:     { icon: "🧳", lc: "lc:luggage",         title: "Logística de viaje",   sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
-    salud:         { icon: "🥗", lc: "lc:salad",           title: "Salud y energía",      sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
+    knigge:        { icon: "🧭", lc: "lc:compass",         title: "Etiqueta de viaje",    titleKey: "discover.kniggeName",  sub: "discover.subKnigge",        accent: ["#3F6B8E", "#6B4FA8"] },
+    logistica:     { icon: "🧳", lc: "lc:luggage",         title: "Logística de viaje",   titleKey: "discover.logisticaName", sub: "discover.subLogistica",     accent: ["#2F6B70", "#B97C24"] },
+    salud:         { icon: "🥗", lc: "lc:salad",           title: "Salud y energía",      titleKey: "discover.saludName",   sub: "discover.subSalud",         accent: ["#2F8E5B", "#76954E"] },
     jerga:         { icon: "🗣️", lc: "lc:megaphone",       title: "Jerga colombiana",     sub: "discover.subJerga",         accent: ["#C25A45", "#B97C24"] },
-    derechos:      { icon: "⚖️", lc: "lc:scale",           title: "Conoce tus derechos",  sub: "discover.subDerechos",      accent: ["#3F5BA8", "#5A4FA8"] },
-    responsable:   { icon: "🌱", lc: "lc:sprout",          title: "Viaja responsable",    sub: "discover.subResponsable",   accent: ["#3F7355", "#5E7D3A"] },
-    fotos:         { icon: "📸", lc: "lc:camera",          title: "Fotos y videos",       sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
+    derechos:      { icon: "⚖️", lc: "lc:scale",           title: "Conoce tus derechos",  titleKey: "discover.derechosName", sub: "discover.subDerechos",      accent: ["#3F5BA8", "#5A4FA8"] },
+    responsable:   { icon: "🌱", lc: "lc:sprout",          title: "Viaja responsable",    titleKey: "discover.responsableName", sub: "discover.subResponsable",   accent: ["#3F7355", "#5E7D3A"] },
+    fotos:         { icon: "📸", lc: "lc:camera",          title: "Fotos y videos",       titleKey: "discover.fotosName",   sub: "discover.subFotos",         accent: ["#C25A45", "#5A4FA8"] },
     flirt:         { icon: "💘", lc: "lc:heart",           title: "Coqueteo y romance",   sub: "discover.subFlirt",         accent: ["#D24A77", "#B05AA8"] },
     bailar:        { icon: "💃", lc: "lc:footprints",      title: "Bailar",               sub: "discover.subBailar",        accent: ["#C0392B", "#5A3FB8"] },
     musica:        { icon: "🎵", lc: "lc:music",           title: "Música",               sub: "discover.subMusica",        accent: ["#7A3FA8", "#C2502E"] },
     cafe:          { icon: "☕", lc: "lc:coffee",          title: "Café de la región",    sub: "discover.subCafe",          accent: ["#6F4A2E", "#B97C24"] },
     "med-ciudad":  { icon: "🚡", lc: "lc:cable-car",       title: "Descubre Medellín",    sub: "discover.subMedCiudad",     accent: ["#2F8E5B", "#1F6B44"] },
     "med-paisa":   { icon: "💐", lc: "lc:heart",           title: "Cultura y sabor paisa", sub: "discover.subMedPaisa",     accent: ["#B97C24", "#C2502E"] },
-    juegos:        { icon: "🎲", lc: "lc:dices",           title: "Juegos de viaje",      sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
+    juegos:        { icon: "🎲", lc: "lc:dices",           title: "Juegos de viaje",      titleKey: "discover.juegosName",  sub: "discover.subJuegos",        accent: ["#C44536", "#2E7D9A"] },
     banderas:      { icon: "🚩", lc: "lc:flag",            title: "Banderas",             sub: "discover.subBanderas",      accent: ["#C0392B", "#2E6E86"] },
     carrito:       { icon: "🛒", lc: "lc:shopping-cart",   title: "El carrito",           sub: "discover.subCarrito",       accent: ["#E0743C", "#B97C24"] },
     jugar:         { icon: "🎮", lc: "lc:dices",           title: "¡A jugar en inglés!",  sub: "discover.subJugar",         accent: ["#3F7355", "#2E6E86"] },
@@ -7285,7 +7291,9 @@
     share.shareImage("module", {
       kicker: t("discover.moduleShareKicker"),
       icon: meta.icon,
-      title: meta.title,
+      // Track-fähiger Titel: im de-en-Track (HelloAbroad) trägt das Sharepic die
+      // deutsche Modul-Benennung (titleKey → …DeEn), sonst die spanische Marke.
+      title: meta.titleKey ? t(meta.titleKey) : meta.title,
       intro: t(meta.sub),
       lines: moduleShareLines(id),
       accent: meta.accent,

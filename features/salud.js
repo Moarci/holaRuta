@@ -24,9 +24,12 @@
     const salud = ctx.salud;
     if (!salud) return { intro: "", topics: [], phrases: [], glossary: [], checklist: [] };
     const en = ctx.i18n && ctx.i18n.getLang() === "en";
+    const deEn = !!(window.SC && window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en");
     const loc = (v) => (ctx.i18n ? ctx.i18n.localizeDeep(v) : v);
     return {
-      intro: (en && salud.INTRO_EN) ? salud.INTRO_EN : salud.INTRO,
+      intro: deEn && salud.INTRO_DEEN ? salud.INTRO_DEEN
+           : (en && salud.INTRO_EN) ? salud.INTRO_EN
+           : salud.INTRO,
       topics: loc(salud.TOPICS || []),
       phrases: loc(salud.PHRASES || []),
       glossary: loc(salud.GLOSSARY || []),
@@ -37,7 +40,7 @@
   // ----- Render -----
   function renderSalud(vm) {
     return moduleSheet(vm, {
-      icon: "lc:salad", title: "Salud y energía", cat: "salud",
+      icon: "lc:salad", title: ctx.i18n.t("discover.saludName"), cat: "salud",
       favPhrases: ctx.isFavorite, // jeder Satz mit Stern → „Mi léxico"
       headTips: "discover.sdTips", headPhrases: "discover.sdPhrases",
       headWords: "discover.sdWords", headChecklist: "discover.sdChecklist",

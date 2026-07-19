@@ -43,6 +43,18 @@
     "for a moment – and finally, how to share your shots (AirDrop, Quick Share, " +
     "apps like Mymories).";
 
+  // de-en-Track (HelloAbroad): gleiche deutsche Einleitung – der Inhalt ist
+  // universell (Motiv, Licht, Posen, Teilen); nichts ist Spanien-/LatAm-spezifisch,
+  // darum keine inhaltliche Umschreibung nötig. Das spanische Lesetraining der
+  // Themen wird im Feature-Modul für de-en ausgeblendet.
+  const INTRO_DEEN =
+    "Die schönsten Erinnerungen stecken in Fotos und Videos – und tolle Bilder " +
+    "macht man mit ein paar einfachen Handgriffen, nicht mit der teuersten Kamera. " +
+    "Hier lernst du, worauf es ankommt: Motiv und Bildaufbau, die richtigen " +
+    "Einstellungen, das beste Licht und natürliche Posen. Dazu die englischen Sätze, " +
+    "um andere um ein Foto zu bitten oder kurz um Platz – und am Ende, wie du deine " +
+    "Bilder teilst (AirDrop, Quick Share, Apps wie Mymories).";
+
   // ---------- Erklärung: tolle Reisebilder (aufklappbar, mit ES-Lesetraining) ----------
   const TOPICS = [
     {
@@ -212,7 +224,7 @@
         "Genug Abstand für Ganzkörperbilder lassen – Füße nicht abschneiden.",
       ],
       dosEn: [
-        "Add movement: walk, laugh, turn around, play with your hair – don't pose frozen.",
+        "Add movement: walk, laugh, turn around, play with your hair – don't hold a frozen pose.",
         "Keep hands busy: hold a cup, your hat, your bag or jacket.",
         "Sometimes look away from the camera – it feels natural and tells a little story.",
         "Shoot slightly from above – more flattering than from below.",
@@ -230,7 +242,7 @@
         "Don't stare stiffly and square-on into the camera like a passport photo.",
         "Don't press your arms tight against your body – it looks tense.",
         "Don't shoot from below (double chin, nostrils).",
-        "Don't get a wide-angle lens too close to a face – it distorts the proportions.",
+        "Don't get too close with a wide-angle lens – it distorts the proportions.",
       ],
       es: [
         "Casi todos se ponen *tiesos* delante de la cámara. El truco es moverse: caminar, *reír*, girarse o jugar con el pelo. Así la *pose* se ve natural.",
@@ -252,7 +264,7 @@
       title: "Videos drehen",
       titleEn: "Shooting video",
       intro: "Video lebt von ruhiger Hand und kurzen Szenen. Lieber viele kurze, stabile Clips als ein langes Gewackel – beim Schneiden bist du dann froh über jede ruhige Aufnahme.",
-      introEn: "Video lives on a steady hand and short scenes. Better many short, stable clips than one long wobble – when editing you'll be grateful for every steady shot.",
+      introEn: "Good video comes down to a steady hand and short scenes. Better to shoot lots of short clips than one long, wobbly one – when editing, you'll be grateful for every steady shot.",
       dos: [
         "Handy mit beiden Händen halten und die Ellbogen anlegen – oder an einer Wand/Geländer abstützen.",
         "Langsame, ruhige Schwenks – sanft mit dem ganzen Körper drehen, nicht aus dem Handgelenk.",
@@ -280,7 +292,7 @@
       dontsEn: [
         "Don't pan wildly and constantly use digital zoom – it makes people dizzy.",
         "Don't shoot vertically for YouTube/TV if you can avoid it.",
-        "Don't film while walking without stabilisation – the picture wobbles uselessly.",
+        "Don't film while walking without stabilisation – the footage comes out too shaky to use.",
         "Don't forget storage and battery – video eats both quickly.",
       ],
       es: [
@@ -316,7 +328,7 @@
         { es: "¿Puedes tomar otra, por favor?", de: "Kannst du noch ein Bild machen, bitte?", en: "Can you take another one, please?" },
         { es: "Una vertical y una horizontal, por favor.", de: "Eins hochkant und eins quer, bitte.", en: "One vertical and one landscape, please." },
         { es: "¿La puedes tomar desde más lejos?", de: "Kannst du von etwas weiter weg fotografieren? (mehr drauf)", en: "Can you take it from a bit further away?" },
-        { es: "Salió movida, ¿la repetimos?", de: "Das Bild ist verwackelt, machen wir es nochmal?", en: "It came out blurry, shall we redo it?" },
+        { es: "Salió movida, ¿la repetimos?", de: "Das Bild ist verwackelt, machen wir es nochmal?", en: "It came out blurry, shall we try again?" },
         { es: "¡Quedó genial, muchas gracias!", de: "Ist super geworden, vielen Dank!", en: "It turned out great, thank you so much!" },
       ],
     },
@@ -327,11 +339,11 @@
       titleEn: "Politely asking for space",
       items: [
         { es: "Disculpa, ¿te puedes correr un momentito?", de: "Entschuldige, kannst du dich kurz zur Seite stellen?", en: "Excuse me, could you move over for a moment?" },
-        { es: "¿Te importaría apartarte un segundo para la foto?", de: "Würde es dir etwas ausmachen, kurz aus dem Bild zu gehen?", en: "Would you mind stepping aside a second for the photo?" },
+        { es: "¿Te importaría apartarte un segundo para la foto?", de: "Würde es dir etwas ausmachen, kurz aus dem Bild zu gehen?", en: "Would you mind stepping out of the shot for a second?" },
         { es: "Perdón, ¿puedo pasar para tomar la foto?", de: "Entschuldigung, darf ich kurz durch fürs Foto?", en: "Sorry, may I get through to take the photo?" },
         { es: "¿Nos dejas un momentito para la foto?", de: "Gibst du uns kurz einen Moment fürs Foto?", en: "Could you give us a moment for the photo?" },
         { es: "Es solo un segundo, gracias.", de: "Es ist nur eine Sekunde, danke.", en: "It's just a second, thanks." },
-        { es: "Gracias, muy amable.", de: "Danke, sehr nett.", en: "Thank you, very kind." },
+        { es: "Gracias, muy amable.", de: "Danke, sehr nett.", en: "Thanks, that's very kind." },
       ],
     },
     {
@@ -346,7 +358,7 @@
         { es: "¿Se pueden tomar fotos aquí?", de: "Darf man hier fotografieren?", en: "Are photos allowed here?" },
         { es: "¿Está bien si grabo un video?", de: "Ist es in Ordnung, wenn ich ein Video mache?", en: "Is it okay if I record a video?" },
         { es: "¿Me la puedes mandar por favor?", de: "Kannst du sie mir bitte schicken?", en: "Can you send it to me, please?" },
-        { es: "¿Me etiquetas en la foto?", de: "Markierst du mich auf dem Foto?", en: "Will you tag me in the photo?" },
+        { es: "¿Me etiquetas en la foto?", de: "Markierst du mich auf dem Foto?", en: "Could you tag me in the photo?" },
       ],
     },
   ];
@@ -416,7 +428,7 @@
   // ---------- Glossar: Schlüsselwörter rund ums Fotografieren ----------
   const GLOSSARY = [
     { es: "la foto / sacar una foto", de: "das Foto / ein Foto machen", en: "the photo / to take a photo" },
-    { es: "tomar una foto", de: "ein Foto machen (LatAm)", en: "to take a photo (LatAm)" },
+    { es: "tomar una foto", de: "ein Foto machen (LatAm)", en: "to take a photo (LatAm)", deDeEn: "ein Foto machen", enDeEn: "to take a photo" },
     { es: "grabar un video", de: "ein Video aufnehmen", en: "to record a video" },
     { es: "la cámara", de: "die Kamera", en: "the camera" },
     { es: "la lente", de: "die Linse / das Objektiv", en: "the lens" },
@@ -447,5 +459,5 @@
   ];
 
   window.SC = window.SC || {};
-  window.SC.fotografia = { INTRO, INTRO_EN, TOPICS, PHRASES, SHARING, APPS, GLOSSARY, CHECKLIST };
+  window.SC.fotografia = { INTRO, INTRO_EN, INTRO_DEEN, TOPICS, PHRASES, SHARING, APPS, GLOSSARY, CHECKLIST };
 })();
