@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HelloAbroad</title>
+  <title>HelloAbroad – Reiseenglisch für echte Situationen</title>
+  <meta name="description" content="Reiseenglisch auffrischen für unterwegs – Karteikarten mit Spaced Repetition für Flughafen, Hotel, Restaurant, Einkaufen und Notfall. Offline, ohne Konto, kostenlos." />
   <!-- Einfache, teilbare URL für HelloAbroad. Leitet auf die App mit der
        Edition "hello-abroad" weiter. Reiner Redirect: die App selbst liegt
        unter ../ (relative Asset-Pfade bleiben intakt). Bewusst OHNE
@@ -11,7 +12,32 @@
        erlaubt eine CSP mit script-src 'none'. -->
   <link rel="canonical" href="../?edition=hello-abroad" />
   <meta name="robots" content="noindex, follow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; script-src 'none'" />
+
+  <!-- Social-Vorschau (Open Graph + Twitter): so erscheint der geteilte
+       /hello-abroad/-Link in WhatsApp, Signal, Facebook, LinkedIn & Co. Eigene
+       HelloAbroad-Marke (Petrol, Reiseenglisch) statt der HolaRuta-Vorschau.
+       Absolute URLs, weil Crawler relative Pfade nicht auflösen. Die Bilder
+       liegen im Repo-Root und werden aus der Marke erzeugt (tools/og-image.js).
+       Crawler lesen nur das rohe HTML – die strenge CSP unten (die den Redirect
+       hart absichert) betrifft sie nicht. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="HelloAbroad" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:url" content="https://moarci.github.io/holaRuta/hello-abroad/" />
+  <meta property="og:title" content="HelloAbroad – Reiseenglisch für echte Situationen" />
+  <meta property="og:description" content="Karteikarten mit Spaced Repetition für Flughafen, Hotel, Restaurant, Einkaufen & Notfall. Offline, ohne Konto, kostenlos." />
+  <meta property="og:image" content="https://moarci.github.io/holaRuta/og-image-hello-abroad.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="HelloAbroad – Reiseenglisch für echte Situationen. Beispielkarte: „Was kostet das?“ → „How much is it?“" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HelloAbroad – Reiseenglisch für echte Situationen" />
+  <meta name="twitter:description" content="Karteikarten mit Spaced Repetition für Flughafen, Hotel, Restaurant, Einkaufen & Notfall. Offline, ohne Konto, kostenlos." />
+  <meta name="twitter:image" content="https://moarci.github.io/holaRuta/og-image-hello-abroad.png" />
+  <meta name="twitter:image:alt" content="HelloAbroad – Reiseenglisch für echte Situationen." />
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'; script-src 'none'" />
   <meta http-equiv="refresh" content="0; url=../?edition=hello-abroad" />
   <style>
     html, body { height: 100%; margin: 0; }

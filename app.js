@@ -74,7 +74,17 @@
   const placement = window.SC.placement || null; // Ruta-Check (Einstufungstest, optional)
   const assessment = window.SC.assessment || null; // HolaRuta Nivel-Test (ausführlich, optional)
   const changelog = window.SC.changelog || null; // Versionsstand & „Was ist neu?" (optional)
-  const DEFAULT_ACCENT = ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
+  // Standard-Rundenakzent (Tagesrunde / Favoriten / „Alle Bereiche" – also überall
+  // ohne eigene Kategorie-Farbe). HelloAbroad (Edition hello-abroad) bekommt seinen
+  // Petrol→Teal-Verlauf, sonst leuchteten diese Karten in HolaRuta-Terrakotta und
+  // brächen die Marke. Andere Editionen bleiben bewusst beim Terrakotta→Ocker.
+  const DEFAULT_ACCENT = (() => {
+    const c = window.SC && window.SC.config;
+    if (c && c.edition === "hello-abroad" && c.accent && c.accent.brand) {
+      return [c.accent.brand, "#3E8388"]; // Petrol → helleres Teal (wie Icon/OG)
+    }
+    return ["#C2502E", "#E9A23B"]; // Terrakotta→Ocker (markenkonform, statt kühlem Indigo)
+  })();
   // Eine Lernrunde bleibt bewusst klein: höchstens so viele Karten pro Sitzung.
   // Sonst startet ein Neueinsteiger mit "561 fällig" in eine erschlagende
   // Pflicht-Session – der Rest bleibt fällig und kommt in der nächsten Runde.
@@ -345,11 +355,18 @@
   const _localsCats = () => (window.SC && window.SC.dataLocals && window.SC.dataLocals.CATEGORIES) || [];
   const localsCatSet = () => new Set(_localsCats().map((c) => c.id));
   const localsGroupSet = () => new Set(_localsCats().map((c) => c.group));
-  // Locals-Karte? (Eigener Korpus aus data.locals.js, Präfix "loc-".) Im Locals-Track
-  // tragen nur diese einen ENGLISCHEN Aussprache-Tipp; die Reise-Karten tragen einen
-  // SPANISCHEN Tipp (+ deutschen Klammertext), der dort fehl am Platz wäre.
+  // Aussprache-Tipp (`tip`) erklärt die SPANISCHE Aussprache (Laienlautschrift +
+  // deutscher Klammertext) – sinnvoll nur, wenn auch Spanisch gelernt wird (de-es).
+  // Tracks, die ENGLISCH lernen, dürfen ihn nicht zeigen: er wäre dort fehl am Platz
+  // (z.B. „OH-la (H ist stumm)" unter dem englischen „Hello"). Ausnahme: die
+  // Locals-Karten (Präfix "loc-") tragen einen eigenen ENGLISCHEN Tipp.
+  //  · es-en (Locals): nur loc-Karten zeigen den (englischen) Tipp – wie bisher.
+  //  · de-en (HelloAbroad): keine loc-Karten → gar kein Tipp (bewusste MVP-Lücke,
+  //    siehe HelloAbroad-Spec), statt eines irreführenden spanischen.
   const tipFor = (card) => {
-    if (isLocals() && !(card && card.id && card.id.indexOf("loc-") === 0)) return null;
+    const learnsSpanish = trk() && trk().learnLang && trk().learnLang() === "es";
+    const isLoc = !!(card && card.id && card.id.indexOf("loc-") === 0);
+    if (!learnsSpanish && !isLoc) return null;
     return (card && card.tip) || null;
   };
   const cardNative = (o) => {
@@ -1345,11 +1362,29 @@
   // ----- Co-Branding-Edition anwenden (einmalig beim Start) -----
   // Überschreibt nur den Akzent (--brand/--brand-ink, wirkt in Hell & Dunkel) und
   // die theme-color-Meta; NICHT --page, damit der Hell/Dunkel-Rahmen intakt bleibt.
+  // Appbar-Logo für eigenständige Marken (aktuell HelloAbroad): Sprechblase in
+  // Petrol statt des Terrakotta-Pins – deckungsgleich mit icon-hello-abroad.svg.
+  // Das statische Shell-SVG (index.html) trägt feste Farb-Stops, lässt sich also
+  // nicht per --brand umfärben; darum wird das Motiv gezielt ausgetauscht.
+  function helloAbroadLogoSvg() {
+    return '<svg viewBox="0 0 512 512" role="img" aria-hidden="true">'
+      + '<defs><linearGradient id="logoG" x1="0" y1="0" x2="1" y2="1">'
+      + '<stop offset="0" stop-color="#2F6B70"/><stop offset="1" stop-color="#3E8388"/>'
+      + '</linearGradient></defs>'
+      + '<rect width="512" height="512" fill="url(#logoG)"/>'
+      + '<path d="M96 150 h320 a40 40 0 0 1 40 40 v140 a40 40 0 0 1 -40 40 h-186 l-64 62 v-62 h-70 a40 40 0 0 1 -40 -40 v-140 a40 40 0 0 1 40 -40 Z" fill="#FBF3E4"/>'
+      + '<text x="256" y="272" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="96" font-weight="800" fill="#1F4A4E" text-anchor="middle">Hi</text>'
+      + '</svg>';
+  }
+
   function applyEdition() {
     const c = window.SC && window.SC.config;
     if (!c || !c.edition) return; // keine Edition → exakt wie heute
     try {
-      if (c.brandName) document.title = c.brandName + " – Reise-Spanisch";
+      // Titel-Suffix folgt der Lernsprache: HelloAbroad (Track de-en) lernt
+      // ENGLISCH, darf also nicht „Reise-Spanisch" im Tab-Titel tragen.
+      const isDeEn = !!(window.SC && SC.track && SC.track.id && SC.track.id() === "de-en");
+      if (c.brandName) document.title = c.brandName + (isDeEn ? " – Reiseenglisch" : " – Reise-Spanisch");
       if (c.accent) {
         // Nur den Akzent überschreiben (wirkt in Hell & Dunkel). --page und die
         // theme-color-Meta bleiben der HolaRuta-Rahmen – sonst bräche der Dark Mode,
@@ -1358,18 +1393,36 @@
         if (c.accent.brand) r.setProperty("--brand", c.accent.brand);
         if (c.accent.brandInk) r.setProperty("--brand-ink", c.accent.brandInk);
       }
-      // Appbar-Wortmarke um den Edition-Zusatz ergänzen (Teil nach „· "), damit die
-      // Edition am sichtbarsten Ort erkennbar ist. Die Wortmarke liegt im statischen
-      // Appshell (außerhalb von #app) und wird hier einmalig gesetzt.
-      const parts = String(c.brandName || "").split("·");
+      // Appbar-Wortmarke (statisches Shell „Hola<span>Ruta</span>", außerhalb #app):
+      //  · Co-Branding-Editionen (brandName mit „·", z.B. „HolaRuta · ECOS")
+      //    hängen NUR den Zusatz an die bestehende Marke an.
+      //  · Eigenständige Marken OHNE „·" und ≠ „HolaRuta" (z.B. „HelloAbroad")
+      //    ERSETZEN die Wortmarke komplett – sonst bliebe der HolaRuta-Bezug am
+      //    sichtbarsten Ort stehen (Editions-Ziel: keine HolaRuta-Referenz).
+      const name = document.querySelector(".appbar__name");
+      const brand = String(c.brandName || "");
+      const parts = brand.split("·");
       if (parts.length > 1) {
-        const name = document.querySelector(".appbar__name");
         if (name && !name.querySelector(".appbar__edition")) {
           const tag = document.createElement("span");
           tag.className = "appbar__edition";
           tag.textContent = "· " + parts.slice(1).join("·").trim();
           name.appendChild(tag);
         }
+      } else if (name && brand && brand !== "HolaRuta") {
+        // „HelloAbroad" → „Hello" + <span>Abroad</span> (die zweite Hälfte trägt die
+        // Akzentfarbe wie „Ruta"). Split am ersten Wortfugen-Großbuchstaben; ohne
+        // Fuge kommt der ganze Name in den (akzentfarbenen) span.
+        const m = brand.match(/^(.+?)([A-Z].*)$/);
+        name.textContent = m ? m[1] : "";
+        const span = document.createElement("span");
+        span.textContent = m ? m[2] : brand;
+        name.appendChild(span);
+      }
+      // Eigenes Logo-Motiv der HelloAbroad-Edition (Sprechblase, Petrol).
+      if (c.edition === "hello-abroad") {
+        const logo = document.querySelector(".appbar__logo");
+        if (logo) logo.innerHTML = helloAbroadLogoSvg();
       }
     } catch (e) { /* Edition ist optional – nie crashen */ }
   }

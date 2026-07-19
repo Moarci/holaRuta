@@ -1804,23 +1804,34 @@
   }
 
   function rateButtons() {
+    // Die Bewertungs-Buttons tragen die spielerische Marken-Stimme in der
+    // GELERNTEN Sprache: HolaRuta lernt Spanisch → „¿Cómo fue? / Otra vez / Vale /
+    // ¡Fácil!". HelloAbroad (Track de-en) lernt Englisch – dort wären spanische
+    // Labels ein Fremdkörper, also die englische Entsprechung. Nur de-en weicht
+    // ab; de-es und der Locals-Track (es-en, spanische UI) bleiben unverändert.
+    const deEn = !!(window.SC && SC.track && SC.track.id && SC.track.id() === "de-en");
+    const L = deEn
+      ? { head: "How was it?", again: "Again", good: "Got it", easy: "Easy!",
+          againA: "Again – nochmal üben", goodA: "Got it – saß ganz gut", easyA: "Easy! – mühelos gewusst" }
+      : { head: "¿Cómo fue?", again: "Otra vez", good: "Vale", easy: "¡Fácil!",
+          againA: t("study.rateAgainLabel"), goodA: t("study.rateGoodLabel"), easyA: t("study.rateEasyLabel") };
     return `
       <div class="rateprompt">
-        <span class="rateprompt__es">¿Cómo fue?</span>
+        <span class="rateprompt__es">${esc(L.head)}</span>
         <span class="rateprompt__de">${esc(t("study.ratePromptDe"))}</span>
       </div>
       <div class="ratebar" role="group" aria-label="${esc(t("study.ratePromptDe"))}">
-        <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="${esc(t("study.rateAgainLabel"))}">
+        <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="${esc(L.againA)}">
           <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:meh")}</span>
-          <span class="feel__txt">Otra vez</span>
+          <span class="feel__txt">${esc(L.again)}</span>
         </button>
-        <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="${esc(t("study.rateGoodLabel"))}">
+        <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="${esc(L.goodA)}">
           <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:smile")}</span>
-          <span class="feel__txt">Vale</span>
+          <span class="feel__txt">${esc(L.good)}</span>
         </button>
-        <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="${esc(t("study.rateEasyLabel"))}">
+        <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="${esc(L.easyA)}">
           <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:laugh")}</span>
-          <span class="feel__txt">¡Fácil!</span>
+          <span class="feel__txt">${esc(L.easy)}</span>
         </button>
       </div>`;
   }
@@ -2056,6 +2067,14 @@
   // Streckenkarte: der Lernfortschritt als Bus-Strecke (on-brand „Ruta“). Drei
   // Haltestellen Neu → Am Lernen → Gemeistert; der Bus (🚌) fährt mit der
   // Meister-Quote voran. Reine Anzeige aus der vorhandenen stats.overview.
+  // Überschrift der Lern-Strecke. „Ruta" ist bewusster HolaRuta-Marken-Wortwitz –
+  // in der HelloAbroad-Edition (Track de-en, kein HolaRuta-Bezug) stattdessen das
+  // neutrale deutsche „Route".
+  function routeCapLabel() {
+    const deEn = !!(window.SC && SC.track && SC.track.id && SC.track.id() === "de-en");
+    return deEn ? "🚌 Deine Route" : t("profile.routeCap");
+  }
+
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
@@ -2076,7 +2095,7 @@
     return `
       <div class="route" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct }))}">
         <div class="route__head">
-          <span class="route__cap">${esc(t("profile.routeCap"))}</span>
+          <span class="route__cap">${esc(routeCapLabel())}</span>
           <span class="route__pct">${esc(t("profile.routePct", { pct }))}</span>
         </div>
         <div class="route__track">

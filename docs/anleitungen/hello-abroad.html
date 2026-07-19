@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HelloAbroad · Reiseenglisch installieren (Anleitung)</title>
+<link rel="stylesheet" href="handout.css">
+<style>
+  /* HelloAbroad-Marke: Petrol statt HolaRuta-Terrakotta (nur diese Seite). */
+  :root { --brand: #2f6b70; --brand-ink: #1f4a4e; }
+  /* handout.js kann aus der Browsersprache data-lang="es" setzen; diese DE-EN-Seite
+     hat aber nur DE/EN – ein es-Locale-Besucher fiele sonst auf einen leeren Body.
+     Für "es" die deutsche Fassung zeigen (sinnvoller Default dieser Edition). */
+  html[data-lang="es"] .lang--de { display: block; }
+  /* Etwas größere, ruhige Typo – die Zielgruppe (50-60+) soll ohne Zoom lesen. */
+  .poster .lead { font-size: 1.28rem; line-height: 1.5; }
+  .install { display: grid; gap: 18px; max-width: 520px; margin: 22px auto 0; text-align: left; }
+  .install h2 { font-size: 1.15rem; margin: 0 0 6px; color: var(--brand-ink); }
+  .install .steps > li { font-size: 1.06rem; line-height: 1.5; }
+  .platform { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; }
+  .platform .tag { display: inline-block; font-weight: 800; color: var(--brand-ink); background: rgba(47,107,112,0.12);
+                   border-radius: 999px; padding: 2px 12px; font-size: 0.9rem; margin-bottom: 8px; }
+  .note { max-width: 520px; margin: 16px auto 0; font-size: 0.98rem; color: var(--muted); }
+  kbd { background: rgba(47,107,112,0.12); border-radius: 6px; padding: 1px 7px; font-weight: 700; color: var(--brand-ink); }
+</style>
+</head>
+<body>
+
+<nav class="langbar" aria-label="Sprache / Language">
+  <button data-lang="de" aria-pressed="true">Deutsch</button>
+  <button data-lang="en" aria-pressed="false">English</button>
+</nav>
+
+<main class="sheet poster">
+
+  <div class="brand">💬 HelloAbroad</div>
+  <h1>Reiseenglisch auf dein Handy</h1>
+
+  <!-- Echter, scannbarer QR-Code (segno) für die HelloAbroad-Edition (Track de-en). -->
+  <div class="qr">
+    <img src="qr-hello-abroad.svg" width="210" height="210"
+         alt="QR-Code, öffnet moarci.github.io/holaRuta in der HelloAbroad-Edition">
+  </div>
+
+  <div class="url">moarci.github.io/holaRuta/hello-abroad</div>
+
+  <!-- ============ DEUTSCH ============ -->
+  <section lang="de" class="lang lang--de">
+    <p class="lead">Frisch dein Reiseenglisch auf – für Flughafen, Hotel, Restaurant, Einkaufen und Notfall.
+      Ein Tipp pro Tag genügt. Kostenlos, ohne Konto, funktioniert auch ohne Internet.</p>
+
+    <div class="install">
+      <div class="platform">
+        <span class="tag">iPhone / iPad (Safari)</span>
+        <ol class="steps">
+          <li>QR-Code scannen oder die Adresse oben in <strong>Safari</strong> öffnen.</li>
+          <li>Unten auf das <strong>Teilen-Symbol</strong> tippen (Quadrat mit Pfeil nach oben).</li>
+          <li>Auf <kbd>Zum Home-Bildschirm</kbd> tippen, dann <kbd>Hinzufügen</kbd>.</li>
+          <li>Fertig – das <strong>HelloAbroad</strong>-Symbol liegt jetzt auf dem Startbildschirm.</li>
+        </ol>
+      </div>
+
+      <div class="platform">
+        <span class="tag">Android (Chrome)</span>
+        <ol class="steps">
+          <li>QR-Code scannen oder die Adresse oben in <strong>Chrome</strong> öffnen.</li>
+          <li>Oben rechts auf das <strong>Menü</strong> tippen (drei Punkte ⋮).</li>
+          <li>Auf <kbd>App installieren</kbd> bzw. <kbd>Zum Startbildschirm hinzufügen</kbd> tippen.</li>
+          <li>Bestätigen – das <strong>HelloAbroad</strong>-Symbol liegt jetzt auf dem Startbildschirm.</li>
+        </ol>
+      </div>
+    </div>
+
+    <p class="note">Kein App-Store, keine Anmeldung, keine Werbung. Der Lernfortschritt bleibt allein auf dem Gerät.
+      Ein Tipp auf das Symbol öffnet die App wie jede andere – auch offline im Flugzeug oder im Ausland.</p>
+
+    <p class="foot" style="text-align:center">Offline nutzbar · kostenlos · kein Konto · Fortschritt bleibt auf dem Gerät</p>
+  </section>
+
+  <!-- ============ ENGLISH ============ -->
+  <section lang="en" class="lang lang--en">
+    <p class="lead">Brush up your travel English – for the airport, hotel, restaurant, shopping and emergencies.
+      One tip a day is enough. Free, no account, works offline too.</p>
+
+    <div class="install">
+      <div class="platform">
+        <span class="tag">iPhone / iPad (Safari)</span>
+        <ol class="steps">
+          <li>Scan the QR code or open the address above in <strong>Safari</strong>.</li>
+          <li>Tap the <strong>Share icon</strong> at the bottom (square with an up arrow).</li>
+          <li>Tap <kbd>Add to Home Screen</kbd>, then <kbd>Add</kbd>.</li>
+          <li>Done – the <strong>HelloAbroad</strong> icon is now on your home screen.</li>
+        </ol>
+      </div>
+
+      <div class="platform">
+        <span class="tag">Android (Chrome)</span>
+        <ol class="steps">
+          <li>Scan the QR code or open the address above in <strong>Chrome</strong>.</li>
+          <li>Tap the <strong>menu</strong> in the top right (three dots ⋮).</li>
+          <li>Tap <kbd>Install app</kbd> or <kbd>Add to Home screen</kbd>.</li>
+          <li>Confirm – the <strong>HelloAbroad</strong> icon is now on your home screen.</li>
+        </ol>
+      </div>
+    </div>
+
+    <p class="note">No app store, no sign-up, no ads. Your progress stays on the device only.
+      A tap on the icon opens it like any other app – offline on the plane or abroad, too.</p>
+
+    <p class="foot" style="text-align:center">Works offline · free · no account · progress stays on the device</p>
+  </section>
+
+</main>
+
+<script src="handout.js"></script>
+</body>
+</html>
