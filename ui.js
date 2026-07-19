@@ -529,6 +529,11 @@
   // und Profil. type="button", damit die Knöpfe innerhalb des Onboarding-<form>
   // dieses NICHT absenden (sonst springt „Weiter" beim Antippen vorzeitig).
   function genderGroup(vm) {
+    // Das Geschlecht löst nur SPANISCHE Anrede-Tokens ({o/a}, z.B. perdido/perdida)
+    // auf. In en-lernenden Tracks (HelloAbroad de-en, Locals es-en) ist die Antwort
+    // Englisch – die Angabe hätte keine Wirkung und der Hinweis verweist obendrein auf
+    // Spanisch. Dann gar nicht anzeigen (showGender kommt aus homeVM: learnLang==="es").
+    if (vm && vm.showGender === false) return "";
     const g = vm.userGender;
     return `
       <div class="switchgroup">

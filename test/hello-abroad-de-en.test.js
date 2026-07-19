@@ -142,3 +142,25 @@ test("Gegenprobe: de-es (Standard) zeigt den Tipp weiterhin – der Mechanismus 
   assert.ok(drainStudyForTips(null).hits.length > 0,
     "face__tip erscheint im de-es-Track (Aussprache des zu lernenden spanischen Wortes)");
 });
+
+// ============================ (3) Geschlechts-Abfrage ============================
+// Das Geschlecht löst nur spanische Anrede-Tokens ({o/a}) auf und wäre in de-en (Antwort
+// Englisch) wirkungslos – der Hinweis verweist zudem auf Spanisch. In de-en darf daher
+// KEINE Geschlechts-Auswahl erscheinen (Onboarding + Profil).
+function settingsHtml(edition) {
+  const root = freshApp(edition);
+  const d = makeDriver(root);
+  if (!d.click("home")) d.click("set-tab", { tab: "start" });
+  d.click("set-tab", { tab: "profil" });
+  return d.html();
+}
+
+test("Gender-Abfrage: de-en blendet die (spanisch begründete) Geschlechts-Auswahl aus", () => {
+  const de_en = settingsHtml("hello-abroad");
+  assert.doesNotMatch(de_en, /data-action="set-gender"/, "de-en darf keine Geschlechts-Auswahl zeigen");
+});
+
+test("Gegenprobe: de-es zeigt die Geschlechts-Auswahl weiterhin (spanische Anrede)", () => {
+  const de_es = settingsHtml(null);
+  assert.match(de_es, /data-action="set-gender"/, "de-es braucht die Geschlechts-Auswahl (perdido/perdida)");
+});

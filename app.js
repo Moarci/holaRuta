@@ -692,6 +692,8 @@
       lastCat,
       userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       userGender: settings.userGender === "female" || settings.userGender === "male" ? settings.userGender : "", // ♀/♂ (für Anrede)
+      showGender: learnField() === "es", // Geschlecht nur relevant, wenn die gelernte Antwort Spanisch ist (löst {o/a}-Tokens); en-Tracks blenden es aus
+
       onboardStep: state.onboardStep || "intro", // Onboarding-Teilschritt (Erklär-Slides → Name+Geschlecht → Reiseziel)
       onboardSlide: state.onboardSlide || 0,     // aktuelle Erklär-Slide im Intro-Schritt
       placementDone: !!gamestats.placement,     // Ruta-Check schon absolviert?
@@ -5163,8 +5165,11 @@
   function advanceOnboardingProfile() {
     const el = document.getElementById("onboard-name");
     saveUserName(el ? el.value : "", false);
-    if (!settings.userName || !settings.userGender) {
-      showNotice(t("home.onboardProfileInvalid"));
+    // Geschlecht nur im Spanisch-Lern-Track (de-es) verpflichtend – nur dort wird es
+    // überhaupt abgefragt und wirksam. In en-Tracks (de-en/es-en) reicht der Name.
+    const needGender = learnField() === "es";
+    if (!settings.userName || (needGender && !settings.userGender)) {
+      showNotice(t(needGender ? "home.onboardProfileInvalid" : "home.onboardNameInvalid"));
       return;
     }
     // Locals-Track: der „Reiseziel"-Schritt ist reise-spezifisch und ergibt für
