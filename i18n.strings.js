@@ -2668,17 +2668,23 @@
     cloudCodePrompt: "Bestätigungscode aus der E-Mail eingeben (leer = später):",
     cloudFailed: "Sync fehlgeschlagen. Später erneut versuchen.",
     installText: "Leg HolaRuta als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.",
+    installTextDeEn: "Leg HelloAbroad als App-Icon ab – startet dann direkt, ohne die Datei zu suchen, und läuft offline.",
     installBtn: "📲 App installieren",
     notInstalledTitle: "Noch nicht installiert",
     installHintLead: "Dein Browser bietet hier gerade keinen Ein-Tipp-Knopf an. So legst du HolaRuta trotzdem als App ab:",
+    installHintLeadDeEn: "Dein Browser bietet hier gerade keinen Ein-Tipp-Knopf an. So legst du HelloAbroad trotzdem als App ab:",
     installStep1: "Oben rechts auf das Browser-Menü tippen (⋮ bzw. Teilen-Symbol).",
     installStep2: 'Dort „App installieren“ bzw. „Zum Startbildschirm hinzufügen“ wählen.',
     installStep3: "Bestätigen – fertig. HolaRuta startet künftig über ihr eigenes Icon, offline und ohne Datei-Suchen.",
+    installStep3DeEn: "Bestätigen – fertig. HelloAbroad startet künftig über ihr eigenes Icon, offline und ohne Datei-Suchen.",
     installHintNote: "Tipp: Am zuverlässigsten klappt das in Chrome. Manche Browser (z. B. Firefox) bieten die App-Installation nicht an.",
     installedTitle: "Als App installiert · offline bereit",
     installedText: "HolaRuta läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
+    installedTextDeEn: "HelloAbroad läuft als installierte App mit eigenem Icon auf dem Startbildschirm – auch offline.",
     installedIosNote: "Wichtig auf dem iPhone: HolaRuta aktualisiert sich von selbst – beim Öffnen erscheint ein „Neue Version“-Hinweis. Lege die App NICHT erneut zum Startbildschirm hinzu: iOS legt dann eine leere zweite Kopie an und dein Fortschritt bleibt in dieser hier.",
+    installedIosNoteDeEn: "Wichtig auf dem iPhone: HelloAbroad aktualisiert sich von selbst – beim Öffnen erscheint ein „Neue Version“-Hinweis. Lege die App NICHT erneut zum Startbildschirm hinzu: iOS legt dann eine leere zweite Kopie an und dein Fortschritt bleibt in dieser hier.",
     installIosReaddWarn: "Schon installiert? Dann öffne HolaRuta über das vorhandene Icon und füge es NICHT noch einmal hinzu – iOS trennt den Speicher pro Icon, eine zweite Installation startet mit leerem Fortschritt.",
+    installIosReaddWarnDeEn: "Schon installiert? Dann öffne HelloAbroad über das vorhandene Icon und füge es NICHT noch einmal hinzu – iOS trennt den Speicher pro Icon, eine zweite Installation startet mit leerem Fortschritt.",
 
     // Ruta-Pass
     passUnavailable: "Der Ruta-Pass ist gerade nicht verfügbar – vermutlich wurde die App offline geöffnet, bevor alles geladen war. Mit Netz neu laden, dann klappt's wieder.",
@@ -2700,8 +2706,10 @@
 
     // Update-Hinweis
     updTitle: "HolaRuta wurde aktualisiert",
+    updTitleDeEn: "HelloAbroad wurde aktualisiert",
     updHowTitle: "So bleibst du aktuell",
     updHowText: "HolaRuta aktualisiert sich automatisch im Hintergrund.\n            Sobald eine neue Version bereitsteht, erscheint unten ein „Neue Version –\n            jetzt laden“-Banner – ein Tap genügt, die App musst du nicht mehr schließen.",
+    updHowTextDeEn: "HelloAbroad aktualisiert sich automatisch im Hintergrund.\n            Sobald eine neue Version bereitsteht, erscheint unten ein „Neue Version –\n            jetzt laden“-Banner – ein Tap genügt, die App musst du nicht mehr schließen.",
     updReload: "Jetzt neu laden",
     updUnderstood: "Verstanden",
     updReadyText: "✨ Neue Version verfügbar",
@@ -2801,17 +2809,23 @@
     cloudCodePrompt: "Enter the confirmation code from your email (blank = later):",
     cloudFailed: "Sync failed. Try again later.",
     installText: "Add HolaRuta as an app icon – it then starts straight away, without hunting for the file, and runs offline.",
+    installTextDeEn: "Add HelloAbroad as an app icon – it then starts straight away, without hunting for the file, and runs offline.",
     installBtn: "📲 Install app",
     notInstalledTitle: "Not installed yet",
     installHintLead: "Your browser isn't offering a one-tap button here right now. Here's how to add HolaRuta as an app anyway:",
+    installHintLeadDeEn: "Your browser isn't offering a one-tap button here right now. Here's how to add HelloAbroad as an app anyway:",
     installStep1: "Tap the browser menu in the top right (⋮ or the share icon).",
     installStep2: "Choose “Install app” or “Add to Home Screen”.",
     installStep3: "Confirm – done. HolaRuta will launch from its own icon, offline and without file-hunting.",
+    installStep3DeEn: "Confirm – done. HelloAbroad will launch from its own icon, offline and without file-hunting.",
     installHintNote: "Tip: this works most reliably in Chrome. Some browsers (e.g. Firefox) don't offer app installation.",
     installedTitle: "Installed as an app · ready offline",
     installedText: "HolaRuta is running as an installed app with its own icon on your home screen – offline too.",
+    installedTextDeEn: "HelloAbroad is running as an installed app with its own icon on your home screen – offline too.",
     installedIosNote: "Important on iPhone: HolaRuta updates itself – a “new version” prompt appears when you open it. Do NOT add the app to your home screen again: iOS would create an empty second copy and your progress would stay in this one.",
+    installedIosNoteDeEn: "Important on iPhone: HelloAbroad updates itself – a “new version” prompt appears when you open it. Do NOT add the app to your home screen again: iOS would create an empty second copy and your progress would stay in this one.",
     installIosReaddWarn: "Already installed? Open HolaRuta from the existing icon and do NOT add it again – iOS keeps storage separate per icon, so a second install starts with empty progress.",
+    installIosReaddWarnDeEn: "Already installed? Open HelloAbroad from the existing icon and do NOT add it again – iOS keeps storage separate per icon, so a second install starts with empty progress.",
 
     passUnavailable: "The Ruta pass isn't available right now – the app was probably opened offline before everything loaded. Reload with a connection and it'll work again.",
     passHero: "Collect stamps for your travel skills.",
@@ -2831,8 +2845,10 @@
     badgeToastLabel: (p) => `${p.head} Open Ruta pass`,
 
     updTitle: "HolaRuta has been updated",
+    updTitleDeEn: "HelloAbroad has been updated",
     updHowTitle: "How to stay up to date",
     updHowText: "HolaRuta updates itself automatically in the background.\n            As soon as a new version is ready, a “New version – reload now” banner\n            appears at the bottom – one tap is enough, no need to close the app.",
+    updHowTextDeEn: "HelloAbroad updates itself automatically in the background.\n            As soon as a new version is ready, a “New version – reload now” banner\n            appears at the bottom – one tap is enough, no need to close the app.",
     updReload: "Reload now",
     updUnderstood: "Got it",
     updReadyText: "✨ New version available",
@@ -2942,6 +2958,7 @@
     cardFlip: "Karte umdrehen", cardFlipped: "Karte ist umgedreht – tippen zum Zurückdrehen",
     // iOS-Installationshinweis
     installHintIos: 'Tippe unten in der Leiste auf „Teilen“ und dann auf „Zum Home-Bildschirm“ – schon hast du HolaRuta als App-Icon, ganz ohne Datei-Suchen, auch offline.',
+    installHintIosDeEn: 'Tippe unten in der Leiste auf „Teilen“ und dann auf „Zum Home-Bildschirm“ – schon hast du HelloAbroad als App-Icon, ganz ohne Datei-Suchen, auch offline.',
   }, {
     allTopics: "All topics",
     all: "All",
@@ -2971,6 +2988,7 @@
     battleLenShort: "Short", battleLenMedium: "Medium", battleLenLong: "Long",
     cardFlip: "Flip card", cardFlipped: "Card is flipped – tap to flip back",
     installHintIos: 'Tap “Share” in the bar below, then “Add to Home Screen” – and HolaRuta sits there as an app icon, no file-hunting, works offline too.',
+    installHintIosDeEn: 'Tap “Share” in the bar below, then “Add to Home Screen” – and HelloAbroad sits there as an app icon, no file-hunting, works offline too.',
   });
 
   // ---------- share: ins Sharepic-Bild gezeichnete Labels (share.js) ----------
