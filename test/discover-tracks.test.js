@@ -254,3 +254,118 @@ test("Suche (Reise): Reise-Features weiterhin indexiert (Regression)", () => {
   assert.match(search(root, "cuerpo"), /open-cuerpo/, "El Cuerpo im Reise-Index");
   assert.match(search(root, "conjugación"), /open-conjugacion/, "Conjugación im Reise-Index");
 });
+
+// ---------------------------------------------------------------------------
+// HelloAbroad-Track (de-en): korrigierte Benennungen + adoptierte Module.
+// Kern des DE-EN-Entdecken-Umbaus: die Kacheln tragen deutsche Namen (nicht die
+// spanischen Marken „Supervivencia"/„El Cuerpo" …), die adoptierten Lern-Module
+// (Spickzettel, Einkaufsliste, Körper, Satzbaukasten, Was ist das?) sind sichtbar,
+// und rein spanisch-content-gebundene Module (Definiciones, Diálogos, Banderas)
+// bleiben draußen. Die Module selbst liefern die englische Lernseite mit deutscher
+// Muttersprache (nicht spanischer, wie im Locals-Track).
+// ---------------------------------------------------------------------------
+test("Entdecken (HelloAbroad de-en): deutsche Modulnamen, adoptierte Kacheln da, Spanisch-Content-Kacheln weg", () => {
+  const root = freshApp("hello-abroad");
+  assert.equal(window.SC.track.id(), "de-en", "de-en-Track aktiv");
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  // Adoptierte + weiterhin sinnvolle Kacheln (open-precios via need:"speech" im
+  // Stub ausgeblendet – seine de-en-Logik prüft der Precios-Test separat).
+  for (const a of ["open-favorites", "open-spickzettel", "open-cuerpo",
+    "open-compras", "open-frases", "open-endless", "open-yesto"]) {
+    assert.ok(d.find(a), `de-en-Kachel ${a} sichtbar`);
+  }
+  // Spanisch-content-gebundene bzw. reise-/locals-spezifische Module bleiben weg.
+  for (const a of ["open-quiz-setup", "open-dialogos", "open-banderas",
+    "open-conjugacion", "open-jerga", "open-regatear", "open-hostel", "open-info",
+    "open-historia", "open-venue-roleplay"]) {
+    assert.ok(!d.find(a), `Kachel ${a} im de-en-Track ausgeblendet`);
+  }
+  const html = d.html();
+  // Benennungen sind deutsch …
+  for (const name of ["Notfall-Sätze", "Einkaufsliste", "Der Körper",
+    "Meine Vokabeln", "Satzbaukasten", "Vokabeln ohne Ende", "Was ist das?"]) {
+    assert.ok(html.indexOf(name) >= 0, `deutscher Modulname „${name}" sichtbar`);
+  }
+  // … nicht die spanischen Marken.
+  for (const es of ["Supervivencia", "Lista de compras", "El Cuerpo", "Mi léxico",
+    "Vocabulario sin fin", "Frases flexibles", "¿Y esto?"]) {
+    assert.ok(html.indexOf(es) < 0, `spanischer Name „${es}" nicht mehr sichtbar`);
+  }
+});
+
+test("Supervivencia (HelloAbroad): Reise-Bereiche, Englisch gelernt, kein Spanisch-Tipp", () => {
+  freshApp("hello-abroad");
+  const vm = window.SC.spickzettel.vm();
+  assert.equal(vm.learnLang, "en", "gelernte Seite Englisch");
+  // de-en nutzt die Reise-Bereiche (data.js), NICHT den Locals-Arbeitskorpus.
+  assert.deepEqual(vm.groups.map((g) => g.id), ["notfall", "basics", "rumbo", "dinero"]);
+  for (const g of vm.groups) {
+    assert.ok(g.cards.length > 0, `Gruppe ${g.id} hat Karten`);
+    for (const c of g.cards) {
+      assert.ok(c.de && c.de.length, `${g.id}: deutsche Seite gefüllt`);
+      assert.ok(c.es && c.es.length, `${g.id}: englische Lernseite gefüllt`);
+      assert.equal(c.tip, null, `${g.id}: kein spanischer Aussprache-Tipp (MVP-Lücke)`);
+    }
+  }
+});
+
+test("Compras (HelloAbroad): Muttersprache Deutsch, Englisch gelernt, keine Touristen-Notizen", () => {
+  freshApp("hello-abroad");
+  const vm = window.SC.compras.vm();
+  assert.equal(vm.learnLang, "en", "gelernte Seite Englisch");
+  const agua = vm.items.find((i) => i.id === "sl_agua");
+  assert.ok(agua, "sl_agua vorhanden");
+  assert.equal(agua.de, "Wasser", "Muttersprache DEUTSCH statt spanisch el agua");
+  assert.equal(agua.es, "water", "gelernte Seite Englisch");
+  assert.equal(agua.tip, null, "kein spanischer Aussprache-Tipp");
+  assert.equal(agua.note, null, "keine Touristen-Notiz");
+  assert.match(agua.ask.have.es, /^Do you have [a-z].*\?$/, "englische Ladenfrage");
+});
+
+test("Cuerpo (HelloAbroad): Englisch gelernt, Muttersprache Deutsch, Tipp/Notiz weg", () => {
+  const root = freshApp("hello-abroad");
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  assert.ok(d.click("open-cuerpo"), "Cuerpo öffnet");
+  assert.ok(d.click("cuerpo-select", { id: "bp_cabeza" }), "Körperteil wählbar");
+  const vm = window.SC.cuerpo.vm();
+  assert.equal(vm.learnLang, "en");
+  assert.equal(vm.selected.es, "Head", "Lernseite Englisch");
+  assert.equal(vm.selected.de, "Kopf", "Muttersprache DEUTSCH");
+  assert.equal(vm.selected.tip, null, "kein spanischer Aussprache-Tipp");
+  assert.equal(vm.selected.note, null, "keine Touristen-Notiz");
+});
+
+test("Was ist das? (HelloAbroad): Themen-Labels deutsch, Prompt deutsch, kein Spanisch", () => {
+  const root = freshApp("hello-abroad");
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  // Themen-Auswahl trägt deutsche Labels (labelDe), nicht das spanische Basis-label.
+  const vm = window.SC.yestoGame.setupVM();
+  const labels = vm.themes.map((th) => th.label);
+  assert.ok(labels.indexOf("Essen") >= 0, "deutsches Themen-Label Essen");
+  assert.ok(labels.indexOf("Comida") < 0, "kein spanisches Comida");
+  // Spielfluss bis zur Auflösung: Prompt deutsch, Hilfszeile deutsch, kein „¿".
+  assert.ok(d.click("open-yesto"), "yesto öffnet");
+  const theme = vm.themes.find((t2) => t2.count >= 1) || vm.themes[0];
+  assert.ok(d.click("start-yesto", { id: theme.id }), "Runde startet");
+  const html = d.html();
+  assert.ok(html.indexOf("Was ist das?") >= 0, "deutscher Prompt");
+  assert.ok(html.indexOf("¿Y esto?") < 0, "kein spanischer Marken-Prompt");
+});
+
+test("Satzbaukasten (HelloAbroad): englischer Rahmen, deutsche Zielbedeutung, kein spanischer Satz", () => {
+  const root = freshApp("hello-abroad");
+  const d = driver(root);
+  d.click("set-tab", { tab: "entdecken" });
+  assert.ok(d.click("open-frases"), "Frases öffnet");
+  const set = window.SC.frasesGame.setupVM().sets.find((s) => s.count >= 1);
+  assert.ok(set, "ein Thema vorhanden");
+  assert.ok(d.click("start-frases", { set: set.id }), "Runde startet");
+  const html = d.html();
+  // Die Ziel-/Sekundärseite ist deutsch: im Locals-Track stünde hier der volle
+  // SPANISCHE Satz (mit „¿"/„¡") – für de-en darf kein Spanisch durchschlagen.
+  assert.ok(html.indexOf("¿") < 0 && html.indexOf("¡") < 0,
+    "kein spanischer Zielsatz auf der de-en-Satzbaukasten-Seite");
+});

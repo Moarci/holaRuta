@@ -67,9 +67,14 @@
     const answered = f.selected !== null;
     const info = frasesSetInfo(f.setId);
     const ll = trackLearnLang();
+    // Muttersprache = Spanisch NUR im echten Locals-Track (es-en). de-en lernt
+    // ebenfalls Englisch (ll "en"), hat aber Deutsch als Muttersprache – die
+    // Sekundärzeile (Baustein-Glosse) und die Zielbedeutung müssen deutsch sein,
+    // nicht spanisch. Daher an der Track-ID festmachen, nicht an ll.
+    const nativeEs = (window.SC.track && window.SC.track.id && window.SC.track.id()) === "es-en";
     // Primärzeile der Bausteine = gelernte Sprache; Sekundärzeile die andere Seite.
     const primary = (o) => (ll === "en" ? o.en : o.es) || "";
-    const secondary = (o) => (ll === "en" ? o.es : nat(o)) || "";
+    const secondary = (o) => (nativeEs ? o.es : nat(o)) || "";
     const options = f.options.map((o, i) => ({
       es: primary(o), de: secondary(o),
       // vor der Antwort neutral; danach Lösung grün, falsche Wahl rot, Rest gedämpft.
@@ -79,11 +84,13 @@
         : "dim",
     }));
     const sol = f.options.find((o) => o.correct) || {};
-    // Locals baut den englischen Satz (frameEn) zur spanischen Zielbedeutung
-    // (vollständiger spanischer Satz = frameEs mit korrektem Baustein); Reise
-    // unverändert: frameEs + muttersprachliche Zielbedeutung (targetDe/En).
+    // Beide Englisch-Tracks bauen den englischen Satz (frameEn). Die Zielbedeutung
+    // darüber ist im Locals-Track (es-en) der vollständige SPANISCHE Satz (frameEs
+    // mit korrektem Baustein) – das ist die L1 der Lernenden. Reise (de-es) UND
+    // HelloAbroad (de-en) zeigen stattdessen die muttersprachliche Zielbedeutung
+    // (targetDe/En über natk), denn beider L1 ist Deutsch, nicht Spanisch.
     const frameShown = !frame ? "" : (ll === "en" ? (frame.frameEn || frame.frameEs) : frame.frameEs);
-    const target = !frame ? "" : (ll === "en"
+    const target = !frame ? "" : (nativeEs
       ? frame.frameEs.replace("___", (frame.slot && frame.slot.es) || "")
       : natk(frame, "targetDe"));
     return {
@@ -184,7 +191,7 @@
     const list = vm.sets.map((s) => tile(s, false)).join("");
     return `
       <section class="screen">
-        ${hmTopbar(`${renderIcon("lc:blocks")} Frases flexibles`, "home")}
+        ${hmTopbar(`${renderIcon("lc:blocks")} ${esc(t("discover.frasesName"))}`, "home")}
         <p class="hm-intro">${esc(t("discover.frasesIntro"))}</p>
         ${moduleShareBtn("frases")}
         <div class="hm-scenes">

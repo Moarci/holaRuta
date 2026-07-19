@@ -53,11 +53,17 @@
   // anderen track-fähigen Feature-Modulen (definiciones …).
   const trackLearnLang = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
   const isLocalsTrk = () => trackLearnLang() === "en";
-  // Gelerntes Wort eines Items (Locals: it.en, sonst it.es).
+  // Muttersprache = Spanisch NUR im echten Locals-Track (es-en). de-en lernt
+  // ebenfalls Englisch (learnLang "en"), hat aber Deutsch als Muttersprache –
+  // die Frage-/Anzeigeseite muss deutsch sein, nicht spanisch. Daher die
+  // native-Seite an der Track-ID festmachen, nicht an learnLang.
+  const nativeEs = () => (window.SC && window.SC.track && window.SC.track.id && window.SC.track.id()) === "es-en";
+  // Gelerntes Wort eines Items (Locals/de-en: it.en, sonst it.es).
   const learnWord = (it) => it[trackLearnLang()] || it.es;
-  // Muttersprachliche Seite: im Locals-Track Spanisch (it.es / Rubrik-label –
-  // SHOPPING trägt keine …Es-Felder, nat() fiele auf Deutsch zurück), sonst nat().
-  const natWord = (o) => (isLocalsTrk() ? (o.es || o.label || ctx.nat(o)) : ctx.nat(o));
+  // Muttersprachliche Seite: nur im Locals-Track Spanisch (it.es / Rubrik-label –
+  // SHOPPING trägt keine …Es-Felder, nat() fiele auf Deutsch zurück), sonst nat()
+  // (Reise de-es UND HelloAbroad de-en: die deutsche UI-Seite).
+  const natWord = (o) => (nativeEs() ? (o.es || o.label || ctx.nat(o)) : ctx.nat(o));
 
   // Führenden Artikel (el/la/los/las) abtrennen – für natürlichere Fragen
   // wie «¿Tienen agua?» statt «¿Tienen el agua?».
@@ -358,7 +364,7 @@
 
     return `
       <section class="screen sl-screen" style="--from:${esc(vm.section.grad[0])};--to:${esc(vm.section.grad[1])}">
-        ${hmTopbar(`${renderIcon("lc:shopping-cart")} Lista de compras`, "home")}
+        ${hmTopbar(`${renderIcon("lc:shopping-cart")} ${esc(t("discover.comprasName"))}`, "home")}
         <p class="hm-intro">${esc(t("discover.comprasIntro"))}</p>
         ${moduleShareBtn("compras")}
         <div class="sl-chips" role="group" aria-label="${esc(t("discover.comprasPickSection"))}">${chips}</div>

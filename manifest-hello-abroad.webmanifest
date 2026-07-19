@@ -14,10 +14,95 @@
   "categories": ["education", "travel"],
   "launch_handler": { "client_mode": "navigate-existing" },
   "handle_links": "preferred",
+  "screenshots": [
+    {
+      "src": "docs/screenshots/hello-abroad-study.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lernkarte – Frage auf Deutsch, Antwort auf Englisch"
+    },
+    {
+      "src": "docs/screenshots/hello-abroad-home.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Themen – die Reisebereiche zum Lernen"
+    },
+    {
+      "src": "docs/screenshots/hello-abroad-stats.png",
+      "sizes": "440x956",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Fortschritt und Statistik"
+    }
+  ],
   "icons": [
     { "src": "icon-192-hello-abroad.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icon-512-hello-abroad.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "icon-512-maskable-hello-abroad.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
     { "src": "icon-hello-abroad.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Heutige Runde",
+      "short_name": "Runde",
+      "description": "Heutige Lernrunde mit fälligen Karten starten",
+      "name_localized": { "de": "Heutige Runde", "en": "Today's round" },
+      "short_name_localized": { "de": "Runde", "en": "Round" },
+      "description_localized": {
+        "de": "Heutige Lernrunde mit fälligen Karten starten",
+        "en": "Start today's round with your due cards"
+      },
+      "url": "./?edition=hello-abroad&a=ruta",
+      "icons": [
+        { "src": "icon-192-hello-abroad.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Meine Vokabeln",
+      "short_name": "Vokabeln",
+      "description": "Deine Lieblingswörter und -sätze – immer griffbereit",
+      "name_localized": { "de": "Meine Vokabeln", "en": "My words" },
+      "short_name_localized": { "de": "Vokabeln", "en": "Words" },
+      "description_localized": {
+        "de": "Deine Lieblingswörter und -sätze – immer griffbereit",
+        "en": "Your favourite words and phrases, always to hand"
+      },
+      "url": "./?edition=hello-abroad&a=favoritos",
+      "icons": [
+        { "src": "icon-192-hello-abroad.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Spickzettel",
+      "short_name": "Spickzettel",
+      "description": "Überlebens-Sätze zum schnellen Nachschlagen",
+      "name_localized": { "de": "Spickzettel", "en": "Cheat sheet" },
+      "short_name_localized": { "de": "Spickzettel", "en": "Cheat sheet" },
+      "description_localized": {
+        "de": "Überlebens-Sätze zum schnellen Nachschlagen",
+        "en": "Survival phrases for quick reference"
+      },
+      "url": "./?edition=hello-abroad&m=supervivencia",
+      "icons": [
+        { "src": "icon-192-hello-abroad.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Suchen",
+      "short_name": "Suchen",
+      "description": "Wort oder Satz blitzschnell finden",
+      "name_localized": { "de": "Suchen", "en": "Search" },
+      "short_name_localized": { "de": "Suchen", "en": "Search" },
+      "description_localized": {
+        "de": "Wort oder Satz blitzschnell finden",
+        "en": "Find a word or phrase fast"
+      },
+      "url": "./?edition=hello-abroad&a=buscar",
+      "icons": [
+        { "src": "icon-192-hello-abroad.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    }
   ]
 }

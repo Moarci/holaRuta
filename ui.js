@@ -137,22 +137,22 @@
   // SC.track/learnLang) deklarieren beide Tracks; reine Locals-Einträge nur "es-en".
   // scope = optionaler data-scope des Buttons (z. B. open-pretrip mit festem Kurs).
   const FEATURES = [
-    { action: "open-favorites", tracks: ["de-es", "es-en", "de-en"],   icon: "lc:star", title: "Mi léxico",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
-    { action: "open-spickzettel", tracks: ["de-es", "es-en"], icon: "lc:life-buoy", title: "Supervivencia",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
+    { action: "open-favorites", tracks: ["de-es", "es-en", "de-en"],   icon: "lc:star", titleKey: "favorites.title",     subKey: "discover.subFavorites", sub: "Deine Favoriten als persönliches Lexikon – Lieblingswörter & -sätze griffbereit", grad: ["#B97C24", "#E9A23B"], group: "reference" },
+    { action: "open-spickzettel", tracks: ["de-es", "es-en", "de-en"], icon: "lc:life-buoy", titleKey: "discover.spickzettelName",  subKey: "discover.subSupervivencia", sub: "Die wichtigsten Sätze sofort griffbereit", grad: ["#B5302A", "#CE463E"], group: "reference" },
     { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",    subKey: "discover.subHostel", sub: "Zu zweit & laut: Battle und Rollenspiele",   grad: ["#C25A45", "#8E4FA8"], group: "play" },
     { action: "open-quiz-setup", tracks: ["de-es", "es-en"],  icon: "lc:puzzle", title: "Definiciones",  subKey: "discover.subDefiniciones", sub: "Definition lesen, Begriff wählen",       grad: ["#3F7355", "#2F6B70"], group: "play" },
-    { action: "open-yesto", tracks: ["de-es", "es-en"],       icon: "lc:eye", title: "¿Y esto?",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
+    { action: "open-yesto", tracks: ["de-es", "es-en", "de-en"],       icon: "lc:eye", titleKey: "discover.yestoName",      subKey: "discover.subYesto", sub: "Bild raten: 3-2-1, dann das spanische Wort", grad: ["#C2502E", "#E9A23B"], need: "yesto", group: "play" },
     { action: "open-banderas", tracks: ["de-es", "es-en"],    icon: "lc:flag", title: "Banderas",      subKey: "discover.subBanderas", sub: "Flaggen-Quiz: Land raten, Farben & Symbole lernen", grad: ["#C0392B", "#2E6E86"], need: "banderas", group: "play" },
-    { action: "open-endless", tracks: ["de-es", "es-en", "de-en"],     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", sub: "Karteikarten am Stück – alle Themen gemischt, ohne Rundenende", grad: ["#2E6E86", "#7048E8"], group: "practice" },
-    { action: "open-frases", tracks: ["de-es", "es-en"],      icon: "lc:blocks", title: "Frases flexibles", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
+    { action: "open-endless", tracks: ["de-es", "es-en", "de-en"],     icon: "lc:infinity", titleKey: "discover.endlessName", subKey: "discover.subEndless", sub: "Karteikarten am Stück – alle Themen gemischt, ohne Rundenende", grad: ["#2E6E86", "#7048E8"], group: "practice" },
+    { action: "open-frases", tracks: ["de-es", "es-en", "de-en"],      icon: "lc:blocks", titleKey: "discover.frasesName", subKey: "discover.subFrases", sub: "Bausteine einsetzen – selbst Sätze bauen", grad: ["#7048E8", "#5A3FB8"], need: "frases", group: "practice" },
     { action: "open-dialogos", tracks: ["de-es", "es-en"],    icon: "lc:message-circle", title: "Diálogos",        subKey: "discover.subDialogos", sub: "Allein ein Gespräch Zug für Zug führen", grad: ["#9B5A8C", "#5A4FA8"], need: "dialogos", group: "play" },
     { action: "open-venue-roleplay", tracks: ["es-en"], icon: "lc:handshake", title: "Roleplay del local", subKey: "discover.subVenueRoleplay", sub: "Zu zweit am Handy: Gast und Personal spielen abwechselnd", grad: ["#2F6B70", "#5A4FA8"], group: "play" },
     { action: "open-carrito", tracks: ["es-en"], icon: "lc:shopping-cart", title: "El carrito", subKey: "discover.subCarrito", sub: "Kinder verkaufen an Touristen: Verkaufs-Englisch & Rollenspiel", grad: ["#E0743C", "#B97C24"], group: "play" },
     { action: "open-jugar", tracks: ["es-en"], icon: "lc:dices", title: "¡A jugar en inglés!", subKey: "discover.subJugar", sub: "Zu zweit spielen & Englisch üben – lokal, ohne Konto", grad: ["#3F7355", "#2E6E86"], group: "play" },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",        subKey: "discover.subRegatear", sub: "Gut verhandeln & feilschen auf dem Markt", grad: ["#B97C24", "#3F7355"], need: "regatear", group: "play" },
-    { action: "open-precios",     tracks: ["de-es", "es-en", "de-en"], icon: "lc:banknote", title: "Precios al oído", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
-    { action: "open-cuerpo",      tracks: ["de-es", "es-en"], icon: "lc:person-standing", title: "El Cuerpo",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
-    { action: "open-compras",     tracks: ["de-es", "es-en"], icon: "lc:shopping-cart", title: "Lista de compras", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
+    { action: "open-precios",     tracks: ["de-es", "es-en", "de-en"], icon: "lc:banknote", titleKey: "discover.preciosName", subKey: "discover.subPrecios", sub: "Preise hören & eintippen – bis zu Millionenbeträgen", grad: ["#5E7D3A", "#76954E"], need: "speech", group: "play" },
+    { action: "open-cuerpo",      tracks: ["de-es", "es-en", "de-en"], icon: "lc:person-standing", titleKey: "discover.cuerpoName",     subKey: "discover.subCuerpo", sub: "Körperteile antippen: Wort & Reisetipp", grad: ["#2E6E86", "#7D4A8E"], group: "practice" },
+    { action: "open-compras",     tracks: ["de-es", "es-en", "de-en"], icon: "lc:shopping-cart", titleKey: "discover.comprasName", subKey: "discover.subCompras", sub: "Supermarkt, Kleidung, Farmacia – Reisebedarf üben", grad: ["#3F7355", "#B97C24"], group: "practice" },
     { action: "open-conjugacion", icon: "lc:repeat", title: "Conjugación",   subKey: "discover.subConjugacion", sub: "Verben beugen – kurz erklärt, dann üben", grad: ["#4C5FA8", "#2B7A78"], group: "practice" },
     { action: "open-tiempos",     icon: "lc:hourglass", title: "Tiempos",       subKey: "discover.subTiempos", sub: "Zeitformen: gestern, jetzt, morgen – kurz erklärt, dann üben", grad: ["#3E7CA8", "#5A9BC4"], group: "practice" },
     { action: "open-info",        icon: "lc:globe", title: "Países y culturas", subKey: "discover.subInfo", sub: "Land & Leute – von México bis Chile",    grad: ["#B97C24", "#C2502E"], need: "countries", group: "reference" },
@@ -1811,23 +1811,34 @@
   }
 
   function rateButtons() {
+    // Die Bewertungs-Buttons tragen die spielerische Marken-Stimme in der
+    // GELERNTEN Sprache: HolaRuta lernt Spanisch → „¿Cómo fue? / Otra vez / Vale /
+    // ¡Fácil!". HelloAbroad (Track de-en) lernt Englisch – dort wären spanische
+    // Labels ein Fremdkörper, also die englische Entsprechung. Nur de-en weicht
+    // ab; de-es und der Locals-Track (es-en, spanische UI) bleiben unverändert.
+    const deEn = !!(window.SC && SC.track && SC.track.id && SC.track.id() === "de-en");
+    const L = deEn
+      ? { head: "How was it?", again: "Again", good: "Got it", easy: "Easy!",
+          againA: "Again – nochmal üben", goodA: "Got it – saß ganz gut", easyA: "Easy! – mühelos gewusst" }
+      : { head: "¿Cómo fue?", again: "Otra vez", good: "Vale", easy: "¡Fácil!",
+          againA: t("study.rateAgainLabel"), goodA: t("study.rateGoodLabel"), easyA: t("study.rateEasyLabel") };
     return `
       <div class="rateprompt">
-        <span class="rateprompt__es">¿Cómo fue?</span>
+        <span class="rateprompt__es">${esc(L.head)}</span>
         <span class="rateprompt__de">${esc(t("study.ratePromptDe"))}</span>
       </div>
       <div class="ratebar" role="group" aria-label="${esc(t("study.ratePromptDe"))}">
-        <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="${esc(t("study.rateAgainLabel"))}">
+        <button class="feel feel--again" data-action="rate" data-rating="again" aria-label="${esc(L.againA)}">
           <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:meh")}</span>
-          <span class="feel__txt">Otra vez</span>
+          <span class="feel__txt">${esc(L.again)}</span>
         </button>
-        <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="${esc(t("study.rateGoodLabel"))}">
+        <button class="feel feel--good" data-action="rate" data-rating="good" aria-label="${esc(L.goodA)}">
           <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:smile")}</span>
-          <span class="feel__txt">Vale</span>
+          <span class="feel__txt">${esc(L.good)}</span>
         </button>
-        <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="${esc(t("study.rateEasyLabel"))}">
+        <button class="feel feel--easy" data-action="rate" data-rating="easy" aria-label="${esc(L.easyA)}">
           <span class="feel__emoji" aria-hidden="true">${renderIcon("lc:laugh")}</span>
-          <span class="feel__txt">¡Fácil!</span>
+          <span class="feel__txt">${esc(L.easy)}</span>
         </button>
       </div>`;
   }
@@ -2063,6 +2074,14 @@
   // Streckenkarte: der Lernfortschritt als Bus-Strecke (on-brand „Ruta“). Drei
   // Haltestellen Neu → Am Lernen → Gemeistert; der Bus (🚌) fährt mit der
   // Meister-Quote voran. Reine Anzeige aus der vorhandenen stats.overview.
+  // Überschrift der Lern-Strecke. „Ruta" ist bewusster HolaRuta-Marken-Wortwitz –
+  // in der HelloAbroad-Edition (Track de-en, kein HolaRuta-Bezug) stattdessen das
+  // neutrale deutsche „Route".
+  function routeCapLabel() {
+    const deEn = !!(window.SC && SC.track && SC.track.id && SC.track.id() === "de-en");
+    return deEn ? "🚌 Deine Route" : t("profile.routeCap");
+  }
+
   function routeMap(ov) {
     const pct = ov.total ? Math.round((ov.mastered / ov.total) * 100) : 0;
     const stops = [
@@ -2083,7 +2102,7 @@
     return `
       <div class="route" role="img" aria-label="${esc(t("profile.routeAria", { neu: ov.neu, learning: ov.learning, mastered: ov.mastered, pct }))}">
         <div class="route__head">
-          <span class="route__cap">${esc(t("profile.routeCap"))}</span>
+          <span class="route__cap">${esc(routeCapLabel())}</span>
           <span class="route__pct">${esc(t("profile.routePct", { pct }))}</span>
         </div>
         <div class="route__track">

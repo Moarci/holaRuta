@@ -32,9 +32,15 @@
   const tKey = (key) => (trackLearnLang() === "en" ? key + "Locals" : key);
 
   // Themen-Label in der aktiven UI-Sprache. Das Daten-`label` ist bereits Spanisch
-  // (z. B. „Comida"), `labelEn` die englische Variante. Nur die englische UI nimmt
-  // `labelEn`; de- und es-Oberfläche zeigen das spanische `label`.
-  function natTheme(th) { return (ctx.i18n.getLang && ctx.i18n.getLang() === "en" && th.labelEn) ? th.labelEn : th.label; }
+  // (z. B. „Comida"), `labelEn` die englische, `labelDe` die deutsche Variante.
+  // Reise (de-es) & Locals (es-en) zeigen bewusst das spanische `label` (Immersion
+  // bzw. spanische Muttersprache); HelloAbroad (de-en) hat keinen Spanisch-Bezug –
+  // dort das deutsche `labelDe`. Nur die englische UI nimmt `labelEn`.
+  function natTheme(th) {
+    const isDeEn = window.SC.track && window.SC.track.id && window.SC.track.id() === "de-en";
+    if (isDeEn && th.labelDe) return th.labelDe;
+    return (ctx.i18n.getLang && ctx.i18n.getLang() === "en" && th.labelEn) ? th.labelEn : th.label;
+  }
 
   // ----- View-Modelle -----
   function yestoSetupVM() {
@@ -54,8 +60,11 @@
     // Lösungswort = gelernte Sprache (Reise: spanisch, Locals: englisch); die
     // Hilfszeile darunter zeigt die jeweils andere Seite (Locals: das spanische
     // Wort; Reise: die muttersprachliche Übersetzung de/en).
+    // Hilfszeile = Muttersprache. Spanisch NUR im echten Locals-Track (es-en);
+    // de-en lernt ebenfalls Englisch, hat aber Deutsch als L1 → nativeText (de).
+    const nativeEs = (window.SC.track && window.SC.track.id && window.SC.track.id()) === "es-en";
     const word = (ll === "en" ? item.en : item.es) || "";
-    const native = ll === "en"
+    const native = nativeEs
       ? (item.es || "")
       : (ctx.i18n.nativeText({ de: item.de, en: item.en }) || "");
     return {
@@ -174,7 +183,7 @@
     if (!vm.available) {
       return `
         <section class="screen">
-          ${hmTopbar(`${renderIcon("lc:eye")} ¿Y esto?`, "home")}
+          ${hmTopbar(`${renderIcon("lc:eye")} ${esc(t("discover.yestoName"))}`, "home")}
           <p class="stat-empty">${esc(t("discover.yeUnavailable"))}</p>
         </section>`;
     }
@@ -186,7 +195,7 @@
       </button>`).join("");
     return `
       <section class="screen">
-        ${hmTopbar(`${renderIcon("lc:eye")} ¿Y esto?`, "home")}
+        ${hmTopbar(`${renderIcon("lc:eye")} ${esc(t("discover.yestoName"))}`, "home")}
         <p class="hm-intro">${esc(t("discover." + tKey("yeIntro")))}</p>
         ${moduleShareBtn("yesto")}
         <h3 class="prc-head">${esc(t("discover.yeChooseTheme"))}</h3>
@@ -201,7 +210,7 @@
       ? `
         <div class="ye-stage" role="group" aria-label="${esc(t("discover." + tKey("yePromptHint")))}">
           <div class="ye-emoji" aria-hidden="true">${esc(vm.emoji)}</div>
-          <div class="ye-q">¿Y esto?</div>
+          <div class="ye-q">${esc(t("discover.yestoName"))}</div>
           <div class="ye-think">${esc(t("discover." + tKey("yePromptHint")))}</div>
           <div class="ye-count" aria-hidden="true"><span class="ye-count__num">${esc(String(vm.count))}</span></div>
         </div>
@@ -218,7 +227,7 @@
         </div>`;
     return `
       <section class="screen study">
-        ${hmTopbar(`${renderIcon("lc:eye")} ¿Y esto?`, "open-yesto")}
+        ${hmTopbar(`${renderIcon("lc:eye")} ${esc(t("discover.yestoName"))}`, "open-yesto")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("common.progress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>
         ${stage}

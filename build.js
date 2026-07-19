@@ -248,6 +248,10 @@ function buildDist() {
   for (const extra of [
     "og-image.png",
     "og-image-square.png",
+    // HelloAbroad-Edition (DE-EN): eigene Social-Vorschau, von hello-abroad/index.html
+    // (Redirect) als absolute og:image-URL referenziert – muss in dist/ liegen.
+    "og-image-hello-abroad.png",
+    "og-image-square-hello-abroad.png",
     "landing.html",
     "landing.css",
     "docs/landing/home.png",
@@ -278,6 +282,10 @@ function buildDist() {
     "docs/anleitungen/handout.css",
     "docs/anleitungen/handout.js",
     "docs/anleitungen/qr-holaruta.svg",
+    // HelloAbroad-Installationsanleitung (DE-EN, ?edition=hello-abroad) + eigener QR,
+    // vom Anleitungs-Index verlinkt – sonst 404 in Produktion.
+    "docs/anleitungen/hello-abroad.html",
+    "docs/anleitungen/qr-hello-abroad.svg",
     "docs/pitch/weroad-colombia.html",
     // Shareable Redirect-URLs (?edition=… fest verdrahtet, per README/Poster
     // verlinkt): fehlten bisher hier und landeten dadurch NIE in dist/ – die
