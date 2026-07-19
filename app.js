@@ -355,20 +355,31 @@
   const _localsCats = () => (window.SC && window.SC.dataLocals && window.SC.dataLocals.CATEGORIES) || [];
   const localsCatSet = () => new Set(_localsCats().map((c) => c.id));
   const localsGroupSet = () => new Set(_localsCats().map((c) => c.group));
-  // Aussprache-Tipp (`tip`) erklärt die SPANISCHE Aussprache (Laienlautschrift +
-  // deutscher Klammertext) – sinnvoll nur, wenn auch Spanisch gelernt wird (de-es).
-  // Tracks, die ENGLISCH lernen, dürfen ihn nicht zeigen: er wäre dort fehl am Platz
-  // (z.B. „OH-la (H ist stumm)" unter dem englischen „Hello"). Ausnahme: die
-  // Locals-Karten (Präfix "loc-") tragen einen eigenen ENGLISCHEN Tipp.
-  //  · es-en (Locals): nur loc-Karten zeigen den (englischen) Tipp – wie bisher.
-  //  · de-en (HelloAbroad): keine loc-Karten → gar kein Tipp (bewusste MVP-Lücke,
-  //    siehe HelloAbroad-Spec), statt eines irreführenden spanischen.
+  // Aussprache-Tipp der Karte – passend zur GELERNTEN Sprache:
+  //  - loc-Karten (data.locals.js, es-en): ENGLISCHE Lautschrift in card.tip.
+  //  - Reise-Karten im de-es-Track: SPANISCHE Lautschrift in card.tip (Aussprache
+  //    des zu lernenden spanischen Wortes).
+  //  - Reise-Karten im de-en-Track (HelloAbroad): ENGLISCHE Aussprachehilfe (auf
+  //    Deutsch lesbar) in card.enPron – z. B. "Hello" → "he-LOU". Der spanische
+  //    card.tip wäre hier falsch (die Aussprache des spanischen Worts) und wird NICHT
+  //    gezeigt; fehlt enPron, bleibt die Karte tipfrei (UI überspringt das sauber).
+  // Eigene Nutzer-Karten (keine loc-/enPron-Daten) bleiben im en-Track ohne Tipp.
   const tipFor = (card) => {
-    const learnsSpanish = trk() && trk().learnLang && trk().learnLang() === "es";
-    const isLoc = !!(card && card.id && card.id.indexOf("loc-") === 0);
-    if (!learnsSpanish && !isLoc) return null;
-    return (card && card.tip) || null;
+    if (!card) return null;
+    const isLocCard = card.id && card.id.indexOf("loc-") === 0;
+    if (isLocCard) return card.tip || null;              // Locals: englischer tip
+    if (learnField() === "es") return card.tip || null;  // de-es: spanischer tip
+    if (learnField() === "en") return card.enPron || null; // de-en: englische Aussprachehilfe
+    return null;
   };
+  // Reise-Kontext einer Karte fürs Display aufbereiten: lokalisieren, {name}/{o/a}
+  // auflösen und markieren, ob die gelernte Sprache Englisch ist. enLearn=true (de-en/
+  // HelloAbroad) lässt das Kontext-Panel den ENGLISCHEN Beispielsatz (sentenceEn) statt
+  // des spanischen (sentenceEs) zeigen – sonst wäre der Reise-Beispielsatz in de-en
+  // Spanisch (Leck). Für Locals-Karten (ctx.loc) bleibt der bestehende en-Pfad in ui.js.
+  const displayContext = (card) => card.context
+    ? Object.assign(withNameObj(loc(card.context)), { enLearn: learnField() === "en" })
+    : null;
   const cardNative = (o) => {
     const t = trk();
     const l1 = t && t.cardNativeLang && t.cardNativeLang();
@@ -715,6 +726,7 @@
       lastCat,
       userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       userGender: settings.userGender === "female" || settings.userGender === "male" ? settings.userGender : "", // ♀/♂ (für Anrede)
+      showGender: learnField() === "es", // Geschlecht nur relevant, wenn die gelernte Antwort Spanisch ist (löst {o/a}-Tokens); en-Tracks blenden es aus
       onboardStep: state.onboardStep || "intro", // Onboarding-Teilschritt (Erklär-Slides → Name+Geschlecht → Reiseziel)
       onboardSlide: state.onboardSlide || 0,     // aktuelle Erklär-Slide im Intro-Schritt
       placementDone: !!gamestats.placement,     // Ruta-Check schon absolviert?
@@ -872,7 +884,7 @@
       studied: state.session ? (state.session.right + state.session.wrong) : 0,
       revealed: state.revealed,
       typeResult: state.typeResult,
-      context: card.context ? withNameObj(loc(card.context)) : null,
+      context: displayContext(card),
       contextOpen: state.contextOpen,
       swatch: card.swatch || null,
     };
@@ -1046,7 +1058,7 @@
       lastText: fmtDate(vm.s.lastAt),
       dueText: fmtDue(vm.s.due),
       shareFormat: shareFormat(),
-      context: card.context ? withNameObj(loc(card.context)) : null,
+      context: displayContext(card),
       contextOpen: state.contextOpen,
       isFav: isFavorite(card.id),
     });
@@ -5222,8 +5234,11 @@
   function advanceOnboardingProfile() {
     const el = document.getElementById("onboard-name");
     saveUserName(el ? el.value : "", false);
-    if (!settings.userName || !settings.userGender) {
-      showNotice(t("home.onboardProfileInvalid"));
+    // Geschlecht nur im Spanisch-Lern-Track (de-es) verpflichtend – nur dort wird es
+    // überhaupt abgefragt und wirksam. In en-Tracks (de-en/es-en) reicht der Name.
+    const needGender = learnField() === "es";
+    if (!settings.userName || (needGender && !settings.userGender)) {
+      showNotice(t(needGender ? "home.onboardProfileInvalid" : "home.onboardNameInvalid"));
       return;
     }
     // Locals- & HelloAbroad-Track: der „Reiseziel"-Schritt (Countdown/Tagespensum)

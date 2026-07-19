@@ -71,6 +71,19 @@
   function isLearnedField(field) {
     return field === "learn" || field === learnLang();
   }
+  // Greift card.alt für dieses Feld? card.alt ist IN DER ANTWORTSPRACHE DER KARTE
+  // verfasst: Reise-Karten (data.js) tragen SPANISCHE Alternativen (alt überschreibt
+  // den es-Split, siehe data.js-Header), loc-Karten (Locals-Korpus) ENGLISCHE. alt darf
+  // deshalb nur zählen, wenn die gelernte Antwort des aktiven Tracks in DERSELBEN
+  // Sprache steht. Sonst – z. B. HelloAbroad (de-en) zeigt eine Reise-Karte, deren
+  // spanisches alt (["me llamo"]) die englische Antwort ("My name is …") sonst
+  // ersetzen und jede korrekte Eingabe ablehnen würde – wird alt ignoriert und die
+  // Kandidaten aus dem gelernten Feld selbst (card.en) abgeleitet.
+  function altApplies(card, field) {
+    if (!isLearnedField(field) || !Array.isArray(card.alt) || !card.alt.length) return false;
+    const altLang = (card.id && String(card.id).indexOf("loc-") === 0) ? "en" : "es";
+    return learnLang() === altLang;
+  }
 
   // Wert des erwarteten Antwortfeldes einer Karte.
   // field: "es"/"de"/"en" (direktes Feld) | "learn" (gelernte Antwort des Tracks)
@@ -112,7 +125,7 @@
   // card.alt gilt nur für die GELERNTE Antwort (Reise: Spanisch, Locals: Englisch).
   function acceptedAnswers(card, field) {
     field = field || "es";
-    if (isLearnedField(field) && Array.isArray(card.alt) && card.alt.length) return card.alt;
+    if (altApplies(card, field)) return card.alt;
     return fieldText(card, field).split("/").map((s) => s.trim()).filter(Boolean);
   }
 
@@ -138,8 +151,9 @@
       }
     };
 
-    // card.alt zählt nur für die gelernte Antwort und ersetzt dort die Varianten.
-    if (isLearnedField(field) && Array.isArray(card.alt) && card.alt.length) {
+    // card.alt zählt nur für die gelernte Antwort in der passenden Sprache (siehe
+    // altApplies) und ersetzt dort die Varianten.
+    if (altApplies(card, field)) {
       card.alt.forEach(add);
       return out;
     }

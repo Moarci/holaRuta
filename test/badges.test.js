@@ -284,6 +284,49 @@ test("Reise-Track (Default): groups()/evaluate behalten die Reise-Badges", () =>
   assert.ok(badges.groups().some((g) => g.id === "banderas") || badges.GROUPS.some((g) => g.id === "banderas"), "Reise-Gruppen vorhanden");
 });
 
+// ---------------------------- HelloAbroad-Track (de-en) ----------------------------
+// Deutsche lernen Reise-ENGLISCH: eigene Badge-Welt ohne Spanisch/LatAm und nur mit
+// den im de-en-Track tatsächlich erreichbaren Spielmodi.
+test("HelloAbroad-Track: groups()/evaluate/byId liefern die de-en Badge-Welt", () => {
+  const prev = window.SC.track;
+  window.SC.track = { id: () => "de-en" };
+  try {
+    // Gruppen: Kern + de-en-Spielmodi; kein hostel/quiz/banderas/reallife.
+    assert.deepEqual(badges.groups().map((g) => g.id).sort(),
+      ["category", "construir", "context", "cuerpo", "learning", "listening", "special", "streak", "yesto"]);
+    const de = badges.evaluate({});
+    const has = (id) => !!find(de, id);
+    // Je KEEP-Gruppe ein Vertreter MUSS da sein:
+    assert.ok(has("first_steps") && has("streak_3") && has("context_first") && has("night_owl"), "Kern-Gruppen vorhanden");
+    assert.ok(has("frases_first") && has("yesto_first") && has("listen_first") && has("cuerpo_first"), "de-en-Spielmodi vorhanden");
+    // Kategorie-Badges an der HelloAbroad-Allowlist (inkl. bisher badgeloser cats):
+    assert.ok(has("cat_flughafen") && has("cat_banco") && has("cat_auto") && has("cat_farmacia"), "neue Allowlist-Kategorien da");
+    assert.ok(has("cat_basics") && has("cat_hotel"), "Reise-Kategorien der Allowlist da");
+    // Nicht-Allowlist-Kategorien der Reise-Welt weg:
+    assert.ok(!has("cat_coqueteo") && !has("cat_zahlen") && !has("cat_verbos"), "Nicht-Allowlist-Kategorien weg");
+    // Nicht erreichbare Spielmodi / Badges ausgeblendet:
+    for (const gone of ["battle_first", "quiz_first", "banderas_first", "challenge_first", "ruta_dia_first", "pretrip_done", "precios_millon"]) {
+      assert.ok(!has(gone), `${gone} im de-en-Track ausgeblendet`);
+    }
+    // KEIN Spanisch/LatAm-Leck in der gesamten aktiven Welt (Namen, Beschreibungen,
+    // Gruppen-Labels). Struktureller Wächter statt Wort-Denylist: (a) eindeutig
+    // spanische Zeichen (ñ ¿ ¡) und nur im Spanischen (nicht Deutsch/Englisch)
+    // vorkommende Akzentvokale á í ó ú; (b) ein paar LatAm-/Marken-Wörter, die ohne
+    // Sonderzeichen durchrutschen würden. So fängt der Test auch KÜNFTIGE Einträge.
+    const spanishChars = /[ñ¿¡áíóú]/i;
+    const spanishOrLatam = /\bLatAm\b|Lateinamerika|Sudamérica|Centroam|Reise-Spanisch|travel Spanish|spoken Spanish|Modo hostal|Definiciones|\bRuta\b/;
+    const strings = badges.groups().flatMap((g) => [g.label, g.labelEn]).concat(
+      de.flatMap((b) => [b.name, b.nameEn, b.description, b.descriptionEn, b.unlockedText, b.unlockedTextEn]),
+    ).filter(Boolean);
+    for (const s of strings) {
+      assert.ok(!spanishChars.test(s), `Spanisches Sonderzeichen im de-en-Track: „${s}"`);
+      assert.ok(!spanishOrLatam.test(s), `Spanisch/LatAm-Wording im de-en-Track: „${s}"`);
+    }
+  } finally {
+    if (prev === undefined) delete window.SC.track; else window.SC.track = prev;
+  }
+});
+
 // buildMetrics mit echten Karten: isMastered-Logik (seen>0 UND interval>=MASTERED_DAYS).
 // Verriegelt die 0-Literale in `(r.seen||0) > 0 && (r.interval||0) >= days` (Mutation 0→1).
 test("buildMetrics: cardsMastered/categoryMastery folgen isMastered (seen>0 & interval>=5)", () => {
