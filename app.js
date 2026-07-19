@@ -704,7 +704,6 @@
       userName: profileName(),                  // Reise-Name normalisiert (konsistent mit Diálogos/Battle/Share)
       userGender: settings.userGender === "female" || settings.userGender === "male" ? settings.userGender : "", // ♀/♂ (für Anrede)
       showGender: learnField() === "es", // Geschlecht nur relevant, wenn die gelernte Antwort Spanisch ist (löst {o/a}-Tokens); en-Tracks blenden es aus
-
       onboardStep: state.onboardStep || "intro", // Onboarding-Teilschritt (Erklär-Slides → Name+Geschlecht → Reiseziel)
       onboardSlide: state.onboardSlide || 0,     // aktuelle Erklär-Slide im Intro-Schritt
       placementDone: !!gamestats.placement,     // Ruta-Check schon absolviert?

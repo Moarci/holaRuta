@@ -268,7 +268,7 @@
     { id: "e01", cat: "essen", lvl: 1, de: "das Essen", en: "the food", es: "la comida", tip: "la ko-MI-da", enPron: "de fuhd" },
     { id: "e02", cat: "essen", lvl: 2, de: "Ich habe Hunger", en: "I'm hungry", es: "Tengo hambre", tip: "TEN-go AM-bre", enPron: "aim HANG-gri" },
     { id: "e03", cat: "essen", lvl: 1, de: "die Speisekarte", en: "the menu", es: "el menú / la carta", tip: "el me-NU", enPron: "de MEN-ju" },
-    { id: "e04", cat: "essen", lvl: 2, de: "Die Rechnung, bitte", en: "The bill, please", es: "La cuenta, por favor", tip: "la KUEN-ta", enPron: "de bil, plies" },
+    { id: "e04", cat: "essen", lvl: 2, de: "Die Rechnung, bitte", en: "The check, please", es: "La cuenta, por favor", tip: "la KUEN-ta", enPron: "de tschek, plies" },
     { id: "e05", cat: "essen", lvl: 2, de: "Ich bin Vegetarier", en: "I'm vegetarian", es: "Soy vegetariano/a", tip: "soy we-che-ta-RI-a-no", alt: ["soy vegetariano", "soy vegetariana"], enPron: "aim we-dsche-TÄ-ri-en" },
     { id: "e06", cat: "essen", lvl: 1, de: "ohne Fleisch", en: "without meat", es: "sin carne", tip: "sin KAR-ne", enPron: "wi-DAUT miet" },
     { id: "e07", cat: "essen", lvl: 1, de: "Brot", en: "bread", es: "pan", tip: "pan", enPron: "bred" },
@@ -281,7 +281,7 @@
     { id: "e14", cat: "essen", lvl: 1, de: "das Mittagessen", en: "the lunch", es: "el almuerzo", tip: "al-MUER-so", enPron: "de lantsch" },
     { id: "e15", cat: "essen", lvl: 1, de: "das Abendessen", en: "the dinner", es: "la cena", tip: "la SE-na", enPron: "de DI-ner" },
     { id: "e16", cat: "essen", lvl: 3, de: "Was empfehlen Sie?", en: "What do you recommend?", es: "¿Qué me recomienda?", tip: "re-ko-mi-EN-da", enPron: "wot du ju re-ke-MEND" },
-    { id: "e17", cat: "essen", lvl: 2, de: "Zum Mitnehmen", en: "To take away", es: "Para llevar", tip: "PA-ra ye-WAR", enPron: "tu tejk e-WEJ" },
+    { id: "e17", cat: "essen", lvl: 2, de: "Zum Mitnehmen", en: "To go", es: "Para llevar", tip: "PA-ra ye-WAR", enPron: "tu gou" },
     { id: "e18", cat: "essen", lvl: 2, de: "Ich habe eine Allergie", en: "I have an allergy", es: "Tengo una alergia", tip: "a-LER-chi-a", enPron: "ai häw en Ä-ler-dschi" },
     { id: "e19", cat: "essen", lvl: 1, de: "Gemüse", en: "vegetables", es: "verduras", tip: "wer-DU-ras", enPron: "WEDSCH-te-bels" },
     { id: "e20", cat: "essen", lvl: 1, de: "Reis", en: "rice", es: "arroz", tip: "a-RROS (rollendes R)", enPron: "rais" },
@@ -312,7 +312,7 @@
     { id: "e44", cat: "essen", lvl: 3, de: "Statt Reis lieber Bohnen, bitte", en: "Beans instead of rice, please", es: "En vez de arroz, frijoles, por favor", tip: "en wes de a-RROS, fri-CHO-les", enPron: "biens in-STED ew rais, plies" },
     { id: "e45", cat: "essen", lvl: 2, de: "Geht das auch mit einer Beilage nach Wahl?", en: "Can I have a side of my choice?", es: "¿Puede ser con un acompañamiento a elección?", tip: "a-kom-pa-nya-mi-EN-to a e-lek-si-ON", enPron: "kän ai häw e said ew mai tschois" },
     { id: "e46", cat: "essen", lvl: 2, de: "Können Sie die Zwiebeln weglassen?", en: "Can you leave out the onions?", es: "¿Puede quitar la cebolla?", tip: "ki-TAR la se-BO-ya", enPron: "kän ju liew aut de A-njens" },
-    { id: "e47", cat: "essen", lvl: 2, de: "Ohne Koriander, bitte", en: "Without coriander, please", es: "Sin cilantro, por favor", tip: "sin si-LAN-tro", enPron: "wi-DAUT ko-ri-ÄN-der, plies" },
+    { id: "e47", cat: "essen", lvl: 2, de: "Ohne Koriander, bitte", en: "Without cilantro, please", es: "Sin cilantro, por favor", tip: "sin si-LAN-tro", enPron: "wi-DAUT si-LAN-trou, plies" },
     { id: "e48", cat: "essen", lvl: 2, de: "Dressing bitte separat", en: "Dressing on the side, please", es: "El aderezo aparte, por favor", tip: "el a-de-RE-so a-PAR-te", enPron: "DRE-sing on de said, plies" },
     { id: "e49", cat: "essen", lvl: 3, de: "Kann ich das Hähnchen durch Gemüse ersetzen?", en: "Can I swap the chicken for vegetables?", es: "¿Puedo reemplazar el pollo por verduras?", tip: "rre-em-pla-SAR el PO-yo", enPron: "kän ai swop de TSCHI-ken for WEDSCH-te-bels" },
 
@@ -330,7 +330,7 @@
     { id: "e58", cat: "essen", lvl: 3, de: "Ist da Erdnuss drin? Das ist wichtig", en: "Are there peanuts in it? It's important", es: "¿Lleva maní? Es importante", tip: "YE-wa ma-NI", enPron: "ar där PIE-nats in it? its im-POR-tent" },
 
     // --- Zum Mitnehmen ---
-    { id: "e59", cat: "essen", lvl: 2, de: "Kann ich das zum Mitnehmen bekommen?", en: "Can I get this to take away?", es: "¿Me lo puede dar para llevar?", tip: "PA-ra ye-WAR", enPron: "kän ai get diss tu tejk e-WEJ" },
+    { id: "e59", cat: "essen", lvl: 2, de: "Kann ich das zum Mitnehmen bekommen?", en: "Can I get this to go?", es: "¿Me lo puede dar para llevar?", tip: "PA-ra ye-WAR", enPron: "kän ai get diss tu gou" },
     { id: "e60", cat: "essen", lvl: 2, de: "Den Rest bitte einpacken", en: "Box up the rest, please", es: "El resto para llevar, por favor", tip: "el RRES-to PA-ra ye-WAR", enPron: "boks ap de rest, plies" },
 
     // ===================== TRINKEN =====================
@@ -350,31 +350,31 @@
     { id: "t14", cat: "trinken", lvl: 2, de: "Das schmeckt richtig gut", en: "This tastes really good", es: "Está buenísimo", tip: "es-TA bue-NI-si-mo", enPron: "diss tejsts RII-li gud" },
 
     // ===================== HOTEL =====================
-    { id: "h01", cat: "hotel", lvl: 2, de: "Haben Sie ein Zimmer frei?", en: "Do you have a room available?", es: "¿Tiene una habitación?", tip: "a-bi-ta-si-ON", enPron: "du ju häw e rum e-WEJ-le-bel" },
-    { id: "h02", cat: "hotel", lvl: 2, de: "ein Doppelzimmer", en: "a double room", es: "una habitación doble", tip: "DO-ble", enPron: "e DA-bel rum" },
+    { id: "h01", cat: "hotel", lvl: 2, de: "Haben Sie ein Zimmer frei?", en: "Do you have a room available?", es: "¿Tiene una habitación?", tip: "a-bi-ta-si-ON", enPron: "du ju häw e ruhm e-WEJ-le-bel" },
+    { id: "h02", cat: "hotel", lvl: 2, de: "ein Doppelzimmer", en: "a double room", es: "una habitación doble", tip: "DO-ble", enPron: "e DA-bel ruhm" },
     { id: "h03", cat: "hotel", lvl: 2, de: "für eine Nacht", en: "for one night", es: "para una noche", tip: "PA-ra U-na NO-che", enPron: "for wan nait" },
     { id: "h04", cat: "hotel", lvl: 1, de: "Gibt es WLAN?", en: "Is there wifi?", es: "¿Hay wifi?", tip: "ai WI-fi", enPron: "is där WAI-fai" },
     { id: "h05", cat: "hotel", lvl: 1, de: "der Schlüssel", en: "the key", es: "la llave", tip: "la YA-we", enPron: "de kie" },
     { id: "h06", cat: "hotel", lvl: 1, de: "die Dusche", en: "the shower", es: "la ducha", tip: "la DU-cha", enPron: "de SCHAU-er" },
     { id: "h07", cat: "hotel", lvl: 1, de: "das Handtuch", en: "the towel", es: "la toalla", tip: "la to-A-ya", enPron: "de TAU-el" },
     { id: "h08", cat: "hotel", lvl: 2, de: "die Klimaanlage", en: "the air conditioning", es: "el aire acondicionado", tip: "AI-re", enPron: "de är ken-DI-sche-ning" },
-    { id: "h09", cat: "hotel", lvl: 3, de: "Kann ich das Zimmer sehen?", en: "Can I see the room?", es: "¿Puedo ver la habitación?", tip: "PUE-do wer", enPron: "kän ai sie de rum" },
+    { id: "h09", cat: "hotel", lvl: 3, de: "Kann ich das Zimmer sehen?", en: "Can I see the room?", es: "¿Puedo ver la habitación?", tip: "PUE-do wer", enPron: "kän ai sie de ruhm" },
     { id: "h10", cat: "hotel", lvl: 3, de: "Um wie viel Uhr ist der Check-out?", en: "What time is check-out?", es: "¿A qué hora es el check-out?", tip: "a ke O-ra", enPron: "wot taim is TSCHEK-aut" },
-    { id: "h11", cat: "hotel", lvl: 3, de: "Kann ich das Zimmer wechseln?", en: "Can I change rooms?", es: "¿Puedo cambiar de habitación?", tip: "kam-bi-AR de a-bi-ta-si-ON", enPron: "kän ai tschejndsch rums" },
+    { id: "h11", cat: "hotel", lvl: 3, de: "Kann ich das Zimmer wechseln?", en: "Can I change rooms?", es: "¿Puedo cambiar de habitación?", tip: "kam-bi-AR de a-bi-ta-si-ON", enPron: "kän ai tschejndsch ruhms" },
     { id: "h12", cat: "hotel", lvl: 2, de: "Es gibt kein warmes Wasser", en: "There's no hot water", es: "No hay agua caliente", tip: "no ai A-gua ka-li-EN-te", enPron: "därs nou hot WO-ter" },
     { id: "h13", cat: "hotel", lvl: 2, de: "Etwas ist kaputt", en: "Something is broken", es: "Algo está roto / dañado", tip: "RO-to / da-NYA-do", enPron: "SAM-thing is BROU-ken" },
     { id: "h14", cat: "hotel", lvl: 2, de: "Die Klimaanlage geht nicht", en: "The air conditioning isn't working", es: "El aire no funciona", tip: "no fun-si-O-na", enPron: "de är ken-DI-sche-ning I-sent WÖR-king" },
     { id: "h15", cat: "hotel", lvl: 2, de: "Das WLAN geht nicht", en: "The wifi isn't working", es: "El wifi no funciona", tip: "WI-fi no fun-si-O-na", enPron: "de WAI-fai I-sent WÖR-king" },
     { id: "h16", cat: "hotel", lvl: 2, de: "Das Licht geht nicht", en: "The light isn't working", es: "La luz no funciona", tip: "la lus", enPron: "de lait I-sent WÖR-king" },
-    { id: "h17", cat: "hotel", lvl: 3, de: "Das Zimmer ist zu laut", en: "The room is too noisy", es: "La habitación es muy ruidosa", tip: "rui-DO-sa", enPron: "de rum is tu NOI-si" },
+    { id: "h17", cat: "hotel", lvl: 3, de: "Das Zimmer ist zu laut", en: "The room is too noisy", es: "La habitación es muy ruidosa", tip: "rui-DO-sa", enPron: "de ruhm is tu NOI-si" },
     { id: "h18", cat: "hotel", lvl: 3, de: "Können Sie es reparieren?", en: "Can you fix it?", es: "¿Lo pueden arreglar?", tip: "a-rre-GLAR", enPron: "kän ju fiks it" },
     { id: "h19", cat: "hotel", lvl: 2, de: "Ich brauche noch ein Handtuch", en: "I need another towel", es: "Necesito otra toalla", tip: "O-tra to-A-ya", enPron: "ai nied e-NA-der TAU-el" },
-    { id: "h20", cat: "hotel", lvl: 3, de: "Können Sie das Zimmer sauber machen?", en: "Can you clean the room?", es: "¿Pueden limpiar la habitación?", tip: "lim-pi-AR", enPron: "kän ju klien de rum" },
+    { id: "h20", cat: "hotel", lvl: 3, de: "Können Sie das Zimmer sauber machen?", en: "Can you clean the room?", es: "¿Pueden limpiar la habitación?", tip: "lim-pi-AR", enPron: "kän ju klien de ruhm" },
     { id: "h21", cat: "hotel", lvl: 3, de: "Kann ich später auschecken?", en: "Can I check out later?", es: "¿Puedo hacer el check-out más tarde?", tip: "mas TAR-de", enPron: "kän ai tschek aut LEJ-ter" },
-    { id: "h23", cat: "hotel", lvl: 2, de: "Die Toilette ist verstopft", en: "The toilet is blocked", es: "El baño está tapado", tip: "ta-PA-do", enPron: "de TOI-let is blokt" },
+    { id: "h23", cat: "hotel", lvl: 2, de: "Die Toilette ist verstopft", en: "The toilet is clogged", es: "El baño está tapado", tip: "ta-PA-do", enPron: "de TOI-let is klogd" },
     { id: "h24", cat: "hotel", lvl: 2, de: "Mir ist zu kalt / zu warm", en: "I'm too cold / too hot", es: "Tengo mucho frío / calor", tip: "FRI-o / ka-LOR", enPron: "aim tu kould / tu hot" },
     { id: "h25", cat: "hotel", lvl: 1, de: "Gibt es einen Aufzug?", en: "Is there an elevator?", es: "¿Hay ascensor?", enPron: "is där en E-le-wej-ter" },
-    { id: "h26", cat: "hotel", lvl: 2, de: "Ich hätte gern ein Zimmer im Erdgeschoss", en: "I'd like a room on the ground floor", es: "Quiero una habitación en la planta baja", enPron: "aid laik e rum on de graund floor" },
+    { id: "h26", cat: "hotel", lvl: 2, de: "Ich hätte gern ein Zimmer im Erdgeschoss", en: "I'd like a room on the ground floor", es: "Quiero una habitación en la planta baja", enPron: "aid laik e ruhm on de graund floor" },
     { id: "h27", cat: "hotel", lvl: 2, de: "Um wie viel Uhr gibt es Frühstück?", en: "What time is breakfast?", es: "¿A qué hora es el desayuno?", enPron: "wot taim is BREK-fest" },
 
     // ===================== HOSTEL =====================
@@ -387,7 +387,7 @@
     { id: "hostel07", cat: "hostel", lvl: 2, de: "Gibt es ein Schließfach?", en: "Is there a locker?", es: "¿Hay un locker?", tip: "ai un LO-ker", enPron: "is där e LO-ker" },
     { id: "hostel08", cat: "hostel", lvl: 2, de: "Mein Bett ist belegt.", en: "My bed is taken.", es: "Mi cama está ocupada.", tip: "mi KA-ma es-TA o-ku-PA-da", enPron: "mai bed is TEJ-ken" },
     { id: "hostel09", cat: "hostel", lvl: 2, de: "Gibt es eine Küche?", en: "Is there a kitchen?", es: "¿Hay cocina?", tip: "ai ko-SI-na", enPron: "is där e KI-tschen" },
-    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", en: "Could I change rooms?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON", enPron: "kud ai tschejndsch rums" },
+    { id: "hostel10", cat: "hostel", lvl: 3, de: "Könnte ich das Zimmer wechseln?", en: "Could I change rooms?", es: "¿Podría cambiar de habitación?", tip: "po-DRI-a kam-bi-AR de a-bi-ta-si-ON", enPron: "kud ai tschejndsch ruhms" },
 
     // ===================== VERKEHR =====================
     { id: "v01", cat: "verkehr", lvl: 2, de: "Wo ist ...?", en: "Where is ...?", es: "¿Dónde está ...?", tip: "DON-de es-TA", alt: ["donde esta"], enPron: "wär is ..." },
@@ -532,7 +532,7 @@
     { id: "s01", cat: "talk", lvl: 1, de: "Wie geht's?", en: "How are you?", es: "¿Cómo estás? / ¿Qué tal?", tip: "KO-mo es-TAS", enPron: "hau ar ju" },
     { id: "s02", cat: "talk", lvl: 1, de: "Gut, danke", en: "Good, thanks", es: "Bien, gracias", tip: "bien GRA-si-as", enPron: "gud, THÄNKS" },
     { id: "s05", cat: "talk", lvl: 2, de: "Ich komme aus Deutschland", en: "I'm from Germany", es: "Soy de Alemania", tip: "a-le-MA-ni-a", enPron: "aim from DSCHÖR-me-ni" },
-    { id: "s06", cat: "talk", lvl: 2, de: "Ich bin im Urlaub", en: "I'm on holiday", es: "Estoy de vacaciones", tip: "wa-ka-si-O-nes", enPron: "aim on HO-li-dej" },
+    { id: "s06", cat: "talk", lvl: 2, de: "Ich bin im Urlaub", en: "I'm on vacation", es: "Estoy de vacaciones", tip: "wa-ka-si-O-nes", enPron: "aim on we-KEJ-schen" },
     { id: "s07", cat: "talk", lvl: 3, de: "Ich bin auf der Durchreise", en: "I'm just passing through", es: "Estoy de paso", tip: "es-TOY de PA-so", enPron: "aim dschast PA-sing thru" },
     { id: "s08", cat: "talk", lvl: 2, de: "Cool! / Super!", en: "Cool! / Great!", es: "¡Qué chévere! / ¡Bacán!", tip: "CHE-we-re / ba-KAN", enPron: "kuhl / grejt" },
     { id: "s09", cat: "talk", lvl: 1, de: "Kein Problem", en: "No problem", es: "No hay problema", tip: "no ai pro-BLE-ma", enPron: "nou PRO-blem" },
@@ -749,7 +749,7 @@
     { id: "dir38", cat: "rumbo", lvl: 2, de: "Es ist zwei Blocks von hier", en: "It's two blocks from here", es: "Queda a dos cuadras de aquí", tip: "KE-da a dos KUA-dras de a-KI", enPron: "its tu bloks from hier" },
 
     // -- Mehr Lage-Präpositionen (Feinheiten der Beschreibung) --
-    { id: "dir39", cat: "rumbo", lvl: 2, de: "in Richtung / auf ... zu", en: "towards", es: "hacia", tip: "A-sia (h stumm)", tipEn: "A-sia (h silent)", enPron: "te-WORDS" },
+    { id: "dir39", cat: "rumbo", lvl: 2, de: "in Richtung / auf ... zu", en: "toward", es: "hacia", tip: "A-sia (h stumm)", tipEn: "A-sia (h silent)", enPron: "tord" },
     { id: "dir40", cat: "rumbo", lvl: 2, de: "bis (zu)", en: "up to / until", es: "hasta", tip: "AS-ta", enPron: "ap tu / an-TIL" },
     { id: "dir41", cat: "rumbo", lvl: 3, de: "schräg gegenüber von", en: "diagonally opposite", es: "diagonal a", tip: "dia-go-NAL a", enPron: "dai-Ä-ge-ne-li O-pe-sit" },
     { id: "dir42", cat: "rumbo", lvl: 2, de: "direkt bei / nahe bei", en: "right by / close to", es: "junto a / próximo a", tip: "HUN-to a / PROK-si-mo a", enPron: "rait bai / klous tu" },
@@ -767,7 +767,7 @@
     // -- Orientierungspunkte unterwegs --
     { id: "dir51", cat: "rumbo", lvl: 2, de: "die Ampel", en: "the traffic light", es: "el semáforo", tip: "el se-MA-fo-ro", enPron: "de TRÄ-fik lait" },
     { id: "dir52", cat: "rumbo", lvl: 2, de: "der Kreisverkehr", en: "the roundabout", es: "la rotonda", tip: "la ro-TON-da (Mexiko: glorieta)", tipEn: "la ro-TON-da (Mexico: glorieta)", enPron: "de RAUND-e-baut" },
-    { id: "dir53", cat: "rumbo", lvl: 2, de: "die Kreuzung", en: "the junction", es: "el cruce", tip: "el KRU-se", enPron: "de DSCHANK-schen" },
+    { id: "dir53", cat: "rumbo", lvl: 2, de: "die Kreuzung", en: "the intersection", es: "el cruce", tip: "el KRU-se", enPron: "de in-ter-SEK-schen" },
     { id: "dir54", cat: "rumbo", lvl: 2, de: "die Brücke", en: "the bridge", es: "el puente", tip: "el PUEN-te", enPron: "de bridsch" },
     { id: "dir55", cat: "rumbo", lvl: 2, de: "die Haltestelle", en: "the bus stop", es: "la parada", tip: "la pa-RA-da", enPron: "de bass stop" },
 
@@ -780,8 +780,8 @@
 
     // -- Mehr Fragen nach dem Weg --
     { id: "dir61", cat: "rumbo", lvl: 3, de: "Wo geht's zum Markt lang?", en: "Which way to the market?", es: "¿Por dónde se va al mercado?", tip: "por DON-de se wa al mer-KA-do", enPron: "witsch wej tu de MAR-kit" },
-    { id: "dir62", cat: "rumbo", lvl: 3, de: "Bin ich auf dem richtigen Weg zur Plaza?", en: "Am I on the right way to the plaza?", es: "¿Voy bien para la plaza?", tip: "woi bien PA-ra la PLA-sa", enPron: "äm ai on de rait wej tu de PLA-se" },
-    { id: "dir63", cat: "rumbo", lvl: 2, de: "Wo gibt es ein Bekleidungsgeschäft?", en: "Where is there a clothes shop?", es: "¿Dónde hay una tienda de ropa?", tip: "DON-de ai U-na TIEN-da de RO-pa", enPron: "wär is där e klous schop" },
+    { id: "dir62", cat: "rumbo", lvl: 3, de: "Bin ich auf dem richtigen Weg zur Plaza?", en: "Am I going the right way to the plaza?", es: "¿Voy bien para la plaza?", tip: "woi bien PA-ra la PLA-sa", enPron: "äm ai GOU-ing de rait wej tu de PLA-se" },
+    { id: "dir63", cat: "rumbo", lvl: 2, de: "Wo gibt es ein Bekleidungsgeschäft?", en: "Where is there a clothing store?", es: "¿Dónde hay una tienda de ropa?", tip: "DON-de ai U-na TIEN-da de RO-pa", enPron: "wär is där e KLOU-ding stor" },
     { id: "dir64", cat: "rumbo", lvl: 3, de: "Kann man zu Fuß gehen?", en: "Can you walk there?", es: "¿Se puede ir caminando?", tip: "se PUE-de ir ka-mi-NAN-do", enPron: "kän ju wook där" },
     { id: "dir65", cat: "rumbo", lvl: 3, de: "Wie lange dauert es zu Fuß?", en: "How long does it take on foot?", es: "¿Cuánto se tarda a pie?", tip: "KUAN-to se TAR-da a pie", enPron: "hau long das it tejk on fut" },
 
@@ -1957,7 +1957,7 @@
     { id: "fa07", cat: "farmacia", lvl: 1, de: "Ich brauche Sonnencreme.", en: "I need sunscreen.", es: "Necesito protector solar.", tip: "ne-se-SI-to pro-tek-TOR so-LAR", enPron: "ai nied SAN-skrien" },
     { id: "fa08", cat: "farmacia", lvl: 1, de: "Haben Sie ein Pflaster?", en: "Do you have a Band-Aid?", es: "¿Tiene una curita?", tip: "TIE-ne U-na ku-RI-ta", enPron: "du ju häw e BÄND-ejd" },
     { id: "fa09", cat: "farmacia", lvl: 1, de: "Ich muss zu einem Arzt.", en: "I need to see a doctor.", es: "Necesito ver a un médico.", tip: "ne-se-SI-to ver a un ME-di-ko", enPron: "ai nied tu sie e DOK-ter" },
-    { id: "fa10", cat: "farmacia", lvl: 2, de: "Gibt es hier eine Notdienst-Apotheke?", en: "Is there a duty pharmacy here?", es: "¿Hay una farmacia de turno por aquí?", tip: "ai U-na far-MA-sia de TUR-no por a-KI", enPron: "is där e DU-ti FAR-me-si hier" },
+    { id: "fa10", cat: "farmacia", lvl: 2, de: "Gibt es hier eine Notdienst-Apotheke?", en: "Is there a 24-hour pharmacy here?", es: "¿Hay una farmacia de turno por aquí?", tip: "ai U-na far-MA-sia de TUR-no por a-KI", enPron: "is där e TWEN-ti-for auer FAR-me-si hier" },
     { id: "fa11", cat: "farmacia", lvl: 2, de: "Ich brauche etwas für den Magen.", en: "I need something for my stomach.", es: "Necesito algo para el estómago.", tip: "ne-se-SI-to AL-go PA-ra el es-TO-ma-go", enPron: "ai nied SAM-thing for mai STA-mek" },
     { id: "fa12", cat: "farmacia", lvl: 2, de: "Haben Sie orale Elektrolytlösung?", en: "Do you have oral rehydration salts?", es: "¿Tiene suero oral?", tip: "TIE-ne SUE-ro o-RAL", enPron: "du ju häw O-rel ri-hai-DREJ-schen solts" },
     { id: "fa13", cat: "farmacia", lvl: 2, de: "Ich habe Halsschmerzen.", en: "I have a sore throat.", es: "Me duele la garganta.", tip: "me DUE-le la gar-GAN-ta", enPron: "ai häw e sor throut" },
@@ -1969,7 +1969,7 @@
     { id: "fa19", cat: "farmacia", lvl: 2, de: "Wie oft muss ich das nehmen?", en: "How often do I have to take this?", es: "¿Cada cuántas horas lo tomo?", tip: "KA-da KUAN-tas O-ras lo TO-mo", enPron: "hau O-fen du ai häw tu tejk diss" },
     { id: "fa20", cat: "farmacia", lvl: 2, de: "Ich habe Zahnschmerzen.", en: "I have a toothache.", es: "Me duele una muela.", tip: "me DUE-le U-na MUE-la", enPron: "ai häw e TUHTH-ejk" },
     { id: "fa21", cat: "farmacia", lvl: 3, de: "Dieses Medikament brauche ich ohne Rezept.", en: "I need this medicine without a prescription.", es: "Necesito este medicamento sin receta.", tip: "ne-se-SI-to ES-te me-di-ka-MEN-to sin re-SE-ta", enPron: "ai nied diss MED-sin wi-DAUT e pri-SKRIP-schen" },
-    { id: "fa22", cat: "farmacia", lvl: 3, de: "Es tut hier weh, seit zwei Tagen.", en: "It hurts here, for two days now.", es: "Me duele aquí, desde hace dos días.", tip: "me DUE-le a-KI DES-de A-se dos DI-as", enPron: "it hörts hier, for tu dejs nau" },
+    { id: "fa22", cat: "farmacia", lvl: 3, de: "Es tut hier weh, seit zwei Tagen.", en: "It's been hurting here for two days.", es: "Me duele aquí, desde hace dos días.", tip: "me DUE-le a-KI DES-de A-se dos DI-as", enPron: "its bin HÖR-ting hier for tu dejs" },
     { id: "fa23", cat: "farmacia", lvl: 3, de: "Ich brauche eine Rechnung für die Versicherung.", en: "I need a receipt for my insurance.", es: "Necesito una factura para el seguro.", tip: "ne-se-SI-to U-na fak-TU-ra PA-ra el se-GU-ro", enPron: "ai nied e ri-SIET for mai in-SCHU-rens" },
     { id: "fa24", cat: "farmacia", lvl: 3, de: "Kann man das Leitungswasser trinken?", en: "Is the tap water safe to drink?", es: "¿Se puede tomar el agua de la llave?", tip: "se PUE-de to-MAR el A-gua de la JA-ve", enPron: "is de täp WO-ter sejf tu drink" },
     { id: "fa25", cat: "farmacia", lvl: 2, de: "Ich habe hohen Blutdruck", en: "I have high blood pressure", es: "Tengo la presión alta", enPron: "ai häw hai blad PRE-scher" },
