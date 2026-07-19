@@ -104,43 +104,48 @@ test("Matcher: ENGLISCHES card.alt (loc-Karte) bleibt auch in de-en gültig", ()
   assert.equal(matcher.check("the toilet", loc, "learn").correct, true, "englisches alt-Synonym akzeptiert");
 });
 
-// ============================ (2) tipFor / Aussprache-Tipp ============================
-// Alle in de-en sichtbaren Karten sind Reise-Karten (kein loc-Korpus) und tragen einen
-// SPANISCHEN Tipp. Nach dem Fix darf im Study-Screen daher NIE ein `face__tip` erscheinen.
-function drainStudyForTips(edition) {
+// ================= (2) Aussprache: englische Hilfe statt spanischem Tipp =============
+// In de-en tragen die (Reise-)Karten von basics/talk eine ENGLISCHE Aussprachehilfe
+// (card.enPron, z. B. "Hello" → "he-LOU"). Der spanische card.tip ("OH-la") darf NIE
+// erscheinen. Der Study-Screen zeigt im de-en-Track also ausschließlich enPron-Werte.
+function drainStudyTips(edition) {
   const root = freshApp(edition);
   const d = makeDriver(root);
-  // In den Karteikarten-Modus (flip), damit die Antwortseite mit dem Tipp rendert.
   d.setTab("profil");
   if (d.find("set-mode", { mode: "flip" })) d.click("set-mode", { mode: "flip" });
   d.setTab("entdecken");
   assert.ok(d.click("open-endless"), "open-endless startet den Study-Screen");
-  const hits = [];
-  let seen = 0;
-  for (let i = 0; i < 40; i++) {
-    if (d.find("flip")) d.click("flip"); // Antwortseite aufdecken
+  const texts = [];
+  for (let i = 0; i < 60; i++) {
+    if (d.find("flip")) d.click("flip"); // Antwortseite (mit Tipp) aufdecken
     if (/face__tip/.test(d.html())) {
       const m = d.html().match(/face__tip[^>]*>([\s\S]*?)<\/div>/);
-      const favId = (root.querySelector('[data-action="fav-toggle"]') || { getAttribute: () => "?" }).getAttribute("data-id");
-      hits.push(`${favId}: ${m ? m[1].replace(/<[^>]+>/g, "").trim().slice(0, 50) : ""}`);
+      if (m) texts.push(m[1].replace(/<[^>]+>/g, "").trim());
     }
     if (!d.click("rate", { rating: "good" })) break;
-    seen++;
   }
-  return { hits, seen };
+  return texts.filter(Boolean);
 }
+const normTip = (s) => String(s).toLowerCase().replace(/\s+/g, " ").trim();
 
-test("tipFor: de-en zeigt KEINEN (spanischen) Aussprache-Tipp im Study-Screen", () => {
-  const { hits, seen } = drainStudyForTips("hello-abroad");
-  assert.ok(seen >= 20, `Study-Runde lief wirklich (Karten bewertet: ${seen})`); // sonst wäre die Tipp-Prüfung leer
-  assert.deepEqual(hits, [], `kein face__tip in de-en erwartet, gefunden: ${JSON.stringify(hits.slice(0, 6))}`);
+test("Aussprache: de-en zeigt die ENGLISCHE Aussprachehilfe, nie den spanischen Tipp", () => {
+  const shown = drainStudyTips("hello-abroad").map(normTip);
+  const { data } = window.SC;
+  const enProns = new Set(data.CARDS.filter((c) => c.enPron).map((c) => normTip(c.enPron)));
+  const esTips = new Set(data.CARDS.filter((c) => !/^loc-/.test(c.id) && c.tip).map((c) => normTip(c.tip)));
+  assert.ok(shown.length >= 3, `genug Aussprachehilfen gesehen (${shown.length})`);
+  for (const t of shown) {
+    assert.ok(enProns.has(t), `gezeigter Tipp ist eine englische Aussprachehilfe: "${t}"`);
+    assert.ok(!esTips.has(t), `spanischer Tipp durchgesickert: "${t}"`);
+  }
 });
 
-test("Gegenprobe: de-es (Standard) zeigt den Tipp weiterhin – der Mechanismus rendert", () => {
-  // Stellt sicher, dass (2) den Tipp wirklich UNTERDRÜCKT und nicht bloß nie rendert:
-  // im Standard-Reise-Track ist der spanische Tipp korrekt und muss erscheinen.
-  assert.ok(drainStudyForTips(null).hits.length > 0,
-    "face__tip erscheint im de-es-Track (Aussprache des zu lernenden spanischen Wortes)");
+test("Gegenprobe: de-es zeigt weiterhin die SPANISCHE Lautschrift", () => {
+  const shown = drainStudyTips(null).map(normTip);
+  const { data } = window.SC;
+  const esTips = new Set(data.CARDS.filter((c) => !/^loc-/.test(c.id) && c.tip).map((c) => normTip(c.tip)));
+  assert.ok(shown.length > 0, "es erscheinen Tipps im de-es-Track");
+  assert.ok(shown.some((t) => esTips.has(t)), "mindestens ein gezeigter Tipp ist die spanische Lautschrift");
 });
 
 // ============================ (3) Geschlechts-Abfrage ============================

@@ -337,19 +337,22 @@
   const _localsCats = () => (window.SC && window.SC.dataLocals && window.SC.dataLocals.CATEGORIES) || [];
   const localsCatSet = () => new Set(_localsCats().map((c) => c.id));
   const localsGroupSet = () => new Set(_localsCats().map((c) => c.group));
-  // Aussprache-Tipp der Karte – aber nur, wenn er zur GELERNTEN Sprache passt.
-  // loc-Karten (data.locals.js) tragen einen ENGLISCHEN Tipp; alle übrigen (Reise-)
-  // Karten tragen einen SPANISCHEN Tipp (+ deutschen Klammertext). Ein Reise-Tipp ist
-  // die Aussprache des SPANISCHEN Wortes und wäre überall dort falsch, wo nicht
-  // Spanisch gelernt wird – also im Locals-Track (es-en) UND in HelloAbroad (de-en,
-  // learnLang "en"). Der frühere isLocals()-Guard deckte nur es-en ab und ließ die
-  // spanischen Tipps in de-en fälschlich stehen (z. B. "Hello" → "OH-la"): daher jetzt
-  // generisch über learnLang. Eigene Nutzer-Karten (keine "loc-"-ID) bleiben im
-  // en-Track ohne Tipp – wie schon bisher im Locals-Track.
+  // Aussprache-Tipp der Karte – passend zur GELERNTEN Sprache:
+  //  - loc-Karten (data.locals.js, es-en): ENGLISCHE Lautschrift in card.tip.
+  //  - Reise-Karten im de-es-Track: SPANISCHE Lautschrift in card.tip (Aussprache
+  //    des zu lernenden spanischen Wortes).
+  //  - Reise-Karten im de-en-Track (HelloAbroad): ENGLISCHE Aussprachehilfe (auf
+  //    Deutsch lesbar) in card.enPron – z. B. "Hello" → "he-LOU". Der spanische
+  //    card.tip wäre hier falsch (die Aussprache des spanischen Worts) und wird NICHT
+  //    gezeigt; fehlt enPron, bleibt die Karte tipfrei (UI überspringt das sauber).
+  // Eigene Nutzer-Karten (keine loc-/enPron-Daten) bleiben im en-Track ohne Tipp.
   const tipFor = (card) => {
-    const isReiseCard = !(card && card.id && card.id.indexOf("loc-") === 0);
-    if (isReiseCard && learnField() !== "es") return null;
-    return (card && card.tip) || null;
+    if (!card) return null;
+    const isLocCard = card.id && card.id.indexOf("loc-") === 0;
+    if (isLocCard) return card.tip || null;              // Locals: englischer tip
+    if (learnField() === "es") return card.tip || null;  // de-es: spanischer tip
+    if (learnField() === "en") return card.enPron || null; // de-en: englische Aussprachehilfe
+    return null;
   };
   // Reise-Kontext einer Karte fürs Display aufbereiten: lokalisieren, {name}/{o/a}
   // auflösen und markieren, ob die gelernte Sprache Englisch ist. enLearn=true (de-en/
