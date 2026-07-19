@@ -6130,18 +6130,18 @@
   // Definiciones, Precios, Cuerpo, Compras, Frases, Diálogos, Vocabulario sin fin,
   // ¿Y esto?, Mi léxico) sind in BEIDEN Tracks sichtbar und daher auch suchbar.
   const SEARCH_FEATURES = [
-    { action: "open-favorites",   icon: "lc:star", title: "Mi léxico",        subKey: "discover.subFavorites", tracks: ["de-es", "es-en", "de-en"] },
-    { action: "open-spickzettel", icon: "lc:life-buoy", title: "Supervivencia",    subKey: "discover.subSupervivencia", tracks: ["de-es", "es-en"] },
+    { action: "open-favorites",   icon: "lc:star", titleKey: "favorites.title",        subKey: "discover.subFavorites", tracks: ["de-es", "es-en", "de-en"] },
+    { action: "open-spickzettel", icon: "lc:life-buoy", titleKey: "discover.spickzettelName",    subKey: "discover.subSupervivencia", tracks: ["de-es", "es-en", "de-en"] },
     { action: "open-hostel",      icon: "lc:bed", title: "Modo hostal",       subKey: "discover.subHostel" },
     { action: "open-quiz-setup",  icon: "lc:puzzle", title: "Definiciones",      subKey: "discover.subDefiniciones", tracks: ["de-es", "es-en"] },
-    { action: "open-endless",     icon: "lc:infinity", title: "Vocabulario sin fin", subKey: "discover.subEndless", tracks: ["de-es", "es-en", "de-en"] },
-    { action: "open-frases",      icon: "lc:blocks", title: "Frases flexibles",  subKey: "discover.subFrases", need: "frases", tracks: ["de-es", "es-en"] },
+    { action: "open-endless",     icon: "lc:infinity", titleKey: "discover.endlessName", subKey: "discover.subEndless", tracks: ["de-es", "es-en", "de-en"] },
+    { action: "open-frases",      icon: "lc:blocks", titleKey: "discover.frasesName",  subKey: "discover.subFrases", need: "frases", tracks: ["de-es", "es-en", "de-en"] },
     { action: "open-dialogos",    icon: "lc:message-circle", title: "Diálogos",          subKey: "discover.subDialogos", need: "dialogos", tracks: ["de-es", "es-en"] },
     { action: "open-regatear",    icon: "lc:handshake", title: "Regatear",          subKey: "discover.subRegatear", need: "regatear" },
-    { action: "open-precios",     icon: "lc:banknote", title: "Precios al oído",   subKey: "discover.subPrecios", need: "speech", tracks: ["de-es", "es-en", "de-en"] },
-    { action: "open-cuerpo",      icon: "lc:person-standing", title: "El Cuerpo",         subKey: "discover.subCuerpo", tracks: ["de-es", "es-en"] },
-    { action: "open-compras",     icon: "lc:shopping-cart", title: "Lista de compras",  subKey: "discover.subCompras", tracks: ["de-es", "es-en"] },
-    { action: "open-yesto",       icon: "lc:eye", title: "¿Y esto?",          subKey: "discover.subYesto", need: "yesto", tracks: ["de-es", "es-en"] },
+    { action: "open-precios",     icon: "lc:banknote", titleKey: "discover.preciosName",   subKey: "discover.subPrecios", need: "speech", tracks: ["de-es", "es-en", "de-en"] },
+    { action: "open-cuerpo",      icon: "lc:person-standing", titleKey: "discover.cuerpoName",         subKey: "discover.subCuerpo", tracks: ["de-es", "es-en", "de-en"] },
+    { action: "open-compras",     icon: "lc:shopping-cart", titleKey: "discover.comprasName",  subKey: "discover.subCompras", tracks: ["de-es", "es-en", "de-en"] },
+    { action: "open-yesto",       icon: "lc:eye", titleKey: "discover.yestoName",          subKey: "discover.subYesto", need: "yesto", tracks: ["de-es", "es-en", "de-en"] },
     { action: "open-conjugacion", icon: "lc:repeat", title: "Conjugación",       subKey: "discover.subConjugacion" },
     { action: "open-tiempos",     icon: "lc:hourglass", title: "Tiempos",           subKey: "discover.subTiempos" },
     { action: "open-bebidas",     icon: "lc:coffee", title: "Bebidas AM/PM",     subKey: "discover.subBebidas", need: "bebidas" },
@@ -6205,11 +6205,14 @@
     SEARCH_FEATURES.forEach((f) => {
       if (f.need && !searchHas[f.need]) return;
       if ((f.tracks || ["de-es"]).indexOf(trackId) < 0) return;
+      // titleKey (track-aware via t(): de-en zeigt den deutschen Modulnamen) hat
+      // Vorrang vor dem festen title; ohne titleKey bleibt der spanische Titel.
+      const ftitle = f.titleKey ? t(f.titleKey) : f.title;
       idx.push({
         group: "ex", kind: "feature", kindLabel: t("search.kindFeature"),
-        icon: f.icon, title: f.title, sub: t(f.subKey),
+        icon: f.icon, title: ftitle, sub: t(f.subKey),
         action: f.action,
-        hay: searchHay([f.title, t(f.subKey)]),
+        hay: searchHay([ftitle, t(f.subKey)]),
       });
     });
 

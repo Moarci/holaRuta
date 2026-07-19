@@ -188,7 +188,7 @@
     if (!vm.speakable) {
       return `
         <section class="screen">
-          ${hmTopbar(`${renderIcon("lc:banknote")} Precios al oído`, "home")}
+          ${hmTopbar(`${renderIcon("lc:banknote")} ${esc(t("discover.preciosName"))}`, "home")}
           <p class="stat-empty">${esc(t("discover.prcNoSpeech"))}</p>
         </section>`;
     }
@@ -211,7 +211,7 @@
       : "";
     return `
       <section class="screen">
-        ${hmTopbar(`${renderIcon("lc:banknote")} Precios al oído`, "home")}
+        ${hmTopbar(`${renderIcon("lc:banknote")} ${esc(t("discover.preciosName"))}`, "home")}
         <p class="hm-intro">${esc(t("discover.prcIntro"))}</p>
         ${moduleShareBtn("precios")}
         <h3 class="prc-head">${t("discover.prcCountryCurrency")}</h3>
@@ -252,7 +252,7 @@
         <button class="cta" data-action="precios-next">${vm.isLast ? esc(t("common.showResult")) : esc(t("common.next"))}</button>`;
     return `
       <section class="screen study">
-        ${hmTopbar(`${renderIcon("lc:banknote")} Precios al oído`, "precios-setup")}
+        ${hmTopbar(`${renderIcon("lc:banknote")} ${esc(t("discover.preciosName"))}`, "precios-setup")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.prcProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="prc-status"><div class="topbar__counter quiz-count" aria-live="polite">${vm.position + 1}/${vm.total}</div>${curTag}</div>
         ${body}

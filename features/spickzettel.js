@@ -55,7 +55,16 @@
   function spickzettelVM() {
     const { data, categoryById, cardById, nat, natk, isFavorite, speech, DEFAULT_ACCENT, state } = ctx;
     const learnLang = trackLearnLang();
-    const groupsDef = learnLang === "en" ? SPICKZETTEL_GROUPS_LOCALS : SPICKZETTEL_GROUPS;
+    // NUR der echte Locals-Track (es-en) zieht aus dem Arbeits-Korpus
+    // (data.locals.js: emergencias-en/saludos-en …). HelloAbroad (de-en) lernt
+    // zwar ebenfalls Englisch (learnLang "en"), lädt aber KEIN data.locals.js –
+    // seine Locals-Kategorien existieren dort nicht, der Zettel bliebe leer. de-en
+    // bekommt daher dieselben Reise-Bereiche wie de-es (notfall/basics/rumbo/
+    // dinero, alle im de-en-Allowlist); die gelernte Seite kommt über learnLang
+    // aus card.en. Deshalb auf die Track-ID prüfen, nicht auf learnLang.
+    const trackId = (window.SC.track && window.SC.track.id && window.SC.track.id()) || "de-es";
+    const isDeEn = trackId === "de-en";
+    const groupsDef = trackId === "es-en" ? SPICKZETTEL_GROUPS_LOCALS : SPICKZETTEL_GROUPS;
     const used = new Set(); // jede Karte höchstens einmal auf dem Zettel
     const groups = groupsDef.map((g) => {
       const cat = categoryById(g.cat);
@@ -67,8 +76,10 @@
         if (used.has(c.id)) continue;
         used.add(c.id);
         // Feldname `es` = GELERNTE Seite (Reise: Spanisch, Locals: Englisch) –
-        // bewusst beibehalten, damit Renderer/Tests stabil bleiben.
-        cards.push({ id: c.id, de: nat(c), es: c[learnLang] || c.es, tip: c.tip || null, fav: isFavorite(c.id) });
+        // bewusst beibehalten, damit Renderer/Tests stabil bleiben. tip erklärt die
+        // SPANISCHE Aussprache – für de-en (Englisch) unbrauchbar (bewusste MVP-
+        // Lücke, siehe helloabroad-design.md), daher dort ausgeblendet.
+        cards.push({ id: c.id, de: nat(c), es: c[learnLang] || c.es, tip: isDeEn ? null : (c.tip || null), fav: isFavorite(c.id) });
       }
       return {
         id: g.cat,
@@ -142,7 +153,7 @@
       </div>` : "";
     return `
       <section class="screen">
-        ${hmTopbar("🆘 Supervivencia", "home")}
+        ${hmTopbar("🆘 " + t("discover.spickzettelName"), "home")}
         <p class="hm-intro">${esc(t("discover.szIntro"))}</p>
         ${moduleShareBtn("supervivencia")}
         <nav class="sz-nav" aria-label="${esc(t("discover.szAreas"))}">${nav}</nav>
