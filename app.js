@@ -694,8 +694,10 @@
       // HelloAbroad-Track (de-en) sichtbar; nur der Locals-Track blendet ihn aus.
       hasPlacement: !!placement && !isLocals(), // Ruta-Check / Einstufungs-Check
       placement: placementProfileVM(), // Ruta-Check-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
-      // Der ausführliche Nivel-Test bleibt vorerst spanisch (kein EN-Katalog) -> de-en/Locals aus.
-      hasAssessment: !!assessment && !hidesTripAndTests(), // HolaRuta Nivel-Test (ausführlicher Einstufungstest)
+      // Der ausführliche Nivel-Test trägt seit dem de-en-Ausbau ebenfalls einen
+      // eigenen ENGLISCHEN Fragenkatalog (assessment.js QUESTIONS_EN, track-gewählt),
+      // daher im HelloAbroad-Track (de-en) sichtbar; nur der Locals-Track blendet ihn aus.
+      hasAssessment: !!assessment && !isLocals(), // HolaRuta Nivel-Test / Niveau-Test
       assessment: assessmentProfileVM(), // Nivel-Test-Ergebnis + Verlauf fürs Profil (null = Modul fehlt)
       assessmentResume: assessmentResumeVM(), // laufender, unabgeschlossener Nivel-Test fürs Dashboard (oder null)
       badgeCount: badges ? Object.keys(gamestats.unlocked || {}).length : 0,

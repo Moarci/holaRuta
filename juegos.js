@@ -246,9 +246,10 @@
       icon: "lc:layers",
       title: "Truco (Argentinien · Uruguay)",
       titleEn: "Truco (Argentina · Uruguay)",
+      titleDeEn: "Cheat / Bluff (Kartenspiel)",
       intro: "Das Kartenspiel des Südens, mit der baraja española (40 Karten). 2, 4 oder 6 Spieler in Teams. Es lebt vom Bluffen, vom Wetten („¡Truco!“ – „¡Quiero!“) und von heimlichen Zeichen (señas) zum Partner.",
       introEn: "The card game of the south, with the baraja española (40 cards). 2, 4 or 6 players in teams. It thrives on bluffing, betting („¡Truco!“ – „¡Quiero!“) and secret signs (señas) to your partner.",
-      introDeEn: "Ein Kartenspiel, das südamerikanische Reisende gern mit ins Hostel bringen, gespielt mit dem spanischen Blatt (40 Karten). 2, 4 oder 6 Spieler in Teams. Es lebt vom Bluffen, vom Wetten („Truco!“ – „Quiero!“) und von heimlichen Zeichen (señas) zum Partner.",
+      introDeEn: "Ein Bluff-Kartenspiel, das in Hostels rund um die Welt läuft – auch „Bluff“ oder „I Doubt It“ genannt. Mit einem normalen 52-Karten-Blatt und 3–8 Spielern. Es lebt vom Flunkern: Karten verdeckt ablegen, dabei lügen – und im richtigen Moment „Cheat!“ rufen.",
       dos: [
         "Spanisches 40-Karten-Blatt: 1–7 plus Sota, Caballo und Rey (eine 8 und 9 gibt es darin gar nicht). Die Kartenrangfolge ist eigen (1 de espada ist die höchste).",
         "Jeder bekommt 3 Karten; es gewinnt, wer 2 der 3 Stiche („manos“) holt.",
@@ -261,6 +262,13 @@
         "Raising the stakes: say „Truco“ → opponent answers „Quiero“ (accepted) or „No quiero“ (folded).",
         "„Envido“ counts the points in your hand at the start of the round. You play to 30 (or 15) points.",
       ],
+      dosDeEn: [
+        "Das ganze Deck wird an alle Spieler verteilt; Ziel ist, als Erster alle Karten loszuwerden.",
+        "Reihum legt man verdeckt eine (oder mehrere) Karte(n) ab und sagt an, welcher Wert es ist – in aufsteigender Reihenfolge (erst Asse, dann Zweien, Dreien …).",
+        "Du darfst lügen: Statt der geforderten Karten legst du heimlich andere und behauptest den geforderten Wert.",
+        "Glaubt dir jemand nicht, ruft er „Cheat!“ – dann wird aufgedeckt.",
+        "Hat der Ableger gelogen, nimmt er den ganzen Stapel auf; hat er die Wahrheit gesagt, nimmt der Zweifler ihn.",
+      ],
       donts: [
         "Señas (Zeichen zum Partner) gehören dazu – aber nur fair, wenn der Gegner die Spielart kennt; vorher ansagen.",
         "Nicht ohne die (unintuitive) Kartenrangordnung starten – ein Spickzettel hilft enorm.",
@@ -270,6 +278,11 @@
         "Señas (signs to your partner) are part of it – but only fair if the opponent knows the style; agree it first.",
         "Don't start without the (unintuitive) card ranking – a cheat sheet helps a lot.",
         "Clarify regional variants (con flor / sin flor), or everyone scores differently.",
+      ],
+      dontsDeEn: [
+        "Nicht zu offensichtlich bluffen – wer immer beim gleichen Wert lügt, wird schnell durchschaut.",
+        "Vor dem Start klären, wie viele Karten pro Zug erlaubt sind (meist 1–4).",
+        "Nicht vergessen mitzuzählen: Wer den Stapel aufnimmt, hat plötzlich viele Karten und liegt zurück.",
       ],
       tips: [
         "Lern die vier „matas“ auswendig: 1 de espada, 1 de basto, 7 de espada, 7 de oro – sie schlagen alles andere und gewinnen dir die wichtigen Stiche.",
@@ -284,6 +297,12 @@
         "Count envido instantly: two cards of the same suit = 20 + their pips (Sota/Caballo/Rey count 0) – so you know at once whether to call.",
         "Often save your strongest card for the second hand: win the first narrowly and you control the rest of the round.",
         "Your biggest edge is fixed señas with your partner (e.g. raised eyebrows = ace of swords) – agree them first and signal subtly.",
+      ],
+      tipsDeEn: [
+        "Bluffe am besten, wenn der Stapel noch klein ist – wirst du erwischt, kostet es dich wenig.",
+        "Merk dir, welche Werte schon oft gefallen sind: Behauptet jemand vier Könige, du hältst aber selbst zwei, ist der Zweifel „Cheat!“ fast sicher.",
+        "Halt ein paar echte Karten des kommenden Werts zurück, um später ehrlich ablegen zu können, wenn alle dich beobachten.",
+        "Ruf „Cheat!“ gezielt, wenn ein Gegner fast leer ist – ein großer Stapel wirft ihn weit zurück.",
       ],
       level: "B1",
       es: [
@@ -303,9 +322,10 @@
       icon: "lc:dices",
       title: "Dudo / Perudo / Cacho (die Anden)",
       titleEn: "Dudo / Perudo / Cacho (the Andes)",
+      titleDeEn: "Liar's Dice",
       intro: "Das Lügen-Würfelspiel der Anden – in Peru, Bolivien und Chile fast überall. Jeder hat 5 Würfel und einen Becher (cubilete); es geht ums Bluffen und ums „¡Dudo!“ (ich zweifle).",
       introEn: "The lying dice game of the Andes – nearly everywhere in Peru, Bolivia and Chile. Everyone has 5 dice and a cup (cubilete); it's about bluffing and calling „¡Dudo!“ (I doubt it).",
-      introDeEn: "Das Lügen-Würfelspiel aus den Anden, das Reisende von dort gern weitertragen. Jeder hat 5 Würfel und einen Becher; es geht ums Bluffen und ums „Dudo!“ (ich zweifle).",
+      introDeEn: "Ein Bluff-Würfelspiel, das in Hostels rund um die Welt läuft – im Englischen „Liar's Dice“. Jeder hat 5 Würfel und einen Becher; es geht ums Bluffen und ums „Doubt it!“ (ich zweifle).",
       dos: [
         "Alle würfeln verdeckt unter dem Becher und schauen heimlich.",
         "Reihum erhöht man das Gebot: „cuatro cincos“ = mindestens 4 der Würfel (aller Spieler) zeigen die 5.",
@@ -324,7 +344,7 @@
         "Alle würfeln verdeckt unter dem Becher und schauen heimlich.",
         "Reihum erhöht man das Gebot: „four fives“ = mindestens 4 der Würfel (aller Spieler) zeigen die 5.",
         "Die 1 (ace) ist Joker und zählt für jede Zahl.",
-        "Zweifelst du das Gebot an, rufst du „Dudo!“ – dann wird aufgedeckt: lag der Bieter zu hoch, verliert er einen Würfel, sonst du.",
+        "Zweifelst du das Gebot an, rufst du „Doubt it!“ – dann wird aufgedeckt: lag der Bieter zu hoch, verliert er einen Würfel, sonst du.",
         "Wer alle Würfel verliert, scheidet aus; der Letzte mit Würfeln gewinnt.",
       ],
       donts: [
@@ -340,7 +360,7 @@
       dontsDeEn: [
         "Becher nicht zu früh heben – der Bluff ist der ganze Spaß.",
         "Die Joker-Regel und den „ace“-Übergang vorher klären (was passiert, wenn Einsen geboten werden).",
-        "„Calzo“ (Gebot ist exakt richtig) nur nutzen, wenn ihr diese Zusatzregel spielt.",
+        "Die „Exact!“-Regel (Gebot ist exakt richtig) nur nutzen, wenn ihr diese Zusatzregel spielt.",
       ],
       tips: [
         "Faustregel: Bei N Würfeln im Spiel zeigt im Schnitt rund N/3 eine bestimmte Zahl (Einsen als Joker mitgezählt). Gebote weit darüber kannst du getrost anzweifeln.",
@@ -361,7 +381,7 @@
         "Nimm deine eigenen Würfel als Anker: Hast du selbst drei Fünfen, ist „four fives“ fast sicher – erhöh ruhig.",
         "Zähl mit, wie viele Würfel noch im Spiel sind – je weniger, desto riskanter wird jedes hohe Gebot.",
         "Bluff früh nur in kleinen Schritten; heb die großen Sprünge auf, wenn die Gegner unter Druck stehen.",
-        "Spielt ihr mit „calzo“: ansagen, wenn du das Gebot für exakt richtig hältst – triffst du, gewinnst du sogar einen Würfel zurück.",
+        "Spielt ihr mit „Exact!“: ansagen, wenn du das Gebot für exakt richtig hältst – triffst du, gewinnst du sogar einen Würfel zurück.",
       ],
       level: "A2",
       es: [
@@ -700,9 +720,10 @@
       icon: "lc:dices",
       title: "Würfeln & wetten (Dudo, Generala)",
       titleEn: "Dice & bidding (Dudo, Generala)",
+      titleDeEn: "Würfeln & bieten (Liar's Dice)",
       items: [
         { es: "Te toca tirar.", de: "Du bist mit Würfeln dran.", en: "It's your roll." },
-        { es: "¡Dudo!", de: "Ich zweifle! (Dudo)", en: "I doubt it!" },
+        { es: "¡Dudo!", de: "Ich zweifle! (Dudo)", deDeEn: "Ich zweifle!", en: "I doubt it!" },
         { es: "Subo la apuesta.", de: "Ich erhöhe das Gebot.", en: "I raise the bid." },
         { es: "Cuatro cincos.", de: "Vier Fünfen.", en: "Four fives." },
         { es: "¿Lo anoto o lo guardo?", de: "Eintragen oder behalten?", en: "Do I score it or keep it?" },
@@ -762,8 +783,10 @@
       icon: "lc:layers",
       item: "Normales/spanisches Kartendeck (baraja)",
       itemEn: "A normal/Spanish deck of cards (baraja)",
+      itemDeEn: "Normales Kartendeck (52 Karten)",
       why: "Für Presidente, Truco, Cuarenta & Dutzende Spiele – das vielseitigste Teil im Rucksack.",
       whyEn: "For Presidente, Truco, Cuarenta & dozens of games – the most versatile thing in your pack.",
+      whyDeEn: "Für Kartenspiele wie UNO, President, Cheat & Liar's Dice – das vielseitigste Teil im Rucksack.",
     },
     {
       icon: "lc:house",
@@ -778,6 +801,7 @@
       itemEn: "5 dice + a small cup",
       why: "Für Dudo/Perudo und Generala – winzig im Gepäck, riesiger Spaßfaktor.",
       whyEn: "For Dudo/Perudo and Generala – tiny in your bag, huge fun.",
+      whyDeEn: "Für Liar's Dice & Yahtzee-artige Würfelspiele – winzig im Gepäck, riesiger Spaßfaktor.",
     },
     {
       icon: "lc:dices",
@@ -792,6 +816,7 @@
       itemEn: "Pen & a small notepad",
       why: "Punkte für Generala/Truco zählen – und neue Spielregeln notieren.",
       whyEn: "To keep score for Generala/Truco – and jot down new rules.",
+      whyDeEn: "Punkte für Würfel- und Kartenspiele zählen – und neue Spielregeln notieren.",
     },
     {
       icon: "lc:smartphone",

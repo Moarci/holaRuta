@@ -171,7 +171,7 @@
     { action: "open-cafe",        icon: "lc:coffee", title: "Café de la región",  subKey: "discover.subCafe", sub: "Kaffeeanbau & -kultur: vom Strauch zur Tasse, Finca-Besuch & bestellen", grad: ["#6F4A2E", "#B97C24"], need: "cafe", group: "reference" },
     { action: "open-med-ciudad", tracks: ["es-en"], icon: "lc:cable-car", title: "Descubre Medellín", subKey: "discover.subMedCiudad", sub: "Medellín erklären: Comuna 13, Metro, Umwelt & Sicherheit – mit den Sätzen dazu", grad: ["#2F8E5B", "#1F6B44"], group: "reference" },
     { action: "open-med-paisa", tracks: ["es-en"], icon: "lc:heart", title: "Cultura y sabor paisa", subKey: "discover.subMedPaisa", sub: "Kultur, Essen, Feste & Guatapé auf Englisch teilen – mit den Sätzen dazu", grad: ["#B97C24", "#C2502E"], group: "reference" },
-    { action: "open-juegos",      icon: "lc:dices", titleKey: "discover.juegosName",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
+    { action: "open-juegos",      tracks: ["de-es", "de-en"], icon: "lc:dices", titleKey: "discover.juegosName",   subKey: "discover.subJuegos", sub: "Hostel-Klassiker: Karten, Würfel & Gruppenspiele – plus die Sätze dazu", grad: ["#C44536", "#2E7D9A"], need: "juegos", group: "reference" },
     { action: "open-pretrip",     icon: "lc:calendar", title: "Pre-Trip-Plan",  subKey: "discover.subPretrip", sub: "In 7 Etappen reisefertig – Kolumbien, Peru, Mexiko, Costa Rica …", grad: ["#2E6E86", "#B97C24"], group: "practice" },
     // Reise-Track: der wochenstrukturierte Spanisch-Kurs (Lernpfad-Mechanik wie der
     // Englisch-Kurs, siehe scripts/gen-curso-espanol.mjs) – öffnet per scope direkt
@@ -180,7 +180,7 @@
     // Locals-Track: derselbe Plan-Screen als mehrwöchiger Kurs (nur hier sichtbar).
     { action: "open-pretrip",     tracks: ["es-en"], icon: "lc:calendar", titleKey: "discover.cursoTitle", subKey: "discover.cursoSub", grad: ["#1F7A8C", "#3F7355"], group: "practice" },
     { action: "open-placement",   tracks: ["de-es", "de-en"], icon: "lc:target", titleKey: "discover.placementName",    subKey: "discover.subPlacement", sub: "Kurzer Einstufungstest: finde dein Startlevel", grad: ["#2E6E86", "#C2502E"], need: "placement", group: "practice" },
-    { action: "open-assessment",  icon: "lc:clipboard-list", titleKey: "discover.assessmentName",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
+    { action: "open-assessment",  tracks: ["de-es", "de-en"], icon: "lc:clipboard-list", titleKey: "discover.assessmentName",        subKey: "discover.subAssessment", sub: "Ausführlicher Test (A0–C1): dein genaues Niveau", grad: ["#3F5BA8", "#2E6E86"], need: "assessment", group: "practice" },
   ];
 
   // Reihenfolge & Beschriftung der Entdecken-Abschnitte – eine Achse (Aktivität),

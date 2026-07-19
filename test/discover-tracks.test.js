@@ -276,18 +276,15 @@ test("Entdecken (HelloAbroad de-en): deutsche Modulnamen, adoptierte Kacheln da,
   for (const a of ["open-favorites", "open-spickzettel", "open-cuerpo",
     "open-compras", "open-frases", "open-endless", "open-yesto",
     "open-quiz-setup", "open-knigge", "open-logistica", "open-salud", "open-fotos",
-    "open-responsable", "open-derechos", "open-placement"]) {
+    "open-responsable", "open-derechos", "open-juegos", "open-placement", "open-assessment"]) {
     assert.ok(d.find(a), `de-en-Kachel ${a} sichtbar`);
   }
   // Rein spanisch-content-gebundene bzw. reise-/locals-/LatAm-spezifische Module
-  // bleiben weg (Spanisch-Grammatik, LatAm-Kultur, Locals-Rollenspiele). Der
-  // ausführliche Nivel-Test (open-assessment, eigener EN-Fragenkatalog) und die
-  // Reisespiele (open-juegos, stark LatAm-Spielkultur) folgen separat.
+  // bleiben weg (Spanisch-Grammatik, LatAm-Kultur, Locals-Rollenspiele).
   for (const a of ["open-dialogos", "open-banderas", "open-conjugacion",
     "open-tiempos", "open-jerga", "open-regatear", "open-hostel", "open-info",
     "open-historia", "open-flirt", "open-bailar", "open-musica", "open-cafe",
-    "open-venue-roleplay", "open-med-ciudad", "open-med-paisa", "open-assessment",
-    "open-juegos"]) {
+    "open-venue-roleplay", "open-med-ciudad", "open-med-paisa"]) {
     assert.ok(!d.find(a), `Kachel ${a} im de-en-Track ausgeblendet`);
   }
   const html = d.html();
@@ -295,7 +292,7 @@ test("Entdecken (HelloAbroad de-en): deutsche Modulnamen, adoptierte Kacheln da,
   for (const name of ["Notfall-Sätze", "Einkaufsliste", "Der Körper",
     "Meine Vokabeln", "Satzbaukasten", "Vokabeln ohne Ende", "Was ist das?",
     "Reise-Knigge", "Reise-Logistik", "Gesund unterwegs", "Fotos &amp; Videos",
-    "Nachhaltig reisen", "Deine Rechte", "Einstufungs-Check"]) {
+    "Nachhaltig reisen", "Deine Rechte", "Reisespiele", "Einstufungs-Check", "Niveau-Test"]) {
     assert.ok(html.indexOf(name) >= 0, `deutscher Modulname „${name}" sichtbar`);
   }
   // … nicht die spanischen Marken (auch nicht der HolaRuta-Marken-Check).
@@ -303,7 +300,7 @@ test("Entdecken (HelloAbroad de-en): deutsche Modulnamen, adoptierte Kacheln da,
     "Vocabulario sin fin", "Frases flexibles", "¿Y esto?",
     "Etiqueta de viaje", "Logística de viaje", "Salud y energía", "Fotos y videos",
     "Viaja responsable", "Conoce tus derechos", "Juegos de viaje", "Definiciones",
-    "HolaRuta-Check"]) {
+    "HolaRuta-Check", "Nivel-Test"]) {
     assert.ok(html.indexOf(es) < 0, `spanischer Name „${es}" nicht mehr sichtbar`);
   }
 });
