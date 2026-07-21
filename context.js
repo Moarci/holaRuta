@@ -95,11 +95,18 @@
   // Kompakte Schreibweise { e, d, s, n } -> volles context-Objekt. Englische
   // Pendants (dEn/sEn/nEn) werden mitgeführt; die aktive Sprache wählt erst die
   // View (per natk), weil der Kontext einmalig beim Laden angehängt wird.
+  // sDeEn/nDeEn (optional): reise-ENGLISCH umgerahmte Situation/Tipp für den
+  // HelloAbroad-Track (de-en). Die Basis-Felder s/n sind für den Reise-Track (de-es)
+  // geschrieben und geben spanisches Reisevokabular als Tipp ("sin azúcar", "el baño")
+  // – in de-en (Deutsch lernt Reiseenglisch) wäre das falsch. i18n.localizeDeep
+  // (_locDeEn) ersetzt darum situation/note durch situationDeEn/noteDeEn, wenn
+  // vorhanden. Fehlt ein …DeEn-Feld (Situation/Tipp ohne Spanisch), bleibt die
+  // deutsche Basiszeile stehen – kein Leck.
   const expand = (x) => ({
     sentenceEs: x.e,
     sentenceDe: x.d, sentenceEn: x.dEn,
-    situation: x.s, situationEn: x.sEn,
-    note: x.n, noteEn: x.nEn,
+    situation: x.s, situationEn: x.sEn, situationDeEn: x.sDeEn,
+    note: x.n, noteEn: x.nEn, noteDeEn: x.nDeEn,
   });
 
   // LOCALS-Track (es-en, Spanisch lernt Englisch): gedrehte Lernrichtung. Der
