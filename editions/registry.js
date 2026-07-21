@@ -175,7 +175,14 @@
       partner: null,
       logo: null,
       defaultDestination: null,
-      appUrl: "https://moarci.github.io/holaRuta/hello-abroad/",
+      // Zeigt auf die APP (wie bei jeder anderen Edition), nicht auf die
+      // Marketing-Landingpage (hello-abroad/index.html): die Landingpage hat
+      // keinen Deep-Link-Router und kennt ?m=<modul> nicht – ein „Modul teilen“-
+      // Link würde sonst dort ohne Modul-Öffnung stranden (siehe share.js:
+      // shareText() hängt ?m=<slug> an appUrl an, share.js: linkBaseUrl() hängt
+      // zusätzlich ?edition=hello-abroad an, damit die App im HelloAbroad-
+      // Branding statt im HolaRuta-Standard startet).
+      appUrl: "https://moarci.github.io/holaRuta/",
       track: "de-en",
       taskTab: false,
       teacherTab: false,
