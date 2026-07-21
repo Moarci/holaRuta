@@ -336,11 +336,12 @@
   const isLocals = () => { const t = trk(); return !!(t && t.id && t.id() === "es-en"); };
   // HelloAbroad-Track aktiv? (Deutsch lernt Reiseenglisch.)
   const isDeEn = () => { const t = trk(); return !!(t && t.id && t.id() === "de-en"); };
-  // Das Reiseziel (Countdown/Tagespensum) und die SPANISCH-Einstufungstests
-  // (Ruta-Check + Nivel-Test) ergeben nur im Reise-Spanisch-Track (de-es) Sinn.
-  // Für Locals (es-en) UND HelloAbroad (de-en) sind sie fehl am Platz – ein
-  // Englisch-Einstufungstest existiert nicht, und das Ziel-Setup stammt aus der
-  // Spanisch-Lernversion. Daher überall (Onboarding, Dashboard, Profil) aus.
+  // Das Reiseziel (Countdown/Tagespensum) stammt aus der Reise-Spanisch-Version
+  // und ergibt nur im de-es-Track Sinn -> für Locals (es-en) UND HelloAbroad
+  // (de-en) überall (Onboarding, Dashboard, Profil) aus. Ruta-Check/Nivel-Test
+  // haben dagegen inzwischen eigene EN-Fragenkataloge (placement.js/assessment.js
+  // QUESTIONS_EN) und sind im de-en-Track sichtbar UND öffenbar -> siehe isLocals()
+  // an den jeweiligen Gates, NICHT hidesTripAndTests().
   const hidesTripAndTests = () => isLocals() || isDeEn();
   // Kategorie-Filter fürs Lernen-Tab/Suche/Editor/Stats (siehe config.js
   // categoryAllowlist). null/unset -> alles erlaubt (unverändertes Verhalten
@@ -575,7 +576,7 @@
   }
 
   function assessmentResumeVM() {
-    if (hidesTripAndTests()) return null; // spanischer Test -> im Locals-/HelloAbroad-Track aus
+    if (isLocals()) return null; // Nivel-Test hat eigenen EN-Katalog -> im de-en-Track verfügbar, nur Locals aus
     const prog = liveAssessmentProgress();
     if (!prog) return null;
     const variant = prog.variant === "extremo" ? "extremo" : "standard";
@@ -4440,10 +4441,11 @@
 
   function openPlacement(fromOnboarding) {
     dismissBadgeToast();
-    // Locals- & HelloAbroad-Track: der Ruta-Check ist ein SPANISCH-Einstufungstest und
-    // damit für Englisch-Lernende inhaltlich sinnlos -> überspringen (aus dem Onboarding
-    // heraus sauber abschließen, sonst no-op). So landet ein neuer Nutzer direkt im Dashboard.
-    if (hidesTripAndTests()) { if (fromOnboarding) finishOnboarding(); return; }
+    // Locals-Track: der Ruta-Check hat keinen EN-Katalog für diese Zielgruppe/Ausrichtung
+    // -> überspringen (aus dem Onboarding heraus sauber abschließen, sonst no-op). Im
+    // HelloAbroad-Track (de-en) hat er dagegen einen eigenen EN-Fragenkatalog
+    // (placement.js QUESTIONS_EN) -> dort NICHT überspringen (siehe hasPlacement-Gate).
+    if (isLocals()) { if (fromOnboarding) finishOnboarding(); return; }
     // Schutz, falls das placement-Modul nicht geladen ist (z. B. Edition-Build /
     // Offline-Erstaufruf): nicht crashen. Aus dem Onboarding heraus stattdessen
     // sauber abschließen, sonst einfach nichts tun. (Sonst würde unten
@@ -4694,7 +4696,7 @@
 
   function openAssessment() {
     dismissBadgeToast();
-    if (hidesTripAndTests()) return; // spanischer Nivel-Test -> im Locals-/HelloAbroad-Track nicht verfügbar
+    if (isLocals()) return; // Nivel-Test hat eigenen EN-Katalog -> im de-en-Track verfügbar, nur Locals aus
     if (!assessment) return; // Modul nicht geladen (Edition/Offline) -> nicht crashen
     // Läuft noch ein unabgeschlossener Test (z. B. nach versehentlichem Zurück
     // oder Reload)? Dann nahtlos fortsetzen statt von vorn zu beginnen.
