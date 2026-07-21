@@ -3715,7 +3715,7 @@
            <button class="teacher-btn teacher-btn--main" data-action="placement-free-submit">${esc(t("placement.answer"))}</button>
          </div>`
       : `<div class="pl-options" role="group" aria-label="${esc(t("placement.optionsLabel"))}">
-           ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="${esc(plLearnLang)}">${esc(o)}</button>`).join("")}
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="placement-unknown">${renderIcon("lc:help-circle")} ${esc(t("placement.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("placement.unknownHint"))}</p>` : "";
@@ -3851,7 +3851,7 @@
            <button class="teacher-btn teacher-btn--main" data-action="assessment-free-submit">${esc(t("assessment.answer"))}</button>
          </div>`
       : `<div class="pl-options" role="group" aria-label="${esc(t("assessment.optionsLabel"))}">
-           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="es">${esc(o)}</button>`).join("")}
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="${esc(asLearnLang)}">${esc(o)}</button>`).join("")}
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="assessment-unknown">${renderIcon("lc:help-circle")} ${esc(t("assessment.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("assessment.unknownHint"))}</p>` : "";
