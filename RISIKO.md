@@ -117,7 +117,7 @@ Der gesamte Fortschritt lebt ausschließlich in localStorage, **ohne Export/Impo
 ## Inhaltliche, geschäftliche & rechtliche Risiken (bislang nicht erfasst)
 
 Die obige Analyse ist überwiegend technisch. Für einen öffentlich erreichbaren Betrieb (DE-App,
-`moarci.github.io`) fehlten bislang folgende nicht-technische Risiken:
+`holaruta.com`) fehlten bislang folgende nicht-technische Risiken:
 
 ### R13 · Muttersprachler-Sign-off der 2293 Karten noch offen *(Qualität/Inhalt)*
 Die heute **2293 Karten** sind generativ/auditiv auf IDs, Schema, Zahlen und „kein
@@ -150,12 +150,14 @@ Die Kultur-/Geschichtsbilder (Länderkunde, `countries.js`/`historia*.js`) stamm
 auslösen. Ist die Attribution unvollständig oder fehlt, drohen Lizenzverstöße. → Lizenz-/Credit-Liste
 je Bild führen und sichtbar machen (z. B. Bild-Credits-Sektion). **Schwere: MEDIUM.**
 
-### R16 · Solo-Person- & Plattform-Abhängigkeit (`moarci.github.io`) *(Geschäft/Bus-Faktor)*
-Das Projekt hängt an **einer Person** (Bus-Faktor 1) und am **kostenlosen GitHub-Pages-Hosting unter
-`moarci.github.io`**. Risiken: Account-/Repo-Verlust, Pages-Policy-/Quota-Änderungen, geteilte
-github.io-Origin (vgl. LOW: Daten-Manipulation durch andere Pages-Projekte), keine eigene Domain →
-kein einfacher Umzug, schwacher Marken-/Vertrauensanker für B2B. → Eigene Domain + Backup-Hosting +
-dokumentierte Bus-Faktor-Übergabe einplanen. **Schwere: MEDIUM** (Kontinuität/Geschäft).
+### R16 · Solo-Person- & Plattform-Abhängigkeit *(Geschäft/Bus-Faktor)*
+Das Projekt hängt an **einer Person** (Bus-Faktor 1). Der Umzug von GitHub Pages
+(`moarci.github.io`) auf **holaruta.com** (Vercel-Hosting, Domain-Registrar IONOS) hat die
+Plattform-Teilrisiken entschärft: keine geteilte `github.io`-Origin mehr (vgl. LOW:
+Daten-Manipulation durch andere Pages-Projekte), eigene Domain als Marken-/Vertrauensanker für
+B2B, Repo kann privat geschaltet werden. Offen bleibt der Bus-Faktor selbst → dokumentierte
+Übergabe (Zugänge zu Vercel/Supabase/IONOS/GitHub) einplanen. **Schwere: LOW–MEDIUM**
+(Kontinuität/Geschäft; Plattform-Anteil entschärft, Solo-Person-Anteil bleibt).
 
 ### R17 · Nicht versionierter Generator `tmp_build_countries.js` *(Reproduzierbarkeit)*
 `countries.js` (≈ Zeile 27) verweist darauf, dass der Datensatz von einem Skript

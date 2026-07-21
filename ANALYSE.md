@@ -25,7 +25,7 @@
 ## 1. Überblick
 
 **HolaRuta** ist eine **Offline-First PWA für Reise-Spanisch** (Lateinamerika-Backpacker).
-Vanilla JavaScript, **null Runtime-Dependencies**, gehostet auf GitHub Pages.
+Vanilla JavaScript, **null Runtime-Dependencies**, gehostet auf Vercel unter holaruta.com.
 
 | | |
 |---|---|
@@ -35,7 +35,7 @@ Vanilla JavaScript, **null Runtime-Dependencies**, gehostet auf GitHub Pages.
 | **Code** | ~47k Zeilen Produktion + ~9,8k Zeilen Tests |
 | **Tests** | 653 Tests (Node built-in Runner) + E2E (Playwright) + Mutation-Testing |
 | **Dependencies** | 0 Runtime · 1 dev (esbuild) |
-| **Live** | https://moarci.github.io/holaRuta/ |
+| **Live** | https://holaruta.com/ |
 
 > Kernversprechen: *„Reines Vanilla JS. Kein Framework, kein Bundler, kein node_modules zur Laufzeit."*
 
@@ -66,7 +66,7 @@ Strikte Separation of Concerns mit unidirektionalem Datenfluss:
 - Entwicklung: roh über `index.html` lauffähig (kein Bundler nötig)
 - Single-File-Build: `build.js` inlined alles → `HolaRuta.html` (~600KB)
 - Service-Worker-Cache-Version: **automatischer Inhalts-Hash** (`swversion.js`)
-- Deploy: GitHub Actions → GitHub Pages; CodeQL-Security-Scan separat
+- Deploy: Vercel (GitHub-Integration, Push auf `main`); GitHub Actions führt Tests/E2E als Merge-Gate, CodeQL-Security-Scan separat
 
 **Edition-System (Co-Branding):** `config.js` (Basis) + `editions/*.js` (Partner-Overrides:
 Logo, Farbe, Sync-Endpoint, `teacherTab`).

@@ -67,7 +67,7 @@ test("buildAllPages: Slugs und Canonicals sind je Locale eindeutig", async () =>
     seenPaths.add(p.path);
     assert.ok(!seenCanonicals.has(p.canonical), `doppelte Canonical: ${p.canonical}`);
     seenCanonicals.add(p.canonical);
-    assert.ok(p.canonical.startsWith("https://moarci.github.io/holaRuta/"));
+    assert.ok(p.canonical.startsWith("https://holaruta.com/"));
     assert.ok(p.path.startsWith(`/${p.locale}/`) && p.path.endsWith("/"));
   }
 });

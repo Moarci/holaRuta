@@ -26,7 +26,7 @@
   //   (origin + Ordnerpfad), 3. nur als letzter Fallback die HolaRuta-Pages-URL
   //   (greift v.a. beim Öffnen der Einzeldatei via file://). So stimmt der Link
   //   auch für Forks und Co-Branding-Editionen.
-  const APP_URL_FALLBACK = "https://moarci.github.io/holaRuta/";
+  const APP_URL_FALLBACK = "https://holaruta.com/";
   function appUrl() {
     const cfg = window.SC && SC.config && SC.config.appUrl;
     if (cfg) return cfg;

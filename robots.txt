@@ -49,4 +49,4 @@ Allow: /
 User-agent: Timpibot
 Allow: /
 
-Sitemap: https://moarci.github.io/holaRuta/sitemap.xml
+Sitemap: https://holaruta.com/sitemap.xml

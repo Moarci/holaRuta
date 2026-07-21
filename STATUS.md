@@ -47,8 +47,7 @@ sich vom Produkt zum Vertrieb verschoben.
    den Schulkanal ein Showstopper.
 2. **Niveau ist ein Filter, kein Lernpfad.** A1/A2/B1 sind ein Häkchen-Filter, keine didaktische
    Progression — Schulen erwarten kuratierte Pfade.
-3. **`localStorage`-Shared-Origin auf `github.io`** — eigene Domain nötig für ernsthaften
-   Partnereinsatz.
+3. ~~`localStorage`-Shared-Origin auf `github.io`~~ — erledigt: eigene Domain (holaruta.com).
 4. **Kein Mehrgeräte-Sync / keine Accounts** (bewusst Roadmap-Stufe 3) — begrenzt Lehrer-Dashboard und
    Per-Seat-Modelle.
 5. **Wikimedia-Bilder** als einziger externer Request (CC-BY-Attributionspflicht, kleiner IP-Leak,
@@ -120,7 +119,8 @@ speziell, Schulen kaufen langsam.
 - [ ] **Ein Testimonial** einsammeln (Zitat + Name/Logo, Freigabe schriftlich).
 
 ### Mittelfristig (Quartal, nur bei Pilot-Zugkraft)
-- [ ] **Eigene Domain** statt `github.io`-Subpfad (behebt `localStorage`-Shared-Origin, wirkt seriöser).
+- [x] **Eigene Domain** statt `github.io`-Subpfad (behebt `localStorage`-Shared-Origin, wirkt seriöser) —
+      holaruta.com (Vercel-Hosting, IONOS-Registrar), holaruta.de als Weiterleitung.
 - [ ] **Niveau-Kuration:** benannte Starter-Sets („Pre-Arrival 100" / „Survival 50") statt nur freiem
       Filter ([MARKT.md §6a](MARKT.md), [BAUPLAN.md](BAUPLAN.md)).
 - [ ] **Erste bezahlte Lizenz** (School Starter 499 USD bzw. Destination-Pack) auf Basis des Piloten.

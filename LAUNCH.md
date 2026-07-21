@@ -37,11 +37,31 @@ den der Nutzer eintippt (`app.js` → `sync.confirm(email, code)` → `verifyOtp
 - [ ] Deploy. Die Launch-Edition setzt `apiBase = location.origin` → same-origin,
       CSP `connect-src 'self'` bleibt gültig, kein CORS nötig.
 
-## 4. Domain-Umzug (SEO/GEO)
+## 4. Domain-Umzug (SEO/GEO) — Repo-Seite erledigt
 
-- [ ] Hartkodierte `moarci.github.io/holaRuta` → neue Vercel-Domain ersetzen in:
-  - `index.html` (canonical, OG, JSON-LD), `editions/*.js` (`appUrl`), `scripts/geo/*` (sitemap/robots/llms.txt).
-- [ ] GitHub-Pages-Deploy-Job in `.github/workflows/pages.yml` entfernen (Vercel übernimmt).
+Primäre Domain **holaruta.com**, Sekundärdomain **holaruta.de** (reine 301-Weiterleitung auf
+`.com`, kein eigener Seitenbestand), Registrar/DNS bei **IONOS**, Hosting bei **Vercel**.
+
+- [x] `BASE_URL` in `scripts/geo/config.mjs` auf `https://holaruta.com` gesetzt (einzige Quelle
+      der Wahrheit) und `sitemap.xml`/`robots.txt`/`llms.txt`/`seo/geo-manifest.json` neu generiert.
+- [x] Hartkodierte `moarci.github.io/holaRuta` ersetzt in `index.html` (canonical, OG, JSON-LD),
+      `editions/registry.js` (`appUrl`), `share.js` (`APP_URL_FALLBACK`), Landingpages,
+      `docs/anleitungen/*`, `docs/pitch/*`, `docs/sticker/*` (inkl. neu erzeugter QR-Codes).
+- [x] Kontakt-E-Mail von `hola@holaruta.app` auf `hola@holaruta.com` umgestellt.
+- [x] GitHub-Pages-Deploy-Job aus `.github/workflows/pages.yml` entfernt (nur noch `test`/`e2e`
+      als CI-Gate) — Vercel deployt selbst über die GitHub-App-Integration bei Push auf `main`.
+
+Noch **außerhalb dieses Repos** zu erledigen (kein Zugriff aus dieser Session):
+- [ ] `holaruta.com` + `holaruta.de` bei IONOS registrieren (falls noch nicht geschehen).
+- [ ] Vercel-Projekt mit dem GitHub-Repo verbinden (GitHub-App-Installation funktioniert auch bei
+      privatem Repo), `holaruta.com` als Produktions-Domain in Vercel hinterlegen.
+- [ ] Bei IONOS die DNS-Records für `holaruta.com` auf Vercel zeigen lassen (Vercel zeigt die
+      nötigen A-/CNAME-Werte beim Hinzufügen der Domain im Dashboard an).
+- [ ] `holaruta.de` bei IONOS als Domain-Weiterleitung auf `https://holaruta.com` einrichten
+      (oder alternativ ebenfalls in Vercel als Redirect-Domain hinterlegen).
+- [ ] Postfach/Weiterleitung für `hola@holaruta.com` bei IONOS einrichten.
+- [ ] Nach Live-Schaltung: `npm run geo:verify` gegen die neue Domain laufen lassen, Search-Console-
+      Property für `holaruta.com` anlegen, alte GitHub-Pages-URL bewusst stilllegen oder umleiten.
 
 ## 5. Verifikation (Definition of Done)
 

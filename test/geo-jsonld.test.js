@@ -100,7 +100,7 @@ test("buildJsonLd: Haupt-Entity referenziert die Marke via 'mentions' und das La
   const page = await samplePage();
   const nodes = buildJsonLd(page);
   const main = nodes.find((n) => n["@type"] === "Article");
-  assert.ok(Array.isArray(main.mentions) && main.mentions.some((m) => m["@id"] === "https://moarci.github.io/holaRuta/#organization"));
+  assert.ok(Array.isArray(main.mentions) && main.mentions.some((m) => m["@id"] === "https://holaruta.com/#organization"));
   assert.equal(main.about["@type"], "Country");
   assert.ok(main.about.name && main.about.name.length > 0);
 });
