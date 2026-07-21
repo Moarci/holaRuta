@@ -49,6 +49,8 @@ const BRAND_KEYS = [
   "profile.installedIosNote",// Install-Karte: iOS-Konsequenz-Hinweis (installiert)
   "profile.installIosReaddWarn", // Install-Karte: iOS-Warnung "nicht erneut hinzufuegen"
   "app.installHintIos",      // iOS-Schritt-fuer-Schritt (installVM.hint)
+  "share.captionModuleHead", // Modul-Sharepic: Begleittext-Kopfzeile ("... aus HolaRuta")
+  "share.captionModule",     // Modul-Sharepic: Begleittext-Tagline ("Reise-Spanisch fuer Lateinamerika ...")
 ];
 
 test("HelloAbroad-Update/Install: keine HolaRuta-Referenz, in de UND en", () => {

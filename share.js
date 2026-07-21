@@ -1294,7 +1294,9 @@
     }
     if (kind === "module") {
       const title = String(p.title || "").trim();
+      const intro = String(p.intro || "").trim();
       let out = t("share.captionModuleHead", { title: title || BRAND });
+      if (intro) out += `\n${intro}`;
       out += `\n\n${t("share.captionModule")}`;
       return out + link;
     }
