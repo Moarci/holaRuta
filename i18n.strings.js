@@ -2463,6 +2463,9 @@
     optionsLabel: "Antwortmöglichkeiten",
     answer: "Antwort prüfen",
     freePh: "Auf Spanisch schreiben …",
+    // HelloAbroad (Track de-en, learnLang "en"): dieselbe Fragenliste, aber
+    // Zielsprache Englisch – Platzhalter muss der Zielsprache folgen (ui.js: learnLangCode()).
+    freePhLocals: "Auf Englisch schreiben …",
     unknown: "Ich weiß es nicht",
     unknownHint: "Nicht sicher? Wähle lieber „Ich weiß es nicht“ statt zu raten.",
     yourLevel: "Dein Startlevel",
@@ -2515,6 +2518,7 @@
     optionsLabel: "Answer choices",
     answer: "Check answer",
     freePh: "Write in Spanish …",
+    freePhLocals: "Write in English …",
     unknown: "I don't know",
     unknownHint: "Not sure? Better choose “I don't know” than guess.",
     yourLevel: "Your starting level",
@@ -2579,6 +2583,9 @@
     optionsLabel: "Antwortmöglichkeiten",
     answer: "Antwort prüfen",
     freePh: "Auf Spanisch schreiben …",
+    // HelloAbroad (Track de-en, learnLang "en"): dieselbe Fragenliste, aber
+    // Zielsprache Englisch – Platzhalter muss der Zielsprache folgen (ui.js: learnLangCode()).
+    freePhLocals: "Auf Englisch schreiben …",
     unknown: "Ich weiß es nicht",
     unknownHint: "Nicht sicher? Wähle lieber „Ich weiß es nicht“ statt zu raten.",
     listenPlay: "Nochmal hören",
@@ -2645,6 +2652,7 @@
     optionsLabel: "Answer choices",
     answer: "Check answer",
     freePh: "Write in Spanish …",
+    freePhLocals: "Write in English …",
     unknown: "I don't know",
     unknownHint: "Not sure? Better choose “I don't know” than guess.",
     listenPlay: "Play again",
