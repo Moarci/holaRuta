@@ -1004,8 +1004,8 @@
   // "+N mehr"-Zeile angezeigt statt Inhalte kommentarlos abzuschneiden.
   function planList(ctx, lines, innerW, isStory, availableH) {
     const basePx = isStory ? 31 : 28;
-    const padX = 24, padY = isStory ? 26 : 22, gap = isStory ? 22 : 18;
-    const markW = isStory ? 66 : 58;
+    const padX = 22, padY = isStory ? 26 : 17, gap = isStory ? 22 : 14;
+    const markW = isStory ? 66 : 56;
     const textW = innerW - padX * 2 - markW;
     ctx.font = font("600", basePx);
     const rows = lines.map((l) => {
@@ -1088,11 +1088,11 @@
     const isStory = aspect === "story";
     bgScene(ctx, accent, h);
 
-    const topY = isStory ? 130 : 96;
+    const topY = isStory ? 130 : 84;
 
     // Icon-Medaillon: großer, klar erkennbarer Anker statt eines kleinen
     // Emojis neben dem Kicker-Text.
-    const medR = isStory ? 108 : 88;
+    const medR = isStory ? 108 : 80;
     const medY = topY + medR;
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.25)";
@@ -1112,7 +1112,7 @@
 
     // Kicker als dunkle Glas-Pille (dunkles Overlay statt hellem) – bleibt auf
     // JEDER Akzentfarbe lesbar, auch auf hellen Verläufen (Gelb/Orange).
-    let y = medY + medR + (isStory ? 56 : 46);
+    let y = medY + medR + (isStory ? 56 : 38);
     ctx.font = font("700", isStory ? 32 : 28);
     const kickerTxt = String(payload.kicker || "").toUpperCase();
     const kw = ctx.measureText(kickerTxt).width + 56;
@@ -1125,13 +1125,13 @@
     ctx.textBaseline = "middle";
     ctx.fillText(kickerTxt, cx, y + kh / 2 + 1);
     ctx.textBaseline = "alphabetic";
-    y += kh + (isStory ? 40 : 32);
+    y += kh + (isStory ? 40 : 26);
 
     // Titel des Themas
     const titleBottom = fitText(ctx, payload.title || "", cx, y, W - PAD * 2 - 40, {
       px: isStory ? 78 : 58, min: 36, weight: "800", color: "#ffffff", maxLines: 2,
     });
-    y = titleBottom + (isStory ? 56 : 44);
+    y = titleBottom + (isStory ? 56 : 36);
 
     const panelY = y;
     const pw = W - PAD * 2;
@@ -1141,15 +1141,19 @@
     const panelMaxBottom = h - footerReserve;
     const minPanelH = isStory ? 480 : 360;
 
+    // Grid eignet sich für kurze, gleichartige Einträge (Länder, Vokabelpaare,
+    // Themen-Titel). Ein einzelner etwas längerer Ausreißer soll die ganze
+    // Liste aber nicht in den (platzhungrigeren) Listenmodus zwingen – daher
+    // ein Anteils- statt eines strikten "alle"-Kriteriums.
     const lines = payload.lines || [];
-    const shortLines = lines.length && lines.every((l) => String(l.text || "").length <= 22);
-    const useGrid = shortLines && lines.length >= 4;
+    const shortCount = lines.filter((l) => String(l.text || "").length <= 34).length;
+    const useGrid = lines.length >= 4 && shortCount >= Math.ceil(lines.length * 0.8);
 
     const introPx = isStory ? 32 : 29;
     ctx.font = font("600", introPx);
     const introLines = payload.intro ? wrap(ctx, payload.intro, innerW) : [];
     const introH = introLines.length ? introLines.length * introPx * 1.4 + (isStory ? 40 : 34) : 0;
-    const topPad = 48, bottomPad = 44;
+    const topPad = isStory ? 48 : 40, bottomPad = isStory ? 44 : 36;
     const availableForRows = (panelMaxBottom - panelY) - topPad - bottomPad - introH;
 
     const plan = useGrid
