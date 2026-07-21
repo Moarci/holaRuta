@@ -19,6 +19,11 @@ Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Span
 
 ### ▶️ [**Live öffnen → holaruta.com**](https://holaruta.com/)
 
+> **Umzug in Vorbereitung:** Die App zieht gerade von `moarci.github.io/holaRuta` auf die eigene
+> Domain `holaruta.com` um (Vercel-Hosting, IONOS-Registrar). Bis DNS/Vercel scharf geschaltet
+> sind, ist der Link oben noch nicht live — bis dahin läuft die App unverändert unter
+> [`moarci.github.io/holaRuta`](https://moarci.github.io/holaRuta/) weiter.
+
 *Direkt im Browser starten — nichts installieren. Auf dem Handy „Zum Startbildschirm hinzufügen" tippen, und HolaRuta liegt als offline-fähige App auf dem Homescreen.*
 
 **[🚀 Schnellstart](#-schnellstart)** &nbsp;|&nbsp; **[🏗 Architektur](#-architektur)** &nbsp;|&nbsp; **[🧠 Spaced Repetition](#-spaced-repetition-sm-2)** &nbsp;|&nbsp; **[🔍 Audit](AUDIT.md)**
@@ -344,6 +349,10 @@ python -m http.server 3000
 Im Browser öffnen → die App registriert den Service Worker, wird offline-fähig und lässt sich über „Zum Startbildschirm hinzufügen" installieren.
 
 ### Variante C — als PWA online (holaruta.com)
+
+> Solange `holaruta.com` noch nicht live ist (DNS/Vercel-Umzug läuft, siehe Hinweis oben),
+> vorübergehend [`moarci.github.io/holaRuta`](https://moarci.github.io/holaRuta/) statt
+> `holaruta.com` verwenden — die Schritte sind identisch.
 
 Für die App auf dem **Android-Startbildschirm**, ohne die Datei je wieder zu suchen:
 
