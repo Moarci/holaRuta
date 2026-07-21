@@ -41,6 +41,17 @@
   function appUrlLabel() {
     return appUrl().replace(/^https?:\/\//, "").replace(/\/+$/, ""); // kurze, lesbare Anzeige
   }
+  // Ziel-Adresse für den ANTIPPBAREN Begleittext-Link (nicht für die kurze Marken-
+  // Anzeige in brandFooter): appUrl() + „edition"-Parameter, falls eine Co-Branding-
+  // Edition aktiv ist – sonst würde ein geteilter Link z.B. HelloAbroad-Inhalte im
+  // HolaRuta-Standard-Branding öffnen statt in der eigenen Edition. Gleiches Muster
+  // wie taskShareLink() in app.js.
+  function linkBaseUrl() {
+    const base = appUrl();
+    const edition = window.SC && SC.config && SC.config.edition;
+    if (!edition) return base;
+    return base + (base.indexOf("?") === -1 ? "?" : "&") + "edition=" + encodeURIComponent(edition);
+  }
   const FONT = '"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif';
   const INK = "#0f172a";      // dunkler Text
   const MUTE = "#64748b";     // gedämpfter Text
@@ -1049,7 +1060,7 @@
     // nackte URL im Begleittext automatisch. Trägt das Sharepic eine Modul-Kennung
     // (moduleSlug), zeigt der Link per ?m=<modul> direkt in dieses Modul: Wer den
     // Link antippt, landet nicht auf der Startseite, sondern im empfohlenen Modul.
-    const base = appUrl();
+    const base = linkBaseUrl();
     const url = p.moduleSlug
       ? base + (base.indexOf("?") === -1 ? "?" : "&") + "m=" + encodeURIComponent(p.moduleSlug)
       : base;
