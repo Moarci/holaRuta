@@ -937,12 +937,159 @@
     return c;
   }
 
+  // Mischt zwei Hex-Farben (0..1) – für die pastellenen Chip-Hintergründe
+  // (Akzentfarbe stark aufgehellt), damit jedes Modul seine Farbidentität auch
+  // in den Listen-/Grid-Zeilen behält statt neutralem Grau.
+  function mix(hexA, hexB, t) {
+    const pa = parseInt(hexA.slice(1), 16), pb = parseInt(hexB.slice(1), 16);
+    const ar = (pa >> 16) & 255, ag = (pa >> 8) & 255, ab = pa & 255;
+    const br = (pb >> 16) & 255, bg = (pb >> 8) & 255, bb = pb & 255;
+    const r = Math.round(ar + (br - ar) * t), g = Math.round(ag + (bg - ag) * t), b = Math.round(ab + (bb - ab) * t);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  // Verlauf + weiche Kreis-„Blobs" für Tiefe – nur für das Modul-/Tipps-Motiv
+  // (buildTips), damit es sich von der reinen Zweifarb-Fläche der anderen
+  // Motive abhebt und weniger flach/„militärisch" wirkt.
+  function bgScene(ctx, accent, h) {
+    bgGradient(ctx, accent[0], accent[1], h);
+    ctx.save();
+    ctx.globalAlpha = 0.14;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.arc(W * 0.92, h * 0.06, 260, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-W * 0.08, h * 0.32, 200, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.globalAlpha = 0.10;
+    ctx.fillStyle = "#000000";
+    ctx.beginPath(); ctx.arc(W * 0.85, h * 0.98, 320, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // Kurze, gleichartige Zeilen (z.B. "🇨🇴 Kolumbien · COP") als 2-spaltiges
+  // Chip-Grid statt einer langen Liste – füllt die Breite und wirkt weniger
+  // wie ein Einstellungsmenü. plan() misst/skaliert, draw() zeichnet.
+  function planGrid(ctx, lines, innerW, isStory, availableH) {
+    const cols = 2, gap = 20;
+    const cw = (innerW - gap) / cols;
+    const rows = Math.ceil(lines.length / cols);
+    const basePx = isStory ? 30 : 27;
+    const baseRowH = isStory ? 96 : 84;
+    const naturalH = rows * baseRowH;
+    let scale = naturalH > 0 ? availableH / naturalH : 1;
+    scale = Math.max(0.66, Math.min(1.35, scale));
+    const rowH = baseRowH * scale;
+    const px = Math.max(20, Math.round(basePx * Math.min(scale, 1.12)));
+    return { cols, gap, cw, rows, rowH, px, totalH: rows * rowH };
+  }
+
+  function drawGrid(ctx, lines, innerX, iy, isStory, plan, accent) {
+    const { cols, gap, cw, rowH, px } = plan;
+    const chipH = rowH - (isStory ? 22 : 18);
+    lines.forEach((l, i) => {
+      const col = i % cols, row = Math.floor(i / cols);
+      const rx = innerX + col * (cw + gap);
+      const ry = iy + row * rowH;
+      ctx.fillStyle = mix(accent[0], "#ffffff", 0.92);
+      roundRect(ctx, rx, ry, cw, chipH, 22);
+      ctx.fill();
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      const markPx = px * 1.3;
+      ctx.font = font("700", markPx);
+      const mark = (l.mark && l.mark.slice(0, 3) === "lc:") ? "•" : (l.mark || "•");
+      ctx.fillStyle = INK;
+      const padX = 24;
+      ctx.fillText(mark, rx + padX, ry + chipH / 2);
+      const markW = ctx.measureText(mark).width;
+      ctx.font = font("700", px);
+      drawFittedLine(ctx, String(l.text || ""), rx + padX + markW + 14, ry + chipH / 2 + 1, cw - padX - markW - 34, px, "700");
+    });
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+  }
+
+  // Längere Sätze (DOs/DON'Ts/Tipps) als volle Chip-Zeilen. Skaliert Schrift &
+  // Abstände in den verfügbaren Platz; passt selbst dann noch nicht ALLES
+  // hinein (viele lange Sätze auf "square"), wird der Rest über eine
+  // "+N mehr"-Zeile angezeigt statt Inhalte kommentarlos abzuschneiden.
+  function planList(ctx, lines, innerW, isStory, availableH) {
+    const basePx = isStory ? 31 : 28;
+    const padX = 22, padY = isStory ? 26 : 17, gap = isStory ? 22 : 14;
+    const markW = isStory ? 66 : 56;
+    const textW = innerW - padX * 2 - markW;
+    ctx.font = font("600", basePx);
+    const rows = lines.map((l) => {
+      const wl = wrap(ctx, l.text || "", textW);
+      return { wl, h: wl.length * basePx * 1.32 + padY * 2 };
+    });
+    const naturalH = rows.reduce((s, r) => s + r.h, 0) + gap * Math.max(0, rows.length - 1);
+    let scale = naturalH > 0 ? availableH / naturalH : 1;
+    scale = Math.max(0.72, Math.min(1.2, scale));
+    const px = Math.max(22, Math.round(basePx * Math.min(scale, 1.08)));
+    ctx.font = font("600", px);
+    const finalRows = lines.map((l) => {
+      const wl = wrap(ctx, l.text || "", textW);
+      return { wl, h: wl.length * px * 1.34 + padY * 2 };
+    });
+    const finalGap = gap * scale;
+    const moreH = px * 1.3 + padY * 1.6; // reservierte Höhe für die "+N mehr"-Zeile
+    let shown = finalRows.length;
+    let totalH = finalRows.reduce((s, r) => s + r.h, 0) + finalGap * Math.max(0, finalRows.length - 1);
+    while (shown > 1 && totalH + (shown < finalRows.length ? moreH + finalGap : 0) > availableH) {
+      shown--;
+      totalH = finalRows.slice(0, shown).reduce((s, r) => s + r.h, 0) + finalGap * Math.max(0, shown - 1);
+    }
+    const truncated = shown < finalRows.length;
+    if (truncated) totalH += moreH + finalGap;
+    return { rows: finalRows, px, padX, padY, markW, gap: finalGap, totalH, shown, hiddenCount: finalRows.length - shown, moreH };
+  }
+
+  function drawList(ctx, lines, innerX, iy, innerW, plan, accent) {
+    const { rows, px, padX, padY, markW, gap, shown, hiddenCount, moreH } = plan;
+    let y = iy;
+    lines.slice(0, shown).forEach((l, i) => {
+      const r = rows[i];
+      ctx.fillStyle = mix(accent[0], "#ffffff", 0.94);
+      roundRect(ctx, innerX, y, innerW, r.h, 24);
+      ctx.fill();
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.font = font("700", px * 1.05);
+      ctx.fillStyle = INK;
+      ctx.fillText((l.mark && l.mark.slice(0, 3) === "lc:") ? "•" : (l.mark || "•"), innerX + padX, y + padY + px);
+      ctx.font = font("600", px);
+      let ty = y + padY + px;
+      r.wl.forEach((ln) => { ctx.fillText(ln, innerX + padX + markW, ty); ty += px * 1.34; });
+      y += r.h + gap;
+    });
+    if (hiddenCount > 0) {
+      ctx.fillStyle = mix(accent[0], "#ffffff", 0.88);
+      roundRect(ctx, innerX, y, innerW, moreH, 24);
+      ctx.fill();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = font("700", px);
+      ctx.fillStyle = accent[0];
+      ctx.fillText(t("share.tipsMore", { n: hiddenCount }), innerX + innerW / 2, y + moreH / 2 + 1);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+    }
+  }
+
   // ---------- Motiv 5: Reise-Tipps (DOs & DON'Ts einer Entdecken-Kategorie) ----------
   // payload: { kicker, icon, title, intro, lines:[{mark,text}], accent:[from,to] }
   // Wird von Knigge, Regatear, Logística und Salud genutzt – ein Thema mit seinen
   // „Mach das"/„Vermeide das"-Punkten als teilbares Bild. Dient außerdem (kind
   // "module") als generische Modul-Einladung: Icon · Titel · Kurz-Intro · ein paar
   // Highlight-Zeilen (Marker frei wählbar, z.B. Vokabel-Beispiele oder Themen).
+  //
+  // Layout: Icon-Medaillon → Kicker-Pille → Titel → weißes Panel, das IMMER
+  // bis knapp über die Marken-Fußzeile reicht (kein Leerraum zwischen Panel
+  // und Fußzeile). Innerhalb des Panels füllen sich kurze, gleichartige Zeilen
+  // als 2-spaltiges Chip-Grid, längere Sätze als volle Chip-Zeilen – beides
+  // skaliert in den verfügbaren Platz (siehe planGrid/planList oben), statt
+  // wie zuvor eine feste Panel-Höhe mit oft leerem Boden zu zeichnen.
   function buildTips(payload, aspect) {
     const h = heightFor(aspect);
     const c = newCanvas(h);
@@ -950,26 +1097,83 @@
     const accent = payload.accent && payload.accent.length === 2 ? payload.accent : ["#3F6B8E", "#6B4FA8"];
     const cx = W / 2;
     const isStory = aspect === "story";
-    bgGradient(ctx, accent[0], accent[1], h);
+    bgScene(ctx, accent, h);
 
-    const pw = W - PAD * 2;
+    const topY = isStory ? 130 : 84;
 
-    // Kicker (Kategorie)
+    // Icon-Medaillon: großer, klar erkennbarer Anker statt eines kleinen
+    // Emojis neben dem Kicker-Text.
+    const medR = isStory ? 108 : 80;
+    const medY = topY + medR;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.25)";
+    ctx.shadowBlur = 34;
+    ctx.shadowOffsetY = 14;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, medY, medR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = INK;
     ctx.textAlign = "center";
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.font = font("700", 32);
-    ctx.fillText(`${payload.icon || "🧭"}  ${String(payload.kicker || "").toUpperCase()}`, cx, isStory ? 140 : 104);
+    ctx.textBaseline = "middle";
+    ctx.font = font("700", medR * 1.15);
+    ctx.fillText(payload.icon || "🧭", cx, medY + medR * 0.06);
+    ctx.textBaseline = "alphabetic";
+
+    // Kicker als dunkle Glas-Pille (dunkles Overlay statt hellem) – bleibt auf
+    // JEDER Akzentfarbe lesbar, auch auf hellen Verläufen (Gelb/Orange).
+    let y = medY + medR + (isStory ? 56 : 38);
+    ctx.font = font("700", isStory ? 32 : 28);
+    const kickerTxt = String(payload.kicker || "").toUpperCase();
+    const kw = ctx.measureText(kickerTxt).width + 56;
+    const kh = isStory ? 58 : 50;
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    roundRect(ctx, cx - kw / 2, y, kw, kh, kh / 2);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(kickerTxt, cx, y + kh / 2 + 1);
+    ctx.textBaseline = "alphabetic";
+    y += kh + (isStory ? 40 : 26);
 
     // Titel des Themas
-    const titleTop = isStory ? 168 : 130;
-    const titleBottom = fitText(ctx, payload.title || "", cx, titleTop, pw - 40, {
-      px: 58, min: 34, weight: "800", color: "#ffffff", maxLines: 3,
+    const titleBottom = fitText(ctx, payload.title || "", cx, y, W - PAD * 2 - 40, {
+      px: isStory ? 78 : 58, min: 36, weight: "800", color: "#ffffff", maxLines: 2,
     });
-    let y = titleBottom + 50;
+    y = titleBottom + (isStory ? 56 : 36);
 
-    // Weißes Panel bis über die Marken-Fußzeile
     const panelY = y;
-    const panelH = h - 175 - panelY;
+    const pw = W - PAD * 2;
+    const innerX = PAD + 52;
+    const innerW = pw - 104;
+    const footerReserve = isStory ? 210 : 168;
+    const panelMaxBottom = h - footerReserve;
+    const minPanelH = isStory ? 480 : 360;
+
+    // Grid eignet sich für kurze, gleichartige Einträge (Länder, Vokabelpaare,
+    // Themen-Titel). Ein einzelner etwas längerer Ausreißer soll die ganze
+    // Liste aber nicht in den (platzhungrigeren) Listenmodus zwingen – daher
+    // ein Anteils- statt eines strikten "alle"-Kriteriums.
+    const lines = payload.lines || [];
+    const shortCount = lines.filter((l) => String(l.text || "").length <= 34).length;
+    const useGrid = lines.length >= 4 && shortCount >= Math.ceil(lines.length * 0.8);
+
+    const introPx = isStory ? 32 : 29;
+    ctx.font = font("600", introPx);
+    const introLines = payload.intro ? wrap(ctx, payload.intro, innerW) : [];
+    const introH = introLines.length ? introLines.length * introPx * 1.4 + (isStory ? 40 : 34) : 0;
+    const topPad = isStory ? 48 : 40, bottomPad = isStory ? 44 : 36;
+    const availableForRows = (panelMaxBottom - panelY) - topPad - bottomPad - introH;
+
+    const plan = useGrid
+      ? planGrid(ctx, lines, innerW, isStory, availableForRows)
+      : planList(ctx, lines, innerW, isStory, availableForRows);
+
+    const contentH = introH + plan.totalH;
+    const panelH = Math.max(minPanelH, Math.min(panelMaxBottom - panelY, contentH + topPad + bottomPad));
+
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.22)";
     ctx.shadowBlur = 44;
@@ -979,45 +1183,17 @@
     ctx.fill();
     ctx.restore();
 
-    const innerX = PAD + 56;
-    const innerW = pw - 112;
-    let iy = panelY + 54;
-    const bottom = panelY + panelH - 44;
+    let iy = panelY + topPad;
+    const bottom = panelY + panelH - bottomPad + 16;
 
-    // Kurze Einleitung (optional, gedämpft)
     if (payload.intro) {
       iy = drawWrapped(ctx, payload.intro, innerX, iy, innerW, {
-        px: isStory ? 30 : 28, weight: "600", color: MUTE, lineHeight: 1.34,
-        maxBottom: panelY + (isStory ? 360 : 240),
-      }) + 40;
+        px: introPx, weight: "600", color: MUTE, lineHeight: 1.4, maxBottom: bottom,
+      }) + (isStory ? 40 : 34);
     }
 
-    // Liste der DOs & DON'Ts. Marker (✅/🚫) links, Text mit hängendem Einzug.
-    const px = isStory ? 31 : 29;
-    const markW = 54;
-    const lineGap = 24;
-    const lines = payload.lines || [];
-    let truncated = false;
-    for (let i = 0; i < lines.length; i++) {
-      const ln = lines[i] || {};
-      if (iy + px > bottom) { truncated = i < lines.length; break; }
-      ctx.font = font("700", px);
-      ctx.fillStyle = INK;
-      ctx.textAlign = "left";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText((ln.mark && ln.mark.slice(0, 3) === "lc:") ? "•" : (ln.mark || "•"), innerX, iy + px);
-      const endY = drawWrapped(ctx, ln.text || "", innerX + markW, iy, innerW - markW, {
-        px, weight: "500", color: INK, lineHeight: 1.34, maxBottom: bottom,
-      });
-      iy = endY + lineGap;
-      if (iy > bottom && i < lines.length - 1) { truncated = true; break; }
-    }
-    if (truncated) {
-      ctx.font = font("800", 30);
-      ctx.fillStyle = MUTE;
-      ctx.textAlign = "center";
-      ctx.fillText("…", cx, Math.min(iy + px * 0.5, bottom + 24));
-    }
+    if (useGrid) drawGrid(ctx, lines, innerX, iy, isStory, plan, accent);
+    else drawList(ctx, lines, innerX, iy, innerW, plan, accent);
 
     brandFooter(ctx, h);
     return c;

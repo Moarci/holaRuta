@@ -3119,6 +3119,7 @@
     captionTips: "Praktische Reise-Tipps für Lateinamerika – HolaRuta. 🌎",
     captionModuleHead: (p) => `🧭 ${p.title} – ein Modul aus HolaRuta`,
     captionModule: "Reise-Spanisch für Lateinamerika – spielerisch lernen mit HolaRuta. 🌎",
+    tipsMore: (p) => `+ ${p.n} mehr in der App`,
     // Ruta-Check (Einstufung)
     myPlacement: "🎯 MEIN HOLARUTA-CHECK",
     myPlacementDeEn: "🎯 MEIN EINSTUFUNGS-CHECK",
@@ -3178,6 +3179,7 @@
     captionTips: "Practical travel tips for Latin America – HolaRuta. 🌎",
     captionModuleHead: (p) => `🧭 ${p.title} – a module from HolaRuta`,
     captionModule: "Travel Spanish for Latin America – learn it the fun way with HolaRuta. 🌎",
+    tipsMore: (p) => `+ ${p.n} more in the app`,
     // Ruta-Check (placement)
     myPlacement: "🎯 MY HOLARUTA-CHECK",
     myPlacementDeEn: "🎯 MY PLACEMENT CHECK",
