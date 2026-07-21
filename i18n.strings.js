@@ -188,8 +188,10 @@
     streakNew: "Starte deine Serie",
     resumeWith: (p) => `Weiter mit ${p.cat}`,
     rutaTitle: "Ruta del día",
+    rutaTitleDeEn: "Tour des Tages",
     rutaSub: "Kurze Tagesrunde quer durch alle Themen",
     rutaDoneTitle: "Ruta del día geschafft",
+    rutaDoneTitleDeEn: "Tour des Tages geschafft",
     rutaDoneSub: "Für heute erledigt – noch eine Runde?",
     presetDone: "geschafft",
     presetDoneSub: "Alle Sätze einmal gelernt – noch eine Runde?",
@@ -348,9 +350,11 @@
     onboardSkip: "Später",
     // Ruta-Check als offene Aufgabe auf dem Dashboard (übersprungen, noch nicht gemacht)
     placementOpenTitle: "HolaRuta-Check noch offen",
+    placementOpenTitleDeEn: "Einstufungs-Check noch offen",
     placementOpenSub: "Kurzer Einstufungstest – finde dein Startniveau heraus.",
     // Nivel-Test fortsetzen (begonnen, aber nicht abgeschlossen)
     assessmentResumeTitle: "Nivel-Test fortsetzen",
+    assessmentResumeTitleDeEn: "Niveau-Test fortsetzen",
     assessmentResumeSub: (p) => `Angefangen bei Frage ${p.i} von ${p.n} – dein Fortschritt ist gesichert.`,
     // Einstellungen
     modeFlip: "Karteikarte",
@@ -361,6 +365,7 @@
     namePlaceholder: "z. B. Marco",
     nameSave: "Speichern",
     nameHint: "Wird in den Diálogos automatisch eingesetzt, wenn du dich vorstellst.",
+    nameHintDeEn: "Wird in den Dialogen automatisch eingesetzt, wenn du dich vorstellst.",
     genderCap: "⚧ Geschlecht",
     genderFemale: "♀ Weiblich",
     genderMale: "♂ Männlich",
@@ -393,12 +398,16 @@
     analyticsHint: "Hilft uns, die App zu verbessern: welche Funktionen genutzt werden, wo es hakt, plus Fehlerberichte. Pseudonym, kein Konto, keine Inhalte/Namen/Suchbegriffe – nur grobe Ereignisse. Standardmäßig aus.",
     analyticsResetId: "Statistik-Id zurücksetzen",
     uiLanguage: "Sprache",
-    // Karten-Prompt (Spanisch, beide Sprachen gleich)
+    // Karten-Prompt (Spanisch, beide Sprachen gleich). HelloAbroad (de-en) lernt
+    // Reiseenglisch – darum ein englischer statt spanischer Immersions-Gruß.
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptDeEn: "What are we learning today?",
     homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
+    homePromptNameDeEn: (p) => `What are we learning today, ${p.name}?`,
     dedication: "Für meine liebe Lisa.",
     // Partner-Editionen (ECOS, WeRoad): neutraler Reisegruß statt der privaten Widmung.
     dedicationEdition: "Hecho con cariño para tu viaje.",
+    dedicationEditionDeEn: "Made with love for your trip.",
   }, {
     tabsAreas: "Sections",
     tabStart: "Home",
@@ -454,8 +463,10 @@
     streakNew: "Start your streak",
     resumeWith: (p) => `Carry on with ${p.cat}`,
     rutaTitle: "Ruta del día",
+    rutaTitleDeEn: "Daily tour",
     rutaSub: "A short daily round across all topics",
     rutaDoneTitle: "Ruta del día done",
+    rutaDoneTitleDeEn: "Daily tour done",
     rutaDoneSub: "Done for today – one more round?",
     presetDone: "done",
     presetDoneSub: "All phrases learned once – one more round?",
@@ -602,8 +613,10 @@
     onboardIntro: "We'll count down the days to departure and suggest a doable daily target. Then a short placement test. You can change both anytime later in your profile.",
     onboardSkip: "Skip",
     placementOpenTitle: "HolaRuta-Check still open",
+    placementOpenTitleDeEn: "Placement check still open",
     placementOpenSub: "Short placement test – find out your starting level.",
     assessmentResumeTitle: "Resume level test",
+    assessmentResumeTitleDeEn: "Resume level test",
     assessmentResumeSub: (p) => `Stopped at question ${p.i} of ${p.n} – your progress is saved.`,
     modeFlip: "Flashcard",
     modeType: "Writing",
@@ -613,6 +626,7 @@
     namePlaceholder: "e.g. Marco",
     nameSave: "Save",
     nameHint: "Used automatically in the Diálogos when you introduce yourself.",
+    nameHintDeEn: "Used automatically in the dialogues when you introduce yourself.",
     genderCap: "⚧ Gender",
     genderFemale: "♀ Female",
     genderMale: "♂ Male",
@@ -644,10 +658,13 @@
     analyticsResetId: "Reset stats ID",
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptDeEn: "What are we learning today?",
     homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
+    homePromptNameDeEn: (p) => `What are we learning today, ${p.name}?`,
     dedication: "For my dear Lisa.",
     // Partner editions (ECOS, WeRoad): a neutral travel sign-off instead of the private dedication.
     dedicationEdition: "Hecho con cariño para tu viaje.",
+    dedicationEditionDeEn: "Made with love for your trip.",
   });
 
   // ---------- search: Suche (gezielt nach Karten/Übungen & Informationen) ----------
@@ -2453,6 +2470,7 @@
   // ---------- placement: Ruta-Check (Einstufungstest) ----------
   i18n.register("placement", {
     title: "HolaRuta-Check",
+    titleDeEn: "Einstufungs-Check",
     introLead: (p) => `Dieser kurze Test (${p.n} Fragen) hilft dir, dein Startlevel zu finden – mit echten Reisesätzen, nicht mit trockener Grammatik.`,
     introHonest: "Bitte rate nicht wild. Wenn du etwas nicht weißt, wähle „Ich weiß es nicht“. So bekommst du eine ehrlichere Empfehlung und landest nicht in einer zu schweren Gruppe.",
     introB1: "Verstehen & Reagieren in echten Reisesituationen",
@@ -2495,6 +2513,7 @@
     reviewCorrect: "Richtig wäre:",
     reviewTypo: "Fast! Kleiner Tippfehler – richtig:",
     profileCap: "HolaRuta-Check",
+    profileCapDeEn: "Einstufungs-Check",
     profileLevelCap: "Startlevel",
     profileScoreLine: (p) => `Trefferquote ${p.acc}% · Gesamt-Score ${p.score}% (inkl. Tempo)`,
     profileLastAt: (p) => `Zuletzt am ${p.date}`,
@@ -2503,11 +2522,13 @@
     profileNever: "Noch nicht gemacht – finde in wenigen Minuten dein Startlevel.",
     share: "Ergebnis teilen",
     takeNow: "HolaRuta-Check machen",
+    takeNowDeEn: "Einstufungs-Check machen",
     retake: "Nochmal",
     later: "Später",
     toApp: "Los geht's",
   }, {
     title: "HolaRuta-Check",
+    titleDeEn: "Placement check",
     introLead: (p) => `This short test (${p.n} questions) helps you find your starting level – with real travel phrases, not dry grammar.`,
     introHonest: "Please don't guess wildly. If you don't know an answer, choose “I don't know”. That gives you a fairer recommendation and keeps you out of a group that's too hard.",
     introB1: "Understand & react in real travel situations",
@@ -2548,6 +2569,7 @@
     reviewCorrect: "Correct answer:",
     reviewTypo: "Almost! Small typo – correct:",
     profileCap: "HolaRuta-Check",
+    profileCapDeEn: "Placement check",
     profileLevelCap: "Starting level",
     profileScoreLine: (p) => `${p.acc}% accuracy · ${p.score}% overall score (incl. pace)`,
     profileLastAt: (p) => `Last taken ${p.date}`,
@@ -2556,6 +2578,7 @@
     profileNever: "Not taken yet – find your starting level in a few minutes.",
     share: "Share result",
     takeNow: "Take the HolaRuta-Check",
+    takeNowDeEn: "Take the placement check",
     retake: "Retake",
     later: "Later",
     toApp: "Let's go",
@@ -2564,7 +2587,9 @@
   // ---------- assessment: HolaRuta Nivel-Test (ausführlicher Einstufungstest) ----------
   i18n.register("assessment", {
     title: "HolaRuta Nivel-Test",
+    titleDeEn: "Niveau-Test",
     introLead: (p) => `Der ausführliche Test (${p.n} Fragen, A0–C1) stuft dich genau ein – mit echten Reise- und Alltagssätzen, Leseverstehen und etwas Grammatik. Länger als der HolaRuta-Check, aber kürzer als ein Zertifikatstest.`,
+    introLeadDeEn: (p) => `Der ausführliche Test (${p.n} Fragen, A0–C1) stuft dich genau ein – mit echten Reise- und Alltagssätzen, Leseverstehen und etwas Grammatik. Länger als der Einstufungs-Check, aber kürzer als ein Zertifikatstest.`,
     introHonest: "Bitte rate nicht. Wenn du etwas wirklich nicht weißt, wähle „Ich weiß es nicht“ – so wird dein Niveau ehrlicher und genauer bestimmt.",
     introB1: "Sechs Stufen: von ersten Wörtern (A0) bis zu feinen Nuancen (C1)",
     introB2: "Verstehen, Reagieren, Wortschatz, Leseverstehen – plus Grammatik & Zeiten",
@@ -2622,6 +2647,7 @@
     reviewNoAnswer: "Keine Antwort („weiß ich nicht“)",
     reviewCorrect: "Richtig wäre:",
     profileCap: "HolaRuta Nivel-Test",
+    profileCapDeEn: "Niveau-Test",
     profileLevelCap: "Niveau",
     profileScoreLine: (p) => `Trefferquote ${p.acc}% · Gesamt-Score ${p.score}% (inkl. Tempo)`,
     profileLastAt: (p) => `Zuletzt am ${p.date}`,
@@ -2630,10 +2656,13 @@
     profileNever: "Noch nicht gemacht – bestimme in 10–15 Minuten dein genaues Niveau (A0–C1).",
     share: "Ergebnis teilen",
     takeNow: "Nivel-Test machen",
+    takeNowDeEn: "Niveau-Test machen",
     retake: "Nochmal",
   }, {
     title: "HolaRuta Level Test",
+    titleDeEn: "Level test",
     introLead: (p) => `This in-depth test (${p.n} questions, A0–C1) places you precisely – with real travel and everyday sentences, reading comprehension and some grammar. Longer than the HolaRuta-Check, but shorter than a certificate exam.`,
+    introLeadDeEn: (p) => `This in-depth test (${p.n} questions, A0–C1) places you precisely – with real travel and everyday sentences, reading comprehension and some grammar. Longer than the placement check, but shorter than a certificate exam.`,
     introHonest: "Please don't guess. If you truly don't know, choose “I don't know” – that makes your level fairer and more accurate.",
     introB1: "Six levels: from first words (A0) to fine nuances (C1)",
     introB2: "Understanding, reacting, vocabulary, reading – plus grammar & tenses",
@@ -2689,6 +2718,7 @@
     reviewNoAnswer: "No answer (“I don't know”)",
     reviewCorrect: "Correct answer:",
     profileCap: "HolaRuta Level Test",
+    profileCapDeEn: "Level test",
     profileLevelCap: "Level",
     profileScoreLine: (p) => `${p.acc}% accuracy · ${p.score}% overall score (incl. pace)`,
     profileLastAt: (p) => `Last taken ${p.date}`,
@@ -2697,6 +2727,7 @@
     profileNever: "Not taken yet – determine your exact level (A0–C1) in 10–15 minutes.",
     share: "Share result",
     takeNow: "Take the level test",
+    takeNowDeEn: "Take the level test",
     retake: "Retake",
   });
 
