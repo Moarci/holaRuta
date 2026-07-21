@@ -152,6 +152,9 @@
     // Mi-léxico-Kachel auf dem Dashboard (Schnellzugriff auf die Favoriten)
     lexSection: "Dein Lexikon",
     lexTitle: "Mi léxico",
+    // HelloAbroad (de-en): spiegelt favorites.titleDeEn – „Mi léxico" passt nicht
+    // fürs Reiseenglisch-Publikum.
+    lexTitleDeEn: "Meine Vokabeln",
     lexLast: (p) => `Zuletzt gemerkt: „${p.es}“`,
     lexHint: "Deine gemerkten Wörter & Sätze – griffbereit",
     // Themen-Abschnitte (Gruppierung der Lern-Kacheln)
@@ -431,6 +434,9 @@
     // Mi-léxico tile on the dashboard (quick access to favourites)
     lexSection: "Your lexicon",
     lexTitle: "Mi léxico",
+    // HelloAbroad (de-en): mirrors favorites.titleDeEn – "Mi léxico" doesn't land
+    // for the travel-English audience.
+    lexTitleDeEn: "My vocabulary",
     lexLast: (p) => `Last saved: “${p.es}”`,
     lexHint: "Your saved words & phrases – within reach",
     catGroupLocals: "English for work",
@@ -742,6 +748,7 @@
     backCurso: "Zum Lernpfad",
     backTask: "Zurück zur Aufgabe",
     backFavorites: "Zurück zu Mi léxico",
+    backFavoritesDeEn: "Zurück zu Meine Vokabeln",
   }, {
     studyProgress: "Learning progress",
     cardBack: "Card is flipped",
@@ -781,6 +788,7 @@
     backCurso: "Back to your learning path",
     backTask: "Back to the task",
     backFavorites: "Back to Mi léxico",
+    backFavoritesDeEn: "Back to My vocabulary",
   });
 
   // ---------- discover: Feature-Untertitel + Modus-Chrome ----------
@@ -3306,7 +3314,9 @@
     practice: "Üben",
     share: "Teilen",
     shareTitle: "Mi léxico",
+    shareTitleDeEn: "Meine Vokabeln",
     shareHead: "📒 Mi léxico – meine Lieblingswörter & -sätze",
+    shareHeadDeEn: "📒 Meine Vokabeln – meine Lieblingswörter & -sätze",
     copied: "Liste in die Zwischenablage kopiert.",
   }, {
     title: "Mi léxico",
@@ -3349,7 +3359,9 @@
     practice: "Practice",
     share: "Share",
     shareTitle: "Mi léxico",
+    shareTitleDeEn: "My vocabulary",
     shareHead: "📒 Mi léxico – my favourite words & phrases",
+    shareHeadDeEn: "📒 My vocabulary – my favourite words & phrases",
     copied: "List copied to clipboard.",
   });
 })();

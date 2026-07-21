@@ -975,7 +975,7 @@
   // Liefert immer ein Objekt – fehlt celebrate.js, fällt es still auf Turista/0 XP.
   function xpVM() {
     const cel = window.SC && SC.celebrate;
-    const levels = (cel && cel.VIAJERO_LEVELS) || [];
+    const levels = (cel && cel.activeLevels) ? cel.activeLevels() : (cel && cel.VIAJERO_LEVELS) || [];
     const xp = Math.max(0, gamestats.xp || 0);
     const level = (cel && cel.levelForXp)
       ? cel.levelForXp(xp)
