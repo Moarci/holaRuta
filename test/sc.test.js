@@ -767,6 +767,21 @@ test("store.loadGameStats: Ruta-Check-Review bleibt erhalten, wird typisiert & g
   assert.equal(g.assessment.review[0].promptDe, "F0");
 });
 
+test("store.loadGameStats: Skill-Eintrag mit nicht-String 'skill' wird verworfen (nicht nur Nicht-Objekte)", () => {
+  // sanitizeSkillBreakdown filtert sowohl Nicht-Objekte ALS AUCH Objekte mit
+  // untypisiertem skill-Feld raus (zwei getrennte Bedingungen) – ein Objekt mit
+  // z.B. skill:42 darf nicht durchrutschen (würde später an .slice() crashen).
+  storeMem[GKEY] = JSON.stringify({
+    placement: {
+      level: "A2", finalScore: 0.5, at: "2026-06-15",
+      skills: [{ skill: 42, accuracy: 50 }, "junk", { skill: "listening", accuracy: 80, unknownRate: 5 }],
+    },
+  });
+  const g = store.loadGameStats();
+  assert.equal(g.placement.skills.length, 1, "nur der Eintrag mit echtem String-skill bleibt");
+  assert.equal(g.placement.skills[0].skill, "listening");
+});
+
 test("store.loadGameStats: pretripDays – altes flaches Format wird nach { colombia: … } migriert", () => {
   // Bestandsgerät mit altem, flachem Kolumbien-Fortschritt.
   storeMem[GKEY] = JSON.stringify({ reviews: 1, pretripDays: { 1: true, 2: true, 3: true } });
@@ -820,6 +835,14 @@ test("store.encodeTask/decodeTask: Round-Trip + Validierung (Aufgaben-Code)", ()
   assert.equal(store.decodeTask("HRT1." + Buffer.from('{"app":"other","kind":"preset","scope":"x"}').toString("base64")), null);
   const badDue = store.decodeTask(store.encodeTask({ kind: "category", scope: "colombia", due: "01.07.2026" }));
   assert.equal(badDue.due, ""); // ungültiges Datum -> leer
+});
+
+test("store.encodeTask: kodierter Payload trägt das Versionsfeld v:1 (Formatstempel)", () => {
+  // decodeTask prüft v (noch) nicht, aber encodeTask MUSS es weiterhin schreiben –
+  // das Feld ist die Grundlage für eine künftige Formatmigration (v:2 …).
+  const code = store.encodeTask({ kind: "preset", scope: "colombia" });
+  const payload = JSON.parse(Buffer.from(code.slice(5), "base64").toString("utf8"));
+  assert.equal(payload.v, 1);
 });
 
 test("store.loadTasks/saveTasks: abonnierte Aufgaben (mehrere, defensiv typisiert)", () => {

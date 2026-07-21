@@ -459,6 +459,8 @@
     yourData: "Tus datos",
     exportData: "Exportar datos",
     importData: "Importar datos",
+    migrationBannerText: "HolaRuta se muda a holaruta.com. Exporta tu copia ahora e impórtala allí para conservar tu progreso.",
+    migrationBannerBtn: "Exportar copia",
     cloudSync: "Sincronización",
     installText: "Añade HolaRuta como app: arranca al instante, sin buscar el archivo, y funciona sin conexión.",
     installBtn: "📲 Instalar app",

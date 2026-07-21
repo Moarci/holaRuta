@@ -162,6 +162,19 @@
     return detectUiLang();
   }
 
+  // Domain-Umzug (github.io -> holaruta.com): nur auf der ALTEN Origin zeigen,
+  // damit Bestandsnutzer ihr Backup exportieren, bevor die alte Adresse
+  // stillgelegt wird. Exakter Hostname-Vergleich (kein "includes") – ein
+  // Treffer soll nicht durch eine fremde Domain vorgetäuscht werden können.
+  // Einmal weggetippt bleibt der Banner auf diesem Gerät weg (store-Flag).
+  const LEGACY_HOSTNAME = "moarci.github.io";
+  function shouldShowMigrationBanner() {
+    try {
+      if (typeof location === "undefined" || location.hostname !== LEGACY_HOSTNAME) return false;
+      return !store.loadMigrationBannerDismissed();
+    } catch (e) { return false; }
+  }
+
   const state = {
     screen: "home",          // 'home' | 'study' | 'done' | 'stats' | 'card' | 'hostel' | 'battleSetup' | 'battle' | 'battleDone' | 'roleplaySetup' | 'roleplay' | 'quizSetup' | 'quiz' | 'quizDone' | 'cuerpo' | 'conjugacion' | 'tiempos' | 'spickzettel' | 'preciosSetup' | 'precios' | 'preciosDone' | 'frasesSetup' | 'frases' | 'frasesDone' | 'compras' | 'comprasQuiz' | 'comprasQuizDone' | 'knigge' | 'regatear' | 'logistica' | 'salud' | 'jerga' | 'derechos' | 'responsable' | 'fotos' | 'flirt' | 'bailar' | 'historia' | 'search' | 'pretrip' | 'teacher' | 'composer' | 'task'
     homeTab: "start",        // Start-Reiter hat Vorrang: jeder App-Start landet auf „Start"; Reiter-Wechsel gilt nur für die laufende Sitzung
@@ -210,6 +223,7 @@
     updateNotice: null,      // „Was ist neu?"-Einträge nach einem Update (null = keiner)
     swUpdate: false,         // wartet eine neue SW-Version? -> "jetzt laden"-Banner
     swWaiting: null,         // Referenz auf den wartenden Service Worker (für SKIP_WAITING)
+    migrationBanner: shouldShowMigrationBanner(), // Domain-Umzug-Hinweis (nur alte Origin, bis weggetippt)
     // ----- Hostel Mode (transient, keine Persistenz) -----
     battle: null,            // { sceneId, poolIds, queue:[battleId…], round, totalRounds, current:'A'|'B', names:{A,B}, scores:{A,B}, revealed, recorded, suddenDeath, challenge }
     battleLength: 10,        // gewünschte Battle-Länge in Runden (vor dem Start wählbar)
@@ -2541,6 +2555,14 @@
     // wenn ein neuer Service Worker installiert ist und auf Aktivierung wartet.
     if (state.swUpdate) {
       root.insertAdjacentHTML("beforeend", ui.updateBanner());
+    }
+
+    // Domain-Umzug-Hinweis (nur auf der alten github.io-Origin, siehe
+    // shouldShowMigrationBanner) – eigener Offset in der CSS-Klasse .migbar,
+    // damit er sich mit dem SW-Update-Banner oben nicht überlappt, falls
+    // beide gleichzeitig sichtbar sind.
+    if (state.migrationBanner) {
+      root.insertAdjacentHTML("beforeend", ui.migrationBanner());
     }
 
     // Fertig-Screen: die anlassbezogene Belohnungs-Inszenierung in die leere Bühne
@@ -7472,6 +7494,7 @@
     "social-copy-code": (el) => { socialCopyCode(); },
     "import-data": (el) => { startImport(); },
     "dismiss-notice": (el) => { el.remove(); },
+    "dismiss-migration-banner": (el) => { dismissMigrationBanner(); },
     "dismiss-update": (el) => { dismissUpdateNotice(); },
     "reload-app": (el) => { location.reload(); },
     "apply-update": (el) => { applyUpdate(); },
@@ -8085,6 +8108,15 @@
   function dismissSwUpdate() {
     state.swUpdate = false;
     const el = root.querySelector(".updbar");
+    if (el) el.remove();
+  }
+
+  // Domain-Umzug-Banner wegtippen: bleibt auf diesem Gerät dauerhaft weg
+  // (store-Flag, kein erneutes Aufdrängen bei jedem Sitzungsstart).
+  function dismissMigrationBanner() {
+    state.migrationBanner = false;
+    try { store.dismissMigrationBanner(); } catch (e) { /* egal */ }
+    const el = root.querySelector(".migbar");
     if (el) el.remove();
   }
 
