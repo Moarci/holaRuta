@@ -119,7 +119,7 @@ test("HelloAbroad Placement: Freitext-Placeholder + lang-Attribute sind Englisch
   assert.ok(d.click("placement-start"), "placement-start startet den adaptiven Lauf");
 
   let sawFree = false;
-  for (let i = 0; i < 20 && !sawFree; i++) {
+  for (let i = 0; i < 20; i++) {
     const html = d.html();
     assert.ok(!/HolaRuta/i.test(html), "Frage-Screen enthaelt kein HolaRuta");
     if (/id="placement-free"/.test(html)) {
@@ -145,7 +145,7 @@ test("HelloAbroad Nivel-Test: Freitext-Placeholder + lang-Attribute sind Englisc
   assert.ok(d.click("assessment-start", { variant: "standard" }), "assessment-start startet den adaptiven Lauf");
 
   let sawFree = false;
-  for (let i = 0; i < 40 && !sawFree; i++) {
+  for (let i = 0; i < 40; i++) {
     const html = d.html();
     assert.ok(!/HolaRuta/i.test(html), "Frage-Screen enthaelt kein HolaRuta");
     if (/id="assessment-free"/.test(html)) {
@@ -169,7 +169,7 @@ test("Gegenprobe: de-es Placement zeigt weiterhin lang=\"es\" und den spanischen
   assert.ok(d.click("placement-start"));
 
   let sawFree = false;
-  for (let i = 0; i < 20 && !sawFree; i++) {
+  for (let i = 0; i < 20; i++) {
     const html = d.html();
     if (/id="placement-free"/.test(html)) {
       sawFree = true;
