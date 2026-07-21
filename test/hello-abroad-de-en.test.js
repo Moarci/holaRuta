@@ -304,3 +304,64 @@ test("Reise-Kontext: de-en zeigt KEIN Spanisch in Situation/Tipp (alle Karten)",
   });
   assert.equal(leaks.length, 0, `Spanisch im de-en-Kontext:\n${leaks.slice(0, 20).join("\n")}`);
 });
+
+// ============ (6) Dashboard: „Mi léxico"-Kachel zeigt keinen spanischen Markennamen ============
+// Der Favoriten-Shortcut auf dem Start-Reiter heißt in de-es „Mi léxico" (spanischer
+// Flair, passend zur App). Für ein Reiseenglisch-50+-Publikum ist das ein Leck ohne
+// Bezug – i18n.strings.js trägt dafür home.lexTitleDeEn ("Meine Vokabeln"), siehe t().
+// app.js liest die Favoriten NUR beim Boot in eine Modul-Variable (Schnappschuss) –
+// die Kachel erscheint also nur, wenn der Favorit schon VOR installModules() im
+// Storage steht (wie freshApp es für den onboarded-Flag macht).
+function freshAppWithFavorite(edition, fav) {
+  stub.install();
+  if (globalThis.window.SC) globalThis.window.SC.editionConfig = null;
+  stub.seedOnboarded();
+  const ns = edition === "hello-abroad" ? "de-en." : "";
+  if (edition === "hello-abroad") {
+    globalThis.window.localStorage.setItem(
+      "spanischcard.de-en.settings.v1", JSON.stringify({ onboarded: true, mode: "flip" }));
+  }
+  globalThis.window.localStorage.setItem(
+    "spanischcard." + ns + "favorites.v1", JSON.stringify([fav]));
+  globalThis.window.location.search = edition ? "?edition=" + edition : "";
+  const SRC = path.join(__dirname, "..");
+  for (const key of Object.keys(require.cache)) {
+    if (key.startsWith(SRC) && !key.includes(`${path.sep}test${path.sep}`)) delete require.cache[key];
+  }
+  stub.installModules();
+  return document.getElementById("app");
+}
+
+test("Dashboard: de-en zeigt 'Meine Vokabeln' statt 'Mi léxico' (sobald ein Favorit existiert)", () => {
+  const root = freshAppWithFavorite("hello-abroad", { id: "f1", de: "Zimmer wechseln", es: "Can I change rooms?", tip: "", addedAt: 1 });
+  const html = root.innerHTML;
+  assert.match(html, /Meine Vokabeln/, "de-en zeigt den deutschen Lexikon-Namen");
+  assert.doesNotMatch(html, /Mi léxico/, "kein spanischer Markenname im de-en-Dashboard");
+});
+
+test("Gegenprobe: de-es zeigt weiterhin 'Mi léxico' auf dem Dashboard", () => {
+  const root = freshAppWithFavorite(null, { id: "f1", de: "Zimmer wechseln", es: "¿Puedo cambiar de habitación?", tip: "", addedAt: 1 });
+  assert.match(root.innerHTML, /Mi léxico/, "de-es behält den spanischen Markennamen");
+});
+
+// ============ (7) Belohnungs-Screen: Rang-Namen/Texte ohne spanischen Flair ============
+// celebrate.js (SC.celebrate) treibt sowohl den Level-Up-Fertig-Screen als auch die
+// „Dein Fortschritt"-Kachel (Rang + XP-Balken). Beide zogen bislang unverändert die
+// Reise-Spanisch-Leiter (Turista/Mochilero/…) und spanische Sätze ("¡Subiste de
+// nivel!", "Nivel X · Y erreicht.") – im de-en-Track ohne jeden Bezug.
+test("Belohnungs-Rangleiter: de-en nutzt die deutsche Namensleiter, kein Turista/Mochilero", () => {
+  freshApp("hello-abroad");
+  const { celebrate } = window.SC;
+  const levels = celebrate.activeLevels();
+  assert.equal(levels[1].name, "Reisefreund");
+  assert.ok(levels.every((l) => !/Turista|Mochilero|Explorador|Trotamundos|Aventurero|Baqueano|Leyenda/.test(l.name)));
+  const scene = celebrate.decide({ levelBefore: 0, levelAfter: 1, xpAfter: 100, right: 8, wrong: 2, total: 10 });
+  assert.doesNotMatch(scene.headline, /[¡¿]/, "Level-Up-Headline ohne spanische Satzzeichen");
+  assert.doesNotMatch(scene.sub, /Nivel |[¡¿]/, "Level-Up-Untertitel ohne 'Nivel'/spanische Satzzeichen");
+});
+
+test("Gegenprobe: de-es behält die Reise-Spanisch-Rangleiter (Turista/Mochilero/…)", () => {
+  freshApp(null);
+  const { celebrate } = window.SC;
+  assert.equal(celebrate.activeLevels()[1].name, "Mochilero");
+});

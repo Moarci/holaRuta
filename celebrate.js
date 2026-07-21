@@ -35,6 +35,27 @@
     { n: 6, key: "leyenda",     name: "Leyenda del Camino", min: 4500 },
   ];
 
+  // HelloAbroad (de-en): dieselbe XP-Leiter, aber ohne den spanischen Flair, der für
+  // ein Reiseenglisch-50+-Publikum keinen Bezug hat. Gleiche Stufen/Schwellen wie
+  // VIAJERO_LEVELS, rein deutsche Namen.
+  var VIAJERO_LEVELS_DEEN = [
+    { n: 0, key: "anfaenger",   name: "Anfänger",     min: 0 },
+    { n: 1, key: "reisefreund", name: "Reisefreund",  min: 100 },
+    { n: 2, key: "entdecker",   name: "Entdecker",    min: 300 },
+    { n: 3, key: "weltenbummler", name: "Weltenbummler", min: 700 },
+    { n: 4, key: "abenteurer",  name: "Abenteurer",   min: 1400 },
+    { n: 5, key: "kenner",      name: "Kenner",       min: 2600 },
+    { n: 6, key: "reiselegende", name: "Reiselegende", min: 4500 },
+  ];
+
+  // HelloAbroad-Track (de-en) aktiv? Analog zu isLocalsTrack in badges.js/i18n.js:
+  // window.SC.track fehlt in Tests/altem Kontext -> bewusst defensiv, fällt sonst
+  // auf den Reise-Spanisch-Standard (VIAJERO_LEVELS/COPY) zurück.
+  function isDeEnTrack() {
+    return !!(window.SC && window.SC.track && typeof window.SC.track.id === "function" && window.SC.track.id() === "de-en");
+  }
+  function activeLevels() { return isDeEnTrack() ? VIAJERO_LEVELS_DEEN : VIAJERO_LEVELS; }
+
   var STREAK_MILESTONES = [3, 7, 14, 30, 50, 75, 100, 150, 200, 300, 365];
 
   // Akzent-Tonalitäten (mappen auf eure CSS-Variablen).
@@ -59,11 +80,13 @@
     return pool[i];
   }
 
-  // Rang zu einem XP-Stand (höchster erreichter).
+  // Rang zu einem XP-Stand (höchster erreichter). Berücksichtigt den aktiven Track
+  // (HelloAbroad/de-en bekommt die spanisch-freie Namensleiter).
   function levelForXp(xp) {
-    var x = num(xp, 0), lvl = VIAJERO_LEVELS[0];
-    for (var i = 0; i < VIAJERO_LEVELS.length; i++) {
-      if (x >= VIAJERO_LEVELS[i].min) lvl = VIAJERO_LEVELS[i];
+    var levels = activeLevels();
+    var x = num(xp, 0), lvl = levels[0];
+    for (var i = 0; i < levels.length; i++) {
+      if (x >= levels[i].min) lvl = levels[i];
     }
     return lvl;
   }
@@ -91,6 +114,23 @@
     trophy:    ["¡Pleno!", "¡Ronda perfecta!", "¡Lo clavaste!"],
   };
 
+  // HelloAbroad (de-en): dieselben Anlässe, aber rein deutsches Wording – der
+  // spanische Flair der Reise-App passt für ein Reiseenglisch-Publikum nicht.
+  var COPY_DEEN = {
+    perfect:   ["Perfekt!", "Fehlerfrei!", "Makellos!"],
+    great:     ["Sehr gut!", "Klasse gemacht!", "Stark gemacht"],
+    good:      ["Geschafft!", "Gut gemacht!", "Runde geschafft"],
+    practice:  ["Dranbleiben!", "Dranbleiben zahlt sich aus", "Jede Runde zählt"],
+    first:     ["Willkommen!", "Deine Reise beginnt"],
+    comeback:  ["Schön, dich zu sehen!", "Willkommen zurück"],
+    streak:    ["Serie läuft!", "Serie gehalten"],
+    badge:     ["Neuer Stempel!", "Stempel gesichert"],
+    destino:   ["Ziel komplett!", "Reiseziel gemeistert"],
+    levelup:   ["Aufgestiegen!", "Neuer Rang"],
+    trophy:    ["Volltreffer!", "Perfekte Runde!", "Klasse gemacht!"],
+  };
+  function activeCopy() { return isDeEnTrack() ? COPY_DEEN : COPY; }
+
   // ---------- 1) ENTSCHEIDUNG ----------
   // Prioritätenliste, von „seltenstes/größtes Ereignis“ nach „Alltag“.
   function decide(result) {
@@ -110,6 +150,11 @@
     var band = accuracyBand(accuracy);
 
     var streakLabel = streak > 0 ? ("Tag " + streak) : null;
+    // HelloAbroad (de-en): track-aware Copy-Pool + Kurzschluss für die einzelnen
+    // Spanisch-Textbausteine unten, die nicht über COPY laufen (Level-/Streak-/
+    // Stempel-Zwischentexte).
+    var deEn = isDeEnTrack();
+    var cp = activeCopy();
 
     var stats = {
       right: right, wrong: wrong, total: total, accuracy: accuracy,
@@ -131,8 +176,8 @@
       var lvl = levelForXp(r.xpAfter);
       return scene({
         id: "levelup", staging: "levelup", tone: "gold",
-        headline: pick(COPY.levelup, seed),
-        sub: "Nivel " + lvl.n + " · " + lvl.name + " erreicht.",
+        headline: pick(cp.levelup, seed),
+        sub: (deEn ? "Level " : "Nivel ") + lvl.n + " · " + lvl.name + " erreicht.",
         level: { from: num(r.levelBefore, lvl.n - 1), to: lvl.n, name: lvl.name },
         confetti: 64, sparks: 0, sound: "fanfare", haptic: [18, 40, 18, 40, 30],
       });
@@ -143,7 +188,7 @@
       var d = r.destinationComplete;
       return scene({
         id: "destination", staging: "stamp", tone: "gold",
-        headline: pick(COPY.destino, seed),
+        headline: pick(cp.destino, seed),
         sub: d.name + (d.country ? " · " + d.country : "") + " ist komplett gelernt.",
         destination: d,
         confetti: 50, sparks: 14, sound: "fanfare", haptic: [15, 30, 15, 30, 25],
@@ -160,10 +205,10 @@
       var tmFull = tmPct >= 100;
       return scene({
         id: "tripMilestone", staging: "stamp", tone: "gold",
-        headline: tmFull ? "¡Listo! Startklar für die Reise" : tmPct + " % startklar",
+        headline: tmFull ? (deEn ? "Fertig! Startklar für die Reise" : "¡Listo! Startklar für die Reise") : tmPct + " % startklar",
         sub: tmDest
           ? (tmFull ? "Alle Karten gemeistert · " + tmDest + ", wir kommen!" : tmPct + " % gemeistert · auf dem Weg nach " + tmDest)
-          : (tmFull ? "Alle Karten gemeistert – ¡buen viaje!" : tmPct + " % deiner Karten gemeistert"),
+          : (tmFull ? (deEn ? "Alle Karten gemeistert – gute Reise!" : "Alle Karten gemeistert – ¡buen viaje!") : tmPct + " % deiner Karten gemeistert"),
         tripMilestone: tm,
         confetti: tmFull ? 60 : 40, sparks: tmFull ? 18 : 12, sound: "fanfare", haptic: [16, 32, 16, 32, 24],
       });
@@ -174,7 +219,7 @@
       var b = newBadges[0];
       return scene({
         id: "badge", staging: "badge", tone: "brand",
-        headline: pick(COPY.badge, seed),
+        headline: pick(cp.badge, seed),
         sub: b.name + (newBadges.length > 1 ? " (+" + (newBadges.length - 1) + " weitere)" : ""),
         badge: b,
         confetti: 30, sparks: 0, sound: "chime", haptic: [12, 24, 30],
@@ -185,8 +230,10 @@
     if (isMilestone) {
       return scene({
         id: "streakMilestone", staging: "flame", tone: "warn",
-        headline: pick(COPY.streak, seed),
-        sub: "Racha de " + streak + " días · ¡no la pierdas mañana!",
+        headline: pick(cp.streak, seed),
+        sub: deEn
+          ? "Serie von " + streak + " Tagen · morgen nicht verlieren!"
+          : "Racha de " + streak + " días · ¡no la pierdas mañana!",
         milestone: streak, streakLabel: streakLabel,
         confetti: 24, sparks: 18, sound: "fanfare", haptic: [14, 28, 14, 28],
       });
@@ -199,8 +246,10 @@
     if (r.isGame && band === "perfect" && total >= 4) {
       return scene({
         id: "gameperfect", staging: "trophy", tone: "gold",
-        headline: pick(COPY.trophy, seed),
-        sub: r.scope ? (r.scope + " · sin fallos.") : "Sin fallos.",
+        headline: pick(cp.trophy, seed),
+        sub: deEn
+          ? (r.scope ? (r.scope + " · fehlerfrei.") : "Fehlerfrei.")
+          : (r.scope ? (r.scope + " · sin fallos.") : "Sin fallos."),
         confetti: 60, sparks: 16, sound: "fanfare", haptic: [16, 30, 16, 30, 24],
       });
     }
@@ -209,7 +258,7 @@
     if (band === "perfect" && total >= 4) {
       return scene({
         id: "perfect", staging: "ring", tone: "gold",
-        headline: pick(COPY.perfect, seed),
+        headline: pick(cp.perfect, seed),
         sub: r.scope ? (r.scope + " · alles richtig.") : "Alles richtig.",
         confetti: 46, sparks: 8, sound: "chime", haptic: [12, 30, 12],
       });
@@ -219,7 +268,7 @@
     if (r.isFirstEver) {
       return scene({
         id: "first", staging: "ring", tone: "brand",
-        headline: pick(COPY.first, seed),
+        headline: pick(cp.first, seed),
         sub: "Erste Runde geschafft. So fühlt sich Fortschritt an.",
         confetti: 30, sparks: 0, sound: "pop", haptic: [10, 20, 10],
       });
@@ -229,8 +278,8 @@
     if (streakIsNew && streakBefore === 0 && streak === 1 && !r.isFirstEver) {
       return scene({
         id: "comeback", staging: "ring", tone: "ok",
-        headline: pick(COPY.comeback, seed),
-        sub: "Neuer Anlauf, neue Racha. Genau richtig.",
+        headline: pick(cp.comeback, seed),
+        sub: deEn ? "Neuer Anlauf, neue Serie. Genau richtig." : "Neuer Anlauf, neue Racha. Genau richtig.",
         confetti: 22, sparks: 0, sound: "pop", haptic: [10, 20],
       });
     }
@@ -240,7 +289,7 @@
     var toneByBand = { great: "ok", good: "brand", practice: "easy" };
     return scene({
       id: "standard", staging: "ring", tone: toneByBand[band] || "brand",
-      headline: pick(COPY[band] || COPY.good, seed),
+      headline: pick(cp[band] || cp.good, seed),
       sub: streakLabel
         ? (r.scope ? r.scope + " · " + streakLabel : streakLabel)
         : (r.scope || "Runde abgeschlossen."),
@@ -381,7 +430,7 @@
 
   // SVG-Stempel (Reisepass) – Bogen-Text wie im Entwurf. Der raue Rand kommt über
   // ein <g filter="url(#cbRoughen)"> (SVG-Attribut, nicht CSS) – siehe ensureRoughFilter.
-  function stampSVG(top, bottom, mark) {
+  function stampSVG(top, bottom, mark, doneLabel) {
     var cx = 105, cy = 105, R = 96;
     return '<svg class="cb-stamp__ink" width="210" height="210" viewBox="0 0 210 210">' +
       '<defs><path id="cbArcTop" d="M ' + (cx - 72) + ' ' + cy + ' A 72 72 0 0 1 ' + (cx + 72) + ' ' + cy + '"/>' +
@@ -395,7 +444,7 @@
       '<textPath href="#cbArcBot" startOffset="50%" text-anchor="middle">' + bottom + '</textPath></text>' +
       '</g>' +
       '</svg><div class="cb-stamp__center"><div class="cb-stamp__mark">' + mark + '</div>' +
-      '<div class="cb-stamp__done">Completado</div></div>';
+      '<div class="cb-stamp__done">' + (doneLabel || "Completado") + '</div></div>';
   }
 
   // Baut den Hero je nach staging. Gibt {node, run(fx,rm)} zurück.
@@ -421,7 +470,7 @@
       ensureRoughFilter();
       var d = scene.destination || { name: "Ruta", country: "" };
       var stamp = elx("div", "cb-stamp");
-      stamp.innerHTML = stampSVG((d.name || "").toUpperCase(), (d.country || "").toUpperCase(), "\uD83E\uDDED");
+      stamp.innerHTML = stampSVG((d.name || "").toUpperCase(), (d.country || "").toUpperCase(), "\uD83E\uDDED", isDeEnTrack() ? "Geschafft" : "Completado");
       return { node: stamp, run: function (fx, rm) {
         if (rm || !stamp.animate) { stamp.style.opacity = 1; return; }
         stamp.animate([
@@ -494,7 +543,7 @@
       } };
     }
     // levelup
-    var lv = scene.level || { to: 1, name: "Mochilero" };
+    var lv = scene.level || { to: 1, name: activeLevels()[1].name };
     var stage = elx("div", "cb-levelup");
     stage.innerHTML = '<div class="cb-rays"></div>' +
       '<div class="cb-emblem"><div class="cb-emblem__n">' + lv.to + '</div></div>' +
@@ -593,6 +642,8 @@
     levelForXp: levelForXp,
     accuracyBand: accuracyBand,
     VIAJERO_LEVELS: VIAJERO_LEVELS,
+    VIAJERO_LEVELS_DEEN: VIAJERO_LEVELS_DEEN,
+    activeLevels: activeLevels,
     STREAK_MILESTONES: STREAK_MILESTONES,
     _pick: pick,
   };

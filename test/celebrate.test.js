@@ -11,10 +11,10 @@ const path = require("path");
 const vm = require("vm");
 
 // celebrate.js in einen Sandbox-Context mit window/navigator-Stub laden.
-function loadCelebrate() {
+function loadCelebrate(trackId) {
   const code = fs.readFileSync(path.join(__dirname, "..", "celebrate.js"), "utf8");
   const sandbox = {
-    window: {},
+    window: { SC: trackId ? { track: { id: () => trackId } } : {} },
     navigator: {},
     document: undefined,
     performance: { now: () => 0 },
@@ -28,6 +28,7 @@ function loadCelebrate() {
 }
 
 const C = loadCelebrate();
+const CDeEn = loadCelebrate("de-en");
 
 function base(over) {
   return Object.assign({
@@ -166,4 +167,57 @@ test("Robustheit: leeres/kaputtes result crasht nicht", () => {
 test("stats-Strip-Daten: accuracy aus right/wrong abgeleitet, wenn nicht gesetzt", () => {
   const s = C.decide({ right: 9, wrong: 1, total: 10, scope: "Test" });
   assert.equal(s.stats.accuracy, 90);
+});
+
+// ---------- HelloAbroad (de-en): kein spanischer Flair mehr in Texten/Rängen ----------
+
+const SPANISH_MARKERS = /[¡¿]|Nivel |Racha|sin fallos|buen viaje|Completado/;
+
+test("HelloAbroad (de-en): levelForXp liefert die deutsche Rang-Leiter, nicht Turista/Mochilero/…", () => {
+  assert.equal(CDeEn.levelForXp(0).key, "anfaenger");
+  assert.equal(CDeEn.levelForXp(100).key, "reisefreund");
+  assert.equal(CDeEn.levelForXp(300).key, "entdecker");
+  assert.equal(CDeEn.levelForXp(4500).key, "reiselegende");
+  // dieselben XP-Schwellen wie die Reise-Spanisch-Leiter (nur die Namen unterscheiden sich)
+  assert.deepEqual(CDeEn.VIAJERO_LEVELS_DEEN.map((l) => l.min), C.VIAJERO_LEVELS.map((l) => l.min));
+});
+
+test("HelloAbroad (de-en): Level-Up-Szene ist spanisch-frei (Headline, Rangname, Untertitel)", () => {
+  const s = CDeEn.decide(base({ levelBefore: 0, levelAfter: 1, xpAfter: 100, seed: 1 }));
+  assert.equal(s.id, "levelup");
+  assert.equal(s.level.name, "Reisefreund");
+  assert.ok(!SPANISH_MARKERS.test(s.headline), `Headline sollte spanisch-frei sein: "${s.headline}"`);
+  assert.ok(!SPANISH_MARKERS.test(s.sub), `Untertitel sollte spanisch-frei sein: "${s.sub}"`);
+  assert.match(s.sub, /^Level \d+ · Reisefreund erreicht\.$/);
+});
+
+test("HelloAbroad (de-en): Streak-Meilenstein-Untertitel ohne 'Racha'/'días'", () => {
+  const s = CDeEn.decide(base({ streak: 7, streakIsNew: true, streakBefore: 6, accuracy: 60, total: 8 }));
+  assert.equal(s.id, "streakMilestone");
+  assert.ok(!SPANISH_MARKERS.test(s.sub), `Untertitel sollte spanisch-frei sein: "${s.sub}"`);
+  assert.match(s.sub, /^Serie von 7 Tagen/);
+});
+
+test("HelloAbroad (de-en): alle Headline-Pools über decide() bleiben spanisch-frei", () => {
+  const scenarios = [
+    base({ destinationComplete: { name: "X", country: "Y" } }),
+    base({ newBadges: [{ id: "a", icon: "🏅", name: "Test" }] }),
+    base({ isGame: true, accuracy: 100, total: 6, right: 6, wrong: 0, streakIsNew: false, streakBefore: 5, streak: 5 }),
+    base({ accuracy: 100, total: 6, right: 6, wrong: 0, streakIsNew: false, streakBefore: 5, streak: 5 }),
+    base({ isFirstEver: true, streakIsNew: true, streakBefore: 0, streak: 1 }),
+    base({ isFirstEver: false, streakBefore: 0, streak: 1, streakIsNew: true }),
+    base({ accuracy: 90, total: 10, streakIsNew: false, streakBefore: 5, streak: 5 }),
+  ];
+  for (const r of scenarios) {
+    const s = CDeEn.decide(r);
+    assert.ok(!SPANISH_MARKERS.test(s.headline), `[${s.id}] Headline sollte spanisch-frei sein: "${s.headline}"`);
+    assert.ok(!SPANISH_MARKERS.test(s.sub), `[${s.id}] Untertitel sollte spanisch-frei sein: "${s.sub}"`);
+  }
+});
+
+test("Reise-Spanisch-Track (Standard) bleibt unverändert: Rangnamen weiter Turista/Mochilero/…", () => {
+  assert.equal(C.levelForXp(0).name, "Turista");
+  assert.equal(C.levelForXp(100).name, "Mochilero");
+  const s = C.decide(base({ levelBefore: 0, levelAfter: 1, xpAfter: 100, seed: 1 }));
+  assert.match(s.sub, /^Nivel \d+ · Mochilero erreicht\.$/);
 });
