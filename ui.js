@@ -222,13 +222,14 @@
   const CAT_ICON = (window.SC && window.SC.catIcon) || {};
   const catIcon = (c) => (c && CAT_ICON[c.id]) || (c && c.icon) || "";
 
-  // Sprachcode der GELERNTEN Antwort (Reise-Track de-es: es, HelloAbroad de-en: en,
-  // Locals: en) – für lang-Attribute auf geteilten Sekundär-Screens (Statistik,
-  // Karten-Detail, Mi léxico) UND auf Placement/Nivel-Test (die im de-en-Track
-  // englische Reisesätze zeigen, siehe placement.js QUESTIONS_EN). Die übrigen
-  // reise-spezifischen Feature-Screens (Arbeitsblätter, Hostel-Battle, Conjugador …)
-  // bleiben fest lang="es": dort ist es korrekt und sie sind im de-en-/Locals-Track
-  // ohnehin ausgeblendet.
+  // Sprachcode der GELERNTEN Antwort (Reise: es, Locals: en) – für lang-Attribute auf
+  // geteilten Sekundär-Screens (Statistik, Karten-Detail, Mi léxico), deren „es"-Slot
+  // die gelernte Antwort trägt. Die meisten reise-spezifischen Feature-Screens
+  // (Arbeitsblätter, Hostel-Battle, Conjugador …) bleiben fest lang="es": dort ist es
+  // korrekt und sie sind im Locals-Track (es-en) ohnehin ausgeblendet. Placement/
+  // Assessment (HolaRuta-Check/Nivel-Test) sind eine Ausnahme: die teilt sich das
+  // HelloAbroad-Track (de-en, learnLang "en") und braucht darum learnLangCode()
+  // statt fest "es" (siehe renderPlacementQuestion/renderAssessmentQuestion/reviewList).
   const learnLangCode = () => (window.SC && window.SC.track && window.SC.track.learnLang && window.SC.track.learnLang()) || "es";
 
   // Bewusst kein role="tablist": ohne Pfeiltasten-Navigation und tabpanel wäre
@@ -1179,26 +1180,25 @@
   function reviewList(ns, review) {
     if (!review || !review.length) return "";
     const tn = (k) => t(ns + "." + k);
-    // Placement/Nivel-Test lernen je nach Track Spanisch (de-es) oder Englisch
-    // (de-en/HelloAbroad) – die gelernte Sprache steuert das lang-Attribut, nicht
-    // fest "es" (sonst wäre englischer Reisetest-Inhalt fälschlich als Spanisch markiert).
-    const qLang = learnLangCode();
+    // HelloAbroad (Track de-en) zeigt hier englische statt spanische Zielsprachen-
+    // Inhalte (questionEs/yourText/correctText) – lang-Attribut folgt der Zielsprache.
+    const reviewLang = learnLangCode();
     const reviewIcon = { correct: "lc:check-circle", wrong: "lc:x-circle", unknown: "lc:help-circle" };
     const reviewRow = (r, i) => `
       <li class="pl-review__item pl-review__item--${esc(r.status)}">
         <p class="pl-review__q">
           <span class="pl-review__icon" aria-hidden="true">${renderIcon(reviewIcon[r.status] || "")}</span>
-          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? renderIcon("lc:headphones") + " " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="${qLang}">„${esc(r.questionEs)}“</span>` : ""}</span>
+          <span><span class="pl-review__num">${i + 1}.</span> ${r.level ? `<span class="pl-review__lvl">${esc(r.level)}</span> ` : ""}${r.listen ? renderIcon("lc:headphones") + " " : ""}${esc(r.promptDe)}${r.questionEs ? ` <span class="pl-review__es" lang="${esc(reviewLang)}">„${esc(r.questionEs)}“</span>` : ""}</span>
         </p>
         ${r.status !== "correct" ? `
           <p class="pl-review__line">
             ${r.yourText
-              ? `${esc(tn("reviewYours"))} <span class="pl-review__yours" lang="${qLang}">${esc(r.yourText)}</span>`
+              ? `${esc(tn("reviewYours"))} <span class="pl-review__yours" lang="${esc(reviewLang)}">${esc(r.yourText)}</span>`
               : `<span class="pl-review__yours pl-review__yours--none">${esc(tn("reviewNoAnswer"))}</span>`}
           </p>
-          <p class="pl-review__line">${esc(tn("reviewCorrect"))} <span class="pl-review__correct" lang="${qLang}">${esc(r.correctText)}</span></p>` : ""}
+          <p class="pl-review__line">${esc(tn("reviewCorrect"))} <span class="pl-review__correct" lang="${esc(reviewLang)}">${esc(r.correctText)}</span></p>` : ""}
         ${r.status === "correct" && r.typo ? `
-          <p class="pl-review__line pl-review__typo">${esc(tn("reviewTypo"))} <span class="pl-review__correct" lang="${qLang}">${esc(r.correctText)}</span></p>` : ""}
+          <p class="pl-review__line pl-review__typo">${esc(tn("reviewTypo"))} <span class="pl-review__correct" lang="${esc(reviewLang)}">${esc(r.correctText)}</span></p>` : ""}
         ${r.explanationDe ? `<p class="pl-review__exp">${esc(r.explanationDe)}</p>` : ""}
       </li>`;
     return `<ul class="pl-review">${review.map(reviewRow).join("")}</ul>`;
@@ -3702,17 +3702,20 @@
         <div class="pl-progress__bar" aria-hidden="true"><div class="pl-progress__fill" style="width:${pct}%"></div></div>
         <span class="pl-progress__label" role="status" aria-live="polite">${esc(t("placement.qOf", { i: vm.index + 1, n: vm.total }))} · ${esc(q.level)}</span>
       </div>`;
-    const qLang = learnLangCode();
+    // HelloAbroad (Track de-en) teilt sich den Fragenkatalog mit de-es, lernt aber
+    // Englisch statt Spanisch (siehe placement.js: activeQuestions()) – q.questionEs
+    // und die freie Eingabe folgen daher der Zielsprache des aktiven Tracks, nicht fest "es".
+    const plLearnLang = learnLangCode();
     const prompt = `
       <p class="pl-prompt">${esc(q.promptDe)}</p>
-      ${q.questionEs ? `<p class="pl-prompt-es" lang="${qLang}">„${esc(q.questionEs)}“</p>` : ""}`;
+      ${q.questionEs ? `<p class="pl-prompt-es" lang="${esc(plLearnLang)}">„${esc(q.questionEs)}“</p>` : ""}`;
     const body = q.type === "free"
-      ? `<input id="placement-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t("placement.freePh"))}" lang="${qLang}">
+      ? `<input id="placement-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t(plLearnLang === "en" ? "placement.freePhLocals" : "placement.freePh"))}" lang="${esc(plLearnLang)}">
          <div class="teacher-actions">
            <button class="teacher-btn teacher-btn--main" data-action="placement-free-submit">${esc(t("placement.answer"))}</button>
          </div>`
       : `<div class="pl-options" role="group" aria-label="${esc(t("placement.optionsLabel"))}">
-           ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="${qLang}">${esc(o)}</button>`).join("")}
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="placement-choose" data-index="${i}" lang="${esc(plLearnLang)}">${esc(o)}</button>`).join("")}
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="placement-unknown">${renderIcon("lc:help-circle")} ${esc(t("placement.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("placement.unknownHint"))}</p>` : "";
@@ -3835,17 +3838,20 @@
          </button>
          <p class="pl-hint pl-hint--listen">${renderIcon("lc:ear")} ${esc(t("assessment.listenHint"))}</p>`
       : "";
-    const qLang = learnLangCode();
+    // HelloAbroad (Track de-en) teilt sich den Fragenkatalog mit de-es, lernt aber
+    // Englisch statt Spanisch (siehe assessment.js: activeQuestions()) – q.questionEs
+    // und die freie Eingabe folgen daher der Zielsprache des aktiven Tracks, nicht fest "es".
+    const asLearnLang = learnLangCode();
     const prompt = `
       <p class="pl-prompt">${esc(q.promptDe)}</p>
-      ${q.questionEs ? `<p class="pl-prompt-es" lang="${qLang}">„${esc(q.questionEs)}“</p>` : ""}`;
+      ${q.questionEs ? `<p class="pl-prompt-es" lang="${esc(asLearnLang)}">„${esc(q.questionEs)}“</p>` : ""}`;
     const body = q.type === "free"
-      ? `<input id="assessment-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t("assessment.freePh"))}" lang="${qLang}">
+      ? `<input id="assessment-free" class="task-input pl-free" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t(asLearnLang === "en" ? "assessment.freePhLocals" : "assessment.freePh"))}" lang="${esc(asLearnLang)}">
          <div class="teacher-actions">
            <button class="teacher-btn teacher-btn--main" data-action="assessment-free-submit">${esc(t("assessment.answer"))}</button>
          </div>`
       : `<div class="pl-options" role="group" aria-label="${esc(t("assessment.optionsLabel"))}">
-           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="${qLang}">${esc(o)}</button>`).join("")}
+           ${q.options.map((o, i) => `<button class="pl-option" data-action="assessment-choose" data-index="${i}" lang="${esc(asLearnLang)}">${esc(o)}</button>`).join("")}
          </div>`;
     const unknown = `<button class="pl-unknown" data-action="assessment-unknown">${renderIcon("lc:help-circle")} ${esc(t("assessment.unknown"))}</button>`;
     const hint = vm.showHint ? `<p class="pl-hint">${esc(t("assessment.unknownHint"))}</p>` : "";

@@ -188,8 +188,10 @@
     streakNew: "Starte deine Serie",
     resumeWith: (p) => `Weiter mit ${p.cat}`,
     rutaTitle: "Ruta del día",
+    rutaTitleDeEn: "Tour des Tages",
     rutaSub: "Kurze Tagesrunde quer durch alle Themen",
     rutaDoneTitle: "Ruta del día geschafft",
+    rutaDoneTitleDeEn: "Tour des Tages geschafft",
     rutaDoneSub: "Für heute erledigt – noch eine Runde?",
     presetDone: "geschafft",
     presetDoneSub: "Alle Sätze einmal gelernt – noch eine Runde?",
@@ -363,6 +365,7 @@
     namePlaceholder: "z. B. Marco",
     nameSave: "Speichern",
     nameHint: "Wird in den Diálogos automatisch eingesetzt, wenn du dich vorstellst.",
+    nameHintDeEn: "Wird in den Dialogen automatisch eingesetzt, wenn du dich vorstellst.",
     genderCap: "⚧ Geschlecht",
     genderFemale: "♀ Weiblich",
     genderMale: "♂ Männlich",
@@ -395,12 +398,16 @@
     analyticsHint: "Hilft uns, die App zu verbessern: welche Funktionen genutzt werden, wo es hakt, plus Fehlerberichte. Pseudonym, kein Konto, keine Inhalte/Namen/Suchbegriffe – nur grobe Ereignisse. Standardmäßig aus.",
     analyticsResetId: "Statistik-Id zurücksetzen",
     uiLanguage: "Sprache",
-    // Karten-Prompt (Spanisch, beide Sprachen gleich)
+    // Karten-Prompt (Spanisch, beide Sprachen gleich). HelloAbroad (de-en) lernt
+    // Reiseenglisch – darum ein englischer statt spanischer Immersions-Gruß.
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptDeEn: "What are we learning today?",
     homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
+    homePromptNameDeEn: (p) => `What are we learning today, ${p.name}?`,
     dedication: "Für meine liebe Lisa.",
     // Partner-Editionen (ECOS, WeRoad): neutraler Reisegruß statt der privaten Widmung.
     dedicationEdition: "Hecho con cariño para tu viaje.",
+    dedicationEditionDeEn: "Made with love for your trip.",
   }, {
     tabsAreas: "Sections",
     tabStart: "Home",
@@ -456,8 +463,10 @@
     streakNew: "Start your streak",
     resumeWith: (p) => `Carry on with ${p.cat}`,
     rutaTitle: "Ruta del día",
+    rutaTitleDeEn: "Daily tour",
     rutaSub: "A short daily round across all topics",
     rutaDoneTitle: "Ruta del día done",
+    rutaDoneTitleDeEn: "Daily tour done",
     rutaDoneSub: "Done for today – one more round?",
     presetDone: "done",
     presetDoneSub: "All phrases learned once – one more round?",
@@ -617,6 +626,7 @@
     namePlaceholder: "e.g. Marco",
     nameSave: "Save",
     nameHint: "Used automatically in the Diálogos when you introduce yourself.",
+    nameHintDeEn: "Used automatically in the dialogues when you introduce yourself.",
     genderCap: "⚧ Gender",
     genderFemale: "♀ Female",
     genderMale: "♂ Male",
@@ -648,10 +658,13 @@
     analyticsResetId: "Reset stats ID",
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",
+    homePromptDeEn: "What are we learning today?",
     homePromptName: (p) => `¿Qué aprendemos hoy, ${p.name}?`,
+    homePromptNameDeEn: (p) => `What are we learning today, ${p.name}?`,
     dedication: "For my dear Lisa.",
     // Partner editions (ECOS, WeRoad): a neutral travel sign-off instead of the private dedication.
     dedicationEdition: "Hecho con cariño para tu viaje.",
+    dedicationEditionDeEn: "Made with love for your trip.",
   });
 
   // ---------- search: Suche (gezielt nach Karten/Übungen & Informationen) ----------
@@ -2470,7 +2483,9 @@
     optionsLabel: "Antwortmöglichkeiten",
     answer: "Antwort prüfen",
     freePh: "Auf Spanisch schreiben …",
-    freePhDeEn: "Auf Englisch schreiben …",
+    // HelloAbroad (Track de-en, learnLang "en"): dieselbe Fragenliste, aber
+    // Zielsprache Englisch – Platzhalter muss der Zielsprache folgen (ui.js: learnLangCode()).
+    freePhLocals: "Auf Englisch schreiben …",
     unknown: "Ich weiß es nicht",
     unknownHint: "Nicht sicher? Wähle lieber „Ich weiß es nicht“ statt zu raten.",
     yourLevel: "Dein Startlevel",
@@ -2526,7 +2541,7 @@
     optionsLabel: "Answer choices",
     answer: "Check answer",
     freePh: "Write in Spanish …",
-    freePhDeEn: "Write in English …",
+    freePhLocals: "Write in English …",
     unknown: "I don't know",
     unknownHint: "Not sure? Better choose “I don't know” than guess.",
     yourLevel: "Your starting level",
@@ -2595,7 +2610,9 @@
     optionsLabel: "Antwortmöglichkeiten",
     answer: "Antwort prüfen",
     freePh: "Auf Spanisch schreiben …",
-    freePhDeEn: "Auf Englisch schreiben …",
+    // HelloAbroad (Track de-en, learnLang "en"): dieselbe Fragenliste, aber
+    // Zielsprache Englisch – Platzhalter muss der Zielsprache folgen (ui.js: learnLangCode()).
+    freePhLocals: "Auf Englisch schreiben …",
     unknown: "Ich weiß es nicht",
     unknownHint: "Nicht sicher? Wähle lieber „Ich weiß es nicht“ statt zu raten.",
     listenPlay: "Nochmal hören",
@@ -2666,7 +2683,7 @@
     optionsLabel: "Answer choices",
     answer: "Check answer",
     freePh: "Write in Spanish …",
-    freePhDeEn: "Write in English …",
+    freePhLocals: "Write in English …",
     unknown: "I don't know",
     unknownHint: "Not sure? Better choose “I don't know” than guess.",
     listenPlay: "Play again",

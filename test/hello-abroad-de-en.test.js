@@ -251,3 +251,56 @@ test("50+-Abdeckung: neue Mobilitäts-/Gesundheits-/Verständnis-Karten vorhande
     assert.ok(allow.indexOf(c.cat) >= 0, `${id}: Kategorie ${c.cat} muss in HelloAbroad sichtbar sein`);
   }
 });
+
+// ============ (5) Kontext-Erklärung: kein Spanisch in Situation/Tipp ============
+// Die Reise-Kontexte (contextdata.js) sind fürs Spanisch-Lernen geschrieben: die
+// deutschen Situation-/Tipp-Zeilen lehren SPANISCHES Reisevokabular ("sin azúcar",
+// "el baño", "izquierda = links"). In de-en (Reiseenglisch) ist das ein Leck. Der
+// Fix hängt an die betroffenen Einträge …DeEn-Pendants (sDeEn/nDeEn), die i18n.
+// localizeDeep im de-en-Track statt der spanisch-lastigen Basiszeile einsetzt.
+//
+// Erkennung ohne pflegeintensive Wortliste: ein app-eigenes DREISPRACHEN-Verfahren.
+//  - Spanisch-Korpus = alle Wörter aus den spanischen Sätzen (card.es + contextData.e).
+//  - Safe-Korpus (DE/EN) = Wörter aus dem sauberen deutschen/englischen Bestand
+//    (card.de/en, contextData.d/dEn und die eingesetzten sDeEn/nDeEn). Die
+//    spanisch-lastigen Basis-Zeilen s/n bleiben BEWUSST draußen.
+// Ein Token in einer angezeigten Situation/Tipp-Zeile, das im Spanisch-Korpus
+// vorkommt, aber NICHT im Safe-Korpus, ist ein Spanisch-Leck. Zusätzlich schlagen
+// spanische Sonderzeichen (¿ ¡ ñ + Akut-Vokale) sofort an. So fällt auch ein neu
+// hinzugefügter, spanisch-lastiger Kontext ohne …DeEn-Pendant künftig auf.
+test("Reise-Kontext: de-en zeigt KEIN Spanisch in Situation/Tipp (alle Karten)", () => {
+  freshApp("hello-abroad");
+  const { data, config, contextData, i18n } = window.SC;
+  const allow = config.categoryAllowlist || [];
+  const loc = i18n.localizeDeep;
+  const words = (s) => String(s || "").toLowerCase().replace(/[^\p{L}\s]/gu, " ").split(/\s+/).filter((w) => w.length > 2);
+
+  const ES = new Set();
+  data.CARDS.forEach((c) => words(c.es).forEach((w) => ES.add(w)));
+  Object.keys(contextData || {}).forEach((id) => words(contextData[id].e).forEach((w) => ES.add(w)));
+
+  const SAFE = new Set();
+  const addSafe = (s) => words(s).forEach((w) => SAFE.add(w));
+  data.CARDS.forEach((c) => { addSafe(c.de); addSafe(c.en); });
+  Object.keys(contextData || {}).forEach((id) => {
+    const e = contextData[id];
+    addSafe(e.d); addSafe(e.dEn); addSafe(e.sDeEn); addSafe(e.nDeEn);
+  });
+  // Englische/deutsche Reise-Lehnwörter, die auch in spanischen Sätzen auftauchen.
+  "check checkin checkout wifi hostel hotel bar taxi bus zero diet local hour usa uk manual automatic padlock lounge gate app board cash".split(/\s+/).forEach((w) => SAFE.add(w));
+
+  const accents = /[¿¡ñáíóúÁÍÓÚÑ]/;
+  const leaks = [];
+  data.CARDS.filter((c) => allow.indexOf(c.cat) >= 0 && c.context && !c.context.loc).forEach((c) => {
+    const lc = loc(c.context);
+    for (const f of ["situation", "note"]) {
+      const v = lc[f];
+      if (!v) continue;
+      if (accents.test(v)) { leaks.push(`${c.id}.${f} [accent]: ${v}`); continue; }
+      for (const w of words(v)) {
+        if (ES.has(w) && !SAFE.has(w)) { leaks.push(`${c.id}.${f} [${w}]: ${v}`); break; }
+      }
+    }
+  });
+  assert.equal(leaks.length, 0, `Spanisch im de-en-Kontext:\n${leaks.slice(0, 20).join("\n")}`);
+});
