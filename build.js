@@ -254,6 +254,9 @@ function buildDist() {
     // Datenschutzerklärung (Account-First -> personenbezogene Daten). Von der
     // Login-Legal-Zeile und der App verlinkt; muss in dist/ erreichbar sein.
     "datenschutz.html",
+    // Nutzungsbedingungen (Account-First -> Vertragsbeziehung). Von datenschutz.html
+    // und dem Google-OAuth-Consent-Screen verlinkt; muss in dist/ erreichbar sein.
+    "nutzungsbedingungen.html",
     "og-image.png",
     "og-image-square.png",
     // HelloAbroad-Edition (DE-EN): eigene Social-Vorschau für die Marketing-Landing.
