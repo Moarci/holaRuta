@@ -626,7 +626,18 @@ function toKpiCsv(stats) {
   var s = isObj(stats) ? stats : {};
   var i = isObj(s.investor) ? s.investor : {};
   var u = isObj(s.users) ? s.users : {};
-  function ret(k) { var arr = Array.isArray(u.retention) ? u.retention : []; for (var j = 0; j < arr.length; j++) if (arr[j].day === k) return arr[j].pct; return 0; }
+  // Retention-Wert für den Data-Room. eligible === 0 heißt NICHT „0 % Retention",
+  // sondern „im gewählten Fenster nicht messbar": bei windowDays=7 liegt Erst-Tag+7
+  // (und +30) strukturell IMMER in der Zukunft, weil die Kohorte per cutoff auf
+  // Erst-Kontakt ab heute-6 beschränkt ist. Eine 0 zu exportieren wäre eine
+  // erfundene Zahl in einem Investoren-Dokument; „n/a" ist die ehrliche Angabe —
+  // und deckungsgleich mit der Heatmap, die solche Offsets (COHORT_OFFSETS) gar
+  // nicht erst als Spalte führt. Eine ECHT gemessene 0 % (eligible > 0) bleibt 0.
+  function ret(k) {
+    var arr = Array.isArray(u.retention) ? u.retention : [];
+    for (var j = 0; j < arr.length; j++) if (arr[j] && arr[j].day === k) return num(arr[j].eligible) ? arr[j].pct : "n/a";
+    return "n/a"; // Kennzahl gar nicht erhoben -> ebenfalls keine Aussage
+  }
   function g(o, path, d) { var cur = o; var ps = path.split("."); for (var j = 0; j < ps.length; j++) { if (!cur || typeof cur !== "object") return d; cur = cur[ps[j]]; } return cur == null ? d : cur; }
   var rows = [
     ["kpi", "wert"],

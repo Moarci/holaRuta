@@ -194,6 +194,42 @@ test("aggregate: Retention D1/D7/D30 zählt keine Alt-Nutzer am Fenster-Rand (ko
   assert.equal(Object.keys(heat).length, 2, "genau die zwei Neu-Kohorten in der Heatmap");
 });
 
+// Fixture für die „nicht messbar"-Fälle: EIN echter Neu-Nutzer mit Erst-Tag vor 3
+// Tagen, der nie wiederkommt. Im 7-T-Fenster ist damit D1 ECHT gemessen (Erst-Tag+1
+// liegt in der Vergangenheit, Nutzer war nicht da -> 0 %), D7/D30 dagegen strukturell
+// unmessbar (Erst-Tag+7 bzw. +30 liegen in der Zukunft).
+function retentionWindowFixture() {
+  const first = dayUTC(NOW - 3 * 86400000);
+  return [{ v: 1, seq: 0, event: "app_open", props: {}, day: first, ts: NOW - 3 * 86400000, clientId: "N", sessionId: "n1" }];
+}
+
+test("aggregate: D7/D30 sind im 7-Tage-Fenster strukturell nicht messbar (eligible 0)", () => {
+  const s = aggregate(retentionWindowFixture(), [], { now: NOW, windowDays: 7 });
+  const d1 = s.users.retention.find((r) => r.day === 1);
+  const d7 = s.users.retention.find((r) => r.day === 7);
+  const d30 = s.users.retention.find((r) => r.day === 30);
+  assert.equal(d1.eligible, 1, "Erst-Tag+1 liegt im Fenster -> echt messbar");
+  assert.equal(d1.pct, 0, "N kam nicht zurück -> gemessene 0 %");
+  // cutoff = heute-6, also ist für JEDEN Nutzer der Kohorte Erst-Tag+7 > heute.
+  assert.equal(d7.eligible, 0, "D7 kann im 7-T-Fenster nie eligible werden");
+  assert.equal(d30.eligible, 0, "D30 erst recht nicht");
+  // Konsistenz mit der Heatmap: die unmessbaren Offsets fehlen dort ganz.
+  const offsets = s.investor.cohorts[0].cells.map((c) => c.dayN);
+  assert.equal(offsets.indexOf(7), -1, "Heatmap lässt 7 im 7-T-Fenster weg");
+  assert.equal(offsets.indexOf(30), -1);
+});
+
+test("toKpiCsv: nicht messbare Retention exportiert n/a, echt gemessene 0 % bleibt 0", () => {
+  const s = aggregate(retentionWindowFixture(), [], { now: NOW, windowDays: 7 });
+  const csv = toKpiCsv(s);
+  // Kritische Unterscheidung: eine erhobene 0 % ist eine Aussage, ein leeres
+  // Fenster ist keine — der Data-Room darf daraus keine „0 % Retention" lesen.
+  assert.match(csv, /\nD1 %,0\n/, "gemessene 0 % bleibt die Zahl 0");
+  assert.match(csv, /\nD7 %,n\/a\n/, "unmessbar -> n/a statt 0");
+  assert.match(csv, /\nD30 %,n\/a\n/);
+  assert.doesNotMatch(csv, /\nD7 %,0\n/);
+});
+
 test("aggregate: Akquise, Teilen, Snapshot-Streak/Reviews, WAU-Trend", () => {
   const E = []; let q = 0;
   const mk = (event, props, day, cid) => E.push({ v: 1, seq: q++, event, props, day, ts: T0, clientId: cid, sessionId: "s" + q });
