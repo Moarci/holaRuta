@@ -265,6 +265,120 @@
             <div class="flip__inner"><div class="face face--front lp-feat__teaser"><span class="lp-feat__icon ha-icon">◇</span><h3 class="lp-feat__title" data-i18n="feat.private.t">Privat und kostenlos</h3><span class="lp-feat__flip" data-i18n="feat.flip">↺ mehr</span></div><div class="face face--back lp-feat__detail"><span class="lp-feat__icon ha-icon">◇</span><h3 class="lp-feat__title" data-i18n="feat.private.t">Privat und kostenlos</h3><p class="lp-feat__body" data-i18n="feat.private.b">Kein Konto, keine Werbung. Dein Lernfortschritt bleibt auf deinem Gerät.</p></div></div>
           </article>
         </div>
+
+        <!-- Weitere Module (wie B2C-Landing): Wisch-Chips + aufklappbare Beispielkarten.
+             Inhalt = HelloAbroad de-en-Module (Notfall, Preise, Logistik …), nicht LatAm-only. -->
+        <div class="lp-more">
+          <p class="lp-more__intro" data-reveal data-i18n="more.intro">Und noch viel mehr an Bord</p>
+          <div class="lp-more__chips" id="lpMoreChips" role="group" data-i18n-aria="more.modules" aria-label="Weitere Module — seitlich wischen">
+            <button class="lp-morechip" type="button" data-mod="surv" data-reveal style="--accent:#B5302A; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🆘</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.surv.n">Notfall-Sätze</span>
+                <span class="lp-morechip__desc" data-i18n="more.surv.d">Die Notfall-Sätze groß auf einen Blick</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="precios" data-reveal style="--accent:#3F7355; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">💶</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.precios.n">Preise nach Gehör</span>
+                <span class="lp-morechip__desc" data-i18n="more.precios.d">Preise hören &amp; blind eintippen</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="compras" data-reveal style="--accent:#B97C24; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🛒</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.compras.n">Einkaufsliste</span>
+                <span class="lp-morechip__desc" data-i18n="more.compras.d">Supermarkt, Kleidung, Apotheke</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="frases" data-reveal style="--accent:#7048E8; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🧩</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.frases.n">Satzbaukasten</span>
+                <span class="lp-morechip__desc" data-i18n="more.frases.d">Bausteine einsetzen – selbst Sätze bauen</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="knigge" data-reveal style="--accent:#3F6B8E; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🧭</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.knigge.n">Reise-Knigge</span>
+                <span class="lp-morechip__desc" data-i18n="more.knigge.d">Verhalten unterwegs: Hotel, Bus, Gruppe</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="logistica" data-reveal style="--accent:#2F6B70; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🎒</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.logistica.n">Reise-Logistik</span>
+                <span class="lp-morechip__desc" data-i18n="more.logistica.d">SIM, Bargeld &amp; clever packen</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="salud" data-reveal style="--accent:#2F8E5B; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🩺</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.salud.n">Gesund unterwegs</span>
+                <span class="lp-morechip__desc" data-i18n="more.salud.d">Apotheke, Arzt &amp; fit bleiben</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="juegos" data-reveal style="--accent:#C44536; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🎲</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.juegos.n">Reisespiele</span>
+                <span class="lp-morechip__desc" data-i18n="more.juegos.d">Karten, Würfel &amp; die Sätze dazu</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="endless" data-reveal style="--accent:#2E6E86; --i:0" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">∞</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.endless.n">Vokabeln ohne Ende</span>
+                <span class="lp-morechip__desc" data-i18n="more.endless.d">Karten am Stück – alle Themen gemischt</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="cuerpo" data-reveal style="--accent:#7D4A8E; --i:1" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">🧍</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.cuerpo.n">Der Körper</span>
+                <span class="lp-morechip__desc" data-i18n="more.cuerpo.d">Körperteile benennen – für Arzt &amp; Apotheke</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="derechos" data-reveal style="--accent:#3F5BA8; --i:2" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">⚖️</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.derechos.n">Deine Rechte</span>
+                <span class="lp-morechip__desc" data-i18n="more.derechos.d">Ruhig bleiben: Kontrolle, Anwalt, Botschaft</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+            <button class="lp-morechip" type="button" data-mod="fotos" data-reveal style="--accent:#C25A45; --i:3" aria-expanded="false" aria-controls="lpMoreDetail">
+              <span class="lp-morechip__ico" aria-hidden="true">📷</span>
+              <span class="lp-morechip__txt">
+                <span class="lp-morechip__name" data-i18n="more.fotos.n">Fotos &amp; Videos</span>
+                <span class="lp-morechip__desc" data-i18n="more.fotos.d">Motiv, Licht, Posen &amp; um Erlaubnis bitten</span>
+              </span>
+              <span class="lp-morechip__chev" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="lp-moredetail" id="lpMoreDetail" hidden>
+            <div class="lp-moredetail__bar">
+              <span class="lp-moredetail__ico" id="lpMD_ico" aria-hidden="true"></span>
+              <span class="lp-moredetail__name" id="lpMD_name"></span>
+              <span class="lp-moredetail__hint" id="lpMD_hint" data-i18n="more.swipe">Antippen dreht um · wischen für mehr</span>
+              <button class="lp-moredetail__close" id="lpMD_close" type="button" data-i18n-aria="more.close" aria-label="Beispiele schließen">✕</button>
+            </div>
+            <div class="lp-moredetail__strip" id="lpMD_strip" tabindex="0" role="group" data-i18n-aria="more.examples" aria-label="Beispielsätze"></div>
+            <div class="lp-moredetail__dots" id="lpMD_dots" role="group" data-i18n-aria="more.pick" aria-label="Beispiel wählen"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -374,6 +488,21 @@
           "ex1.cat":"BEZAHLEN","ex1.q":"Was kostet das?","ex1.sit":"Im Geschäft, am Markt oder am Ticketschalter.","ex2.cat":"FLUGHAFEN","ex2.q":"Wo ist die Gepäckausgabe?","ex2.sit":"Nach der Landung, bevor du den Flughafen verlässt.","ex3.cat":"GESUNDHEIT","ex3.q":"Ich brauche einen Arzt.","ex3.sit":"Im Hotel, in der Apotheke oder im Notfall.",
           "feat.eyebrow":"LERNEN OHNE UMWEGE","feat.title":"Für die Reise gemacht. Nicht für die nächste Prüfung.","feat.lead":"HelloAbroad konzentriert sich auf das, was unterwegs Sicherheit gibt: verstehen, antworten und den richtigen Satz im richtigen Moment finden.","feature.flip":"Vorteil umdrehen","feat.flip":"↺ mehr",
           "feat.srs.t":"Bleibt im Kopf","feat.srs.b":"Das Wiederholsystem zeigt dir einen Satz genau dann wieder, wenn er zu verblassen beginnt.","feat.audio.t":"Hören und nachsprechen","feat.audio.b":"Jede englische Antwort lässt sich vorlesen – ruhig, deutlich und jederzeit wiederholbar.","feat.offline.t":"Auch ohne Netz","feat.offline.b":"Einmal geladen, funktioniert die App im Flugzeug, im Zug und überall mit schlechtem Empfang.","feat.modes.t":"So lernen, wie es passt","feat.modes.b":"Karte ansehen, Antwort selbst schreiben oder nur hören – du bestimmst Tempo und Modus.","feat.search.t":"Im Moment griffbereit","feat.search.b":"Suche deutsch oder englisch und finde den benötigten Satz, ohne durch Kapitel zu blättern.","feat.private.t":"Privat und kostenlos","feat.private.b":"Kein Konto, keine Werbung. Dein Lernfortschritt bleibt auf deinem Gerät.",
+          "more.intro":"Und noch viel mehr an Bord","more.modules":"Weitere Module — seitlich wischen",
+          "more.surv.n":"Notfall-Sätze","more.surv.d":"Die Notfall-Sätze groß auf einen Blick",
+          "more.precios.n":"Preise nach Gehör","more.precios.d":"Preise hören & blind eintippen",
+          "more.compras.n":"Einkaufsliste","more.compras.d":"Supermarkt, Kleidung, Apotheke",
+          "more.frases.n":"Satzbaukasten","more.frases.d":"Bausteine einsetzen – selbst Sätze bauen",
+          "more.knigge.n":"Reise-Knigge","more.knigge.d":"Verhalten unterwegs: Hotel, Bus, Gruppe",
+          "more.logistica.n":"Reise-Logistik","more.logistica.d":"SIM, Bargeld & clever packen",
+          "more.salud.n":"Gesund unterwegs","more.salud.d":"Apotheke, Arzt & fit bleiben",
+          "more.juegos.n":"Reisespiele","more.juegos.d":"Karten, Würfel & die Sätze dazu",
+          "more.endless.n":"Vokabeln ohne Ende","more.endless.d":"Karten am Stück – alle Themen gemischt",
+          "more.cuerpo.n":"Der Körper","more.cuerpo.d":"Körperteile benennen – für Arzt & Apotheke",
+          "more.derechos.n":"Deine Rechte","more.derechos.d":"Ruhig bleiben: Kontrolle, Anwalt, Botschaft",
+          "more.fotos.n":"Fotos & Videos","more.fotos.d":"Motiv, Licht, Posen & um Erlaubnis bitten",
+          "more.swipe":"Antippen dreht um · wischen für mehr","more.close":"Beispiele schließen","more.pick":"Beispiel wählen","more.examples":"Beispielsätze",
+          "card.lvl":"A1 · Easy","card.lvl2":"A2 · Medium","ctx.situation":"Situation","ctx.note":"Tipp",
           "areas.eyebrow":"VON DER LANDUNG BIS ZUR HEIMREISE","areas.title":"Zehn Situationen, in denen ein Satz den Unterschied macht.","areas.lead":"Über 400 Karten, sinnvoll gebündelt – damit du nicht „Englisch allgemein“, sondern für deine nächste Reise lernst.",
           "area.1.k":"Ankommen","area.1.t":"Grundlagen","area.1.b":"Begrüßen, bedanken, nachfragen und um Hilfe bitten.","area.2.k":"Begegnen","area.2.t":"Smalltalk","area.2.b":"Sich vorstellen, ins Gespräch kommen und freundlich verabschieden.","area.3.k":"Abflug und Landung","area.3.t":"Flughafen und Gepäck","area.3.b":"Check-in, Sicherheitskontrolle, Gate, Verspätung und verlorenes Gepäck.","area.4.k":"Einreisen","area.4.t":"Pass- und Grenzkontrolle","area.4.b":"Reisezweck, Aufenthaltsdauer, Adresse und Rückflug erklären.","area.5.k":"Übernachten","area.5.t":"Hotel und Unterkunft","area.5.b":"Reservierung, Check-in, Frühstück, Wünsche und Probleme im Zimmer.","area.6.k":"Genießen","area.6.t":"Essen und Trinken","area.6.b":"Tisch bestellen, Speisekarte verstehen, Allergien nennen und bezahlen.","area.7.k":"Besorgen","area.7.t":"Einkaufen und Bezahlen","area.7.b":"Preis, Größe, Karte oder Bargeld, Bankautomat und Wechselgeld.","area.8.k":"Weiterkommen","area.8.t":"Transport und Orientierung","area.8.b":"Taxi, Bus und Bahn nehmen, Tickets kaufen und nach dem Weg fragen.","area.9.k":"Selbst fahren","area.9.t":"Mietwagen und Tankstelle","area.9.b":"Übernahme, Versicherung, Tanken, Panne und Rückgabe meistern.","area.10.k":"Sicher bleiben","area.10.t":"Gesundheit und Notfälle","area.10.b":"Beschwerden erklären, Apotheke finden und im Notfall Hilfe holen.",
           "how.eyebrow":"SO EINFACH GEHT’S","how.title":"Drei Schritte. Fünf Minuten. Ein gutes Gefühl.","how.1.k":"AUSWÄHLEN","how.1.t":"Was steht als Nächstes an?","how.1.b":"Wähle Flughafen, Hotel, Restaurant oder eine andere Reisesituation.","how.2.k":"ÜBEN","how.2.t":"Karte ansehen, hören, antworten","how.2.b":"Deutsch vorne, Englisch hinten. Höre die Aussprache und sprich den Satz nach.","how.3.k":"DRANBLEIBEN","how.3.t":"Nur wiederholen, was noch fehlt","how.3.b":"HelloAbroad merkt sich deinen Stand und plant die nächste kurze Runde.",
@@ -393,6 +522,21 @@
           "ex1.cat":"PAYING","ex1.q":"Was kostet das?","ex1.sit":"In a shop, at a market or at the ticket counter.","ex2.cat":"AIRPORT","ex2.q":"Wo ist die Gepäckausgabe?","ex2.sit":"After landing, before you leave the airport.","ex3.cat":"HEALTH","ex3.q":"Ich brauche einen Arzt.","ex3.sit":"At your hotel, in a pharmacy or in an emergency.",
           "feat.eyebrow":"LEARN WITHOUT THE DETOUR","feat.title":"Made for travel. Not for your next exam.","feat.lead":"HelloAbroad focuses on what gives you confidence on the road: understanding, replying and finding the right phrase at the right moment.","feature.flip":"Flip benefit","feat.flip":"↺ more",
           "feat.srs.t":"Stays in your head","feat.srs.b":"Spaced repetition brings a phrase back just as it starts to fade.","feat.audio.t":"Listen and repeat","feat.audio.b":"Hear every English answer clearly and repeat it as often as you like.","feat.offline.t":"Works offline","feat.offline.b":"Once loaded, the app works on the plane, on the train and wherever reception is poor.","feat.modes.t":"Learn your way","feat.modes.b":"Flip a card, type the answer or simply listen – you choose the pace and mode.","feat.search.t":"Ready when you need it","feat.search.b":"Search in German or English and find the phrase without leafing through chapters.","feat.private.t":"Private and free","feat.private.b":"No account and no ads. Your progress stays on your device.",
+          "more.intro":"And so much more on board","more.modules":"More modules — swipe sideways",
+          "more.surv.n":"Emergency phrases","more.surv.d":"Key emergency lines at a glance",
+          "more.precios.n":"Prices by ear","more.precios.d":"Hear prices and type them in",
+          "more.compras.n":"Shopping list","more.compras.d":"Supermarket, clothes, pharmacy",
+          "more.frases.n":"Sentence builder","more.frases.d":"Drop in building blocks – make your own sentences",
+          "more.knigge.n":"Travel etiquette","more.knigge.d":"How to behave: hotel, bus, group",
+          "more.logistica.n":"Travel logistics","more.logistica.d":"SIM, cash and smart packing",
+          "more.salud.n":"Stay healthy","more.salud.d":"Pharmacy, doctor and staying well",
+          "more.juegos.n":"Travel games","more.juegos.d":"Cards, dice and the phrases that go with them",
+          "more.endless.n":"Endless vocabulary","more.endless.d":"Cards back-to-back – all topics mixed",
+          "more.cuerpo.n":"The body","more.cuerpo.d":"Name body parts – for doctors and pharmacies",
+          "more.derechos.n":"Your rights","more.derechos.d":"Stay calm: checks, lawyer, embassy",
+          "more.fotos.n":"Photos & video","more.fotos.d":"Shots, light, poses and asking permission",
+          "more.swipe":"Tap to flip · swipe for more","more.close":"Close examples","more.pick":"Choose example","more.examples":"Example phrases",
+          "card.lvl":"A1 · Easy","card.lvl2":"A2 · Medium","ctx.situation":"Situation","ctx.note":"Tip",
           "areas.eyebrow":"FROM TOUCHDOWN TO THE JOURNEY HOME","areas.title":"Ten situations where one phrase makes all the difference.","areas.lead":"More than 400 cards, grouped with purpose – so you learn for your next trip, not “English in general”.",
           "area.1.k":"Arrive","area.1.t":"Essentials","area.1.b":"Say hello, thank people, ask again and ask for help.","area.2.k":"Connect","area.2.t":"Small talk","area.2.b":"Introduce yourself, start a conversation and say goodbye naturally.","area.3.k":"Take off and land","area.3.t":"Airport and baggage","area.3.b":"Check-in, security, gates, delays and missing baggage.","area.4.k":"Enter the country","area.4.t":"Passport and border control","area.4.b":"Explain your reason for travel, length of stay, address and return flight.","area.5.k":"Stay","area.5.t":"Hotel and accommodation","area.5.b":"Reservations, check-in, breakfast, requests and room problems.","area.6.k":"Enjoy","area.6.t":"Food and drink","area.6.b":"Book a table, understand the menu, mention allergies and pay.","area.7.k":"Shop","area.7.t":"Shopping and paying","area.7.b":"Prices, sizes, cards or cash, cash machines and change.","area.8.k":"Get around","area.8.t":"Transport and directions","area.8.b":"Take a taxi, bus or train, buy tickets and ask the way.","area.9.k":"Drive","area.9.t":"Rental cars and fuel","area.9.b":"Pick-up, insurance, refuelling, breakdowns and return.","area.10.k":"Stay safe","area.10.t":"Health and emergencies","area.10.b":"Describe symptoms, find a pharmacy and get help in an emergency.",
           "how.eyebrow":"IT REALLY IS THIS SIMPLE","how.title":"Three steps. Five minutes. More confidence.","how.1.k":"CHOOSE","how.1.t":"What comes next?","how.1.b":"Pick the airport, hotel, restaurant or another travel situation.","how.2.k":"PRACTISE","how.2.t":"Look, listen and answer","how.2.b":"German on the front, English on the back. Hear the phrase and say it aloud.","how.3.k":"KEEP GOING","how.3.t":"Repeat only what still needs work","how.3.b":"HelloAbroad remembers your progress and plans the next short round.",
@@ -436,6 +580,345 @@
       var phone=document.getElementById("lpPhoneImg");
       var shots={"1":"../docs/landing/hello-abroad-home.webp","2":"../docs/landing/hello-abroad-study.webp","3":"../docs/landing/hello-abroad-stats.webp"};
       document.querySelectorAll(".lp-step[data-step]").forEach(function(st){st.addEventListener("click",function(){document.querySelectorAll(".lp-step[data-step]").forEach(function(x){x.classList.toggle("is-active",x===st);});if(phone)phone.src=shots[st.dataset.step];});});
+
+      // ── „Mehr an Bord": Modul antippen → DE→EN-Beispielkarten aufklappen ──
+      (function moreModules() {
+        var chipsWrap = document.getElementById("lpMoreChips");
+        var detail = document.getElementById("lpMoreDetail");
+        if (!chipsWrap || !detail) return;
+        var strip = document.getElementById("lpMD_strip");
+        var dotsWrap = document.getElementById("lpMD_dots");
+        var nameEl = document.getElementById("lpMD_name");
+        var icoEl = document.getElementById("lpMD_ico");
+        var closeBtn = document.getElementById("lpMD_close");
+        var chips = Array.prototype.slice.call(chipsWrap.querySelectorAll(".lp-morechip"));
+        // Die Kacheln liegen in einer horizontalen Wisch-Leiste; die rechts außer-
+        // halb des Sichtfelds würde der vertikale Scroll-Reveal (opacity:0) nie ein-
+        // blenden. Darum hier direkt sichtbar schalten.
+        chips.forEach(function (c) { c.classList.add("is-in"); });
+
+        // de = Frage (L1), en = Antwort (Ziel), tip = Aussprachehilfe deutsch lesbar.
+        // sit/note folgen der Landing-UI-Sprache.
+        var DATA = {
+          surv: { cat: ["NOTFALL", "EMERGENCY"], ex: [
+            { de: "Hilfe, bitte!", en: "Help, please!", tip: "help plies", lvl: 1,
+              sit: { de: "Wenn schnell jemand helfen muss – Unfall, Sturz, Diebstahl.", en: "When someone needs to help fast – accident, fall, theft." },
+              note: { de: "Laut und deutlich. Notruf oft 112 oder 911.", en: "Loud and clear. Emergency number is often 112 or 911." } },
+            { de: "Rufen Sie die Polizei.", en: "Please call the police.", tip: "plies kohl de po-LEES", lvl: 1,
+              sit: { de: "Bei Diebstahl oder wenn es brenzlig wird.", en: "For theft or when things get tense." },
+              note: { de: "Höflich und klar – „please“ öffnet Türen.", en: "Polite and clear – “please” opens doors." } },
+            { de: "Man hat mich bestohlen.", en: "I've been robbed.", tip: "aiv bin ROBD", lvl: 2,
+              sit: { de: "Auf der Polizeiwache, um Anzeige zu erstatten.", en: "At the police station, to file a report." },
+              note: { de: "Für die Versicherung brauchst du oft einen schriftlichen Report.", en: "Travel insurance often needs a written report." } } ] },
+          precios: { cat: ["GELD", "MONEY"], ex: [
+            { de: "Das macht zwanzig Euro.", en: "That's twenty euros.", tip: "däts TWEN-ti JU-ros", lvl: 1,
+              sit: { de: "Wenn dir der Verkäufer den Preis nennt.", en: "When the vendor tells you the price." },
+              note: { de: "Zahlen laut üben – Preise kommen schnell gesprochen.", en: "Practise numbers out loud – prices come fast." } },
+            { de: "Was schulde ich Ihnen?", en: "How much do I owe you?", tip: "hau matsch du ai OU ju", lvl: 1,
+              sit: { de: "Beim Bezahlen, höflich nach dem Betrag fragen.", en: "When paying, politely asking for the amount." },
+              note: { de: "Locker auch: „How much is that?“", en: "Casual: “How much is that?”" } },
+            { de: "Bekomme ich Wechselgeld?", en: "Will I get change?", tip: "wil ai get tscheindsch", lvl: 1,
+              sit: { de: "Wenn du mit einem großen Schein zahlst.", en: "When you pay with a big bill." },
+              note: { de: "Kleine Scheine sparen Ärger an Kiosken und in Taxis.", en: "Small bills save hassle at kiosks and in taxis." } } ] },
+          compras: { cat: ["EINKAUF", "SHOPPING"], ex: [
+            { de: "Haben Sie das in einer anderen Größe?", en: "Do you have this in another size?", tip: "du ju häv dis in e-NA-der saise", lvl: 2,
+              sit: { de: "Im Kleiderladen, wenn die Größe nicht passt.", en: "In a clothes shop when the size doesn’t fit." },
+              note: { de: "S, M, L – oder einfach die Zahl nennen.", en: "S, M, L – or just say the number." } },
+            { de: "Wo finde ich die Zahnpasta?", en: "Where can I find the toothpaste?", tip: "wär kän ai faind de TUS-peist", lvl: 1,
+              sit: { de: "Im Supermarkt, wenn du die Gänge nicht kennst.", en: "In a supermarket when you don’t know the aisles." },
+              note: { de: "„Aisle“ = Gang. Sehr hilfreich in großen Läden.", en: "“Aisle” is the word for the row of shelves." } },
+            { de: "Brauche ich ein Rezept dafür?", en: "Do I need a prescription for that?", tip: "du ai niid e pri-SKRIP-schen for dät", lvl: 2,
+              sit: { de: "In der Apotheke, bei Schmerzmitteln oder Antibiotika.", en: "At the pharmacy, for painkillers or antibiotics." },
+              note: { de: "Viele OTCs gehen ohne Rezept – frag einfach nach.", en: "Many OTC meds need no prescription – just ask." } } ] },
+          frases: { cat: ["SATZBAU", "BUILDER"], ex: [
+            { de: "Könnten Sie das bitte wiederholen?", en: "Could you please repeat that?", tip: "kud ju plies ri-PIIT dät", lvl: 1,
+              sit: { de: "Wenn du etwas nicht verstanden hast.", en: "When you didn’t catch something." },
+              note: { de: "Baustein: Could you please …? – höflich und universell.", en: "Building block: Could you please …? – polite and universal." } },
+            { de: "Ich hätte gerne …", en: "I would like …", tip: "ai wud laik", lvl: 1,
+              sit: { de: "Bestellen im Café, Restaurant oder Shop.", en: "Ordering in a café, restaurant or shop." },
+              note: { de: "Höflicher als „I want …“ – fast immer die bessere Wahl.", en: "More polite than “I want …” – almost always better." } },
+            { de: "Wo ist der nächste …?", en: "Where is the nearest …?", tip: "wär is de NIR-est", lvl: 1,
+              sit: { de: "Nach Bank, Toilette, Bahnhof oder Apotheke fragen.", en: "Asking for a bank, toilet, station or pharmacy." },
+              note: { de: "Danach kommt das Substantiv: … ATM / restroom / station.", en: "Then add the noun: … ATM / restroom / station." } } ] },
+          knigge: { cat: ["KNIGGE", "ETIQUETTE"], ex: [
+            { de: "Entschuldigung, ist dieser Platz frei?", en: "Excuse me, is this seat free?", tip: "eks-KJUS mi is dis siit frii", lvl: 1,
+              sit: { de: "Im Bus, Zug oder Wartebereich.", en: "On a bus, train or in a waiting area." },
+              note: { de: "„Excuse me“ vor jeder Frage wirkt respektvoll.", en: "“Excuse me” before any request feels respectful." } },
+            { de: "Darf ich fotografieren?", en: "May I take a photo?", tip: "mei ai teik e FO-to", lvl: 1,
+              sit: { de: "In Museen, Tempeln oder bei Menschen.", en: "In museums, temples or with people." },
+              note: { de: "Immer fragen – besonders bei Personen und heiligen Orten.", en: "Always ask – especially with people and sacred places." } },
+            { de: "Vielen Dank für Ihre Hilfe.", en: "Thank you for your help.", tip: "sänk ju for jor help", lvl: 1,
+              sit: { de: "Nach einer Wegbeschreibung oder einer Gefälligkeit.", en: "After directions or a favour." },
+              note: { de: "Ein kurzes „Thank you so much“ bleibt länger hängen.", en: "A short “Thank you so much” sticks longer." } } ] },
+          logistica: { cat: ["LOGISTIK", "LOGISTICS"], ex: [
+            { de: "Wo kaufe ich eine SIM-Karte?", en: "Where can I buy a SIM card?", tip: "wär kän ai bai e sim kard", lvl: 1,
+              sit: { de: "Am Flughafen oder im Handyladen.", en: "At the airport or a phone shop." },
+              note: { de: "Oft auch „eSIM“ – frag, was dein Handy kann.", en: "Often also “eSIM” – ask what your phone supports." } },
+            { de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", tip: "is der en ei-tii-em NIR-bai", lvl: 1,
+              sit: { de: "Wenn du Bargeld brauchst.", en: "When you need cash." },
+              note: { de: "ATM = Geldautomat. Achte auf Gebühren.", en: "ATM = cash machine. Watch the fees." } },
+            { de: "Wie komme ich ins Zentrum?", en: "How do I get to the city centre?", tip: "hau du ai get tu de SI-ti SEN-ter", lvl: 1,
+              sit: { de: "Nach der Ankunft am Terminal oder Bahnhof.", en: "After arriving at the terminal or station." },
+              note: { de: "US: city center. UK: city centre – beides wird verstanden.", en: "US: city center. UK: city centre – both are understood." } } ] },
+          salud: { cat: ["GESUNDHEIT", "HEALTH"], ex: [
+            { de: "Mir ist schlecht.", en: "I feel sick.", tip: "ai fiil sik", lvl: 1,
+              sit: { de: "Wenn Magen, Jetlag oder Hitze dich umhauen.", en: "When your stomach, jet lag or heat hits you." },
+              note: { de: "Genauer: „I have a headache / a fever / a stomach ache.“", en: "Be specific: “I have a headache / a fever / a stomach ache.”" } },
+            { de: "Wo ist die nächste Apotheke?", en: "Where is the nearest pharmacy?", tip: "wär is de NIR-est FAR-me-si", lvl: 2,
+              sit: { de: "Bei Kopfweh, Magen oder für Sonnencreme.", en: "For a headache, upset stomach or sunscreen." },
+              note: { de: "US oft „drugstore“ – dasselbe Ziel.", en: "In the US often “drugstore” – same idea." } },
+            { de: "Ich brauche einen Arzt.", en: "I need a doctor.", tip: "ai niid e DOK-ter", lvl: 1,
+              sit: { de: "Wenn es ernst wird – Fieber, starke Schmerzen.", en: "When it gets serious – fever, strong pain." },
+              note: { de: "Versicherungsnummer bereithalten.", en: "Have your insurance number ready." } } ] },
+          juegos: { cat: ["SPIEL", "GAME"], ex: [
+            { de: "Wer fängt an?", en: "Who goes first?", tip: "hu gous först", lvl: 1,
+              sit: { de: "Bevor das Spiel startet.", en: "Before the game starts." },
+              note: { de: "Auch: „Whose turn is it?“ – Wer ist dran?", en: "Also: “Whose turn is it?”" } },
+            { de: "Du bist dran.", en: "It's your turn.", tip: "its jor törn", lvl: 1,
+              sit: { de: "Beim Kartenspiel oder Brettspiel.", en: "During a card or board game." },
+              note: { de: "Freundlich bleiben – Spiele verbinden.", en: "Stay friendly – games connect people." } },
+            { de: "Noch eine Runde?", en: "One more round?", tip: "wan mor raund", lvl: 1,
+              sit: { de: "Am Ende der Runde, wenn’s Spaß macht.", en: "At the end of a round when it’s fun." },
+              note: { de: "„I’m out“ = ich steige aus.", en: "“I’m out” = you’re done for now." } } ] },
+          endless: { cat: ["TRAINING", "DRILL"], ex: [
+            { de: "Wo ist der Ausgang?", en: "Where is the exit?", tip: "wär is di EG-sit", lvl: 1,
+              sit: { de: "In Flughäfen, Bahnhöfen, Museen.", en: "In airports, stations, museums." },
+              note: { de: "Kurze Karten, viele Wiederholungen – so bleibt’s hängen.", en: "Short cards, many reps – that’s how it sticks." } },
+            { de: "Einen Moment, bitte.", en: "Just a moment, please.", tip: "dschast e MOU-ment plies", lvl: 1,
+              sit: { de: "Wenn du kurz nachdenken oder suchen musst.", en: "When you need a second to think or look." },
+              note: { de: "Gewinnt Zeit – ohne peinliche Stille.", en: "Buys time without awkward silence." } },
+            { de: "Ich verstehe nicht.", en: "I don't understand.", tip: "ai dount an-der-STÄND", lvl: 1,
+              sit: { de: "Ehrlich und klar – besser als nicken und raten.", en: "Honest and clear – better than nodding and guessing." },
+              note: { de: "Danach: „Could you speak more slowly?“", en: "Then: “Could you speak more slowly?”" } } ] },
+          cuerpo: { cat: ["KÖRPER", "BODY"], ex: [
+            { de: "Mein Kopf tut weh.", en: "My head hurts.", tip: "mai hed hörts", lvl: 1,
+              sit: { de: "Beim Arzt oder in der Apotheke.", en: "At the doctor’s or pharmacy." },
+              note: { de: "Auch: „I have a headache.“", en: "Also: “I have a headache.”" } },
+            { de: "Ich habe mir den Fuß verstaucht.", en: "I twisted my ankle.", tip: "ai TWIS-ted mai ÄN-kel", lvl: 2,
+              sit: { de: "Nach einem Sturz auf dem Gehweg oder der Treppe.", en: "After a fall on a pavement or stairs." },
+              note: { de: "ankle = Knöchel, foot = Fuß, knee = Knie.", en: "ankle / foot / knee – useful trio." } },
+            { de: "Ich bin allergisch gegen …", en: "I'm allergic to …", tip: "aim e-LÖR-dschik tu", lvl: 2,
+              sit: { de: "Im Restaurant oder beim Arzt – lebenswichtig.", en: "In a restaurant or at the doctor’s – critical." },
+              note: { de: "Danach: nuts / dairy / gluten / penicillin.", en: "Then: nuts / dairy / gluten / penicillin." } } ] },
+          derechos: { cat: ["RECHTE", "RIGHTS"], ex: [
+            { de: "Ich möchte einen Anwalt sprechen.", en: "I want to speak to a lawyer.", tip: "ai wont tu spiik tu e LOI-er", lvl: 2,
+              sit: { de: "Bei einer Kontrolle, die ernst wird.", en: "During a check that turns serious." },
+              note: { de: "Ruhig bleiben, klar sprechen, nichts unterschreiben unter Druck.", en: "Stay calm, speak clearly, don’t sign under pressure." } },
+            { de: "Können Sie mir die Botschaft nennen?", en: "Can you give me the embassy number?", tip: "kän ju giv mi di EM-be-si nam-ber", lvl: 2,
+              sit: { de: "Wenn du konsularische Hilfe brauchst.", en: "When you need consular help." },
+              note: { de: "Nummer der Botschaft vor der Reise speichern.", en: "Save the embassy number before you travel." } },
+            { de: "Ich verstehe meine Rechte.", en: "I understand my rights.", tip: "ai an-der-STÄND mai raits", lvl: 2,
+              sit: { de: "Um zu signalisieren: ich bleibe kooperativ und wach.", en: "To signal: cooperative and alert." },
+              note: { de: "Höflichkeit schützt – Aggressivität eskaliert.", en: "Politeness protects – aggression escalates." } } ] },
+          fotos: { cat: ["FOTOS", "PHOTOS"], ex: [
+            { de: "Darf ich ein Foto machen?", en: "May I take a photo?", tip: "mei ai teik e FO-to", lvl: 1,
+              sit: { de: "Vor einem Motiv oder einer Person.", en: "In front of a subject or a person." },
+              note: { de: "Immer fragen – besonders bei Menschen.", en: "Always ask – especially with people." } },
+            { de: "Können Sie uns fotografieren?", en: "Could you take a photo of us?", tip: "kud ju teik e FO-to ov as", lvl: 1,
+              sit: { de: "Wenn du jemanden um ein Gruppenfoto bittest.", en: "When you ask someone for a group shot." },
+              note: { de: "Handy vorher entsperren und den Auslöser zeigen.", en: "Unlock the phone first and show the shutter." } },
+            { de: "Ist Fotografieren hier erlaubt?", en: "Is photography allowed here?", tip: "is fo-TOG-re-fi e-LAUD hir", lvl: 2,
+              sit: { de: "In Museen, Gotteshäusern, Bahnhöfen.", en: "In museums, places of worship, stations." },
+              note: { de: "Manche Orte erlauben Fotos ohne Blitz.", en: "Some places allow photos without flash." } } ] }
+        };
+
+        var openMod = null;
+        var currentAccent = "var(--brand)";
+
+        function lang() { return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "de"; }
+        function t(key) {
+          var d = I18N[lang()] || {};
+          return (key in d) ? d[key] : key;
+        }
+
+        function speak(text) {
+          try {
+            if (!("speechSynthesis" in window)) return;
+            var u = new SpeechSynthesisUtterance(text);
+            u.lang = "en-US"; u.rate = 0.95;
+            speechSynthesis.cancel(); speechSynthesis.speak(u);
+          } catch (e) {}
+        }
+
+        function syncDots() {
+          var w = strip.clientWidth || 1;
+          var active = Math.round(strip.scrollLeft / w);
+          var dots = dotsWrap.children;
+          for (var n = 0; n < dots.length; n++) dots[n].classList.toggle("is-active", n === active);
+          var slides = strip.children;
+          for (var s = 0; s < slides.length; s++) {
+            if (s === active) continue;
+            var fl = slides[s].querySelector(".flip");
+            if (fl) { fl.classList.remove("is-flipped"); fl.setAttribute("aria-pressed", "false"); }
+            var cp = slides[s].querySelector(".lp-ctxpanel");
+            if (cp) cp.setAttribute("hidden", "");
+            var cb = slides[s].querySelector(".cardbtn--ctx");
+            if (cb) { cb.classList.remove("is-open"); cb.setAttribute("aria-expanded", "false"); }
+          }
+        }
+        strip.addEventListener("scroll", function () { window.requestAnimationFrame(syncDots); });
+
+        function render(mod) {
+          var m = DATA[mod];
+          if (!m) return;
+          var l = lang();
+          var cat = l === "en" ? m.cat[1] : m.cat[0];
+          var hint = t("card.hint"), speakLbl = t("card.speak"), flipLbl = t("card.flip");
+          var ctxLbl = t("ctx.show"), ctxTitle = t("ctx.title"), sitLbl = t("ctx.situation"), noteLbl = t("ctx.note");
+          var fromCol = "color-mix(in srgb, " + currentAccent + " 84%, #0D2426)";
+          strip.innerHTML = "";
+          dotsWrap.innerHTML = "";
+          m.ex.forEach(function (c, i) {
+            var lvl = t(c.lvl === 2 ? "card.lvl2" : "card.lvl");
+            var front = c.de; // HelloAbroad: immer DE vorne (L1), EN hinten
+            var slide = document.createElement("div");
+            slide.className = "lp-mdslide";
+            slide.innerHTML =
+              '<div class="flip" role="button" tabindex="0" aria-pressed="false">' +
+                '<div class="flip__inner">' +
+                  '<div class="face face--front">' +
+                    '<span class="face__cat"></span>' +
+                    '<span class="lvl-badge"></span>' +
+                    '<div class="face__word"></div>' +
+                    '<span class="face__hint"></span>' +
+                  '</div>' +
+                  '<div class="face face--back">' +
+                    '<span class="face__cat"></span>' +
+                    '<span class="lvl-badge lvl-badge--on"></span>' +
+                    '<button class="cardbtn cardbtn--ctx is-on" type="button" aria-expanded="false">🧭</button>' +
+                    '<button class="cardbtn cardbtn--speak is-on" type="button">🔊</button>' +
+                    '<div class="face__word" lang="en"></div>' +
+                    '<div class="face__tip"></div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="context-panel lp-ctxpanel" hidden>' +
+                '<h3 class="context-panel__title"></h3>' +
+                '<div class="context-panel__line">' +
+                  '<p class="context-panel__es" lang="en"></p>' +
+                  '<p class="context-panel__de"></p>' +
+                '</div>' +
+                '<div class="context-panel__block">' +
+                  '<div class="context-panel__label context-panel__label--sit"></div>' +
+                  '<p class="context-panel__text context-panel__text--sit"></p>' +
+                '</div>' +
+                '<div class="context-panel__block">' +
+                  '<div class="context-panel__label context-panel__label--note"></div>' +
+                  '<p class="context-panel__text context-panel__text--note"></p>' +
+                '</div>' +
+              '</div>';
+            var front_ = slide.querySelector(".face--front");
+            front_.querySelector(".face__cat").textContent = cat;
+            front_.querySelector(".lvl-badge").textContent = lvl;
+            front_.querySelector(".face__word").textContent = front;
+            front_.querySelector(".face__hint").textContent = hint;
+            var back_ = slide.querySelector(".face--back");
+            back_.style.setProperty("--from", fromCol);
+            back_.querySelector(".face__cat").textContent = cat;
+            back_.querySelector(".lvl-badge").textContent = lvl;
+            back_.querySelector(".face__word").textContent = c.en;
+            back_.querySelector(".face__tip").textContent = c.tip ? ("🗣️ " + c.tip) : "";
+            var spk = back_.querySelector(".cardbtn--speak");
+            spk.setAttribute("aria-label", speakLbl);
+            spk.setAttribute("data-spk", c.en);
+            spk.addEventListener("click", function (e) { e.stopPropagation(); speak(c.en); });
+
+            var panel = slide.querySelector(".lp-ctxpanel");
+            panel.querySelector(".context-panel__title").textContent = ctxTitle;
+            panel.querySelector(".context-panel__es").textContent = c.en;
+            panel.querySelector(".context-panel__de").textContent = front;
+            panel.querySelector(".context-panel__label--sit").textContent = sitLbl;
+            panel.querySelector(".context-panel__text--sit").textContent = c.sit ? c.sit[l] : "";
+            panel.querySelector(".context-panel__label--note").textContent = noteLbl;
+            panel.querySelector(".context-panel__text--note").textContent = c.note ? c.note[l] : "";
+            var ctxBtn = back_.querySelector(".cardbtn--ctx");
+            ctxBtn.setAttribute("aria-label", ctxLbl);
+            ctxBtn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              var willOpen = panel.hasAttribute("hidden");
+              if (willOpen) panel.removeAttribute("hidden"); else panel.setAttribute("hidden", "");
+              ctxBtn.classList.toggle("is-open", willOpen);
+              ctxBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+            });
+            function closeCtx() {
+              panel.setAttribute("hidden", "");
+              ctxBtn.classList.remove("is-open");
+              ctxBtn.setAttribute("aria-expanded", "false");
+            }
+
+            var flip = slide.querySelector(".flip");
+            flip.setAttribute("aria-label", flipLbl);
+            function doFlip() {
+              var on = flip.classList.toggle("is-flipped");
+              flip.setAttribute("aria-pressed", on ? "true" : "false");
+              if (!on) closeCtx();
+            }
+            flip.addEventListener("click", function (e) { if (e.target.closest(".cardbtn")) return; doFlip(); });
+            flip.addEventListener("keydown", function (e) {
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doFlip(); }
+            });
+            strip.appendChild(slide);
+
+            var dot = document.createElement("button");
+            dot.type = "button"; dot.className = "lp-dot" + (i === 0 ? " is-active" : "");
+            dot.setAttribute("aria-label", t("more.pick") + " " + (i + 1));
+            dot.addEventListener("click", function () {
+              strip.scrollTo({ left: strip.clientWidth * i, behavior: reduce ? "auto" : "smooth" });
+            });
+            dotsWrap.appendChild(dot);
+          });
+          strip.scrollLeft = 0;
+          syncDots();
+        }
+
+        function openChip(chip) {
+          openMod = chip.getAttribute("data-mod");
+          chips.forEach(function (c) { c.setAttribute("aria-expanded", c === chip ? "true" : "false"); });
+          currentAccent = (chip.style.getPropertyValue("--accent") || "").trim() || "var(--brand)";
+          detail.style.setProperty("--accent", currentAccent);
+          var ico = chip.querySelector(".lp-morechip__ico");
+          var nm = chip.querySelector(".lp-morechip__name");
+          icoEl.textContent = ico ? ico.textContent : "";
+          nameEl.textContent = nm ? nm.textContent : "";
+          render(openMod);
+          detail.hidden = false;
+          if (window.matchMedia && window.matchMedia("(max-width: 560px)").matches) {
+            try { detail.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" }); } catch (e) {}
+          }
+        }
+        function closeDetail() {
+          openMod = null;
+          chips.forEach(function (c) { c.setAttribute("aria-expanded", "false"); });
+          detail.hidden = true;
+          try { speechSynthesis.cancel(); } catch (e) {}
+        }
+
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            if (openMod === chip.getAttribute("data-mod")) closeDetail();
+            else openChip(chip);
+          });
+        });
+        closeBtn.addEventListener("click", closeDetail);
+
+        document.querySelectorAll(".lp-langbtn").forEach(function (b) {
+          b.addEventListener("click", function () {
+            if (!openMod) return;
+            // Nach setLang (gleicher Click): Namen/Labels neu aus dem Chip lesen.
+            setTimeout(function () {
+              var chip = null;
+              for (var i = 0; i < chips.length; i++) {
+                if (chips[i].getAttribute("data-mod") === openMod) { chip = chips[i]; break; }
+              }
+              if (chip) {
+                var nm = chip.querySelector(".lp-morechip__name");
+                if (nm) nameEl.textContent = nm.textContent;
+              }
+              render(openMod);
+            }, 0);
+          });
+        });
+      })();
     })();
   </script>
 </body>
