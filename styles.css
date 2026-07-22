@@ -1341,10 +1341,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dangerbtn:active { transform: translateY(1px); }
 
 /* ---------- STATISTIK ---------- */
-.kpis { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+/* KPI-Kacheln: minmax(0,1fr) statt 1fr, damit die Spalten unter ihre
+ * Inhalts-Mindestbreite schrumpfen dürfen. Sonst erzwingen lange, nicht
+ * umbrechbare Labels (z. B. "TREFFERQUOTE") eine Grid-Breite größer als der
+ * Viewport – die ganze Statistik-Seite bekäme dann horizontalen Overflow. */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .kpi {
+  min-width: 0;
   background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
   padding: 12px 8px; text-align: center; box-shadow: var(--shadow);
+}
+/* Auf schmalen Handys passen vier Spalten mit den langen deutschen Labels nicht
+ * nebeneinander – dann als gut lesbares 2×2-Raster stapeln statt zu quetschen. */
+@media (max-width: 430px) {
+  .kpis { grid-template-columns: 1fr 1fr; }
 }
 .kpi__num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--ink); }
 .kpi__of { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
