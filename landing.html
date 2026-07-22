@@ -1058,6 +1058,7 @@
         "nav.cta": "Starten",
         "hero.eyebrow": "REISE-SPANISCH FÜR LATEINAMERIKA",
         "hero.h1": "Sprich Spanisch, <span class=\"lp-hl\">bevor der Bus kommt.</span>",
+        "hero.h1.b": "Nie wieder sprachlos <span class=\"lp-hl\">in Lateinamerika.</span>",
         "hero.sub": "Genau die Sätze, die du im Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt.",
         "hero.cta": "Kostenlos starten →",
         "hero.cta2": "Wie es funktioniert",
@@ -1152,6 +1153,7 @@
         "nav.cta": "Start",
         "hero.eyebrow": "TRAVEL SPANISH FOR LATIN AMERICA",
         "hero.h1": "Speak Spanish <span class=\"lp-hl\">before the bus arrives.</span>",
+        "hero.h1.b": "Never lost for words <span class=\"lp-hl\">in Latin America.</span>",
         "hero.sub": "Exactly the phrases you'll need on the bus, at the table and at the border — ready when it counts.",
         "hero.cta": "Start free →",
         "hero.cta2": "See how it works",
@@ -1246,6 +1248,7 @@
         "nav.cta": "Empezar",
         "hero.eyebrow": "ESPAÑOL DE VIAJE PARA LATINOAMÉRICA",
         "hero.h1": "Habla español <span class=\"lp-hl\">antes de que llegue el bus.</span>",
+        "hero.h1.b": "Nunca más sin palabras <span class=\"lp-hl\">en Latinoamérica.</span>",
         "hero.sub": "Justo las frases que necesitas en el bus, en la mesa y en la frontera — listas para cuando cuentan.",
         "hero.cta": "Empezar gratis →",
         "hero.cta2": "Cómo funciona",
@@ -1337,7 +1340,7 @@
       }
     };
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
-    var HTML_KEYS = { "hero.h1": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "hero.h1.b": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
 
     var LANG_KEY = "holaruta.landing.lang";
 
@@ -1383,6 +1386,39 @@
     var browserLang = browser.indexOf("de") === 0 ? "de" : (browser.indexOf("es") === 0 ? "es" : "en");
     var initial = (urlLang && SUPPORTED.indexOf(urlLang) >= 0) ? urlLang
       : (saved && SUPPORTED.indexOf(saved) >= 0) ? saved : browserLang;
+
+    // ── Leichtes, abhängigkeitsfreies A/B-Fundament ──────────────────────────
+    // Weist beim ersten Besuch stabil eine Variante zu (persistiert lokal, KEIN
+    // externer Call, keine Zuweisung serverseitig). Variante b hängt die Hero-
+    // Headline auf einen alternativen i18n-Key um (setLang rendert ihn danach in
+    // jeder Sprache) und beide Varianten hängen &var= an die Onboarding-CTAs, damit
+    // die App die Variante aufs app_open schreibt. Auswertung: Conversion je Variante
+    // im Admin-Cockpit (variantFunnel) – die Landing selbst trackt nichts.
+    function lpExp() {
+      var EXP_KEY = "holaruta.landing.exp.v1";
+      var VARIANTS = ["a", "b"]; // a = Bestands-Headline, b = Alternative (Schmerz-vermeidend)
+      var v = null;
+      try { v = localStorage.getItem(EXP_KEY); } catch (e) {}
+      if (VARIANTS.indexOf(v) < 0) {
+        v = VARIANTS[(Math.random() * VARIANTS.length) | 0]; // 50/50, framework-frei
+        try { localStorage.setItem(EXP_KEY, v); } catch (e) {}
+      }
+      document.documentElement.setAttribute("data-exp", v);
+      if (v === "b") {
+        var h1 = document.querySelector('h1[data-i18n="hero.h1"]');
+        if (h1) h1.setAttribute("data-i18n", "hero.h1.b");
+      }
+      var links = document.querySelectorAll('a[href*="start=onboarding"]');
+      for (var i = 0; i < links.length; i++) {
+        var href = links[i].getAttribute("href");
+        if (href && href.indexOf("var=") < 0) {
+          links[i].setAttribute("href", href + (href.indexOf("?") < 0 ? "?" : "&") + "var=" + v);
+        }
+      }
+      return v;
+    }
+    try { lpExp(); } catch (e) { /* Experiment darf die Seite nie brechen */ }
+
     setLang(initial);
 
     document.querySelectorAll(".lp-langbtn").forEach(function (b) {
