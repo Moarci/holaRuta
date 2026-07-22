@@ -34,6 +34,10 @@
   // bewusst NICHT in KNOWN_KEYS – gerätelokaler Arbeitsstand, kein Backup-Inhalt
   // (ein Import von einem anderen Gerät soll fremde Antworten nicht einspielen).
   const SHEETFILL_KEY = "spanischcard.sheetfill.v1";
+  // Domain-Umzug-Hinweisbanner (github.io -> holaruta.com) weggetippt? Ebenfalls
+  // bewusst NICHT in KNOWN_KEYS – gerätelokaler Anzeige-Status, kein Backup-Inhalt
+  // (ein Import auf einem anderen Gerät soll den Hinweis dort nicht unterdrücken).
+  const MIGRATION_BANNER_KEY = "spanischcard.migrationBannerDismissed.v1";
   // Alle Keys, die zu HolaRuta gehören – Basis für Export/Import (Backup).
   const KNOWN_KEYS = [PROGRESS_KEY, SETTINGS_KEY, USERCARDS_KEY, GAMESTATS_KEY, TASKS_KEY, FAVORITES_KEY];
 
@@ -814,6 +818,10 @@
       return typeof v === "string" ? v : null;
     },
     saveSeenVersion: (v) => writeJson(SEENVERSION_KEY, String(v)),
+    // Domain-Umzug-Banner: einmal weggetippt, bleibt es auf diesem Gerät weg
+    // (kein erneutes Aufdrängen bei jedem Sitzungsstart).
+    loadMigrationBannerDismissed: () => readJson(MIGRATION_BANNER_KEY, false) === true,
+    dismissMigrationBanner: () => writeJson(MIGRATION_BANNER_KEY, true),
     // Arbeitsheft-Eingaben (Handy-Modus). Struktur: { "<blattId>": { "<feld>": "<text>" } }.
     // Strukturwächter mit Deckeln, damit korruptes/manipuliertes localStorage
     // weder crasht noch unbegrenzt wuchert (max. 50 Blätter × 400 Felder).
