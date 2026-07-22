@@ -356,3 +356,20 @@ test("googleStart: baut die Start-URL mit encodetem redirect (kein window -> No-
     "redirect ist URL-encodet und haengt an /v1/auth/google/start",
   );
 });
+
+test("request: timeout-Grenze ist strikt > 0 (timeout:1 verdrahtet noch einen AbortController und bricht ab)", async () => {
+  reset();
+  // Langsame Antwort (120ms); der 1ms-Abort-Timer feuert zuverlässig davor.
+  globalThis.fetch = (url, opts) => new Promise((resolve, reject) => {
+    const sig = opts && opts.signal;
+    if (sig) sig.addEventListener("abort", () => reject(new Error("aborted")));
+    setTimeout(() => resolve(res(200, "{}")), 120);
+  });
+  // timeout:1 -> `timeout > 0` ist wahr -> AbortController + 1ms-Timer -> Abbruch.
+  // Tötet die Mutante `timeout > 1` (die bei timeout:1 KEINEN Controller verdrahtete
+  // und die 120ms-Antwort normal durchließe, statt abzubrechen).
+  await assert.rejects(
+    () => net.request("http://api", "GET", "/x", null, { timeout: 1, retries: 0 }),
+    /aborted/,
+  );
+});

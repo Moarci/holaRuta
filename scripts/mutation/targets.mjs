@@ -123,6 +123,10 @@ export const IGNORE = [
     "review: `Math.max(1, Math.round(base * ease))` (1→0). base ist stets ≥1 (interval||1 bzw. max(1,…)) und ease∈[1.3,3.0], " +
     "also round(base*ease) ≥ round(1.3) = 1. Für jeden erreichbaren Wert ist max(1,x)==max(0,x) → äquivalent." },
   // net.js (Härtung Timeout/Retry resampelt – reine Wartedauer ohne beobachtbaren Effekt)
+  { file: "net.js", line: 75, op: "relational", grund:
+    "request: `retries = (opts.retries > 0) ? opts.retries : 0` vs `>=`. Der EINZIGE unterscheidende Eingabewert ist " +
+    "opts.retries === 0: dann liefert `>0` den else-Zweig 0 und `>=0` den then-Zweig opts.retries — beides der Wert 0. " +
+    "Für jeden erreichbaren Wert (undefined, 0, >0) also identisches retries → äquivalent." },
   { file: "net.js", line: 76, op: "number", grund:
     "request: `backoff = (typeof opts.backoff === 'number') ? opts.backoff : 400` (Default 400→0). Der Default-Backoff " +
     "beeinflusst NUR die Wartedauer zwischen Wiederholungen, nicht deren Ergebnis; alle Tests übergeben backoff explizit. " +
