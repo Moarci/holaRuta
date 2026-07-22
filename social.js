@@ -187,8 +187,13 @@
     return publish(snap).then(function () {
       return leaderboard(snap.day);
     }).then(function (r) {
-      var entries = (r && r.ok && r.body && Array.isArray(r.body.entries)) ? r.body.entries : [];
-      var meId = (r && r.ok && r.body && (r.body.meId === 0 || r.body.meId)) ? r.body.meId : (o.meId != null ? o.meId : null);
+      // Ein fehlgeschlagener Rangliste-Abruf (Server-Fehler, 4xx/5xx) darf NICHT als
+      // leere Liste durchrutschen – sonst zeigt die UI „noch keine Freund:innen",
+      // obwohl in Wahrheit der Server hakt. Ablehnen -> der Aufrufer zeigt den
+      // Fehlerzustand mit „Erneut versuchen".
+      if (!r || !r.ok) { var err = new Error("leaderboard failed"); err.status = r && r.status; throw err; }
+      var entries = (r.body && Array.isArray(r.body.entries)) ? r.body.entries : [];
+      var meId = (r.body && (r.body.meId === 0 || r.body.meId)) ? r.body.meId : (o.meId != null ? o.meId : null);
       return { ok: true, board: buildLeaderboard(entries, { day: snap.day, meId: meId }) };
     });
   }
