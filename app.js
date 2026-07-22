@@ -3011,6 +3011,12 @@
       const item = dialogosGame.autoSpeakItem();
       if (item) return item;
     }
+    // ¿Y esto?: das aufgelöste Wort automatisch vorlesen (das Feature-Modul
+    // liefert {key,text} nur in der Auflösungs-Phase).
+    if (state.screen === "yesto" && state.yesto && yestoGame) {
+      const item = yestoGame.autoSpeakItem();
+      if (item) return item;
+    }
     return null;
   }
   function maybeAutoSpeak() {

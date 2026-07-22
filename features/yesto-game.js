@@ -53,6 +53,14 @@
     };
   }
 
+  // Lösungswort eines Motivs in der gelernten Sprache (Reise: spanisch, Locals/
+  // HelloAbroad: englisch). Gemeinsame Quelle für die Anzeige (yestoVM) und die
+  // Sprachausgabe (autoSpeakItem) – so bleiben Wort auf dem Screen und gesprochenes
+  // Wort garantiert identisch.
+  function learnWord(item, ll) {
+    return ((ll || trackLearnLang()) === "en" ? item.en : item.es) || "";
+  }
+
   function yestoVM() {
     const y = ctx.state.yesto;
     const item = (y && y.queue[y.idx]) || {};
@@ -63,7 +71,7 @@
     // Hilfszeile = Muttersprache. Spanisch NUR im echten Locals-Track (es-en);
     // de-en lernt ebenfalls Englisch, hat aber Deutsch als L1 → nativeText (de).
     const nativeEs = (window.SC.track && window.SC.track.id && window.SC.track.id()) === "es-en";
-    const word = (ll === "en" ? item.en : item.es) || "";
+    const word = learnWord(item, ll);
     const native = nativeEs
       ? (item.es || "")
       : (ctx.i18n.nativeText({ de: item.de, en: item.en }) || "");
@@ -168,6 +176,20 @@
 
   function yestoAgain() { startYesto(ctx.state.yesto ? ctx.state.yesto.themeId : null); }
 
+  // Auto-Sprachausgabe der Auflösung: sobald ein Motiv aufgelöst ist (Phase
+  // „reveal"), das Lösungswort in der gelernten Sprache vorlesen – analog zur
+  // Karten-Hörphase und zu Diálogos. app.js ruft das im Render-Loop über
+  // autoSpeakTarget() ab; die Locale kommt aus der Track-Stimme (SC.speech).
+  // Der Key ist pro Motiv eindeutig, damit jedes Wort genau einmal klingt.
+  function autoSpeakItem() {
+    const y = ctx.state.yesto;
+    if (!y || y.phase !== "reveal") return null;
+    const item = y.queue[y.idx];
+    if (!item) return null;
+    const text = learnWord(item);
+    return text ? { key: "yesto:" + y.idx + ":" + text, text } : null;
+  }
+
   // Ergebnis einer beendeten ¿Y-esto?-Runde in die Spiel-Zähler buchen (Ruta-Pass).
   // „Perfekt" = bei jedem Bild „Wusste ich" getippt (correct === total).
   function recordYestoResult(y) {
@@ -251,6 +273,8 @@
     // Countdown-Timer: render() des Controllers schaltet ihn scharf/ab.
     arm: yestoArm,
     disarm: yestoDisarm,
+    // Auto-Sprachausgabe der Auflösung (app.js autoSpeakTarget liest das im Render-Loop).
+    autoSpeakItem,
     // Handler (ACTIONS / miniDoneConfig / Deep-Link).
     open: openYesto,
     start: startYesto,
