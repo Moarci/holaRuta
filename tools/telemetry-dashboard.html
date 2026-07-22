@@ -41,14 +41,14 @@
     --shadow-lg:0 12px 0 -6px rgba(45,27,18,0.14);
     --font:"Instrument Sans","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
     --font-display:"Bricolage Grotesque","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
-    --maxw:1180px;
+    --maxw-admin:1180px;
     color-scheme: light;
   }
   [data-theme="dark"] {
     --page:#0E0907; --surface:#17100C; --card:#221811; --on-accent:#241510;
     --ink:#F0E6D8; --ink-soft:#C3B2A1; --muted:#A8917D; --faint:#968069;
     --line:rgba(251,243,228,0.12); --line-strong:rgba(251,243,228,0.22);
-    --sunken:rgba(251,243,228,0.06);
+    --sunken:rgba(251,243,228,0.07);
     --brand:#E06A40; --brand-ink:#F0996B;
     --ok:#5FA77C; --no:#E5736A; --easy:#4FA0A6; --warn:#D89B3E;
     --shadow:0 2px 0 rgba(0,0,0,0.35);
@@ -75,7 +75,7 @@
   /* ---- Kopfzeile --------------------------------------------------------- */
   header { border-bottom:1.5px solid var(--line); background:var(--card); }
   .hwrap {
-    max-width:var(--maxw); margin:0 auto; padding:14px 24px;
+    max-width:var(--maxw-admin); margin:0 auto; padding:14px 24px;
     display:flex; align-items:center; gap:14px; flex-wrap:wrap;
   }
   .brand { display:flex; align-items:center; gap:10px; }
@@ -118,7 +118,7 @@
   }
 
   /* ---- Layout ------------------------------------------------------------ */
-  main { max-width:var(--maxw); margin:0 auto; padding:24px 24px 64px; }
+  main { max-width:var(--maxw-admin); margin:0 auto; padding:24px 24px 64px; }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
   /* Grid-Items haben per Default min-width:auto — eine lange Überschrift zieht die
      Spalte dann über die Seitenbreite hinaus und die GANZE Seite scrollt seitlich.
@@ -222,7 +222,7 @@
   .fstep .flab { width:150px; flex:none; color:var(--ink-soft); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .fstep .fbarwrap { flex:1; }
   .fstep .fbar {
-    background:linear-gradient(90deg,var(--brand),var(--warn)); height:28px; border-radius:999px;
+    background:var(--brand); height:28px; border-radius:999px;
     min-width:40px; display:flex; align-items:center; justify-content:center;
     color:var(--on-accent); font-weight:800; font-size:12px; font-variant-numeric:tabular-nums;
     transition:width .3s ease;
@@ -231,7 +231,20 @@
   @media (max-width:520px){ .fstep .flab { width:92px; } .fstep .fmeta { width:74px; } }
 
   /* ---- Tabellen ---------------------------------------------------------- */
+  /* Scrollbare Bereiche brauchen tabindex, sonst kommt man mit der Tastatur
+     nicht an den überstehenden Inhalt (auf schmalen Screens die halbe Heatmap). */
   .tablewrap { overflow-x:auto; }
+  .tablewrap:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+  /* Nur für Screenreader: trägt die Bedeutung, die sonst allein an einem Glyph
+     oder einer Farbe hängen würde. */
+  .sr { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+  .skip {
+    position:absolute; left:-9999px; top:0; z-index:100;
+    background:var(--brand); color:var(--on-accent); font-weight:700;
+    padding:10px 16px; border-radius:0 0 var(--r-sm) 0; text-decoration:none;
+  }
+  .skip:focus, .skip:focus-visible { left:8px; top:8px; }
+  .heat-na { color:var(--faint); }
   table { width:100%; border-collapse:collapse; font-size:13px; }
   th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
   th { color:var(--brand-ink); font-weight:800; white-space:nowrap; }
@@ -286,7 +299,7 @@
   .gate summary { cursor:pointer; font-weight:700; }
 
   footer {
-    max-width:var(--maxw); margin:0 auto; padding:0 24px 48px;
+    max-width:var(--maxw-admin); margin:0 auto; padding:0 24px 48px;
     color:var(--muted); font-size:12px;
   }
   footer code { background:var(--sunken); padding:1px 6px; border-radius:6px; }
@@ -298,6 +311,7 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#app">Zum Inhalt springen</a>
 <div class="topstripe"></div>
 <header>
   <div class="hwrap">
@@ -324,7 +338,8 @@
     </span>
   </div>
 </header>
-<main id="app"><p class="empty">Lade …</p></main>
+<p id="live" class="sr" role="status" aria-live="polite"></p>
+<main id="app" tabindex="-1"><p class="empty">Lade …</p></main>
 <footer id="foot" hidden>
   Zugriff per <code>ADMIN_TELEMETRY_TOKEN</code> · Daten kommen ausschließlich von Geräten mit <b>aktivierter</b> opt-in-Statistik.
   Feld-Definitionen: <code>docs/TELEMETRIE.md</code> · Kennzahlen-Spec: <code>docs/INVESTOR-KPIS.md</code>. „Nutzer“ = distinkte pseudonyme <code>clientId</code>.
@@ -446,20 +461,30 @@ function vbars(series, opts){
   return chartFrame(svg, max, xLabels(series, opts.xlabel));
 }
 
-// Trichter. WICHTIG: ist die erste Stufe 0, gibt es keinen gültigen Nenner —
-// vorher wurde dann ersatzweise durch 1 geteilt, was Balken >100% Breite und
-// Quoten wie "300 %" erzeugte (real erreichbar, wenn das intro-Event außerhalb
-// des Fensters liegt, der Abschluss aber darin). Jetzt: ehrlich als n/a.
+// Trichter.
+//
+// Zwei Wege, auf denen ein "Trichter" keiner ist — beide real erreichbar, weil
+// die Stufen aus voneinander UNABHÄNGIGEN Event-Mengen gezählt werden (s.funnel:
+// `onboarding_step:intro` vs. `onboarding_complete`) und das Zeitfenster mitten
+// durch eine Nutzerreise schneiden kann:
+//   a) Einstiegsstufe 0, spätere Stufe > 0  (intro vor dem Fenster, Abschluss darin)
+//   b) irgendeine Stufe > Einstiegsstufe    (dieselbe Ursache, nur teilweise)
+// In beiden Fällen ist die Quote nicht definiert. Sie trotzdem auszurechnen
+// ergab vorher Werte wie "300 %". Jetzt: Quote = n/a, Balken werden am GRÖSSTEN
+// Wert skaliert (sonst stünden alle Stufen auf 100 % und der Balken trüge
+// überhaupt keine Information mehr), plus ein Hinweis, warum.
 function funnelChart(steps, emptyWhy){
   steps = (steps||[]).map(function(s){ return { label: s.label!=null?s.label:s.step, count: s.count||0 }; });
   if(!steps.length || !steps.some(function(s){return s.count>0;})) return empty("Keine Trichter-Daten", emptyWhy||"");
   var top = steps[0].count;
-  var noBase = !top;
-  return (noBase? '<p class="empty" style="margin-bottom:10px"><b>Einstiegsstufe im Fenster leer</b> — Quoten nicht berechenbar, absolute Zahlen unten.</p>' : '')
+  var peak = steps.reduce(function(m,s){ return Math.max(m, s.count); }, 0) || 1;
+  var broken = !top || steps.some(function(s){ return s.count > top; });
+  var scale = broken ? peak : top;
+  return (broken? '<p class="empty" style="margin-bottom:10px"><b>Stufen nicht vergleichbar</b> — eine spätere Stufe ist größer als die Einstiegsstufe (Ereignisse der Einstiegsstufe liegen teilweise vor dem Zeitfenster). Quoten deshalb n/a; die absoluten Zahlen stimmen. Größeres Fenster wählen.</p>' : '')
     + '<div class="funnel">'+steps.map(function(s,i){
-    var w = noBase ? 100 : Math.max(4, Math.min(100, Math.round((s.count/top)*100)));
-    var conv = noBase ? null : Math.round((s.count/top)*100);
-    var drop = (i>0 && steps[i-1].count) ? Math.round((1-(s.count/steps[i-1].count))*100) : null;
+    var w = Math.max(4, Math.min(100, Math.round((s.count/scale)*100)));
+    var conv = broken ? null : Math.round((s.count/top)*100);
+    var drop = (!broken && i>0 && steps[i-1].count) ? Math.round((1-(s.count/steps[i-1].count))*100) : null;
     return '<div class="fstep">'
       + '<div class="flab" title="'+esc(s.label)+'">'+esc(s.label)+'</div>'
       + '<div class="fbarwrap"><div class="fbar" style="width:'+w+'%"><span>'+esc(fmtN(s.count))+'</span></div></div>'
@@ -506,17 +531,23 @@ function heatmap(cohorts){
   var head = '<tr><th class="lab">Kohorte (Erst-Tag)</th><th>Größe</th>'+offs.map(function(k){ return '<th>D'+k+'</th>'; }).join("")+'</tr>';
   var rows = cohorts.map(function(co){
     var cells = co.cells.map(function(c){
-      if(!c.eligible || c.pct==null) return '<td style="color:var(--faint)" title="noch nicht messbar">·</td>';
-      var a = (0.10+(c.pct/100)*0.85);
-      // Textfarbe kippt ab mittlerer Sättigung: helle Schrift auf kräftigem Grün
-      // erreichte sonst nur ~2,6:1 — ausgerechnet bei den BESTEN Kohorten.
-      var fg = c.pct > 45 ? "#17100C" : "var(--ink)";
-      return '<td style="background:color-mix(in srgb, var(--ok) '+Math.round(a*100)+'%, transparent);color:'+fg+'" title="'+c.retained+' / '+co.size+' wieder aktiv">'+c.pct+' %</td>';
+      if(!c.eligible || c.pct==null) return '<td class="heat-na"><span class="sr">nicht messbar</span><span aria-hidden="true">·</span></td>';
+      // Sättigung bewusst bei 45 % gedeckelt und KEIN Textfarben-Wechsel.
+      // Begründung (durchgerechnet, beide Themes): eine durchgehende Farbrampe
+      // läuft zwangsläufig durch eine mittlere Helligkeit, in der weder dunkler
+      // noch heller Text 4,5:1 erreicht — mit Umschaltpunkt kommt man auf höchstens
+      // ~3,9:1, und die Umschaltrichtung müsste je Theme entgegengesetzt sein
+      // (hell: dunkles Grün braucht helle Schrift, dunkel: helles Grün braucht
+      // dunkle). Gedeckelt bei 0.45 hält --ink durchgehend 8,4:1 (hell) bzw.
+      // 6,4:1 (dunkel). Die Zahl steht ohnehin in jeder Zelle — die Fläche ist
+      // nur der zweite Kanal, nicht der einzige.
+      var a = 0.06 + (c.pct/100)*0.39;
+      return '<td style="background:color-mix(in srgb, var(--ok) '+Math.round(a*100)+'%, transparent)'+(c.pct>=50?';font-weight:800':'')+'" title="'+esc(fmtN(c.retained))+' / '+esc(fmtN(co.size))+' wieder aktiv">'+c.pct+' %</td>';
     }).join("");
     return '<tr><td class="lab">'+esc(co.cohort)+'</td><td>'+esc(fmtN(co.size))+'</td>'+cells+'</tr>';
   }).join("");
   var legend = '<div class="heat-legend"><span>0 %</span><span class="grad"></span><span>100 % wieder aktiv</span><span style="margin-left:auto">· = im Fenster noch nicht messbar</span></div>';
-  return '<div class="tablewrap"><table class="heat">'+head+rows+'</table></div>'+legend;
+  return '<div class="tablewrap" tabindex="0" role="region" aria-label="Retention-Kohorten, horizontal scrollbar"><table class="heat">'+head+rows+'</table></div>'+legend;
 }
 
 function editionTable(eds){
@@ -525,7 +556,7 @@ function editionTable(eds){
   var rows = eds.map(function(e){
     return '<tr><td>'+esc(e.edition)+'</td><td class="num">'+esc(fmtN(e.users))+'</td><td class="num">'+esc(fmtN(e.wau))+'</td><td class="num">'+esc(fmtN(e.sessions))+'</td><td class="num">'+esc(fmtN(e.activated))+'</td><td class="num">'+esc(pct(e.activationPct))+'</td></tr>';
   }).join("");
-  return '<div class="tablewrap"><table>'+head+rows+'</table></div>';
+  return '<div class="tablewrap" tabindex="0" role="region" aria-label="KPIs je Edition, horizontal scrollbar"><table>'+head+rows+'</table></div>';
 }
 
 // Retention-Eintrag holen. `eligible === 0` heißt NICHT "0 % kamen zurück",
@@ -544,15 +575,23 @@ function render(s){
   var inv = s.investor || {};
   var html = "";
   // "Nichts gemessen" sicher erkennen: totals kommen direkt aus dem Ingest und
-  // sind unabhängig von jeder Ableitung.
+  // sind unabhängig von jeder Ableitung. ACHTUNG: sie sind FENSTER-gefiltert —
+  // "0 Snapshots" heißt "keine im gewählten Fenster", nicht zwingend "keine da".
+  // Die Texte unten müssen entsprechend vorsichtig formuliert sein.
   var noEvents = !(s.totals && s.totals.events), noSnaps = !(s.totals && s.totals.snapshots);
   var virgin = noEvents && noSnaps;
+  // Alle Quoten/Verhältnisse leiten sich aus aktiven Personen ab. Ohne solche im
+  // Fenster ist JEDE davon aussagelos — sie dann als "0 %" mit rotem "Ziel
+  // verfehlt"-Chip zu zeigen, wäre wieder die Kachelwand, die wie ein Defekt
+  // aussieht. Deshalb gilt der Leer-Zustand nicht nur für den jungfräulichen
+  // Fall, sondern immer wenn die Bezugsgröße fehlt.
+  var noBasis = virgin || !u.total;
 
   html += '<h2 class="sec">Investor-Cockpit <small>AARRR · pro Person · Sitzung · Tag · Kohorte · Edition</small></h2>';
 
   if(inv.alerts && inv.alerts.length){
     html += '<div class="panel" style="border-color:var(--no)"><h3 style="color:var(--no)">Regressions-Alarm <small>(Fehlerquote je App-Version über Schwelle)</small></h3>'
-      + hbars(inv.alerts.map(function(a){return {label:a.version+" · "+a.errors+"/"+a.events+" Events",count:a.ratePct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}})
+      + hbars(inv.alerts.map(function(a){return {label:a.version+" · "+fmtN(a.errors)+"/"+fmtN(a.events)+" Events",count:a.ratePct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}})
       + '</div>';
   }
 
@@ -566,10 +605,10 @@ function render(s){
       + '</div>';
   } else if(noEvents){
     html += '<div class="firstrun"><h3>Nur Snapshots, kein Event-Strom</h3>'
-      + '<p><b>'+esc(fmtN(s.totals.snapshots))+' Snapshots</b>, aber <b>0 Events</b>. Der tägliche Snapshot kommt an, der Ereignis-Strom nicht — das deutet auf <code>POST /v1/events</code> hin (Route, Größenlimit oder Rate-Limit), nicht auf fehlende Zustimmung.</p></div>';
+      + '<p>Im '+esc(s.windowDays)+'-Tage-Fenster: <b>'+esc(fmtN(s.totals.snapshots))+' Snapshots</b>, aber <b>0 Events</b>. Zuerst ein größeres Fenster probieren — Events können schlicht älter sein. Bleibt es dabei, kommt der tägliche Snapshot an und der Ereignis-Strom nicht: dann <code>POST /v1/events</code> prüfen (Route, Größenlimit, Rate-Limit).</p></div>';
   } else if(noSnaps){
     html += '<div class="firstrun"><h3>Nur Events, keine Snapshots</h3>'
-      + '<p><b>'+esc(fmtN(s.totals.events))+' Events</b>, aber <b>0 Snapshots</b>. Prüfe <code>POST /v1/usage</code> — häufigste Ursache ist eine noch nicht angewendete Migration (Schema-Fehler ⇒ 500).</p></div>';
+      + '<p>Im '+esc(s.windowDays)+'-Tage-Fenster: <b>'+esc(fmtN(s.totals.events))+' Events</b>, aber <b>0 Snapshots</b>. Zuerst ein größeres Fenster probieren — der Snapshot kommt nur einmal täglich, bei wenig Nutzung liegt der letzte leicht außerhalb. Bleibt es dabei, <code>POST /v1/usage</code> prüfen (häufigste Ursache: eine noch nicht angewendete Migration ⇒ Schema-Fehler ⇒ 500).</p></div>';
   } else if(!u.total){
     html += '<div class="firstrun"><h3>Daten empfangen, aber keine aktiven Nutzer im Fenster</h3>'
       + '<p><b>'+esc(fmtN(s.totals.events))+' Events</b> im Speicher, aber niemand war in den letzten '+esc(s.windowDays)+' Tagen aktiv. Größeres Zeitfenster wählen.</p></div>';
@@ -580,18 +619,18 @@ function render(s){
   var wal = nsm.wal||0, walMau = nsm.walMauPct||0;
   html += '<div class="hero">'
     + '<div class="hero__main">'
-    + '<div class="hero__val'+(virgin?'" style="color:var(--faint);font-weight:400':'')+'">'+(virgin?"—":esc(fmtN(wal)))
+    + '<div class="hero__val'+(noBasis?'" style="color:var(--faint);font-weight:400':'')+'">'+(noBasis?"—":esc(fmtN(wal)))
     // Trendpfeil nur mit Datengrundlage: "± 0 %" neben einem Strich behauptet
     // eine gemessene Stagnation, die es nicht gibt.
-    + (virgin?"":' <span style="font-size:20px;font-family:var(--font)">'+arrow((nsm.trend||{}).deltaPct)+'</span>')+'</div>'
+    + (noBasis?"":' <span style="font-size:20px;font-family:var(--font)">'+arrow((nsm.trend||{}).deltaPct)+'</span>')+'</div>'
     + '<div class="hero__lbl">★ North Star — Weekly Active Learners (WAL)</div>'
     + '<div class="hero__hint">Personen, die in den letzten 7 Tagen mindestens eine Lernrunde abgeschlossen haben · Ziel + 5–7 % pro Woche</div>'
     + '</div>'
     + '<div class="hero__side">'
-    + '<div class="hero__stat"><div class="v">'+(virgin?"—":esc(fmtN(nsm.avgSessionsPerLearner||0)))+'</div><div class="l">Ø Runden / Learner</div></div>'
-    + '<div class="hero__stat"><div class="v"'+(!virgin&&walMau>=50?' style="color:var(--ok)"':'')+'>'+(virgin?"—":esc(pct(walMau)))+'</div><div class="l">WAL / MAU · Ziel ≥ 50 %</div></div>'
+    + '<div class="hero__stat"><div class="v">'+(noBasis?"—":esc(fmtN(nsm.avgSessionsPerLearner||0)))+'</div><div class="l">Ø Runden / Learner</div></div>'
+    + '<div class="hero__stat"><div class="v"'+(!noBasis&&walMau>=50?' style="color:var(--ok)"':'')+'>'+(noBasis?"—":esc(pct(walMau)))+'</div><div class="l">WAL / MAU · Ziel ≥ 50 %</div></div>'
     + '</div>'
-    + (virgin?"":'<div class="hero__spark">'+spark(u.dauSeries,{color:"var(--brand)"})+'</div>')
+    + (noBasis?"":'<div class="hero__spark">'+spark(u.dauSeries,{color:"var(--brand)"})+'</div>')
     + '</div>';
 
   // ---- Tier 1: Bleiben sie? ----------------------------------------------
@@ -599,58 +638,58 @@ function render(s){
   var qr = (inv.growth&&inv.growth.quickRatio)||0;
   var bounce = (inv.quality&&inv.quality.bouncePct)||0;
   var r1 = retEntry(u,1), r7 = retEntry(u,7), r30 = retEntry(u,30);
-  html += '<div class="eyebrow">Retention — bleiben sie?</div><div class="kpis">'
-    + kpi({ tier:1, empty:virgin||r1.na, raw:retText(u,1), label:"Retention D1",
+  html += '<h3 class="eyebrow">Retention — bleiben sie?</h3><div class="kpis">'
+    + kpi({ tier:1, empty:noBasis||r1.na, raw:retText(u,1), label:"Retention D1",
             target:r1.na?{na:true,text:"im Fenster nicht messbar"}:{ok:r1.pct>=25,text:"Ziel ≥ 25 %"},
-            tone:r1.pct>=25?"var(--ok)":null, hint:r1.na?"braucht ≥ 2 Tage Historie":r1.eligible+" Personen gewertet" })
-    + kpi({ tier:1, empty:virgin||r7.na, raw:retText(u,7), label:"Retention D7",
+            tone:r1.pct>=25?"var(--ok)":null, hint:r1.na?"braucht ≥ 2 Tage Historie":fmtN(r1.eligible)+" Personen gewertet" })
+    + kpi({ tier:1, empty:noBasis||r7.na, raw:retText(u,7), label:"Retention D7",
             target:r7.na?{na:true,text:"im Fenster nicht messbar"}:{ok:r7.pct>=15,text:"Ziel ≥ 15 %"},
-            tone:r7.pct>=15?"var(--ok)":null, hint:r7.na?"braucht ≥ 8 Tage Historie":r7.eligible+" Personen gewertet" })
-    + kpi({ tier:1, empty:virgin||r30.na, raw:retText(u,30), label:"Retention D30",
+            tone:r7.pct>=15?"var(--ok)":null, hint:r7.na?"braucht ≥ 8 Tage Historie":fmtN(r7.eligible)+" Personen gewertet" })
+    + kpi({ tier:1, empty:noBasis||r30.na, raw:retText(u,30), label:"Retention D30",
             target:r30.na?{na:true,text:"im Fenster nicht messbar"}:{ok:r30.pct>=8,text:"Ziel ≥ 8 %"},
-            tone:r30.pct>=8?"var(--ok)":null, hint:r30.na?"braucht ≥ 31 Tage Historie":r30.eligible+" Personen gewertet" })
-    + kpi({ tier:1, empty:virgin, raw:pct(stick), label:"Stickiness",
+            tone:r30.pct>=8?"var(--ok)":null, hint:r30.na?"braucht ≥ 31 Tage Historie":fmtN(r30.eligible)+" Personen gewertet" })
+    + kpi({ tier:1, empty:noBasis, raw:pct(stick), label:"Stickiness",
             target:{ok:stick>=20,text:"Ziel ≥ 20 %"}, tone:stick>=20?"var(--ok)":null,
             hint:"Ø DAU "+fmtN(u.avgDau||0)+" / MAU "+fmtN(u.mau||0) })
     + '</div>';
   html += '<div class="kpis">'
-    + kpi({ tier:2, empty:virgin, raw:fmtN(qr), label:"Quick Ratio",
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(qr), label:"Quick Ratio",
             target:{ok:qr>1,text:"Ziel > 1"}, tone:qr>1?"var(--ok)":"var(--no)",
             hint:"(neu + reaktiviert) / abgewandert" })
-    + kpi({ tier:2, empty:virgin, raw:pct(bounce), label:"Bounce",
+    + kpi({ tier:2, empty:noBasis, raw:pct(bounce), label:"Bounce",
             target:{ok:bounce<=40,text:"Ziel ≤ 40 %"}, tone:bounce>40?"var(--warn)":null,
             hint:"nur einen einzigen Tag aktiv" })
-    + kpi({ tier:2, empty:virgin, raw:pct(u.returnRatePct||0), label:"Wiederkehrrate", hint:"≥ 2 aktive Tage" })
-    + kpi({ tier:2, empty:virgin, raw:fmtN(u.dauToday||0)+" / "+fmtN(u.wau||0)+" / "+fmtN(u.mau||0),
+    + kpi({ tier:2, empty:noBasis, raw:pct(u.returnRatePct||0), label:"Wiederkehrrate", hint:"≥ 2 aktive Tage" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.dauToday||0)+" / "+fmtN(u.wau||0)+" / "+fmtN(u.mau||0),
             label:"DAU / WAU / MAU", hint:"aktiv heute / 7 T / 30 T · WAU vs. Vorwoche siehe Details" })
     + '</div>';
 
   // ---- Tier 2: Kommen sie rein, wie tief? --------------------------------
   var act = inv.activation||{}, ix = inv.interactions||{}, tot = inv.timeOnTask||{}, rounds = inv.rounds||{};
   var actRate = act.ratePct||0, compl = rounds.completionPct||0;
-  html += '<div class="eyebrow">Aktivierung &amp; Tiefe — kommen sie rein, wie weit?</div><div class="kpis">'
-    + kpi({ tier:2, empty:virgin, raw:pct(actRate), label:"Aktivierungsrate",
+  html += '<h3 class="eyebrow">Aktivierung &amp; Tiefe — kommen sie rein, wie weit?</h3><div class="kpis">'
+    + kpi({ tier:2, empty:noBasis, raw:pct(actRate), label:"Aktivierungsrate",
             target:{ok:actRate>40,text:"Ziel > 40 %"}, tone:actRate>40?"var(--ok)":null,
             hint:fmtN(act.activated||0)+" von "+fmtN(act.newUsers||0)+" neuen Personen" })
-    + kpi({ tier:2, empty:virgin, raw:pct(compl), label:"Runden-Abschluss",
-            tone:compl>=60?"var(--ok)":null,
+    + kpi({ tier:2, empty:noBasis, raw:pct(compl), label:"Runden-Abschluss",
+            target:{ok:compl>=60,text:"Ziel ≥ 60 %"}, tone:compl>=60?"var(--ok)":null,
             hint:fmtN(rounds.completed||0)+" von "+fmtN(rounds.started||0)+" Runden" })
-    + kpi({ tier:2, empty:virgin, raw:fmtN((ix.perSession&&ix.perSession.avg)||0), label:"Ø Interaktionen / Sitzung",
-            tone:"var(--easy)", hint:"Median "+fmtN((ix.perSession&&ix.perSession.median)||0) })
-    + kpi({ tier:2, empty:virgin, raw:fmtDur(tot.avgSec||0), label:"Ø Lernzeit / Runde",
-            tone:"var(--ok)", hint:"Median "+fmtDur(tot.medianSec||0)+" · "+fmtN(tot.rounds||0)+" Runden" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN((ix.perSession&&ix.perSession.avg)||0), label:"Ø Interaktionen / Sitzung",
+            hint:"Median "+fmtN((ix.perSession&&ix.perSession.median)||0) })
+    + kpi({ tier:2, empty:noBasis, raw:fmtDur(tot.avgSec||0), label:"Ø Lernzeit / Runde",
+            hint:"Median "+fmtDur(tot.medianSec||0)+" · "+fmtN(tot.rounds||0)+" Runden" })
     + '</div>';
 
   // ---- Tier 3: Wächst es von selbst, läuft es stabil? --------------------
   var kf = (inv.virality&&inv.virality.kFactor)||0;
   var eps = (inv.quality&&inv.quality.errorsPerSession)||0;
-  html += '<div class="eyebrow">Wachstum &amp; Stabilität</div><div class="kpis">'
-    + kpi({ tier:3, empty:virgin, raw:fmtN(kf), label:"K-Factor",
+  html += '<h3 class="eyebrow">Wachstum &amp; Stabilität</h3><div class="kpis">'
+    + kpi({ tier:3, empty:noBasis, raw:fmtN(kf), label:"K-Factor",
             target:{ok:kf>0.5,text:"Ziel > 0,5"}, tone:kf>0.5?"var(--ok)":null,
             hint:fmtN((inv.virality&&inv.virality.viralNew7)||0)+" viral / Basis "+fmtN((inv.virality&&inv.virality.base7)||0) })
-    + kpi({ tier:3, empty:virgin, raw:fmtN((ix.perUser&&ix.perUser.avg)||0), label:"Ø Interaktionen / Person",
+    + kpi({ tier:3, empty:noBasis, raw:fmtN((ix.perUser&&ix.perUser.avg)||0), label:"Ø Interaktionen / Person",
             hint:"Median "+fmtN((ix.perUser&&ix.perUser.median)||0)+" · Ø "+fmtN((ix.perActiveDay&&ix.perActiveDay.avg)||0)+" je aktivem Tag" })
-    + kpi({ tier:3, empty:virgin, raw:fmtN(eps), label:"Fehler / Sitzung",
+    + kpi({ tier:3, empty:noBasis, raw:fmtN(eps), label:"Fehler / Sitzung",
             target:{ok:eps<=0.1,text:"Ziel ≤ 0,1"}, tone:eps>0.1?"var(--no)":"var(--ok)",
             hint:fmtN((inv.quality&&inv.quality.errors)||0)+" Fehler gesamt" })
     + kpi({ tier:3, empty:virgin, raw:fmtN(s.totals.events), label:"Events gesamt",
@@ -689,24 +728,24 @@ function render(s){
 
   html += '<div class="grid">';
   html += '<div class="panel"><h3>Lernspiel: Start → Abschluss <small>(Abschlussquote je Spiel)</small></h3>'
-    + ((inv.featureFunnel&&inv.featureFunnel.length)? hbars(inv.featureFunnel.map(function(f){return {label:f.feature+" · "+f.starts+"→"+f.completes, count:(f.completionPct==null?0:f.completionPct)};}),{color:"var(--warn)",fmt:function(d){return d.count+" %";}}) : empty("Keine Spiel-Daten","entsteht mit dem ersten feature_start"))+'</div>';
+    + ((inv.featureFunnel&&inv.featureFunnel.length)? hbars(inv.featureFunnel.map(function(f){return {label:f.feature+" · "+fmtN(f.starts)+"→"+fmtN(f.completes), count:(f.completionPct==null?0:f.completionPct)};}),{color:"var(--warn)",fmt:function(d){return d.count+" %";}}) : empty("Keine Spiel-Daten","entsteht mit dem ersten feature_start"))+'</div>';
   html += '<div class="panel"><h3>B2B: KPIs je Edition <small>(Umsatzkanal)</small></h3>'+editionTable(inv.editions)+'</div>';
   html += '</div>';
 
   html += '<hr class="sec-sep"/><h2 class="sec">Details</h2>';
 
   html += '<div class="kpis">'
-    + kpi({ tier:2, empty:virgin, raw:fmtN(u.total||0), label:"Personen (distinkt)", tone:"var(--brand)", hint:"im "+s.windowDays+"-Tage-Fenster" })
-    + kpi({ tier:2, empty:virgin, raw:fmtN(u.dauToday||0), label:"Aktiv heute (DAU)", hint:s.today+" · Ø "+fmtN(u.avgDau||0)+" im Fenster" })
-    + kpi({ tier:2, empty:virgin, raw:fmtN(u.wau||0), label:"Aktiv 7 Tage (WAU)", hint:"vs. Vorwoche "+(((u.trendWau7||{}).deltaPct)|0)+" %" })
-    + kpi({ tier:2, empty:virgin, raw:fmtN(se.count||0), label:"Sitzungen", hint:"Ø "+fmtN(se.avgEventsPerSession||0)+" Events je Sitzung" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.total||0), label:"Personen (distinkt)", tone:"var(--brand)", hint:"im "+s.windowDays+"-Tage-Fenster" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.dauToday||0), label:"Aktiv heute (DAU)", hint:s.today+" · Ø "+fmtN(u.avgDau||0)+" im Fenster" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.wau||0), label:"Aktiv 7 Tage (WAU)", hint:"vs. Vorwoche "+(((u.trendWau7||{}).deltaPct)|0)+" %" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(se.count||0), label:"Sitzungen", hint:"Ø "+fmtN(se.avgEventsPerSession||0)+" Events je Sitzung" })
     + '</div>';
   html += '<div class="kpis">'
-    + kpi({ tier:3, empty:virgin, raw:fmtDur(se.avgDurationSec||0), label:"Ø Sitzungsdauer", tone:"var(--ok)", hint:"Median "+fmtDur(se.medianDurationSec||0) })
-    + kpi({ tier:3, empty:virgin||!(s.search&&s.search.total), raw:pct((s.search&&s.search.noResultPct)||0), label:"Suche ohne Treffer",
-            tone:(s.search&&s.search.noResultPct)>20?"var(--warn)":null, hint:fmtN((s.search&&s.search.total)||0)+" Suchen" })
-    + kpi({ tier:3, empty:virgin||noSnaps, raw:pct((s.trip&&s.trip.withGoalPct)||0), label:"mit Reiseziel", tone:"var(--brand)", hint:fmtN((s.trip&&s.trip.snapshots)||0)+" Snapshots" })
-    + kpi({ tier:3, empty:virgin, raw:fmtN(s.totals.errors||0), label:"Fehler", tone:s.totals.errors?"var(--no)":null, hint:"im Fenster" })
+    + kpi({ tier:3, empty:noBasis, raw:fmtDur(se.avgDurationSec||0), label:"Ø Sitzungsdauer", tone:"var(--ok)", hint:"Median "+fmtDur(se.medianDurationSec||0) })
+    + kpi({ tier:3, empty:noBasis||!(s.search&&s.search.total), raw:pct((s.search&&s.search.noResultPct)||0), label:"Suche ohne Treffer",
+            target:{ok:!((s.search&&s.search.noResultPct)>20),text:"Ziel ≤ 20 %"}, tone:(s.search&&s.search.noResultPct)>20?"var(--warn)":null, hint:fmtN((s.search&&s.search.total)||0)+" Suchen" })
+    + kpi({ tier:3, empty:noBasis||noSnaps, raw:pct((s.trip&&s.trip.withGoalPct)||0), label:"mit Reiseziel", tone:"var(--brand)", hint:fmtN((s.trip&&s.trip.snapshots)||0)+" Snapshots" })
+    + kpi({ tier:3, empty:virgin, raw:fmtN(s.totals.errors||0), label:"Fehler", target:{ok:!s.totals.errors,text:s.totals.errors?"Fehler aufgetreten":"keine Fehler"}, tone:s.totals.errors?"var(--no)":null, hint:"im Fenster" })
     + '</div>';
 
   html += '<div class="panel" style="margin-top:16px"><h3>Aktive Personen pro Tag <small>(distinkte clientId · UTC-Tagesgrenzen)</small></h3>'+lineChart(u.dauSeries,{color:"var(--brand)",ma:7})+'</div>';
@@ -746,14 +785,21 @@ function render(s){
     + hbars(sortBuckets(le.accuracy).map(function(a){return {label:a.key+" %",count:a.count};}))
     + '</div>';
   html += '<div class="panel"><h3>Retention <small>(Tag-N wieder aktiv)</small></h3>'
-    + hbars((u.retention||[]).map(function(r){return {label:"D"+r.day+" · "+r.eligible+" gewertet",count:r.eligible?r.pct:0};}),{color:"var(--ok)",fmt:function(d){return d.count+" %";}})
+    // Muss dieselbe Unterscheidung treffen wie die Kachel oben: `eligible === 0`
+    // heißt "im Fenster nicht messbar", nicht "0 % kamen zurück". Sonst stünden
+    // auf EINER Seite drei Aussagen zum selben Wert: "—" (Kachel), "·" (Heatmap)
+    // und "0 %" (hier).
+    + hbars((u.retention||[]).map(function(r){
+        return { label:"D"+r.day+(r.eligible? " · "+fmtN(r.eligible)+" gewertet" : " · nicht messbar"),
+                 count:r.eligible?r.pct:0, na:!r.eligible };
+      }),{color:"var(--ok)",fmt:function(d){ return d.na ? "n/a" : d.count+" %"; }})
     + '<h4>Aktive Tage je Person</h4>'
     + hbars((u.activeDaysHistogram||[]).map(function(d){return {label:d.bucket+(d.bucket==="1"?" Tag":" Tage"),count:d.count};}),{color:"var(--brand)"})+'</div>';
   html += '</div>';
 
   html += '<div class="grid">';
   html += '<div class="panel"><h3>Schwierigste Themen <small>(„Nochmal“-Quote · Anzahl)</small></h3>'
-    + (le.difficult&&le.difficult.length? hbars(le.difficult.map(function(d){return {label:d.cat+" · "+d.total,count:d.againPct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}}) : empty("Zu wenig Daten","ab 5 Bewertungen je Thema"))+'</div>';
+    + (le.difficult&&le.difficult.length? hbars(le.difficult.map(function(d){return {label:d.cat+" · "+fmtN(d.total),count:d.againPct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}}) : empty("Zu wenig Daten","ab 5 Bewertungen je Thema"))+'</div>';
   html += '<div class="panel"><h3>Lernmodus <small>(je Sitzung)</small></h3>'
     + hbars((le.modes||[]).map(function(m){return {label:m.key,count:m.count};}),{color:"var(--ok)"})+'</div>';
   html += '</div>';
@@ -821,7 +867,11 @@ function render(s){
 }
 
 // ---------------------------------------------------------------------------
-// Zugang, Laden, Fehlerbehandlung
+// ==== DOM-VERDRAHTUNG AB HIER ====
+// Alles OBERHALB dieser Marke ist frei von document/window/fetch und wird von
+// test/telemetry-dashboard.test.js genau an dieser Zeile abgeschnitten und in
+// Node ausgeführt. Die Marke deshalb NICHT umformulieren, und oberhalb nichts
+// ergänzen, das einen Browser braucht.
 // ---------------------------------------------------------------------------
 var QS = new URLSearchParams(location.search);
 var TOKEN_KEY = "holaruta.admintoken.v1";
@@ -851,10 +901,18 @@ function apiFetch(path){
   return fetch(apiUrl(path), { headers: h });
 }
 
-function renderDaysBtns(){
+function say(msg){ var l = $("live"); if(l) l.textContent = msg; }
+
+function renderDaysBtns(keepFocus){
   $("daysbtns").innerHTML = [7,14,30,90].map(function(d){
     return '<button type="button" data-days="'+d+'" aria-pressed="'+(d===DAYS)+'">'+d+' T</button>';
   }).join("");
+  // Die Buttons werden neu erzeugt — ohne das hier landet der Tastatur-Fokus bei
+  // jedem Wechsel des Zeitfensters auf <body>, also am Seitenanfang.
+  if(keepFocus){
+    var b = $("daysbtns").querySelector('[data-days="'+DAYS+'"]');
+    if(b) b.focus();
+  }
 }
 
 function stopTimer(){ if(timer){ clearInterval(timer); timer = null; } }
@@ -881,6 +939,8 @@ function showGate(msg){
     + (msg ? '<p class="err" role="alert">'+esc(msg)+'</p>' : '')
     + '<details><summary>Woher kommt der Token?</summary>Vercel → Projekt <code>hola-ruta</code> → Settings → Environment Variables → <code>ADMIN_TELEMETRY_TOKEN</code>.</details>'
     + '</div>';
+  var gi = $("gatetoken"); if(gi) gi.focus();
+  say(msg ? "Anmeldung fehlgeschlagen: "+msg : "Anmeldung erforderlich");
   $("gateform").addEventListener("submit", function(e){
     e.preventDefault();
     var v = $("gatetoken").value.trim();
@@ -896,10 +956,13 @@ function showGate(msg){
 // Fehlermeldungen: vorher fiel alles außer 401 in r.json() und der Nutzer sah
 // "Unexpected token '<'" statt der eigentlichen Server-Aussage.
 function httpMessage(status, body){
+  // Body kürzen: bei einem Fehler von Edge/Proxy kommt eine ganze HTML-Seite
+  // zurück, die sonst komplett in der Meldung landen würde.
+  var b = String(body||"").slice(0, 120);
   if(status === 401) return "Token ungültig.";
   if(status === 429) return "Zu viele Anfragen (Rate-Limit) — in einer Minute erneut versuchen.";
-  if(status === 500 && body && /not configured/.test(body)) return "Server-Konfiguration: ADMIN_TELEMETRY_TOKEN ist auf dem Server nicht gesetzt.";
-  if(status === 500) return "Server-Fehler beim Laden der Daten (" + (body||"500") + ").";
+  if(status === 500 && /not configured/.test(b)) return "Server-Konfiguration: ADMIN_TELEMETRY_TOKEN ist auf dem Server nicht gesetzt.";
+  if(status === 500) return "Server-Fehler beim Laden der Daten (" + (b||"500") + ").";
   return "Unerwartete Server-Antwort (HTTP " + status + ").";
 }
 
@@ -922,6 +985,7 @@ function load(){
     try {
       render(s);
       startTimer();
+      say("Daten geladen: Fenster "+s.windowDays+" Tage, "+(s.users&&s.users.total||0)+" Personen.");
     } catch(e){
       stopTimer();
       $("app").innerHTML = '<p class="empty"><b>Darstellungsfehler</b> — die Daten kamen an, konnten aber nicht gezeichnet werden: '
@@ -943,7 +1007,13 @@ function load(){
 // Adresszeile/History landet.
 function download(path, filename, mime){
   apiFetch(path).then(function(r){
-    if(!r.ok) throw new Error("HTTP "+r.status);
+    if(!r.ok){
+      // Abgelaufener Token soll auch hier zurück zur Anmeldung führen statt in
+      // einer Sackgassen-Meldung ohne Weg zurück zu enden.
+      var e = new Error(httpMessage(r.status, ""));
+      e.status = r.status;
+      throw e;
+    }
     return r.text();
   }).then(function(t){
     var a = document.createElement("a");
@@ -952,6 +1022,11 @@ function download(path, filename, mime){
     a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
   }).catch(function(e){
+    if(e && e.status === 401){
+      TOKEN = "";
+      try { window.localStorage.removeItem(TOKEN_KEY); } catch (err) {}
+      return showGate(e.message);
+    }
     alert("Download fehlgeschlagen: " + ((e&&e.message)||"unbekannt"));
   });
 }
@@ -965,7 +1040,7 @@ $("daysbtns").addEventListener("click", function(e){
   var b = e.target.closest("[data-days]");
   if(!b) return;
   DAYS = Number(b.dataset.days);
-  renderDaysBtns();
+  renderDaysBtns(true);
   load();
 });
 $("theme").addEventListener("click", function(){
