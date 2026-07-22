@@ -172,7 +172,7 @@
     const list = vm.sets
       .map((s) =>
         `<button class="hm-scene" data-action="start-quiz" data-set="${esc(s.id)}">
-           <span class="hm-scene__icon" aria-hidden="true">${esc(s.icon)}</span>
+           <span class="hm-scene__icon" aria-hidden="true">${renderIcon(s.icon)}</span>
            <span class="hm-scene__label">${esc(s.label)}${s.lvlShort ? ` <span class="quiz-lvl">${esc(s.lvlShort)}</span>` : ""}<br><span class="quiz-set__intro">${esc(s.intro)}</span></span>
            <span class="hm-scene__count">${s.count}</span>
          </button>`)
@@ -220,7 +220,7 @@
 
     return `
       <section class="screen study">
-        ${hmTopbar(`${esc(vm.setIcon)} ${esc(vm.setLabel)}`, "quiz-again")}
+        ${hmTopbar(`${renderIcon(vm.setIcon)} ${esc(vm.setLabel)}`, "quiz-again")}
         <div class="progress" role="progressbar" aria-valuenow="${vm.position + 1}" aria-valuemin="1" aria-valuemax="${vm.total}" aria-label="${esc(t("discover.quizProgress"))}"><div class="progress__bar" style="width:${pct}%"></div></div>
         <div class="topbar__counter quiz-count" aria-live="polite">${esc(t("discover.quizQuestion", { pos: vm.position + 1, total: vm.total }))}</div>
         <div class="quiz-def">
