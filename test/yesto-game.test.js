@@ -43,7 +43,7 @@ test("SC.yestoGame exportiert die erwartete Modul-API", () => {
   freshApp();
   const m = window.SC.yestoGame;
   for (const k of ["init", "setupScreen", "playScreen", "doneScreen", "setupVM", "doneVM",
-    "arm", "disarm", "open", "start", "reveal", "rate", "again"]) {
+    "arm", "disarm", "open", "start", "reveal", "rate", "again", "autoSpeakItem"]) {
     assert.equal(typeof m[k], "function", `API: ${k}`);
   }
 });
@@ -89,6 +89,25 @@ test("Spielfluss: start (Countdown) -> reveal -> rate; doneVM zählt", () => {
   assert.match(g.playScreen(), /ye-count__num/, "nächstes Motiv im Countdown");
   assert.equal(g.doneVM().correct, 1, "eine richtige Selbstbewertung gezählt");
   assert.ok(g.doneVM().total >= 1, "doneVM kennt die Rundenlänge");
+});
+
+test("autoSpeakItem: liefert das Lösungswort nur in der Auflösungs-Phase", () => {
+  freshApp();
+  const g = window.SC.yestoGame;
+  const themeId = g.setupVM().themes[0].id;
+
+  g.start(themeId);
+  g.disarm();
+  // Countdown-Phase: noch nichts vorlesen (Wort ist verdeckt).
+  assert.equal(g.autoSpeakItem(), null, "Countdown-Phase spricht nicht");
+
+  // Auflösung: {key,text} mit dem angezeigten Lösungswort.
+  g.reveal();
+  const item = g.autoSpeakItem();
+  assert.ok(item && typeof item.text === "string" && item.text, "Auflösung liefert ein Wort");
+  assert.match(item.key, /^yesto:/, "eindeutiger Key pro Motiv");
+  // Das gesprochene Wort ist exakt das im Screen gezeigte Lösungswort.
+  assert.match(g.playScreen(), new RegExp(item.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), "Wort steht auch im Screen");
 });
 
 test("Klick open-yesto öffnet die Themen-Auswahl", () => {
