@@ -3507,15 +3507,15 @@
   //   es  = der Begriff (Lösung, Spanisch)   de = deutsche Übersetzung (Lernhilfe)
   //   def = die spanische Definition (Frage)  icon = kleines Sinnbild
   const QUIZ_SETS = [
-    { id: "ciudad", label: "En la ciudad", labelDeEn: "In der Stadt", icon: "🏙️", lvl: 1,
+    { id: "ciudad", label: "En la ciudad", labelDeEn: "In der Stadt", icon: "lc:building", lvl: 1,
       intro: "Lies die Definition und wähle den richtigen Ort in der Stadt.",
       introEn: "Read the definition and pick the right place in the city.",
       introEs: "Lee la definición y elige el lugar correcto de la ciudad." },
-    { id: "ruta", label: "En la ruta", labelDeEn: "Unterwegs", icon: "🎒", lvl: 1,
+    { id: "ruta", label: "En la ruta", labelDeEn: "Unterwegs", icon: "lc:backpack", lvl: 1,
       intro: "Orte, die du als Backpacker unterwegs ständig brauchst.",
       introEn: "Places you'll need all the time as a backpacker on the road.",
       introEs: "Lugares que necesitas todo el tiempo como mochilero en la ruta." },
-    { id: "comida", label: "La comida", labelDeEn: "Essen & Trinken", icon: "🍽️", lvl: 1,
+    { id: "comida", label: "La comida", labelDeEn: "Essen & Trinken", icon: "lc:utensils", lvl: 1,
       intro: "Lies die Definition und wähle das passende Essen oder Getränk.",
       introEn: "Read the definition and pick the matching food or drink.",
       introEs: "Lee la definición y elige la comida o bebida correcta." },
