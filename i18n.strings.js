@@ -2844,7 +2844,7 @@
     distNew: (p) => `Neu ${p.n}`,
     splitFirstTry: (p) => `<b>${p.n}</b> auf Anhieb gewusst 🎯`,
     splitNeedPractice: (p) => `<b>${p.n}</b> brauchten Übung 🔁`,
-    statsTitle: "📊 Statistik",
+    statsTitle: "Statistik",
     statsFilter: "Filter",
     statsEmpty: "Hier erscheinen deine Karten, sobald du sie bewertet hast.",
     statsMore: (p) => `+${p.n} weitere Karten (schwächste zuerst – nutze die Filter oben zum Eingrenzen)`,
@@ -2876,7 +2876,7 @@
 
     // Editor (Eigene Karten)
     editorEmpty: "Noch keine eigenen Karten. Leg oben deine erste an! ✍️",
-    editorTitle: "✍️ Eigene Karten",
+    editorTitle: "Eigene Karten",
     edQuestionDe: "Frage (Deutsch)",
     edQuestionDePlaceholder: "z. B. Wo ist der Strand?",
     edAnswerEs: "Antwort (Spanisch)",
@@ -2988,7 +2988,7 @@
     distNew: (p) => `New ${p.n}`,
     splitFirstTry: (p) => `<b>${p.n}</b> knew first time 🎯`,
     splitNeedPractice: (p) => `<b>${p.n}</b> needed practice 🔁`,
-    statsTitle: "📊 Statistics",
+    statsTitle: "Statistics",
     statsFilter: "Filter",
     statsEmpty: "Your cards appear here once you've rated them.",
     statsMore: (p) => `+${p.n} more cards (weakest first – use the filters above to narrow down)`,
@@ -3018,7 +3018,7 @@
     studyThisCard: "Practise this card",
 
     editorEmpty: "No own cards yet. Add your first one above! ✍️",
-    editorTitle: "✍️ Your own cards",
+    editorTitle: "Your own cards",
     edQuestionDe: "Question (English)",
     edQuestionDePlaceholder: "e.g. Where is the beach?",
     edAnswerEs: "Answer (Spanish)",

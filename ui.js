@@ -1448,7 +1448,7 @@
 
       <nav class="profnav" aria-label="${esc(t("profile.progressTitle"))}">
         ${navrow("open-stats", "lc:bar-chart-3", t("profile.statistics"))}
-        ${vm.hasBadges ? navrow("open-badges", "lc:award", t("profile.rutaPass"), vm.badgeCount || "") : ""}
+        ${vm.hasBadges ? navrow("open-badges", "lc:medal", t("profile.rutaPass"), vm.badgeCount || "") : ""}
         ${vm.socialEnabled ? navrow("open-social", "lc:trophy", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
         ${navrow("open-favorites", "lc:star", t("profile.favorites"), vm.favCount || "")}
         ${navrow("open-editor", "lc:square-pen", t("profile.ownCards"))}
@@ -2336,7 +2336,7 @@
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${esc(t("profile.statsTitle"))}</div>
+          <div class="topbar__title">${renderIcon("lc:bar-chart-3")} ${esc(t("profile.statsTitle"))}</div>
           <div class="topbar__counter">${ov.seenCards}/${ov.total}</div>
         </div>
         ${xpBanner(vm.xp)}
@@ -2471,7 +2471,7 @@
       <section class="screen">
         <div class="topbar">
           <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-          <div class="topbar__title">${esc(t("profile.editorTitle"))}</div>
+          <div class="topbar__title">${renderIcon("lc:square-pen")} ${esc(t("profile.editorTitle"))}</div>
           <div class="topbar__counter">${vm.cards.length}</div>
         </div>
 
@@ -4419,7 +4419,7 @@
     const head = `
       <div class="topbar">
         <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
-        <div class="topbar__title">${esc(t("social.title"))}</div>
+        <div class="topbar__title">${renderIcon("lc:trophy")} ${esc(t("social.title"))}</div>
         <span></span>
       </div>
       <p class="social-intro">${esc(t("social.intro"))}</p>`;
