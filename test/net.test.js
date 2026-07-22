@@ -373,3 +373,62 @@ test("request: timeout-Grenze ist strikt > 0 (timeout:1 verdrahtet noch einen Ab
     /aborted/,
   );
 });
+
+// ---- Login-CSRF-state (net.oauthStateStart / net.oauthStateCheck) -------------
+// sessionStorage- + crypto-Shim (net.js liest beide als globale Browser-APIs).
+const smem = {};
+globalThis.sessionStorage = {
+  getItem: (k) => (k in smem ? smem[k] : null),
+  setItem: (k, v) => { smem[k] = String(v); },
+  removeItem: (k) => { delete smem[k]; },
+};
+function sreset() { for (const k of Object.keys(smem)) delete smem[k]; }
+// Deterministische Zufallsquelle: buf[i] = i -> vorhersagbarer Hex-String. `crypto`
+// ist auf globalThis nur ein Getter -> per defineProperty (writable) überschreiben,
+// damit einzelne Tests es kurzfristig weiter anpassen können.
+const DETERMINISTIC_CRYPTO = { getRandomValues: (a) => { for (let i = 0; i < a.length; i++) a[i] = i; return a; } };
+Object.defineProperty(globalThis, "crypto", { value: DETERMINISTIC_CRYPTO, configurable: true, writable: true });
+const STATE_KEY = "spanischcard.oauthstate.v1";
+
+test("oauthStateStart: erzeugt 32-stelligen Hex-state und legt ihn im sessionStorage ab", () => {
+  sreset();
+  const st = net.oauthStateStart();
+  assert.match(st, /^[0-9a-f]{32}$/, "16 Bytes -> 32 Hex-Zeichen");
+  assert.equal(st, "000102030405060708090a0b0c0d0e0f", "deterministischer Shim (buf[i]=i)");
+  assert.equal(smem[STATE_KEY], st, "unter dem state-Key gespeichert");
+});
+
+test("oauthStateStart: ohne crypto.getRandomValues -> '' und nichts gespeichert (fail closed)", () => {
+  sreset();
+  const saved = globalThis.crypto;
+  globalThis.crypto = {};
+  try {
+    assert.equal(net.oauthStateStart(), "");
+    assert.equal(STATE_KEY in smem, false, "kein state abgelegt");
+  } finally { globalThis.crypto = saved; }
+});
+
+test("oauthStateCheck: exakte Übereinstimmung -> true UND state wird einmalig gelöscht (kein Replay)", () => {
+  sreset();
+  const st = net.oauthStateStart();
+  assert.equal(net.oauthStateCheck(st), true, "gleicher state -> ok");
+  assert.equal(STATE_KEY in smem, false, "nach der Prüfung gelöscht (Single-Use)");
+  assert.equal(net.oauthStateCheck(st), false, "zweiter Versuch (Replay) -> false");
+});
+
+test("oauthStateCheck: falscher state -> false (untergeschobener Angreifer-Link)", () => {
+  sreset();
+  net.oauthStateStart();
+  assert.equal(net.oauthStateCheck("deadbeefdeadbeefdeadbeefdeadbeef"), false);
+});
+
+test("oauthStateCheck: kein gespeicherter state (Flow nie in diesem Browser gestartet) -> false", () => {
+  sreset();
+  assert.equal(net.oauthStateCheck("000102030405060708090a0b0c0d0e0f"), false);
+});
+
+test("oauthStateCheck: leerer got -> false, selbst wenn ein state gespeichert ist", () => {
+  sreset();
+  net.oauthStateStart();
+  assert.equal(net.oauthStateCheck(""), false);
+});

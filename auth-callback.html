@@ -54,16 +54,13 @@
       var token = frag.get("access_token");
       // CSRF-Schutz (Login-CSRF/Account-Fixation): der über den Query-String
       // zurückgegebene `state` muss exakt dem beim Start im sessionStorage
-      // hinterlegten Wert entsprechen (Bindung an den startenden Browser). Einmalig
-      // -> sofort löschen. Fehlt/mismatcht er, wird NICHT eingetauscht (fail closed):
+      // hinterlegten Wert entsprechen (net.oauthStateCheck vergleicht einmalig und
+      // löscht ihn). Fehlt/mismatcht er, wird NICHT eingetauscht (fail closed):
       // ein untergeschobenes fremdes Token hat hier keinen passenden state.
       var qs = new URLSearchParams((window.location.search || "").replace(/^\?/, ""));
       var got = qs.get("s") || "";
-      var want = "";
-      try { want = window.sessionStorage.getItem("spanischcard.oauthstate.v1") || ""; } catch (e) {}
-      try { window.sessionStorage.removeItem("spanischcard.oauthstate.v1"); } catch (e) {}
       if (!token || !(window.SC && window.SC.net && window.SC.net.googleConfirm)) { fail(); return; }
-      if (!want || !got || got !== want) { fail("Sicherheitsprüfung fehlgeschlagen — bitte erneut anmelden."); return; }
+      if (!window.SC.net.oauthStateCheck(got)) { fail("Sicherheitsprüfung fehlgeschlagen — bitte erneut anmelden."); return; }
       window.SC.net.googleConfirm(origin, token).then(function () {
         // Token liegt jetzt in localStorage (spanischcard.synctoken.v1) -> App startet eingeloggt.
         try { window.location.replace("/"); } catch (e) { window.location.href = "/"; }

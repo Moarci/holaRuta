@@ -127,6 +127,36 @@
       .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("google confirm failed"); });
   }
 
+  // ---- Login-CSRF-Schutz für den Google-Redirect-Flow -----------------------
+  // Der `state` bindet den OAuth-Roundtrip an DEN Browser, der ihn gestartet hat:
+  // beim Start zufällig erzeugt und im sessionStorage abgelegt, über redirectTo (?s=)
+  // zurückgespielt, im Callback exakt verglichen. Ein untergeschobenes fremdes Token
+  // trägt einen fremden state -> kein passender sessionStorage-Eintrag -> abgewiesen.
+  var OAUTH_STATE_KEY = "spanischcard.oauthstate.v1";
+
+  // Zufälligen state erzeugen + im sessionStorage ablegen; gibt ihn zurück. Leerer
+  // String, wenn keine sichere Zufallsquelle/kein sessionStorage vorhanden ist – der
+  // Aufrufer bricht dann ab (fail closed statt ungeschützt weiterzuleiten).
+  function oauthStateStart() {
+    try {
+      if (typeof crypto === "undefined" || !crypto.getRandomValues || typeof sessionStorage === "undefined") return "";
+      var buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      var st = Array.prototype.map.call(buf, function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+      sessionStorage.setItem(OAUTH_STATE_KEY, st);
+      return st;
+    } catch (e) { return ""; }
+  }
+
+  // Zurückgegebenen state gegen den gespeicherten prüfen und diesen EINMALIG löschen.
+  // true NUR bei nicht-leerer, exakter Übereinstimmung (fehlt/mismatcht er -> false).
+  function oauthStateCheck(got) {
+    var want = "";
+    try { want = sessionStorage.getItem(OAUTH_STATE_KEY) || ""; } catch (e) { want = ""; }
+    try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) { /* egal */ }
+    return !!want && !!got && got === want;
+  }
+
   SC.net = {
     TOKEN_KEY: TOKEN_KEY,
     getToken: getToken,
@@ -138,5 +168,7 @@
     confirm: confirm,
     googleStart: googleStart,
     googleConfirm: googleConfirm,
+    oauthStateStart: oauthStateStart,
+    oauthStateCheck: oauthStateCheck,
   };
 })();

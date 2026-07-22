@@ -140,6 +140,16 @@ export const IGNORE = [
   { file: "net.js", line: 81, op: "arithmetic", grund: "Backoff-Wartedauer (Exponent attempt-1), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
   { file: "net.js", line: 85, op: "number", grund: "Backoff-Wartedauer im Netzfehler-Retry (Math.pow-Basis/Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
   { file: "net.js", line: 85, op: "arithmetic", grund: "Backoff-Wartedauer im Netzfehler-Retry (* und Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
+  { file: "net.js", line: 32, op: "number", grund:
+    "DEFAULT_TIMEOUT_MS 12000 → 0. Der Default-Timeout betrifft nur, OB/WANN ein ohne expliziten " +
+    "opts.timeout hängender fetch abgebrochen wird; 0 vs 12000 ist ausschließlich durch einen real " +
+    ">12 s hängenden fetch unterscheidbar (flakige Langzeitmessung, die die Suite bewusst meidet). " +
+    "Die Timeout-MECHANIK selbst ist über die opts.timeout-Tests (1 ms/10 ms) abgedeckt → äquivalent." },
+  { file: "net.js", line: 142, op: "logical", grund:
+    "oauthStateStart-Guard `typeof crypto===\"undefined\" || !crypto.getRandomValues || typeof " +
+    "sessionStorage===\"undefined\"` (|| → &&). Umgeht die Mutation eine Teilbedingung, läuft der " +
+    "nachfolgende crypto.getRandomValues(...)-Zugriff bei fehlender Quelle in DENSELBEN try/catch → " +
+    "Rückgabe '' wie im Guard-Zweig. Für jede erreichbare Eingabe identisches Ergebnis → äquivalent." },
   // badges.js (nach der Locals-Badge-Welt resampelt – nachweislich äquivalent)
   { file: "badges.js", line: 344, op: "number", grund:
     "buildMetrics: `categoryMastery[cat] = catTotal[cat] ? (catMastered[cat]||0)/catTotal[cat] : 0` (Fallback 0→1). " +

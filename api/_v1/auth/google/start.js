@@ -5,41 +5,17 @@
  * serverseitig die Supabase-Google-URL (authClient/signInWithOAuth) und leiten mit
  * 302 dorthin weiter.
  *
- * Redirect-Härtung: Das `redirect`-Ziel wird gegen eine FESTE Allowlist geprüft
- * (Env AUTH_REDIRECT_ORIGINS, kommagetrennt) und muss auf /auth-callback.html zeigen
- * -> kein offener Redirector, kein Vertrauen allein auf gefälschte Host-Header. Ohne
- * gesetzte Env fällt es auf die anfragende (Vercel-gesetzte) Origin zurück; zweite,
- * unabhängige Schranke bleibt Supabases eigene Redirect-URL-Allowlist. Fehlerfälle
- * leiten (Browser-Navigation!) zurück zur App statt rohes JSON zu zeigen.
+ * Redirect-Härtung liegt in ./_redirect.js (dependency-frei, unit-getestet):
+ * safeRedirect() prüft das Ziel gegen eine feste Allowlist (Env AUTH_REDIRECT_ORIGINS)
+ * und erzwingt den Pfad /auth-callback.html -> kein offener Redirector, kein blindes
+ * Vertrauen auf Host-Header. Zweite Schranke bleibt Supabases eigene Redirect-Allowlist.
+ * Fehlerfälle leiten (Browser-Navigation!) zurück zur App statt rohes JSON zu zeigen.
  */
 "use strict";
 const { send } = require("../../../_http");
 const { allow, clientIp } = require("../../../_ratelimit");
 const { googleUrl } = require("../../../_auth");
-
-// Erlaubte App-Origins. Primär die feste Env-Allowlist; ohne sie die anfragende
-// Origin (Vercel setzt x-forwarded-* selbst und verwirft eingehende Fälschungen).
-function allowedOrigins(req) {
-  const env = String(process.env.AUTH_REDIRECT_ORIGINS || "").trim();
-  if (env) return env.split(",").map((s) => s.trim().replace(/\/+$/, "")).filter(Boolean);
-  const proto = (req.headers["x-forwarded-proto"] || "https").split(",")[0].trim();
-  const host = (req.headers["x-forwarded-host"] || req.headers.host || "").split(",")[0].trim();
-  return host ? [proto + "://" + host] : [];
-}
-
-// Nur ein Ziel auf einer erlaubten Origin UND mit Pfad /auth-callback.html ist gültig
-// (Query wie ?s=<state> bleibt erhalten). Sonst Default-Callback der ersten Origin.
-function safeRedirect(req) {
-  const origins = allowedOrigins(req);
-  const raw = req.query && req.query.redirect ? String(req.query.redirect) : "";
-  for (const origin of origins) {
-    try {
-      const u = new URL(raw, origin);
-      if (u.origin === origin && u.pathname === "/auth-callback.html") return u.toString();
-    } catch (e) { /* ungültig -> nächste Origin / Default */ }
-  }
-  return origins.length ? origins[0] + "/auth-callback.html" : "";
-}
+const { allowedOrigins, safeRedirect } = require("./_redirect");
 
 // Bei Fehlern (Rate-Limit, Google-Start scheitert) zurück zur App mit Fehlerflag –
 // der Aufruf kommt per Top-Level-Navigation, rohes JSON wäre eine Sackgasse.
