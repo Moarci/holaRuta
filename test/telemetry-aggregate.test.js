@@ -174,6 +174,26 @@ test("aggregate: Retention D1, Onboarding-Funnel, Zeit-Verteilung", () => {
   assert.ok(s.time.byHour.reduce((a, b) => a + b.count, 0) > 0);
 });
 
+test("aggregate: Retention D1/D7/D30 zählt keine Alt-Nutzer am Fenster-Rand (konsistent zur Heatmap)", () => {
+  // Alt-Nutzer O: Erst-Kontakt VOR dem 30-T-Fenster; taucht am Fenster-Rand an zwei
+  // Folgetagen wieder auf. Sein fenster-LOKALER Erst-Tag+1 wäre „retained" — er darf
+  // aber NICHT als frische Kohorte in D1 zählen (lebenslanger Erst-Tag < cutoff).
+  const E = []; let q = 0;
+  const mk = (day, ts, cid) => E.push({ v: 1, seq: q++, event: "app_open", props: {}, day, ts, clientId: cid, sessionId: "x" + q });
+  const off = (n) => dayUTC(NOW - n * 86400000);
+  const ts = (n) => NOW - n * 86400000;
+  mk(off(45), ts(45), "O"); mk(off(2), ts(2), "O"); mk(off(1), ts(1), "O"); // Alt-Nutzer, Signup 45 T vor jetzt
+  mk(off(10), ts(10), "N1"); mk(off(9), ts(9), "N1");                       // echter Neu-Nutzer, D1 zurück
+  mk(off(5), ts(5), "N2");                                                  // echter Neu-Nutzer, D1 verfehlt
+  const s = aggregate(E, [], { now: NOW, windowDays: 30 });
+  const d1 = s.users.retention.find((r) => r.day === 1);
+  assert.equal(d1.eligible, 2, "nur die echten Neu-Nutzer N1/N2 zählen, nicht Alt-Nutzer O");
+  assert.equal(d1.pct, 50, "N1 kam an Tag+1 zurück, N2 nicht -> 1/2");
+  // Headline-D1 und Kohorten-Heatmap müssen dieselbe Grundmenge nutzen.
+  const heat = {}; s.investor.cohorts.forEach((c) => { const cell = c.cells.find((x) => x.dayN === 1); if (cell && cell.eligible) heat[c.cohort] = cell.retained; });
+  assert.equal(Object.keys(heat).length, 2, "genau die zwei Neu-Kohorten in der Heatmap");
+});
+
 test("aggregate: Akquise, Teilen, Snapshot-Streak/Reviews, WAU-Trend", () => {
   const E = []; let q = 0;
   const mk = (event, props, day, cid) => E.push({ v: 1, seq: q++, event, props, day, ts: T0, clientId: cid, sessionId: "s" + q });
