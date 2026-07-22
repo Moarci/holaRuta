@@ -4424,42 +4424,72 @@
       </div>
       <p class="social-intro">${esc(t("social.intro"))}</p>`;
 
-    // Nicht angemeldet: ein Knopf, der den (geteilten) passwortlosen Login startet.
+    // Nicht angemeldet: eine einladende Karte mit einem Knopf, der den (geteilten)
+    // passwortlosen Login startet.
     if (!vm.loggedIn) {
       return `
-        <section class="screen">
+        <section class="screen social-screen">
           ${head}
           <div class="social-cta">
+            <div class="social-cta__art" aria-hidden="true">🏆</div>
             <p>${esc(t("social.loginNeeded"))}</p>
             <button class="cta" data-action="social-login">${esc(t("social.loginBtn"))}</button>
           </div>
         </section>`;
     }
 
+    // Teilbarer eigener Freundes-Code: prominent, wenn vorhanden – sonst nur der
+    // Einladungs-Knopf.
     const codeBlock = vm.myCode ? `
       <div class="social-code">
         <span class="switchcap">${esc(t("social.myCodeCap"))}</span>
         <code class="social-code__val">${esc(vm.myCode)}</code>
         <div class="social-code__actions">
-          <button class="ghostbtn" data-action="social-copy-code">${esc(t("social.copyCode"))}</button>
-          <button class="ghostbtn" data-action="social-add-friend">${esc(t("social.addFriend"))}</button>
+          <button class="ghostbtn" data-action="social-share-code">↗ ${esc(t("social.shareCode"))}</button>
+          <button class="ghostbtn" data-action="social-copy-code">⧉ ${esc(t("social.copyCode"))}</button>
         </div>
+        <button class="cta cta--soft social-code__add" data-action="social-add-friend">＋ ${esc(t("social.addFriend"))}</button>
       </div>` : `
-      <div class="social-code">
-        <button class="ghostbtn" data-action="social-add-friend">${esc(t("social.addFriend"))}</button>
+      <div class="social-code social-code--bare">
+        <button class="cta cta--soft" data-action="social-add-friend">＋ ${esc(t("social.addFriend"))}</button>
       </div>`;
+
+    // Medaille für die Plätze 1–3, sonst die Rangzahl (geteilte Ränge inklusive).
+    const rankCell = (e) => {
+      const medal = e.rank === 1 ? "🥇" : e.rank === 2 ? "🥈" : e.rank === 3 ? "🥉" : "";
+      return medal
+        ? `<span class="lboard__rank lboard__rank--medal">${medal}</span>`
+        : `<span class="lboard__rank">${e.rank}</span>`;
+    };
 
     let listHtml;
     if (vm.loading) {
-      listHtml = `<p class="stat-empty">${esc(t("social.loading"))}</p>`;
+      // Skeleton statt nacktem „Lädt…" – signalisiert Aktivität statt Stillstand.
+      const skRow = `
+        <li class="lboard__row lboard__row--sk" aria-hidden="true">
+          <span class="sk sk--rank"></span>
+          <span class="sk sk--name"></span>
+          <span class="sk sk--cards"></span>
+        </li>`;
+      listHtml = `<ol class="lboard lboard--sk">${skRow.repeat(4)}</ol>
+        <p class="sr-only" role="status">${esc(t("social.loading"))}</p>`;
     } else if (vm.error) {
-      listHtml = `<p class="stat-empty">${esc(t("social.failed"))}</p>`;
+      listHtml = `
+        <div class="social-note social-note--error" role="alert">
+          <span class="social-note__icon" aria-hidden="true">😕</span>
+          <p>${esc(t("social.failed"))}</p>
+          <button class="cta cta--soft" data-action="social-refresh">↻ ${esc(t("social.retry"))}</button>
+        </div>`;
     } else if (!vm.board || !vm.board.entries.length) {
-      listHtml = `<p class="stat-empty">${esc(t("social.empty"))}</p>`;
+      listHtml = `
+        <div class="social-note social-note--empty">
+          <span class="social-note__icon" aria-hidden="true">🧭</span>
+          <p>${esc(t("social.empty"))}</p>
+        </div>`;
     } else {
       listHtml = `<ol class="lboard">${vm.board.entries.map((e) => `
-        <li class="lboard__row ${e.me ? "is-me" : ""}">
-          <span class="lboard__rank">${e.rank}</span>
+        <li class="lboard__row ${e.me ? "is-me" : ""} ${e.rank <= 3 ? "lboard__row--top lboard__row--top" + e.rank : ""}">
+          ${rankCell(e)}
           <span class="lboard__name">${esc(e.name || "—")}${e.me ? ` <em class="lboard__you">${esc(t("social.you"))}</em>` : ""}</span>
           <span class="lboard__streak">${e.streak ? esc(t("social.streakCap", { n: e.streak })) : ""}</span>
           <span class="lboard__cards"><b>${e.cards}</b><small>${esc(t("social.columnCards"))}</small></span>
@@ -4467,12 +4497,20 @@
         </li>`).join("")}</ol>`;
     }
 
+    // „Dein Platz"-Chip, sobald die eigene Zeile in der geladenen Liste steht.
+    const mePos = (!vm.loading && !vm.error && vm.board && vm.board.me)
+      ? `<span class="social-mypos">${esc(t("social.yourRank", { n: vm.board.me.rank }))}</span>`
+      : "";
+
     return `
-      <section class="screen">
+      <section class="screen social-screen">
         ${head}
         <div class="social-bar">
-          <span class="sectioncap">${esc(t("social.todayCap"))}</span>
-          <button class="ghostbtn" data-action="social-refresh">↻ ${esc(t("social.refresh"))}</button>
+          <div class="social-bar__left">
+            <span class="sectioncap">${esc(t("social.todayCap"))}</span>
+            ${mePos}
+          </div>
+          <button class="ghostbtn social-refresh ${vm.loading ? "is-loading" : ""}" data-action="social-refresh" ${vm.loading ? 'aria-busy="true" disabled' : ""}>↻ ${esc(t("social.refresh"))}</button>
         </div>
         ${listHtml}
         ${codeBlock}

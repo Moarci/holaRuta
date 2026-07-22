@@ -7072,6 +7072,21 @@
     } catch (e) { /* egal */ }
   }
 
+  // Freundes-Code über das native Teilen-Blatt weitergeben (WhatsApp, Mail …).
+  // Fällt auf „Code kopieren" zurück, wo die Web-Share-API fehlt (Desktop).
+  function socialShareCode() {
+    const code = state.social.code || "";
+    if (!code) return;
+    const msg = t("social.shareMsg", { code: code });
+    try {
+      if (navigator.share) {
+        navigator.share({ title: t("social.shareTitle"), text: msg }).catch(() => {});
+        return;
+      }
+    } catch (e) { /* fällt auf Kopieren zurück */ }
+    socialCopyCode();
+  }
+
   // Spricht die gelernte Antwort der aktuellen Karte vor (Reise: Spanisch, Locals: Englisch).
   // Erste akzeptierte Variante (ohne "/"-Alternativen), damit es sauber klingt.
   function speakCurrent() {
@@ -7700,6 +7715,7 @@
     "social-add-friend": (el) => { socialAddFriend(); },
     "social-remove": (el) => { socialRemoveFriend(el.dataset.id); },
     "social-copy-code": (el) => { socialCopyCode(); },
+    "social-share-code": (el) => { socialShareCode(); },
     "import-data": (el) => { startImport(); },
     "dismiss-notice": (el) => { el.remove(); },
     "dismiss-migration-banner": (el) => { dismissMigrationBanner(); },
