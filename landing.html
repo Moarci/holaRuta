@@ -1401,15 +1401,22 @@
       : (saved && SUPPORTED.indexOf(saved) >= 0) ? saved : browserLang;
 
     // ── Leichtes, abhängigkeitsfreies A/B-Fundament ──────────────────────────
-    // Weist beim ersten Besuch stabil eine Variante zu (persistiert lokal, KEIN
-    // externer Call, keine Zuweisung serverseitig). Variante b hängt die Hero-
-    // Headline auf einen alternativen i18n-Key um (setLang rendert ihn danach in
-    // jeder Sprache) und beide Varianten hängen &var= an die Onboarding-CTAs, damit
-    // die App die Variante aufs app_open schreibt. Auswertung: Conversion je Variante
-    // im Admin-Cockpit (variantFunnel) – die Landing selbst trackt nichts.
+    // DORMANT bis echter Traffic da ist: Solange EXP_ACTIVE = false, sieht JEDER die
+    // Kontroll-Variante (a = Bestands-Headline) und es wird KEIN &var= gesetzt. Grund:
+    // im Vor-Pilot (≈0 Besucher) wäre eine 50/50-Randomisierung nie signifikant und
+    // hätte keine Abschluss-Logik – sie würde nur dauerhaft der Hälfte der Besucher
+    // evtl. die schlechtere Headline zeigen. Zum Scharfschalten (sobald z. B. der
+    // Hostel-QR/Pilot Besucher bringt): die EINE Zeile unten auf `true` setzen. Die
+    // komplette Infrastruktur ist fertig: stabile Zuweisung (persistiert lokal, KEIN
+    // externer Call), Headline-Swap je Variante über den i18n-Key hero.h1.b (setLang
+    // rendert ihn in jeder Sprache), &var= an den Onboarding-CTAs -> app_open.var ->
+    // Auswertung als variantFunnel im Admin-Cockpit. Die Landing selbst trackt nichts.
+    var EXP_ACTIVE = false; // ← auf true stellen, um das A/B-Experiment scharf zu schalten
     function lpExp() {
+      // Dormant: Kontrolle für alle, keine Randomisierung, keine &var=-Markierung.
+      if (!EXP_ACTIVE) { document.documentElement.setAttribute("data-exp", "off"); return "a"; }
       var EXP_KEY = "holaruta.landing.exp.v1";
-      var VARIANTS = ["a", "b"]; // a = Bestands-Headline, b = Alternative (Schmerz-vermeidend)
+      var VARIANTS = ["a", "b"]; // a = Bestands-Headline (Kontrolle), b = Alternative
       var v = null;
       try { v = localStorage.getItem(EXP_KEY); } catch (e) {}
       if (VARIANTS.indexOf(v) < 0) {
