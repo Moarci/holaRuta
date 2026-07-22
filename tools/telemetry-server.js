@@ -272,21 +272,26 @@ function aggregate(events, usage, opts) {
   difficult.sort(function (a, b) { return b.againPct - a.againPct || b.total - a.total; });
   difficult = difficult.slice(0, 12);
 
-  // --- Aktive Tage je Nutzer + Erst-Tag (für Retention) ---
+  // --- Aktive Tage je Nutzer ---
   var activeDaysHist = { "1": 0, "2": 0, "3-4": 0, "5-7": 0, "8+": 0 };
-  var clientFirstDay = new Map();
-  clientsAll.forEach(function (daysSet, c) {
-    var days = Array.from(daysSet).sort();
-    var n = days.length;
+  clientsAll.forEach(function (daysSet) {
+    var n = daysSet.size;
     activeDaysHist[n === 1 ? "1" : n === 2 ? "2" : n <= 4 ? "3-4" : n <= 7 ? "5-7" : "8+"]++;
-    clientFirstDay.set(c, days[0]);
   });
   function addDays(dayStr, k) { var pp = String(dayStr).split("-"); return dayUTC(Date.UTC(+pp[0], +pp[1] - 1, +pp[2]) + k * DAY_MS); }
-  // N-Tage-Retention: von den Nutzern, deren Erst-Tag+N noch im Bereich liegt, wie
-  // viele waren an genau Tag (Erst-Tag+N) wieder aktiv?
+  // N-Tage-Retention: von den ECHTEN Neu-Nutzern (lebenslanger Erst-Tag IM Fenster,
+  // clientFirstDayAll), deren Erst-Tag+N ≤ heute liegt — wie viele waren an genau
+  // Tag (Erst-Tag+N) wieder aktiv? Nutzt DENSELBEN Erst-Tag-Begriff und dieselbe
+  // cutoff-Schranke wie die Kohorten-Heatmap (investor.cohorts), damit die
+  // Headline-Kacheln D1/D7/D30 und die Heatmap sich nicht widersprechen. (Ein
+  // fenster-LOKALER Erst-Tag würde bereits-gehaltene Alt-Nutzer am Fenster-Rand
+  // fälschlich als frische Kohorte zählen und die Retention systematisch überzeichnen.)
+  // clientFirstDayAll wird unten aus evAll gefüllt; retentionDay() wird erst im
+  // Rückgabeobjekt aufgerufen, also nach dem Füllen.
   function retentionDay(k) {
     var elig = 0, ret = 0;
-    clientFirstDay.forEach(function (first, c) {
+    clientFirstDayAll.forEach(function (first, c) {
+      if (first < cutoff) return;                 // nur Erst-Kontakt im Fenster (echte Neu-Kohorte)
       var target = addDays(first, k);
       if (target <= today) { elig++; var ds = clientsAll.get(c); if (ds && ds.has(target)) ret++; }
     });
@@ -455,10 +460,16 @@ function aggregate(events, usage, opts) {
   var sessionCounts = []; sessions.forEach(function (s) { sessionCounts.push(s.count); });
   var userCounts = []; eventsPerClient.forEach(function (v) { userCounts.push(v); });
   var activeUserDays = 0; clientsAll.forEach(function (ds) { activeUserDays += ds.size; });
+  // Zähler MUSS zum jeweiligen Nenner/Histogramm passen: nur Events MIT sessionId
+  // (bzw. clientId) sind einer Sitzung (bzw. Person) zugeordnet. ev.length enthält
+  // auch nicht-zuordenbare Events und würde Ø > Summe/Anzahl liefern (avg ≠ Median-
+  // Datensatz). sessionEventTotal/clientEventTotal = Summe der jeweiligen Counts.
+  var sessionEventTotal = sessionCounts.reduce(function (a, b) { return a + b; }, 0);
+  var clientEventTotal = userCounts.reduce(function (a, b) { return a + b; }, 0);
   var interactions = {
-    perSession: { avg: sessions.size ? Math.round((ev.length / sessions.size) * 10) / 10 : 0, median: median(sessionCounts), histogram: histogram(sessionCounts, [1, 3, 5, 10, 20]) },
-    perUser: { avg: totalUsers ? Math.round((ev.length / totalUsers) * 10) / 10 : 0, median: median(userCounts), histogram: histogram(userCounts, [1, 3, 10, 30, 100]) },
-    perActiveDay: { avg: activeUserDays ? Math.round((ev.length / activeUserDays) * 10) / 10 : 0, activeUserDays: activeUserDays },
+    perSession: { avg: sessions.size ? Math.round((sessionEventTotal / sessions.size) * 10) / 10 : 0, median: median(sessionCounts), histogram: histogram(sessionCounts, [1, 3, 5, 10, 20]) },
+    perUser: { avg: totalUsers ? Math.round((clientEventTotal / totalUsers) * 10) / 10 : 0, median: median(userCounts), histogram: histogram(userCounts, [1, 3, 10, 30, 100]) },
+    perActiveDay: { avg: activeUserDays ? Math.round((clientEventTotal / activeUserDays) * 10) / 10 : 0, activeUserDays: activeUserDays },
   };
 
   // --- Präzise Time-on-Task (aus session_complete.secs) ---
@@ -549,7 +560,7 @@ function aggregate(events, usage, opts) {
       medianDurationSec: median(durations),
       durationHistogram: DURATION_ORDER.map(function (k) { return { bucket: k, count: durHist.get(k) || 0 }; }),
       perDay: sessionsPerDay,
-      avgEventsPerSession: sessions.size ? Math.round((ev.length / sessions.size) * 10) / 10 : 0,
+      avgEventsPerSession: sessions.size ? Math.round((sessionEventTotal / sessions.size) * 10) / 10 : 0,
     },
     engagement: {
       events: topCounts(eventCounts),
