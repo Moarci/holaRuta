@@ -824,8 +824,8 @@ function render(s){
   html += '<div class="panel"><h3>Landing-CTA-Conversion <small>(welcher Abschnitt bringt Onboarding-Starts · distinkte Personen)</small></h3>'
     + hbars(((s.engagement&&s.engagement.ctaSources)||[]).map(function(a){return {label:ctaLabel(a.key),count:a.count};}),{color:"var(--brand)",emptyWhy:"entsteht, sobald Besucher über einen Landing-CTA (&src=) starten"})+'</div>';
   var vf = (s.engagement&&s.engagement.variantFunnel)||[];
-  html += '<div class="panel"><h3>A/B-Test <small>(Onboarding-Conversion je Landing-Variante)</small></h3>'
-    + hbars(vf.map(function(v){return {label:v.variant+" · "+v.pct+" % ("+v.complete+"/"+v.users+")", count:v.users};}),{color:"var(--ok)",emptyWhy:"entsteht, sobald ein Landing-Experiment (&var=) läuft"})+'</div>';
+  html += '<div class="panel"><h3>A/B-Test <small>(je Landing-Variante: Aktivierung = erste Lernrunde · Onboarding beendet)</small></h3>'
+    + hbars(vf.map(function(v){return {label:v.variant+" · aktiviert "+v.actPct+" % ("+v.activated+"/"+v.users+") · Onboarding "+v.pct+" %", count:v.users};}),{color:"var(--ok)",emptyWhy:"entsteht, sobald ein Landing-Experiment (&var=) läuft"})+'</div>';
   html += '</div>';
 
   html += '<div class="grid">';

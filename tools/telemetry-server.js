@@ -327,11 +327,18 @@ function aggregate(events, usage, opts) {
   // abgeschlossen haben (Conversion pro Variante). Leer, solange kein Experiment läuft.
   var variantFunnel = [];
   variantClients.forEach(function (set, v) {
-    var comp = 0;
-    set.forEach(function (c) { if (onboardComplete.has(c)) comp++; });
-    variantFunnel.push({ variant: v, users: set.size, complete: comp, pct: set.size ? Math.round((comp / set.size) * 100) : 0 });
+    var comp = 0, act = 0;
+    set.forEach(function (c) {
+      if (onboardComplete.has(c)) comp++;
+      if (activatedClients.has(c)) act++; // erste Lernrunde absolviert = echte Aktivierung
+    });
+    variantFunnel.push({
+      variant: v, users: set.size,
+      complete: comp, pct: set.size ? Math.round((comp / set.size) * 100) : 0,
+      activated: act, actPct: set.size ? Math.round((act / set.size) * 100) : 0,
+    });
   });
-  variantFunnel.sort(function (a, b) { return b.users - a.users || b.complete - a.complete; });
+  variantFunnel.sort(function (a, b) { return b.users - a.users || b.activated - a.activated; });
 
   // ======================= INVESTOR-KPIs =======================
   // Bewusst über ALLE Events (evAll), nicht das Fenster: der echte Erst-Kontakt/die
