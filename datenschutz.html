@@ -50,9 +50,9 @@
   <p>HolaRuta ist „lokal zuerst" gebaut: Dein Lernfortschritt entsteht und lebt zunächst
   ausschließlich in deinem Browser (lokaler Speicher deines Geräts). Personenbezogene Daten
   verlassen dein Gerät im Wesentlichen nur, wenn du dich anmeldest (dann Konto &amp; Cloud-Sync,
-  Abschnitt 4–5), freiwillig soziale Funktionen nutzt (Abschnitt 6) oder der optionalen,
-  standardmäßig ausgeschalteten Nutzungsstatistik ausdrücklich zustimmst (Abschnitt 8). Wir setzen
-  keine Werbe- oder Drittanbieter-Tracker ein.</p>
+  Abschnitt 4–5), freiwillig soziale Funktionen nutzt (Abschnitt 6) oder die anonyme
+  Nutzungsstatistik aktiv lässt, die voreingestellt an und jederzeit mit einem Klick abschaltbar
+  ist (Abschnitt 8). Wir setzen keine Werbe- oder Drittanbieter-Tracker ein.</p>
 
   <h2>3. Hosting, Auslieferung &amp; Server-Protokolle</h2>
   <p>Die App und ihre Programmierschnittstellen (API) werden bei unserem Hosting-Dienstleister
@@ -90,8 +90,8 @@
   <p>Der lokale Speicher (localStorage/IndexedDB) wird für den Kernbetrieb und zur Speicherung
   deines Fortschritts genutzt; dieser Zugriff ist zur Erbringung des von dir angeforderten Dienstes
   <strong>unbedingt erforderlich</strong> (§ 25 Abs. 2 Nr. 2 TDDDG) und erfordert keine gesonderte
-  Einwilligung. Nicht notwendige Zugriffe (Nutzungsstatistik) erfolgen nur mit Einwilligung
-  (Abschnitt 8).</p>
+  Einwilligung. Zum lokalen Speicher für die Nutzungsstatistik siehe Abschnitt 8; dieser lässt sich
+  dort jederzeit abschalten.</p>
   <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Vertrag/Nutzung des Dienstes);
   für die lokale Speicherung ergänzend § 25 Abs. 2 Nr. 2 TDDDG.</p>
 
@@ -112,14 +112,22 @@
   die betreffenden Daten im Auftrag der jeweiligen Einrichtung. <span class="ph">[Sofern zutreffend:
   Auftragsverarbeitung nach Art. 28 DSGVO mit der Einrichtung; andernfalls diesen Abschnitt entfernen.]</span></p>
 
-  <h2>8. Optionale, anonyme Nutzungsstatistik</h2>
-  <p>Standardmäßig ausgeschaltet und nur nach deiner <strong>ausdrücklichen Einwilligung</strong>
-  in der App senden wir eine anonyme, gebündelte Tages-Statistik sowie einen pseudonymen
-  Interaktions-Datenstrom zur Produktverbesserung und Fehlerdiagnose. Es werden <strong>keine</strong>
-  Suchtexte, Karteninhalte/-IDs oder Namen übertragen; die pseudonyme Statistik-Kennung ist
-  jederzeit zurücksetzbar. Aufbewahrung der Ereignisdaten: <span class="ph">[90 Tage]</span>.</p>
-  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO sowie § 25 Abs. 1 TDDDG
-  (Einwilligung). Den Widerruf kannst du jederzeit mit Wirkung für die Zukunft in der App erklären.</p>
+  <h2>8. Anonyme Nutzungsstatistik (jederzeit abschaltbar)</h2>
+  <p>Zur Produktverbesserung und Fehlerdiagnose senden wir eine anonyme, gebündelte Tages-Statistik
+  sowie einen pseudonymen Interaktions-Datenstrom. Diese Statistik ist <strong>voreingestellt
+  aktiv</strong> und lässt sich in der App jederzeit mit einem Klick abschalten
+  (<em>Einstellungen → Nutzungsstatistik teilen → Aus</em>). Ab dem Abschalten verlässt kein
+  Statistik-Datum mehr dein Gerät; die pseudonyme Kennung und der lokale Puffer werden dabei
+  gelöscht. Es werden <strong>keine</strong> Suchtexte, Karteninhalte/-IDs oder Namen übertragen;
+  die pseudonyme Statistik-Kennung ist außerdem jederzeit zurücksetzbar. Aufbewahrung der
+  Ereignisdaten: <span class="ph">[90 Tage]</span>.</p>
+  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der
+  Verbesserung und Fehlerfreiheit der App). Du kannst dieser Verarbeitung jederzeit mit Wirkung für
+  die Zukunft widersprechen (Art. 21 DSGVO) – der Schalter in der App genügt.
+  <span class="ph">[Rechtsprüfung erforderlich: Ob das Speichern der pseudonymen Statistik-Kennung
+  im lokalen Speicher ohne Einwilligung nach § 25 Abs. 2 Nr. 2 TDDDG zulässig ist, ist strittig.
+  Vor dem Launch anwaltlich klären – sonst zurück auf Einwilligung (Art. 6 Abs. 1 lit. a DSGVO,
+  § 25 Abs. 1 TDDDG) oder Kennung nicht mehr persistieren.]</span></p>
 
   <h2>9. Externe Inhalte: Kulturbilder von Wikimedia</h2>
   <p>Einzelne Lerninhalte binden Bilder von <strong>Wikimedia</strong>

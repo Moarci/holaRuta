@@ -363,8 +363,10 @@ Nutzer-ID das Gerät.
 ### 17.1 Leitplanken (zusätzlich zu §1, §12)
 
 - **Doppelte Schranke.** Gesendet wird **nur**, wenn (1) eine Edition `SC.config.analytics`
-  (`enabled` + `endpoint`) setzt **und** (2) der Nutzer im Profil ausdrücklich zustimmt
-  (`settings.analyticsConsent === true`). Ohne beides: **0 Netzwerk-Calls** — exakt wie ohne das Modul.
+  (`enabled` + `endpoint`) setzt **und** (2) der Nutzer die Statistik nicht abgeschaltet hat
+  (**Opt-out**: `settings.analyticsConsent !== false`). Ohne beides: **0 Netzwerk-Calls** — exakt
+  wie ohne das Modul. `analytics.js` selbst kennt keinen Default: es prüft weiterhin strikt
+  `consent === true`; den Default setzt allein der Controller (`app.js`).
 - **Datenminimierung als Kern.** Der Snapshot trägt **nur grobe, gebucketete** Aggregate, alle aus dem
   **bereits vorhandenen** `gamestats` abgeleitet (nichts Neues wird erfasst): Tag, App-Version, UI-Sprache,
   Lern-Track, Karten-heute-**Bucket**, Streak-**Bucket**, Reviews-**Bucket** und boolesche „je-Modus-benutzt"-
@@ -390,10 +392,10 @@ Nutzer-ID das Gerät.
 - **Rechtsgrundlage:** ausdrückliche Einwilligung (opt-in im Profil), jederzeit widerrufbar (Schalter aus).
 - **Keine PII, kein Profil, kein Werbe-Tracking, keine Drittanbieter-Tracker.** Server speichert nur
   aggregierte Tageszahlen; IP wird **nicht** persistiert (nur transient fürs Rate-Limit).
-- **Marketing-Konsistenz:** Da nun eine — opt-in — Telemetrie existiert, wird die frühere absolute
-  „kein Tracking"-Aussage in den Beschreibungen durch die ehrliche Formulierung ersetzt
-  („lokal-first, keine Werbung; Cloud-Sync **und** anonyme Nutzungsstatistik sind optional und
-  standardmäßig aus").
+- **Marketing-Konsistenz:** Da eine Telemetrie existiert und seit dem Wechsel auf **Opt-out**
+  voreingestellt **an** ist, wird die frühere absolute „kein Tracking"-Aussage in den Beschreibungen
+  durch die ehrliche Formulierung ersetzt („lokal-first, keine Werbung; Cloud-Sync ist optional, die
+  anonyme Nutzungsstatistik läuft voreingestellt mit und ist mit einem Klick abschaltbar").
 
 ### 17.4 Akzeptanzkriterien (DoD)
 

@@ -695,7 +695,7 @@
       socialEnabled: !!(window.SC.social && window.SC.social.enabled()), // opt-in Freunde/Rangliste (nur per Edition)
       socialLoggedIn: !!(window.SC.social && window.SC.social.loggedIn && window.SC.social.loggedIn()),
       analyticsAvailable: !!(window.SC.analytics && window.SC.analytics.available()), // anonyme Telemetrie nur, wenn eine Edition einen Endpunkt setzt
-      analyticsConsent: settings.analyticsConsent === true, // Nutzer hat dem Senden ausdrücklich zugestimmt (Default aus)
+      analyticsConsent: settings.analyticsConsent !== false, // Opt-out: nur ein ausdrückliches „Aus" schaltet ab (Default an)
       hasCountries: !!countries, // dito für die Länderkunde
       hasHistoria: !!historia,   // dito für die Geschichte Südamerikas
       hasHistoriaCentro: !!historiaCentro, // dito für die Geschichte Mittelamerikas
@@ -5505,10 +5505,10 @@
     render();
   }
 
-  // Anonyme Nutzungsstatistik teilen an/aus (opt-in, Default aus). Merken, neu
-  // rendern und bei FRISCHER Zustimmung gleich einen Tages-Snapshot senden (sofort
-  // wirksam – nicht erst beim nächsten Start). Ohne Zustimmung verlässt kein Datum
-  // das Gerät; das Modul prüft beides (Endpunkt + consent) nochmals selbst.
+  // Anonyme Nutzungsstatistik teilen an/aus (OPT-OUT, Default an). Merken, neu
+  // rendern und bei (Wieder-)Einschalten gleich einen Tages-Snapshot senden (sofort
+  // wirksam – nicht erst beim nächsten Start). Nach dem Abschalten verlässt kein
+  // Datum das Gerät; das Modul prüft beides (Endpunkt + consent) nochmals selbst.
   function setAnalyticsConsent(on) {
     settings = Object.assign({}, settings, { analyticsConsent: !!on });
     store.saveSettings(settings);
@@ -5544,7 +5544,9 @@
   // Gemeinsamer Kontext (Meta + Einwilligung) für SC.analytics.configure/track.
   function analyticsCtx() {
     return {
-      consent: settings.analyticsConsent === true,
+      // Opt-out (Tri-State): undefined/true = an, NUR ein ausdrückliches false = aus.
+      // Damit sind auch Bestandsprofile ohne gespeicherte Wahl automatisch an.
+      consent: settings.analyticsConsent !== false,
       appVersion: (changelog && changelog.VERSION) || "",
       locale: state.uiLang,
       track: (window.SC.track && window.SC.track.id()) || "",
