@@ -67,6 +67,12 @@
        dieselbe Datei bedient auch die B2B-Landings (dort mit Pills). -->
   <script src="landing-carousel.js" defer></script>
 
+  <!-- PWA-Install: self-contained (SC.install), keine Deps, keine Netzwerkanfrage.
+       Fängt beforeinstallprompt ab, damit die Install-Sektion einen echten
+       „App installieren"-Knopf mit nativem Dialog anbieten kann (Android/Chromium).
+       iOS/Desktop ohne Prompt fallen still auf die manuelle Anleitung zurück. -->
+  <script src="install.js" defer></script>
+
   <!-- Sicherheits-Header analog index.html. Diese Seite nutzt keine externen
        Ressourcen (Fonts/Bilder self-hosted) – default-src 'self' genügt. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
@@ -925,6 +931,10 @@
           </article>
         </div>
         <div class="lp-install__cta" data-reveal>
+          <!-- Nativer Install-Knopf: erscheint nur, wenn der Browser ihn anbietet
+               (SC.install.canPrompt, i. d. R. Android/Chromium). Sonst versteckt,
+               und die manuelle Anleitung oben trägt (iOS/Desktop). -->
+          <button type="button" class="lp-cta lp-cta--lg lp-cta--onbrand" id="lpInstallBtn" data-i18n="install.now" hidden>App installieren →</button>
           <a class="lp-cta lp-cta--lg" href="./?src=install" data-i18n="install.cta">Jetzt im Browser öffnen →</a>
         </div>
 
@@ -1127,6 +1137,7 @@
         "install.a1": "Öffne HolaRuta im Browser.", "install.a2": "Tippe auf „Zum Startbildschirm hinzufügen\".", "install.a3": "Fertig — HolaRuta liegt als App auf dem Homescreen, offline-fähig.",
         "install.i1": "Öffne HolaRuta in Safari.", "install.i2": "Tippe auf das Teilen-Symbol, dann „Zum Home-Bildschirm\".", "install.i3": "Öffne HolaRuta vom Homescreen — läuft offline.",
         "install.note": "Kein App-Store, keine Anmeldung, keine Updates-Warteschlange.",
+        "install.now": "App installieren →",
         "install.cta": "Jetzt im Browser öffnen →",
         "faq.q1": "Brauche ich Internet?", "faq.a1": "Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.",
         "faq.q2": "Ist es wirklich kostenlos?", "faq.a2": "Ja. Komplett kostenlos, keine Werbung, keine In-App-Käufe, kein Konto.",
@@ -1222,6 +1233,7 @@
         "install.a1": "Open HolaRuta in your browser.", "install.a2": "Tap \"Add to Home screen\".", "install.a3": "Done — HolaRuta sits on your home screen, offline-ready.",
         "install.i1": "Open HolaRuta in Safari.", "install.i2": "Tap the Share icon, then \"Add to Home Screen\".", "install.i3": "Launch HolaRuta from the home screen — it runs offline.",
         "install.note": "No app store, no sign-up, no update queue.",
+        "install.now": "Install the app →",
         "install.cta": "Open in your browser →",
         "faq.q1": "Do I need internet?", "faq.a1": "No. Once loaded, HolaRuta works offline — built for the dead zone on the night bus.",
         "faq.q2": "Is it really free?", "faq.a2": "Yes. Completely free, no ads, no in-app purchases, no account.",
@@ -1317,6 +1329,7 @@
         "install.a1": "Abre HolaRuta en tu navegador.", "install.a2": "Toca «Añadir a la pantalla de inicio».", "install.a3": "Listo — HolaRuta queda como app en tu pantalla de inicio, lista sin conexión.",
         "install.i1": "Abre HolaRuta en Safari.", "install.i2": "Toca el icono de Compartir y luego «Añadir a inicio».", "install.i3": "Abre HolaRuta desde la pantalla de inicio — funciona sin conexión.",
         "install.note": "Sin tienda de apps, sin registro, sin cola de actualizaciones.",
+        "install.now": "Instalar la app →",
         "install.cta": "Abrir ahora en el navegador →",
         "faq.q1": "¿Necesito internet?", "faq.a1": "No. Una vez cargada, HolaRuta funciona sin conexión — pensada para el bus nocturno sin señal.",
         "faq.q2": "¿De verdad es gratis?", "faq.a2": "Sí. Completamente gratis, sin anuncios, sin compras dentro de la app, sin cuenta.",
@@ -1993,6 +2006,27 @@
       });
     });
   })();
+  </script>
+
+  <!-- PWA-Install-Knopf verdrahten. Läuft auf DOMContentLoaded, also NACH dem
+       deferred install.js (SC.install ist dann garantiert da). Der Knopf ist per
+       Default versteckt und erscheint nur, wenn der Browser einen nativen
+       Install-Dialog anbietet (canPrompt) – setOnChange fängt auch ein spät
+       gefeuertes beforeinstallprompt ab. Bricht nie: alles in try/Guards. -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    try {
+      var I = window.SC && window.SC.install;
+      var btn = document.getElementById("lpInstallBtn");
+      if (!I || !btn) return;
+      function sync() { btn.hidden = !I.canPrompt(); }
+      I.setOnChange(sync);
+      sync();
+      btn.addEventListener("click", function () {
+        try { I.promptInstall(); } catch (e) {}
+      });
+    } catch (e) { /* Install-Knopf ist optional – Seite läuft ohne ihn weiter */ }
+  });
   </script>
 </body>
 </html>
