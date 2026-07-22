@@ -337,7 +337,12 @@ a { color: var(--brand-ink); }
 }
 .lp-hero__sub { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink-soft); margin: 0 0 var(--space-5); max-width: 52ch; }
 
-.lp-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-5); }
+.lp-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-3); }
+/* Friktions-Reducer direkt unter der primären CTA: adressiert die Einstiegshürde
+   (kein Download/Login) am Entscheidungspunkt – ergänzt die Zahlen-Badges darunter,
+   statt sie zu wiederholen. */
+.lp-hero__reassure { display: flex; align-items: center; gap: 7px; margin: 0 0 var(--space-5); font-size: 0.86rem; font-weight: 600; color: var(--ink-soft); }
+.lp-hero__reassure::before { content: "✓"; font-weight: 800; color: #3F7355; }
 /* Mobile: CTAs gestapelt & full-width -> große, saubere Tap-Ziele. */
 @media (max-width: 520px) {
   .lp-hero__cta { flex-direction: column; align-items: stretch; }

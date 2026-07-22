@@ -169,6 +169,7 @@
             <a class="lp-cta lp-cta--lg" href="./?start=onboarding&src=hero" data-i18n="hero.cta">Kostenlos starten →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">Wie es funktioniert</a>
           </div>
+          <p class="lp-hero__reassure" data-reveal style="--i:3" data-i18n="hero.reassure">Kein Download, keine Anmeldung — einfach loslegen.</p>
           <div class="lp-trust">
             <div class="lp-trust__item" data-reveal style="--i:4; --accent:#C2502E">
               <span class="lp-trust__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-cards"/></svg></span>
@@ -929,12 +930,12 @@
 
         <div class="lp-faq">
           <details data-reveal style="--i:0">
-            <summary data-i18n="faq.q1">Brauche ich Internet?</summary>
-            <div class="lp-faq__body" data-i18n="faq.a1">Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.</div>
-          </details>
-          <details data-reveal style="--i:1">
             <summary data-i18n="faq.q2">Ist es wirklich kostenlos?</summary>
             <div class="lp-faq__body" data-i18n="faq.a2">Ja. Komplett kostenlos, keine Werbung, keine In-App-Käufe, kein Konto.</div>
+          </details>
+          <details data-reveal style="--i:1">
+            <summary data-i18n="faq.q1">Brauche ich Internet?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a1">Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.</div>
           </details>
           <details data-reveal style="--i:2">
             <summary data-i18n="faq.q3">Welches Spanisch lerne ich?</summary>
@@ -1060,6 +1061,7 @@
         "hero.sub": "Genau die Sätze, die du im Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt.",
         "hero.cta": "Kostenlos starten →",
         "hero.cta2": "Wie es funktioniert",
+        "hero.reassure": "Kein Download, keine Anmeldung — einfach loslegen.",
         "trust.cards": "Karten", "trust.areas": "Bereiche", "trust.modes": "Lernmodi", "trust.free": "Offline · kein Konto",
         "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel",
         "card.speakLabel": "Antwort vorlesen",
@@ -1153,6 +1155,7 @@
         "hero.sub": "Exactly the phrases you'll need on the bus, at the table and at the border — ready when it counts.",
         "hero.cta": "Start free →",
         "hero.cta2": "See how it works",
+        "hero.reassure": "No download, no sign-up — just start.",
         "trust.cards": "cards", "trust.areas": "areas", "trust.modes": "modes", "trust.free": "Offline · no account",
         "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate",
         "card.speakLabel": "Read answer aloud",
@@ -1246,6 +1249,7 @@
         "hero.sub": "Justo las frases que necesitas en el bus, en la mesa y en la frontera — listas para cuando cuentan.",
         "hero.cta": "Empezar gratis →",
         "hero.cta2": "Cómo funciona",
+        "hero.reassure": "Sin descargas ni registro: empieza y ya.",
         "trust.cards": "tarjetas", "trust.areas": "áreas", "trust.modes": "modos", "trust.free": "Sin conexión · sin cuenta",
         "card.hint": "Toca para girar", "card.lvl": "A1 · Principiante", "card.lvl2": "A2 · Intermedio",
         "card.speakLabel": "Leer la respuesta en voz alta",
@@ -1578,8 +1582,14 @@
       var openMod = null;
       var currentAccent = "var(--brand)";
 
-      function lang() { return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "de"; }
-      function t(key) { var d = I18N[lang()] || {}; return d[key] || key; }
+      // UI-Sprache dreisprachig (de/en/es) – die Chrome-Strings liegen alle drei im
+      // I18N-Wörterbuch vor. (Früher fiel ES hier fälschlich auf DE zurück.)
+      function uiLang() { var l = document.documentElement.getAttribute("data-lang"); return (l === "en" || l === "es") ? l : "de"; }
+      // Die Modul-Beispieldaten (DATA) existieren nur auf DE/EN; für ES die englische
+      // Bedeutungsseite zeigen (die spanische Rückseite ist ohnehin sprachunabhängig) –
+      // für ein spanischsprachiges Publikum die passendere Fallback-Sprache als DE.
+      function dataLang() { return uiLang() === "de" ? "de" : "en"; }
+      function t(key) { var d = I18N[uiLang()] || {}; return d[key] || key; }
 
       function speak(text) {
         try {
@@ -1612,7 +1622,7 @@
       function render(mod) {
         var m = DATA[mod];
         if (!m) return;
-        var l = lang();
+        var l = dataLang();
         var cat = l === "en" ? m.cat[1] : m.cat[0];
         var hint = t("card.hint"), speakLbl = t("card.speakLabel"), flipLbl = t("a11y.card");
         var ctxLbl = t("ctx.show"), ctxTitle = t("ctx.title"), sitLbl = t("ctx.situation"), noteLbl = t("ctx.note");
