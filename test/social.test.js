@@ -134,3 +134,34 @@ test("dayKey: lokales YYYY-MM-DD (zweistellig)", () => {
   const k = social.dayKey(new Date(2026, 0, 5, 12, 0, 0).getTime()); // 5. Jan
   assert.equal(k, "2026-01-05");
 });
+
+/*
+ * Einladungslink (?amigo=…): der Freundes-Code ist base64 und enthält regelmäßig
+ * "+" und "/". In einer Query decodiert URLSearchParams ein rohes "+" als
+ * LEERZEICHEN – der Code wäre kaputt. Deshalb MUSS die App beim Bauen des Links
+ * encodeURIComponent nutzen. Dieser Test hält genau das fest (app.js baut den
+ * Link identisch in socialInviteUrl()).
+ */
+test("Einladungslink: Round-Trip Code -> ?amigo= -> parseFriendCode", () => {
+  // Echte Konto-Ids (UUID) und Grenzfälle mit Zeichen, die eine Query zerlegen
+  // würden, wenn nicht kodiert wird.
+  const ids = ["user-123", "3f1b2c44-9a0e-4b77-8c31-0d5e6f7a8b90", "a?b&c=d", "ÿÿÿ-ø-плюс"];
+  for (const id of ids) {
+    const code = social.makeFriendCode(id);
+    const url = "https://holaruta.com/?amigo=" + encodeURIComponent(code);
+    const back = new URLSearchParams(new URL(url).search).get("amigo");
+    assert.equal(back, code, "Code übersteht den Query-Roundtrip unverändert");
+    assert.deepEqual(social.parseFriendCode(back), { id: id });
+  }
+});
+
+test("Einladungslink: rohes (nicht kodiertes) Anhängen wäre kaputt", () => {
+  // Negativprobe: base64 darf "+" enthalten, und ein rohes "+" in der Query
+  // decodiert URLSearchParams als LEERZEICHEN. Deshalb ist encodeURIComponent
+  // in socialInviteUrl() Pflicht, nicht Kosmetik.
+  const code = "HRF1.ab+cd/ef=";
+  const naive = new URLSearchParams(new URL("https://holaruta.com/?amigo=" + code).search).get("amigo");
+  assert.notEqual(naive, code, "ohne encodeURIComponent wird '+' zum Leerzeichen");
+  const safe = new URLSearchParams(new URL("https://holaruta.com/?amigo=" + encodeURIComponent(code)).search).get("amigo");
+  assert.equal(safe, code);
+});

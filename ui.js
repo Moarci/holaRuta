@@ -4438,17 +4438,22 @@
         </section>`;
     }
 
-    // Teilbarer eigener Freundes-Code: prominent, wenn vorhanden – sonst nur der
-    // Einladungs-Knopf.
-    const codeBlock = vm.myCode ? `
-      <div class="social-code">
-        <span class="switchcap">${esc(t("social.myCodeCap"))}</span>
-        <code class="social-code__val">${esc(vm.myCode)}</code>
-        <div class="social-code__actions">
-          <button class="ghostbtn" data-action="social-share-code">↗ ${esc(t("social.shareCode"))}</button>
-          <button class="ghostbtn" data-action="social-copy-code">⧉ ${esc(t("social.copyCode"))}</button>
+    // Einladungskarte: QR zum Abscannen mit der Kamera-App plus derselbe Link zum
+    // Verschicken. Der rohe HRF1.-Code bleibt unsichtbar – der manuelle Weg ist nur
+    // noch ein kleiner Textlink darunter. Ohne Einladungslink (Code noch nicht
+    // geladen) bleibt nur der bisherige Hinzufügen-Knopf.
+    // Achtung: vm.inviteQr ist unser eigener, in app.js/qr.js erzeugter SVG-Markup –
+    // er wird bewusst roh eingesetzt (esc() würde das Markup als Text anzeigen).
+    const codeBlock = vm.inviteUrl ? `
+      <div class="social-code social-invite">
+        <span class="switchcap">${esc(t("social.inviteCap"))}</span>
+        ${vm.inviteQr ? `<div class="social-invite__qr">${vm.inviteQr}</div>` : ""}
+        <p class="social-invite__hint">${esc(t("social.inviteHint"))}</p>
+        <div class="social-invite__actions">
+          <button class="ghostbtn" data-action="social-share-invite">↗ ${esc(t("social.shareInvite"))}</button>
+          <button class="ghostbtn" data-action="social-copy-link">⧉ ${esc(t("social.copyLink"))}</button>
         </div>
-        <button class="cta cta--soft social-code__add" data-action="social-add-friend">＋ ${esc(t("social.addFriend"))}</button>
+        <button class="social-invite__manual" data-action="social-add-friend">${esc(t("social.manualCode"))}</button>
       </div>` : `
       <div class="social-code social-code--bare">
         <button class="cta cta--soft" data-action="social-add-friend">＋ ${esc(t("social.addFriend"))}</button>

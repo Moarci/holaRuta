@@ -4692,13 +4692,34 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .social-note .cta { max-width: 240px; }
 .social-note--error { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
 
-/* Eigener Freundes-Code zum Teilen. */
+/* Einladungskarte: QR zum Abscannen + derselbe Link zum Verschicken. */
 .social-code { margin-top: 18px; padding: 16px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; }
 .social-code--bare { align-items: stretch; }
-.social-code__val { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; word-break: break-all; color: var(--ink-soft); background: color-mix(in srgb, var(--ink) 4%, transparent); padding: 10px 12px; border-radius: var(--r-sm, 10px); }
-.social-code__actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.social-code__actions .ghostbtn { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.social-code__add { margin-top: 2px; }
+
+/* QR-Fläche: quadratisch, zentriert, IMMER hell hinterlegt – auch im Dark Mode,
+ * sonst ist der Code nicht scannbar. Das SVG aus qr.js bringt selbst weißen
+ * Grund und schwarze Module mit (kein currentColor); --cream ist in beiden
+ * Themes hell und rahmt das sauber ein. Das Padding ergänzt die Quiet-Zone. */
+.social-invite__qr {
+  align-self: center; width: 100%; max-width: 180px; aspect-ratio: 1;
+  padding: 10px; box-sizing: border-box;
+  background: var(--cream);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px);
+}
+.social-invite__qr svg { display: block; width: 100%; height: 100%; }
+
+.social-invite__hint { margin: 0; text-align: center; font-size: 0.88rem; color: var(--ink-soft); }
+.social-invite__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.social-invite__actions .ghostbtn { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
+/* Manueller Weg (Code eintippen) bleibt erreichbar, aber dezent als Textlink. */
+.social-invite__manual {
+  align-self: center; margin-top: 2px; padding: 8px 10px; min-height: 44px;
+  border: 0; background: transparent; cursor: pointer;
+  font: inherit; font-size: 0.82rem; color: var(--ink-soft);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.social-invite__manual:hover { color: var(--ink); }
 
 @media (prefers-reduced-motion: reduce) {
   .sk::after { animation: none; }

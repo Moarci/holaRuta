@@ -235,7 +235,9 @@
     roleplayId: null,        // aktuell geöffnetes Rollenspiel
     roleplaySwapped: false,  // Rollen A/B getauscht?
     // ----- Freunde & Tages-Rangliste (opt-in, transient; Server = source of truth) -----
-    social: { loading: false, error: false, board: null, code: "" },
+    // `pendingInvite`: über ?amigo= geöffneter Einladungs-Code, der noch auf den
+    // Login wartet – wird nach erfolgreicher Anmeldung automatisch eingelöst.
+    social: { loading: false, error: false, board: null, code: "", pendingInvite: "" },
     // ----- Definiciones (Zuordnen-Quiz, transient, keine Persistenz) -----
     quiz: null,              // { setId, queue:[defId…], idx, total, options:[{id,es,de,icon}…], selected:defId|null, correct }
     // ----- Precios al oído (Preis-Hörtrainer, transient) -----
@@ -1734,6 +1736,8 @@
     trackEvent("onboarding_complete", {});
     state.tripEdit = false;
     setState({ screen: "home" });
+    // Über einen Einladungslink gekommen? Jetzt ist der Weg frei dafür.
+    if (state.social.pendingInvite) { openSocial(); redeemPendingInvite(); }
   }
 
   // ---- Account-First (Login-Gate direkt am Start) ----------------------------
@@ -1889,6 +1893,10 @@
       beginOnboarding();
       stripUrlParam("start");
     }
+    // Einladung per QR/Link zuletzt: sie öffnet den Freunde-Screen und soll das
+    // Onboarding nicht überschreiben, wenn beides zusammenkommt (handleInviteLink
+    // merkt sich den Code dann und finishOnboarding() holt ihn nach).
+    handleInviteLink();
   }
 
   // Beim Start einmal claimen/syncen, falls bereits eingeloggt (z. B. nach dem
@@ -6970,21 +6978,111 @@
   // truth; der Client veröffentlicht nur seinen Tages-Snapshot und holt die Liste.
   function socialVM() {
     const social = window.SC.social;
+    const url = socialInviteUrl();
     return {
       loggedIn: !!(social && social.loggedIn && social.loggedIn()),
       loading: !!state.social.loading,
       error: !!state.social.error,
       board: state.social.board,
-      myCode: state.social.code || "",
+      inviteUrl: url,
+      // Fertiges SVG statt Rohdaten: ui.js bleibt frei von der QR-Abhängigkeit
+      // und muss nicht wissen, ob das (lazy) Modul schon geladen ist.
+      inviteQr: url ? socialInviteQr(url) : "",
     };
+  }
+
+  // Einladungslink: derselbe HRF1-Code, nur als klickbare/scanbare URL. Basis ist
+  // die aktuelle Adresse OHNE Query/Hash – so funktioniert der Link in jeder
+  // Edition und in jeder Auslieferung (Dev, dist/, eigene Domain).
+  function socialInviteUrl() {
+    const code = state.social.code || "";
+    if (!code) return "";
+    try {
+      return location.origin + location.pathname + "?amigo=" + encodeURIComponent(code);
+    } catch (e) { return ""; }
+  }
+
+  // QR nur, wenn das (lazy) qr-Modul schon da ist – sonst leer; openSocial() lädt
+  // es nach und rendert erneut. Ergebnis wird gemerkt: socialVM() läuft bei JEDEM
+  // Render (Laden, Aktualisieren, Sprachwechsel), und ein QR ist ~30 KB Markup
+  // plus Reed-Solomon-Rechnerei – einmal pro Link genügt.
+  let _inviteQrCache = { key: "", svg: "" };
+  function socialInviteQr(url) {
+    // Der Alt-Text steckt im SVG – deshalb gehört die übersetzte Fassung in den
+    // Schlüssel, sonst bliebe er nach einem Sprachwechsel stehen.
+    const alt = t("social.qrAlt");
+    const key = url + "\n" + alt;
+    if (_inviteQrCache.key === key) return _inviteQrCache.svg;
+    const qr = window.SC && window.SC.qr;
+    if (!(qr && qr.svg)) return "";               // nicht cachen: Modul lädt noch
+    let svg = "";
+    // margin 4 = die von der Norm geforderte Ruhezone; ohne sie scheitern
+    // manche Kamera-Apps trotz CSS-Padding.
+    try { svg = qr.svg(url, { margin: 4, alt: alt }) || ""; } catch (e) { svg = ""; }
+    _inviteQrCache = { key: key, svg: svg };
+    return svg;
   }
 
   function openSocial() {
     const social = window.SC.social;
     if (!(social && social.enabled())) return;
     state.screen = "social";
+    // QR-Generator nachladen (nur der Lehrer-Screen lud ihn bisher); danach neu
+    // rendern, damit die Einladungskarte den Code zeigt.
+    loadModule("qr", () => { if (state.screen === "social") render(); });
     if (social.loggedIn()) refreshSocial();        // direkt frische Liste holen
     render();
+    // Noch offene Einladung (Link vor dem Login geöffnet) hier nachziehen.
+    // Doppelaufrufe sind harmlos: redeemPendingInvite() leert den Merker sofort.
+    if (social.loggedIn() && state.social.pendingInvite) redeemPendingInvite();
+  }
+
+  // ----- Einladung per Link/QR (?amigo=HRF1.…) -----
+  // Wird beim Start aufgerufen. Eingeloggt → nachfragen und einlösen; sonst den
+  // Code merken und nach dem Login automatisch verarbeiten.
+  function handleInviteLink() {
+    const social = window.SC.social;
+    const code = urlParam("amigo");
+    if (!code) return;
+    stripUrlParam("amigo");
+    if (!(social && social.enabled())) return;     // Edition ohne Sozial-Schicht
+    if (!social.parseFriendCode(code)) { showNotice(t("social.inviteBad")); return; }
+    // Immer merken – auch wenn gerade das Onboarding läuft. Eingelöst wird beim
+    // Login, beim Abschluss des Onboardings oder spätestens beim Öffnen des
+    // Freunde-Screens, damit eine Einladung nie still verloren geht.
+    state.social = Object.assign({}, state.social, { pendingInvite: code });
+    if (state.screen === "onboarding") return;
+    openSocial();
+    if (social.loggedIn()) redeemPendingInvite();
+    else showNotice(t("social.inviteLoginNeeded"));
+  }
+
+  // Gemerkte Einladung einlösen (nach Login oder direkt). Fragt einmal nach,
+  // damit ein versehentlich geöffneter Link niemanden ungefragt hinzufügt.
+  function redeemPendingInvite() {
+    const social = window.SC.social;
+    const code = state.social.pendingInvite || "";
+    if (!code || !(social && social.enabled() && social.loggedIn())) return;
+    // Merker SOFORT leeren (vor jedem await): so kann ein zweiter Aufruf im selben
+    // Tick – openSocial() und handleInviteLink() – nicht doppelt nachfragen.
+    state.social = Object.assign({}, state.social, { pendingInvite: "" });
+    // Scheitert das NETZ, kommt der Code zurück in den Merker: der Link ist aus
+    // der Adresszeile schon entfernt, ein erneutes Öffnen des Freunde-Screens
+    // soll die Einladung deshalb noch einmal versuchen können. Nach einem
+    // bewussten Abbruch oder einer Absage vom Server bleibt er geleert.
+    const keepForRetry = () => {
+      state.social = Object.assign({}, state.social, { pendingInvite: code });
+      showNotice(t("social.failed"));
+    };
+    // Eigene Einladung (gleiches Gerät/Konto) freundlich abfangen.
+    ensureFriendCode().then((mine) => {
+      if (mine && mine === code) { showNotice(t("social.inviteSelf")); return; }
+      if (!confirmAsk(t("social.inviteConfirm"))) return;
+      social.addFriend(code).then((r) => {
+        if (r && r.ok) { showNotice(t("social.addOk")); refreshSocial(); }
+        else showNotice(t("social.inviteBad"));
+      }).catch(keepForRetry);
+    }).catch(keepForRetry);
   }
 
   // Eigenen Freundes-Code sicherstellen (einmal laden, dann gecacht). Wird VOR
@@ -7029,13 +7127,13 @@
     email = email.trim();
     if (!email) return;
     social.login(email).then(() => {
-      if (social.loggedIn()) { refreshSocial(); render(); return; }  // Mock: direkt eingeloggt
+      if (social.loggedIn()) { refreshSocial(); render(); redeemPendingInvite(); return; }  // Mock: direkt eingeloggt
       // Echter Flow: Bestätigungscode aus der E-Mail (geteilter Login mit Cloud-Sync).
       let code = "";
       try { code = window.prompt(t("profile.cloudCodePrompt")) || ""; } catch (e) { code = ""; }
       code = code.trim();
       if (!code) { showNotice(t("social.loginCheckMail")); return; }
-      social.confirm(email, code).then(() => { refreshSocial(); render(); }).catch(() => showNotice(t("social.loginFailed")));
+      social.confirm(email, code).then(() => { refreshSocial(); render(); redeemPendingInvite(); }).catch(() => showNotice(t("social.loginFailed")));
     }).catch(() => showNotice(t("social.loginFailed")));
   }
 
@@ -7062,29 +7160,30 @@
     social.removeFriend(id).then(() => refreshSocial()).catch(() => showNotice(t("social.failed")));
   }
 
-  function socialCopyCode() {
-    const code = state.social.code || "";
-    if (!code) return;
-    const done = () => showNotice(t("social.codeCopied"));
+  // Einladungslink in die Zwischenablage (Fallback zum Teilen-Blatt und
+  // Desktop-Weg: Link in WhatsApp Web/Mail einfügen).
+  function socialCopyLink() {
+    const url = socialInviteUrl();
+    if (!url) return;
+    const done = () => showNotice(t("social.linkCopied"));
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done).catch(() => {});
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done).catch(() => {});
       else done();
     } catch (e) { /* egal */ }
   }
 
-  // Freundes-Code über das native Teilen-Blatt weitergeben (WhatsApp, Mail …).
-  // Fällt auf „Code kopieren" zurück, wo die Web-Share-API fehlt (Desktop).
-  function socialShareCode() {
-    const code = state.social.code || "";
-    if (!code) return;
-    const msg = t("social.shareMsg", { code: code });
+  // Einladung über das native Teilen-Blatt weitergeben (WhatsApp, Mail …).
+  // Fällt auf „Link kopieren" zurück, wo die Web-Share-API fehlt (Desktop).
+  function socialShareInvite() {
+    const url = socialInviteUrl();
+    if (!url) return;
     try {
       if (navigator.share) {
-        navigator.share({ title: t("social.shareTitle"), text: msg }).catch(() => {});
+        navigator.share({ title: t("social.shareTitle"), text: t("social.shareInviteMsg", { url: url }) }).catch(() => {});
         return;
       }
     } catch (e) { /* fällt auf Kopieren zurück */ }
-    socialCopyCode();
+    socialCopyLink();
   }
 
   // Spricht die gelernte Antwort der aktuellen Karte vor (Reise: Spanisch, Locals: Englisch).
@@ -7714,8 +7813,8 @@
     "social-refresh": (el) => { refreshSocial(); },
     "social-add-friend": (el) => { socialAddFriend(); },
     "social-remove": (el) => { socialRemoveFriend(el.dataset.id); },
-    "social-copy-code": (el) => { socialCopyCode(); },
-    "social-share-code": (el) => { socialShareCode(); },
+    "social-copy-link": (el) => { socialCopyLink(); },
+    "social-share-invite": (el) => { socialShareInvite(); },
     "import-data": (el) => { startImport(); },
     "dismiss-notice": (el) => { el.remove(); },
     "dismiss-migration-banner": (el) => { dismissMigrationBanner(); },

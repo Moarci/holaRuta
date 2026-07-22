@@ -2308,13 +2308,19 @@ var qrcode = function() {
 
   // text -> skalierbares <svg> (viewBox, ohne feste Pixelmaße; Größe via CSS).
   // ecc: Fehlerkorrektur L/M/Q/H (M = guter Kompromiss). margin in Modulen.
+  // alt: Beschreibung für Screenreader (setzt role="img" + aria-labelledby).
   function svg(text, opts) {
     opts = opts || {};
     try {
       var qr = qrcode(0, opts.ecc || "M"); // 0 = Version automatisch nach Datenlänge
       qr.addData(String(text == null ? "" : text));
       qr.make();
-      return qr.createSvgTag({ cellSize: opts.cellSize || 4, margin: opts.margin == null ? 0 : opts.margin, scalable: true });
+      return qr.createSvgTag({
+        cellSize: opts.cellSize || 4,
+        margin: opts.margin == null ? 0 : opts.margin,
+        scalable: true,
+        alt: opts.alt || null,
+      });
     } catch (e) { return ""; } // im Zweifel kein QR statt kaputtem Blatt
   }
 
