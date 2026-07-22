@@ -113,6 +113,9 @@ function aggregate(events, usage, opts) {
   var platformClients = new Map();     // platform -> Set(clientId)
   var acquisition = new Map();         // src -> distinkte Nutzer (nach erster Quelle)
   var clientFirstOpen = new Map();     // clientId -> { ts, src } (früheste Quelle je Nutzer)
+  var ctaAcq = new Map();              // cta_src -> distinkte Nutzer (welcher Landing-CTA/Abschnitt)
+  var clientCta = new Map();           // clientId -> { ts, cta } (früheste Landing-CTA-Quelle)
+  var variantClients = new Map();      // A/B-Variante -> Set(clientId) (Landing-Experiment)
   // --- Investor-KPIs (alle mit ungeprüften Event-Daten geschlüsselt -> Map/Set) ---
   var eventsPerClient = new Map();     // clientId -> Events gesamt (Interaktionen/Person)
   var activatedClients = new Set();    // clientId mit >=1 session_complete bzw. activation (aktiviert)
@@ -164,6 +167,11 @@ function aggregate(events, usage, opts) {
       case "app_open":
         (p.returning ? openReturning++ : openNew++);
         if (p.src && cid) { var fo = clientFirstOpen.get(cid); if (!fo || ts < fo.ts) clientFirstOpen.set(cid, { ts: ts, src: String(p.src) }); }
+        // CTA-Quelle der Landing (hero/nav/final/footer/…) – früheste je Nutzer, damit
+        // wiederkehrende Opens die Zuordnung nicht verzerren.
+        if (p.cta_src && cid) { var fc = clientCta.get(cid); if (!fc || ts < fc.ts) clientCta.set(cid, { ts: ts, cta: String(p.cta_src) }); }
+        // A/B-Variante der Landing (falls ein Experiment lief) – distinkte Nutzer je Variante.
+        if (p.var && cid) addToSet(variantClients, String(p.var), cid);
         break;
       case "screen_view": if (p.screen) inc(screenCounts, String(p.screen)); break;
       case "action": if (p.action) inc(actionCounts, String(p.action)); break;
@@ -310,6 +318,20 @@ function aggregate(events, usage, opts) {
   // Akquise: distinkte Nutzer nach ihrer ERSTEN Quelle (nicht Opens – sonst würden
   // wiederkehrende „direct"-Starts die Kanäle verzerren).
   clientFirstOpen.forEach(function (fo) { inc(acquisition, fo.src); });
+
+  // CTA-Conversion: distinkte Nutzer nach dem Landing-CTA/Abschnitt, der sie brachte
+  // (hero/nav/final/footer/install/…). Zeigt, welcher Abschnitt Onboarding-Starts liefert.
+  clientCta.forEach(function (fc) { inc(ctaAcq, fc.cta); });
+
+  // A/B-Funnel: je Landing-Variante, wie viele der zugeordneten Nutzer das Onboarding
+  // abgeschlossen haben (Conversion pro Variante). Leer, solange kein Experiment läuft.
+  var variantFunnel = [];
+  variantClients.forEach(function (set, v) {
+    var comp = 0;
+    set.forEach(function (c) { if (onboardComplete.has(c)) comp++; });
+    variantFunnel.push({ variant: v, users: set.size, complete: comp, pct: set.size ? Math.round((comp / set.size) * 100) : 0 });
+  });
+  variantFunnel.sort(function (a, b) { return b.users - a.users || b.complete - a.complete; });
 
   // ======================= INVESTOR-KPIs =======================
   // Bewusst über ALLE Events (evAll), nicht das Fenster: der echte Erst-Kontakt/die
@@ -568,6 +590,8 @@ function aggregate(events, usage, opts) {
       actions: topCounts(actionCounts, 15),
       share: topCounts(shareContentCounts), // aus dem dedizierten share-Event (content)
       acquisition: topCounts(acquisition),
+      ctaSources: topCounts(ctaAcq),   // Landing-CTA/Abschnitt, der Onboarding-Starts brachte
+      variantFunnel: variantFunnel,    // A/B: Onboarding-Conversion je Landing-Variante
     },
     // ------- Investor-Cockpit: AARRR auf einen Blick -------
     investor: {
