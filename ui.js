@@ -671,16 +671,18 @@
             ${brand}
             <h1 class="onboarding__title">${esc(welcomeTitle)}</h1>
             <p class="onboarding__intro">${esc(t("home.onboardWelcomeIntro"))}</p>
-            <form class="trip trip--edit" data-action="onboard-profile-next">
-              <label class="trip__field"><span>${renderIcon("lc:user")} ${esc(t("home.nameCap"))}</span>
-                <input id="onboard-name" type="text" maxlength="40"
-                       autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
-                       placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" /></label>
-              ${genderGroup(vm)}
-              <div class="trip__actions">
-                <button class="cta" type="submit">${esc(t("home.onboardNext"))}</button>
-              </div>
-            </form>
+            <div class="authcard">
+              <form class="trip trip--edit trip--flush" data-action="onboard-profile-next">
+                <label class="trip__field"><span>${renderIcon("lc:user")} ${esc(t("home.nameCap"))}</span>
+                  <input id="onboard-name" type="text" maxlength="40"
+                         autocomplete="given-name" autocapitalize="words" autocorrect="off" spellcheck="false"
+                         placeholder="${esc(t("home.namePlaceholder"))}" value="${esc(vm.userName)}" /></label>
+                ${genderGroup(vm)}
+                <div class="trip__actions">
+                  <button class="cta" type="submit">${esc(t("home.onboardNext"))}</button>
+                </div>
+              </form>
+            </div>
           </div>
         </section>`;
     }
@@ -747,16 +749,18 @@
             ${brand}
             <h1 class="onboarding__title">${esc(t("account.codeTitle"))}</h1>
             <p class="onboarding__intro">${esc(t("account.codeIntro", { email: vm.email }))}</p>
-            <form class="trip trip--edit" data-action="account-code-submit">
-              <label class="trip__field"><span>${renderIcon("lc:key-round")} ${esc(t("account.codeLabel"))}</span>
-                <input id="account-code" type="text" inputmode="numeric" autocomplete="one-time-code"
-                       autocapitalize="off" autocorrect="off" spellcheck="false"
-                       placeholder="${esc(t("account.codePlaceholder"))}" /></label>
-              ${errBox}
-              <div class="trip__actions">
-                <button class="cta" type="submit"${vm.busy ? " disabled" : ""}>${esc(t("account.codeSubmit"))}</button>
-              </div>
-            </form>
+            <div class="authcard">
+              <form class="trip trip--edit trip--flush" data-action="account-code-submit">
+                <label class="trip__field"><span>${renderIcon("lc:key-round")} ${esc(t("account.codeLabel"))}</span>
+                  <input id="account-code" type="text" inputmode="numeric" autocomplete="one-time-code"
+                         autocapitalize="off" autocorrect="off" spellcheck="false"
+                         placeholder="${esc(t("account.codePlaceholder"))}" /></label>
+                ${errBox}
+                <div class="trip__actions">
+                  <button class="cta" type="submit"${vm.busy ? " disabled" : ""}>${esc(t("account.codeSubmit"))}</button>
+                </div>
+              </form>
+            </div>
             <button class="ghostbtn" type="button" data-action="account-back">${esc(t("account.back"))}</button>
           </div>
         </section>`;
@@ -775,17 +779,19 @@
           ${brand}
           <h1 class="onboarding__title">${esc(t("account.title"))}</h1>
           <p class="onboarding__intro">${esc(t("account.intro"))}</p>
-          ${googleBlock}
-          <form class="trip trip--edit" data-action="account-email-submit">
-            <label class="trip__field"><span>${renderIcon("lc:mail")} ${esc(t("account.emailLabel"))}</span>
-              <input id="account-email" type="email" inputmode="email" autocomplete="email"
-                     autocapitalize="off" autocorrect="off" spellcheck="false"
-                     placeholder="${esc(t("account.emailPlaceholder"))}" value="${esc(vm.email)}" /></label>
-            ${errBox}
-            <div class="trip__actions">
-              <button class="cta" type="submit"${vm.busy ? " disabled" : ""}>${esc(t("account.emailSubmit"))}</button>
-            </div>
-          </form>
+          <div class="authcard">
+            ${googleBlock}
+            <form class="trip trip--edit trip--flush" data-action="account-email-submit">
+              <label class="trip__field"><span>${renderIcon("lc:mail")} ${esc(t("account.emailLabel"))}</span>
+                <input id="account-email" type="email" inputmode="email" autocomplete="email"
+                       autocapitalize="off" autocorrect="off" spellcheck="false"
+                       placeholder="${esc(t("account.emailPlaceholder"))}" value="${esc(vm.email)}" /></label>
+              ${errBox}
+              <div class="trip__actions">
+                <button class="cta" type="submit"${vm.busy ? " disabled" : ""}>${esc(t("account.emailSubmit"))}</button>
+              </div>
+            </form>
+          </div>
           <p class="account__legal">${t("account.legal")}</p>
         </div>
       </section>`;
@@ -2101,9 +2107,14 @@
   function migrationBanner() {
     return `
       <div class="migbar" role="status" aria-live="polite">
-        <span class="migbar__text">${esc(t("profile.migrationBannerText"))}</span>
-        <button class="migbar__btn" data-action="export-data">${esc(t("profile.migrationBannerBtn"))}</button>
-        <button class="migbar__close" data-action="dismiss-migration-banner" aria-label="${esc(t("common.cancel"))}">✕</button>
+        <div class="migbar__top">
+          <span class="migbar__text">${esc(t("profile.migrationBannerText"))}</span>
+          <button class="migbar__close" data-action="dismiss-migration-banner" aria-label="${esc(t("common.cancel"))}">✕</button>
+        </div>
+        <div class="migbar__actions">
+          <a class="migbar__link" href="https://holaruta.com" rel="noopener">${renderIcon("lc:map-pin")} <span>${esc(t("profile.migrationBannerUrl"))}</span></a>
+          <button class="migbar__btn" data-action="export-data">${esc(t("profile.migrationBannerBtn"))}</button>
+        </div>
       </div>`;
   }
 
