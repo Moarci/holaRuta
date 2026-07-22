@@ -1785,7 +1785,30 @@
       render();
       return;
     }
-    const redirect = (typeof location !== "undefined" ? location.origin : "") + "/auth-callback.html";
+    // CSRF-Schutz gegen Login-CSRF/Account-Fixation: einen zufälligen `state`
+    // erzeugen, im sessionStorage des STARTENDEN Browsers ablegen und über
+    // redirectTo durch den OAuth-Roundtrip echoen. auth-callback.html tauscht das
+    // zurückkommende Token NUR ein, wenn der mitgeschickte `state` exakt dem
+    // gespeicherten entspricht. Ein untergeschobenes fremdes Token (Angreifer-Link)
+    // trägt einen fremden `state`, für den das Opfer keinen sessionStorage-Eintrag
+    // hat -> abgewiesen. Der Wert verlässt den Browser nur über Google/Supabase und
+    // kommt in denselben Browser zurück (sessionStorage überlebt die Navigation).
+    var st = "";
+    try {
+      var buf = new Uint8Array(16);
+      if (window.crypto && window.crypto.getRandomValues) {
+        window.crypto.getRandomValues(buf);
+        st = Array.prototype.map.call(buf, function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+        window.sessionStorage.setItem("spanischcard.oauthstate.v1", st);
+      }
+    } catch (e) { st = ""; }
+    if (!st) { // Ohne sichere Zufallsquelle NICHT ungeschützt weiterleiten (fail closed).
+      state.account = Object.assign({}, state.account, { error: t("account.emailFailed") });
+      render();
+      return;
+    }
+    var origin = (typeof location !== "undefined" ? location.origin : "");
+    var redirect = origin + "/auth-callback.html?s=" + encodeURIComponent(st);
     window.SC.net.googleStart(accountApiBase(), redirect);
   }
 

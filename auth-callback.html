@@ -46,13 +46,24 @@
         // Ohne Zutun nach kurzer Zeit zurück zur App (dort greift das Login-Gate erneut).
         setTimeout(function () { try { window.location.replace("/"); } catch (e) {} }, 2500);
       }
-      // Fragment nach access_token / error parsen (Implicit-Flow von Supabase).
-      var frag = (window.location.hash || "").replace(/^#/, "");
-      var params = new URLSearchParams(frag);
-      if (!frag && window.location.search) params = new URLSearchParams(window.location.search.replace(/^\?/, ""));
-      if (params.get("error")) { fail("Anmeldung abgebrochen."); return; }
-      var token = params.get("access_token");
+      // Token AUSSCHLIESSLICH aus dem URL-Fragment lesen (Implicit-Flow von Supabase).
+      // Bewusst KEIN Query-String-Fallback: ein Token im Query landet leichter in
+      // Server-Logs/Browser-History und würde Hijack-Links erleichtern.
+      var frag = new URLSearchParams((window.location.hash || "").replace(/^#/, ""));
+      if (frag.get("error")) { fail("Anmeldung abgebrochen."); return; }
+      var token = frag.get("access_token");
+      // CSRF-Schutz (Login-CSRF/Account-Fixation): der über den Query-String
+      // zurückgegebene `state` muss exakt dem beim Start im sessionStorage
+      // hinterlegten Wert entsprechen (Bindung an den startenden Browser). Einmalig
+      // -> sofort löschen. Fehlt/mismatcht er, wird NICHT eingetauscht (fail closed):
+      // ein untergeschobenes fremdes Token hat hier keinen passenden state.
+      var qs = new URLSearchParams((window.location.search || "").replace(/^\?/, ""));
+      var got = qs.get("s") || "";
+      var want = "";
+      try { want = window.sessionStorage.getItem("spanischcard.oauthstate.v1") || ""; } catch (e) {}
+      try { window.sessionStorage.removeItem("spanischcard.oauthstate.v1"); } catch (e) {}
       if (!token || !(window.SC && window.SC.net && window.SC.net.googleConfirm)) { fail(); return; }
+      if (!want || !got || got !== want) { fail("Sicherheitsprüfung fehlgeschlagen — bitte erneut anmelden."); return; }
       window.SC.net.googleConfirm(origin, token).then(function () {
         // Token liegt jetzt in localStorage (spanischcard.synctoken.v1) -> App startet eingeloggt.
         try { window.location.replace("/"); } catch (e) { window.location.href = "/"; }
