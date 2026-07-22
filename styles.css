@@ -742,6 +742,31 @@ body {
 }
 .navrow__chev { flex: none; color: var(--muted); font-size: 1.2rem; font-weight: 700; }
 
+/* Profil: die Sprungziel-Liste ist EINE Einheit – Zeilen enger gestaffelt als der
+   18px-Screen-Gap, damit sie als zusammengehörige Navigation liest, nicht als lose
+   Einzelkarten. .profnav/.proffoot sind selbst direkte .screen-Kinder (18px Luft). */
+.profnav { display: flex; flex-direction: column; gap: 10px; }
+/* Profil-Fuß: Über/Partner/Installieren stehen dezent abgesetzt und gedämpft, damit
+   sie nicht dasselbe Gewicht tragen wie die eigentlichen Sprungziele darüber. */
+.proffoot { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.navrow--quiet {
+  box-shadow: none; background: transparent; font-weight: 600; color: var(--ink-soft);
+  border-color: color-mix(in srgb, var(--line) 60%, transparent);
+}
+.navrow--quiet .navrow__icon { color: var(--muted); }
+
+/* Test-Karten (Ruta-Check / Nivel-Test): Detail-, Rückblick- und Verlaufsblöcke
+   liegen jetzt hinter einem Aufklapper, damit die Karte im Profil kompakt bleibt
+   (Level + Score + Wiederholen sofort sichtbar). */
+.plprof__more { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 2px; }
+.plprof__moresum {
+  cursor: pointer; list-style: none; padding: 4px 0;
+  font-size: 0.82rem; font-weight: 800; letter-spacing: 0.02em; color: var(--brand-ink);
+}
+.plprof__moresum::-webkit-details-marker { display: none; }
+.plprof__moresum::before { content: "▸ "; }
+details[open] > .plprof__moresum::before { content: "▾ "; }
+
 /* „Auf den Startbildschirm"-Hinweis: dezent abgesetzte Karte unter den Zeilen.
    Erscheint nur, wenn eine Installation möglich und die App noch nicht installiert
    ist (siehe install.js). */

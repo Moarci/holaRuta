@@ -121,15 +121,17 @@ test("study-all startet die Lernrunde (Study-Screen erscheint)", () => {
 });
 
 test("set-mode WIRKT: der im Profil gewählte Modus bestimmt die Study-UI", () => {
-  // Der Modus-Wähler liegt im PROFIL-Tab (Einstellungen → learnPrefs). Wir wählen
-  // dort den Modus, gehen auf Start und starten die Runde. Der Study-Screen muss
-  // dem gewählten Modus FOLGEN: type → Eingabefeld (#answer/#typer) und KEIN
-  // Flip-Knopf; flip → Aufdeck-Knopf. Ein toter set-mode-Handler fällt damit auf
-  // (Mutationstest), weil der gewählte Modus sich nicht in der Study-UI zeigt.
+  // Der Modus-Wähler liegt im Einstellungen-Screen (Profil → open-settings →
+  // learnPrefs). Wir öffnen ihn, wählen den Modus, gehen auf Start und starten die
+  // Runde. Der Study-Screen muss dem gewählten Modus FOLGEN: type → Eingabefeld
+  // (#answer/#typer) und KEIN Flip-Knopf; flip → Aufdeck-Knopf. Ein toter
+  // set-mode-Handler fällt damit auf (Mutationstest), weil der gewählte Modus sich
+  // nicht in der Study-UI zeigt.
   {
     const d = makeDriver(freshApp());
     d.setTab("profil");
-    assert.ok(d.find("set-mode", { mode: "type" }), "Modus-Wähler (set-mode) liegt im Profil");
+    assert.ok(d.click("open-settings"), "open-settings öffnet den Einstellungen-Screen");
+    assert.ok(d.find("set-mode", { mode: "type" }), "Modus-Wähler (set-mode) liegt in den Einstellungen");
     assert.ok(d.click("set-mode", { mode: "type" }), "set-mode type klickbar");
     d.setTab("start");
     assert.ok(d.click("study-all"), "Runde startbar");
@@ -139,6 +141,7 @@ test("set-mode WIRKT: der im Profil gewählte Modus bestimmt die Study-UI", () =
   {
     const d = makeDriver(freshApp());
     d.setTab("profil");
+    assert.ok(d.click("open-settings"), "open-settings öffnet den Einstellungen-Screen");
     assert.ok(d.click("set-mode", { mode: "flip" }), "set-mode flip klickbar");
     d.setTab("start");
     assert.ok(d.click("study-all"), "Runde startbar");
@@ -147,6 +150,7 @@ test("set-mode WIRKT: der im Profil gewählte Modus bestimmt die Study-UI", () =
   // listen ist TTS-abhängig (im Stub ggf. nicht angeboten): nur Robustheit prüfen.
   const dl = makeDriver(freshApp());
   dl.setTab("profil");
+  dl.click("open-settings");
   if (dl.find("set-mode", { mode: "listen" })) {
     assert.ok(dl.click("set-mode", { mode: "listen" }), "set-mode listen klickbar");
     dl.setTab("start");
@@ -263,6 +267,8 @@ const OPENERS = {
   "open-stats": "profil",
   "open-badges": "profil",
   "open-editor": "profil",
+  "open-settings": "profil",
+  "open-reise": "profil",
 };
 
 test("alle erreichbaren Screens rendern ohne Throw und mit Inhalt", () => {

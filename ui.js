@@ -1370,9 +1370,12 @@
             ${l.at ? `<p class="plprof__date">${esc(t("placement.profileLastAt", { date: l.at }))} · ${esc(t("placement.profileAttempts", { n: p.attempts }))}</p>` : ""}
           </div>
         </div>
-        ${resultDetailBlocks("placement", l)}
-        ${reviewBox("placement", l.review)}
-        ${historyList("placement", p.history)}
+        <details class="plprof__more">
+          <summary class="plprof__moresum">${esc(t("profile.showDetails"))}</summary>
+          ${resultDetailBlocks("placement", l)}
+          ${reviewBox("placement", l.review)}
+          ${historyList("placement", p.history)}
+        </details>
         ${shareBlock(shareFmt, "share-placement", t("placement.share"))}
         <div class="plprof__actions">
           <button class="ghostbtn" data-action="open-placement">${renderIcon("lc:rotate-ccw")} ${esc(t("placement.retake"))}</button>
@@ -1408,9 +1411,12 @@
             ${l.at ? `<p class="plprof__date">${esc(t("assessment.profileLastAt", { date: l.at }))} · ${esc(t("assessment.profileAttempts", { n: p.attempts }))}</p>` : ""}
           </div>
         </div>
-        ${resultDetailBlocks("assessment", l)}
-        ${reviewBox("assessment", l.review)}
-        ${historyList("assessment", p.history)}
+        <details class="plprof__more">
+          <summary class="plprof__moresum">${esc(t("profile.showDetails"))}</summary>
+          ${resultDetailBlocks("assessment", l)}
+          ${reviewBox("assessment", l.review)}
+          ${historyList("assessment", p.history)}
+        </details>
         ${shareBlock(shareFmt, "share-assessment", t("assessment.share"))}
         <div class="plprof__actions">
           <button class="ghostbtn" data-action="open-assessment">${renderIcon("lc:rotate-ccw")} ${esc(t("assessment.retake"))}</button>
@@ -1426,9 +1432,56 @@
         ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
         <span class="navrow__chev" aria-hidden="true">›</span>
       </button>`;
-    // Lern-Einstellungen: Bediensprache (de/en) plus die Lern-Voreinstellungen
-    // (Modus/Richtung/Stufen/Tempo). Alles globale Vorgaben, daher gebündelt hier
-    // im Profil – das Dashboard zeigt davon nur noch die Zusammenfassung.
+    // Das Profil ist ein reiner ÜBERBLICK: die Fortschritts-Karte oben, darunter die
+    // (kompakten) Test-Ergebnisse und eine schlanke Liste von Sprungzielen. Alles zum
+    // Einstellen (Modus/Sprache/Name …) lebt jetzt im eigenen Einstellungen-Screen
+    // (renderSettings), die Reiseplanung im Reise-Screen (renderReise). So bleibt das
+    // Profil scannbar statt überladen. Über/Partner/Installieren stehen dezent im Fuß.
+    return `
+      ${pagehead(esc(t("profile.progressTitle")))}
+
+      ${progressCard(vm)}
+
+      ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
+      ${vm.hasAssessment ? assessmentCard(vm.assessment, vm.shareFormat) : ""}
+
+      <nav class="profnav" aria-label="${esc(t("profile.progressTitle"))}">
+        ${navrow("open-stats", "lc:bar-chart-3", t("profile.statistics"))}
+        ${vm.hasBadges ? navrow("open-badges", "lc:award", t("profile.rutaPass"), vm.badgeCount || "") : ""}
+        ${navrow("open-favorites", "lc:star", t("profile.favorites"), vm.favCount || "")}
+        ${navrow("open-editor", "lc:square-pen", t("profile.ownCards"))}
+        ${vm.socialEnabled ? navrow("open-social", "lc:trophy", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
+        ${vm.showTrip === false ? "" : navrow("open-reise", "lc:target", t("profile.myTrip"))}
+        ${navrow("open-settings", "lc:settings", t("profile.settings"))}
+      </nav>
+
+      <div class="proffoot">
+        <a class="navrow navrow--quiet" href="landing.html" style="text-decoration:none" aria-label="${esc(t("profile.about"))}">
+          <span class="navrow__icon" aria-hidden="true">${renderIcon("lc:info")}</span>
+          <span class="navrow__label">${esc(t("profile.about"))}</span>
+          <span class="navrow__chev" aria-hidden="true">›</span>
+        </a>
+        <a class="navrow navrow--quiet" href="landing.html#partner" style="text-decoration:none" aria-label="${esc(t("profile.partner"))}">
+          <span class="navrow__icon" aria-hidden="true">${renderIcon("lc:handshake")}</span>
+          <span class="navrow__label">${esc(t("profile.partner"))}</span>
+          <span class="navrow__chev" aria-hidden="true">›</span>
+        </a>
+        ${installBlock(vm.install)}
+        ${editionCredit(vm.edition)}
+      </div>`;
+  }
+
+  // Einstellungen-Screen: alles zum EINSTELLEN, gebündelt hinter einer Nav-Zeile im
+  // Profil. Vorher lag das (6 Gruppen + Daten-Block) offen im Profil und machte es
+  // überladen. Zurück-Knopf führt auf den zuletzt aktiven Reiter (i. d. R. Profil).
+  function renderSettings(vm) {
+    const navrow = (action, icon, label, chip) => `
+      <button class="navrow" data-action="${action}">
+        <span class="navrow__icon" aria-hidden="true">${renderIcon(icon)}</span>
+        <span class="navrow__label">${esc(label)}</span>
+        ${chip ? `<span class="navrow__chip">${chip}</span>` : ""}
+        <span class="navrow__chev" aria-hidden="true">›</span>
+      </button>`;
     // Reise-Name: wird in den Diálogos automatisch eingesetzt (Hotel, Notfall …),
     // damit der Nutzer dort seinen eigenen Namen nennt statt eines Beispielnamens.
     // Eigenes <form>, damit Enter speichert; zusätzlich sichert ein Blur den Stand
@@ -1454,53 +1507,45 @@
         </div>
       </div>`;
     return `
-      ${pagehead(esc(t("profile.progressTitle")))}
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">${renderIcon("lc:settings")} ${esc(t("profile.settings"))}</div>
+          <span></span>
+        </div>
+        <div class="prefs">
+          ${themeSetting(vm)}
+          ${nameGroup}
+          ${genderGroup(vm)}
+          ${langGroup}
+          ${learnPrefs(vm)}
+          ${celebrateSoundGroup(vm)}
+        </div>
 
-      ${progressCard(vm)}
+        <p class="sectioncap">${esc(t("profile.yourData"))}</p>
+        ${navrow("export-data", "lc:upload", t("profile.exportData"))}
+        ${navrow("import-data", "lc:download", t("profile.importData"))}
+        ${vm.syncEnabled ? navrow("cloud-sync", "lc:cloud", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
+        ${analyticsConsentGroup(vm)}
+        <input type="file" id="import-file" accept=".json,application/json" hidden />
+      </section>`;
+  }
 
-      ${vm.showTrip === false ? "" : `<p class="sectioncap">${renderIcon("lc:target")} ${esc(t("home.tripCap"))}</p>
-      ${tripManage(vm)}`}
-
-      ${vm.hasPlacement ? placementCard(vm.placement, vm.shareFormat) : ""}
-      ${vm.hasAssessment ? assessmentCard(vm.assessment, vm.shareFormat) : ""}
-
-      <p class="sectioncap">${renderIcon("lc:settings")} ${esc(t("home.settingsCap"))}</p>
-      <div class="prefs">
-        ${themeSetting(vm)}
-        ${nameGroup}
-        ${genderGroup(vm)}
-        ${langGroup}
-        ${learnPrefs(vm)}
-        ${celebrateSoundGroup(vm)}
-      </div>
-
-      ${navrow("open-stats", "lc:bar-chart-3", t("profile.statistics"))}
-      ${vm.hasBadges ? navrow("open-badges", "lc:award", t("profile.rutaPass"), vm.badgeCount || "") : ""}
-      ${navrow("open-favorites", "lc:star", t("profile.favorites"), vm.favCount || "")}
-      ${navrow("open-editor", "lc:square-pen", t("profile.ownCards"))}
-
-      <p class="sectioncap">${esc(t("profile.yourData"))}</p>
-      ${navrow("export-data", "lc:upload", t("profile.exportData"))}
-      ${navrow("import-data", "lc:download", t("profile.importData"))}
-      ${vm.syncEnabled ? navrow("cloud-sync", "lc:cloud", t("profile.cloudSync"), vm.syncLoggedIn ? "✓" : "") : ""}
-      ${vm.socialEnabled ? navrow("open-social", "lc:trophy", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
-      ${analyticsConsentGroup(vm)}
-      <input type="file" id="import-file" accept=".json,application/json" hidden />
-
-      <a class="navrow" href="landing.html" style="text-decoration:none" aria-label="${esc(t("profile.about"))}">
-        <span class="navrow__icon" aria-hidden="true">${renderIcon("lc:info")}</span>
-        <span class="navrow__label">${esc(t("profile.about"))}</span>
-        <span class="navrow__chev" aria-hidden="true">›</span>
-      </a>
-
-      <a class="navrow" href="landing.html#partner" style="text-decoration:none" aria-label="${esc(t("profile.partner"))}">
-        <span class="navrow__icon" aria-hidden="true">${renderIcon("lc:handshake")}</span>
-        <span class="navrow__label">${esc(t("profile.partner"))}</span>
-        <span class="navrow__chev" aria-hidden="true">›</span>
-      </a>
-
-      ${installBlock(vm.install)}
-      ${editionCredit(vm.edition)}`;
+  // Reise-Screen: die komplette Reiseplanung (Countdown, Route-Zeitleiste per
+  // Drag&Drop, Prognose, Länderwechsel). Vorher lag der dichte Block mitten im
+  // Profil – jetzt hat er eine eigene Bühne, erreichbar über die Profil-Nav ODER
+  // den Tap auf die Reise-Karte im Dashboard (openTripManage). Das Drag&Drop wird
+  // in app.js delegiert an root verdrahtet und funktioniert screen-unabhängig.
+  function renderReise(vm) {
+    return `
+      <section class="screen">
+        <div class="topbar">
+          <button class="iconbtn" data-action="home" aria-label="${esc(t("common.backShort"))}">‹</button>
+          <div class="topbar__title">${renderIcon("lc:target")} ${esc(t("profile.myTrip"))}</div>
+          <span></span>
+        </div>
+        ${tripManage(vm)}
+      </section>`;
   }
 
   // Dezenter Co-Branding-Hinweis im Profil (nur in einer Edition sichtbar).
@@ -4433,7 +4478,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderAccount, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSettings, renderReise, renderSearch, searchResults, renderOnboarding, renderAccount, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner, migrationBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,

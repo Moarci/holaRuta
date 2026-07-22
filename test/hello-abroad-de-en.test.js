@@ -177,6 +177,8 @@ function settingsHtml(edition) {
   const d = makeDriver(root);
   if (!d.click("home")) d.click("set-tab", { tab: "start" });
   d.click("set-tab", { tab: "profil" });
+  // Die Geschlechts-Auswahl lebt seit dem Profil-Umbau im Einstellungen-Screen.
+  d.click("open-settings");
   return d.html();
 }
 
