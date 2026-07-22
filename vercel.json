@@ -3,7 +3,7 @@
   "buildCommand": "node build.js --dist --edition=launch && node build.js && cp HolaRuta.html dist/HolaRuta.html",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/v1/:path*", "destination": "/api/v1/:path*" }
+    { "source": "/v1/:path*", "destination": "/api/v1?path=:path*" }
   ],
   "crons": [
     { "path": "/api/cron/purge-events", "schedule": "0 3 * * *" }
