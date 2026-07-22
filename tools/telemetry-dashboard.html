@@ -305,6 +305,110 @@
   footer code { background:var(--sunken); padding:1px 6px; border-radius:6px; }
   hr.sec-sep { border:none; border-top:1.5px solid var(--line); margin:32px 0; }
 
+  /* ---- Bereichs-Navigation (sticky) -------------------------------------- */
+  /* Ein Cockpit mit ~30 Panels braucht eine Karte: die Subnav benennt die acht
+     Bereiche und zeigt per Scrollspy, wo man gerade ist. */
+  .subnav {
+    position:sticky; top:0; z-index:50;
+    background:color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    border-bottom:1.5px solid var(--line);
+  }
+  .subnav__wrap {
+    max-width:var(--maxw-admin); margin:0 auto; padding:8px 24px;
+    display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;
+  }
+  .subnav__wrap::-webkit-scrollbar { display:none; }
+  .subnav a {
+    flex:none; text-decoration:none; font-size:12px; font-weight:700;
+    color:var(--ink-soft); border:1.5px solid transparent; border-radius:999px;
+    padding:6px 12px; white-space:nowrap;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .subnav a:hover { color:var(--brand-ink); border-color:var(--line-strong); }
+  .subnav a[aria-current="true"] {
+    background:color-mix(in srgb, var(--brand) 12%, transparent);
+    border-color:color-mix(in srgb, var(--brand) 45%, transparent);
+    color:var(--brand-ink);
+  }
+
+  /* ---- Bereiche mit Beschreibung ----------------------------------------- */
+  /* scroll-margin: sonst verschwindet die Überschrift beim Anker-Sprung unter
+     der sticky Subnav. */
+  section.zone { scroll-margin-top:64px; }
+  .zone__head { margin:36px 0 6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .zone__head h2 { font-family:var(--font-display); font-size:20px; font-weight:800; letter-spacing:-0.02em; margin:0; }
+  .zone__head .znum {
+    font-family:var(--font-display); font-size:13px; font-weight:800;
+    color:var(--on-accent); background:var(--brand); border-radius:999px;
+    width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center;
+    flex:none; transform:translateY(-2px);
+  }
+  .zone__head small { font-family:var(--font); font-size:13px; font-weight:400; color:var(--muted); }
+  /* Die Leitfrage + Lesehilfe je Bereich: max 74ch, damit die Zeile lesbar bleibt. */
+  .zone__desc { color:var(--ink-soft); font-size:13px; margin:0 0 14px; max-width:74ch; }
+  .zone__desc b { color:var(--ink); }
+  section.zone:first-of-type .zone__head { margin-top:8px; }
+
+  /* Kurze Lesehilfe direkt unter der Panel-Überschrift. */
+  .panel__desc { color:var(--muted); font-size:12px; margin:-6px 0 12px; max-width:70ch; }
+  .panel__foot { margin-top:10px; font-size:11px; color:var(--muted); }
+
+  /* ---- Donut + Legende ---------------------------------------------------- */
+  .donutwrap { display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+  .donutwrap svg { flex:none; }
+  .donut__c { font-family:var(--font-display); font-weight:800; font-size:26px; fill:var(--ink); }
+  .donut__cl { font-size:10px; fill:var(--muted); }
+  .legend { display:flex; flex-direction:column; gap:6px; min-width:150px; flex:1; }
+  .legend__i { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft); }
+  .legend__i .sw { width:12px; height:12px; border-radius:4px; flex:none; }
+  .legend__i .k { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .legend__i .n { margin-left:auto; font-weight:700; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .legend__i .p { width:52px; text-align:right; font-variant-numeric:tabular-nums; color:var(--muted); font-size:12px; }
+
+  /* ---- Klartext-Zusammenfassung ------------------------------------------ */
+  .digest {
+    background:var(--cream); border:1.5px solid var(--line); border-radius:var(--r-lg);
+    padding:16px 20px; margin-bottom:16px; box-shadow:var(--shadow);
+    font-size:13px; color:var(--ink-soft); max-width:none;
+  }
+  [data-theme="dark"] .digest { background:var(--card); }
+  .digest b { color:var(--ink); }
+  .digest .dt { font-weight:800; color:var(--brand-ink); margin-right:6px; }
+
+  /* ---- Glossar ------------------------------------------------------------ */
+  details.gloss {
+    background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-md);
+    padding:12px 16px; margin:0 0 16px; font-size:13px; color:var(--ink-soft);
+  }
+  details.gloss summary { cursor:pointer; font-weight:800; color:var(--ink); }
+  details.gloss dl { margin:10px 0 0; display:grid; grid-template-columns:auto 1fr; gap:6px 14px; }
+  details.gloss dt { font-weight:700; color:var(--brand-ink); white-space:nowrap; }
+  details.gloss dd { margin:0; max-width:70ch; }
+  @media (max-width:640px){ details.gloss dl { grid-template-columns:1fr; gap:2px; } details.gloss dd { margin-bottom:8px; } }
+
+  /* ---- Diagramm-Tooltip (eine Instanz, per Delegation gefüllt) ------------ */
+  .tip {
+    position:fixed; z-index:200; pointer-events:none;
+    background:var(--ink); color:var(--surface);
+    font-size:12px; font-weight:700; font-variant-numeric:tabular-nums;
+    padding:6px 10px; border-radius:8px; box-shadow:var(--shadow-lg);
+    max-width:260px; opacity:0; transition:opacity .1s ease;
+  }
+  .tip.on { opacity:1; }
+  [data-tip]:hover { filter:brightness(1.12); cursor:default; }
+
+  /* ---- Druck / PDF-Export -------------------------------------------------- */
+  /* Der Drucken-Button macht aus dem Cockpit ein Data-Room-taugliches PDF:
+     Bedienelemente raus, Panels nicht über Seitengrenzen brechen. */
+  @media print {
+    .subnav, .tools, .skip, .tip { display:none !important; }
+    body { background:#fff; }
+    .panel, .hero, .kpi, .digest { box-shadow:none; break-inside:avoid; }
+    section.zone { break-before:auto; }
+    a { text-decoration:none; color:inherit; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important; }
   }
@@ -332,12 +436,16 @@
       <button type="button" id="exp-json" title="Statistik als JSON herunterladen">JSON</button>
       <button type="button" id="exp-csv" title="Tagesreihe als CSV herunterladen">CSV</button>
       <button type="button" id="exp-kpicsv" title="Investor-KPIs als CSV (Data-Room / Pitch-Deck)">KPI-CSV</button>
+      <button type="button" id="print" title="Druckansicht (PDF für Data-Room)">Drucken</button>
       <button type="button" id="refresh">Aktualisieren</button>
       <button type="button" id="theme" title="Hell/Dunkel umschalten" aria-label="Hell/Dunkel umschalten">◐</button>
       <button type="button" id="logout" title="Token aus diesem Browser entfernen">Abmelden</button>
     </span>
   </div>
 </header>
+<!-- Bereichs-Navigation: wird von render() gefüllt (die Bereiche stehen als
+     SECTIONS-Registry im reinen Skriptteil) und bleibt bis dahin versteckt. -->
+<nav class="subnav" id="subnav" aria-label="Bereiche" hidden><div class="subnav__wrap" id="subnavwrap"></div></nav>
 <p id="live" class="sr" role="status" aria-live="polite"></p>
 <main id="app" tabindex="-1"><p class="empty">Lade …</p></main>
 <footer id="foot" hidden>
@@ -434,14 +542,28 @@ function spark(series, opts){
     + '</svg>';
 }
 
+// Achsen-Deckenwert: rundet auf eine "schöne" Zahl auf (1/2/4/5/10 × 10^n),
+// damit oben an der y-Achse "50" steht statt "47" — und der Mittel-Tick eine
+// halbwegs lesbare Hälfte hat (25 statt 23,5).
+function niceMax(v){
+  v = Number(v) || 0;
+  if(v <= 0) return 1;
+  var p = Math.pow(10, Math.floor(Math.log10(v)));
+  var m = v / p;
+  var f = m <= 1 ? 1 : m <= 2 ? 2 : m <= 4 ? 4 : m <= 5 ? 5 : 10;
+  return f * p;
+}
+
 // Rahmen für Zeitreihen: Achsenbeschriftung liegt als HTML AUSSERHALB des SVG.
 // Grund: das Plot-SVG wird mit preserveAspectRatio="none" auf die Panelbreite
 // gezogen; SVG-<text> darin würde mitverzerrt (auf dem Handy zu ~3px-Glyphen
 // zusammengequetscht). HTML-Labels bleiben in jeder Breite lesbar.
+// Drei y-Ticks (max/Hälfte/0) statt zwei: erst der Mittelwert macht ablesbar,
+// ob ein Punkt "knapp unter Spitze" oder "gut die Hälfte" ist.
 function chartFrame(plotSvg, max, labels, legend, summary){
   return '<div class="chart">'
     + (summary? '<p class="sr">'+esc(summary)+'</p>' : '')
-    + '<div class="chart__y" aria-hidden="true"><span>'+esc(fmtN(max))+'</span><span>0</span></div>'
+    + '<div class="chart__y" aria-hidden="true"><span>'+esc(fmtN(max))+'</span><span>'+esc(fmtN(max/2))+'</span><span>0</span></div>'
     + '<div class="chart__plot">'+plotSvg+'</div>'
     + '<div class="chart__x" aria-hidden="true">'+labels.map(function(l){ return '<span>'+esc(l)+'</span>'; }).join("")+'</div>'
     + (legend? '<div class="chart__legend">'+legend+'</div>' : '')
@@ -454,13 +576,24 @@ function xLabels(series, fn){
   if(n===2) return [f(series[0]), f(series[1])];
   return [f(series[0]), f(series[Math.floor(n/2)]), f(series[n-1])];
 }
+// Gitterlinien auf halber und voller Höhe der Skala — als eigene Ebene UNTER
+// den Daten. vector-effect hält die Strichstärke trotz preserveAspectRatio:none.
+function gridLines(W, ys, max){
+  return [max, max/2].map(function(v){
+    var y = ys(v).toFixed(1);
+    return '<line x1="0" y1="'+y+'" x2="'+W+'" y2="'+y+'" stroke="var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+  }).join("");
+}
 
 // Zeitreihe als Fläche+Linie mit optionalem gleitendem Mittel.
+// Punkte tragen data-tip (Datum · Wert) für den delegierten HTML-Tooltip —
+// <title> im aria-hidden-SVG wäre für niemanden erreichbar und auf Touch stumm.
 function lineChart(series, opts){
   opts = opts || {};
   if(!series || !series.length) return empty("Keine Zeitreihe", "entsteht mit dem ersten app_open");
   var W=1000, H=200, color = opts.color || "var(--brand)";
-  var max = series.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var raw = series.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var max = niceMax(raw);
   var n = series.length;
   var xs = function(i){ return n<2?0:(i/(n-1))*W; };
   var ys = function(v){ return H - ((v||0)/max)*(H-8) - 4; };
@@ -472,8 +605,15 @@ function lineChart(series, opts){
     for(var i=0;i<n;i++){ if(i < w-1) continue; var sum=0; for(var j=i-w+1;j<=i;j++) sum+=series[j].count||0; mapts.push(xs(i).toFixed(1)+","+ys(sum/w).toFixed(1)); }
     maLine = '<polyline points="'+mapts.join(" ")+'" fill="none" stroke="var(--warn)" stroke-width="2" vector-effect="non-scaling-stroke"/>';
   }
-  var dots = series.map(function(d,i){ return '<circle cx="'+xs(i).toFixed(1)+'" cy="'+ys(d.count).toFixed(1)+'" r="2" fill="'+color+'" vector-effect="non-scaling-stroke"><title>'+esc(d.day)+': '+esc(fmtN(d.count||0))+'</title></circle>'; }).join("");
+  // r=6 unsichtbar-großzügig als Trefferfläche, der sichtbare Punkt ist r=2:
+  // auf 2px-Ziele trifft am Handy niemand.
+  var dots = series.map(function(d,i){
+    var tip = esc(d.day)+" · "+esc(fmtN(d.count||0))+(opts.unit?esc(opts.unit):"");
+    return '<circle cx="'+xs(i).toFixed(1)+'" cy="'+ys(d.count).toFixed(1)+'" r="2" fill="'+color+'" vector-effect="non-scaling-stroke"/>'
+      + '<circle cx="'+xs(i).toFixed(1)+'" cy="'+ys(d.count).toFixed(1)+'" r="6" fill="transparent" vector-effect="non-scaling-stroke" data-tip="'+tip+'"/>';
+  }).join("");
   var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+    + gridLines(W, ys, max)
     + '<path d="'+area+'" fill="'+color+'" opacity="0.14"/>'
     + '<polyline points="'+pts.join(" ")+'" fill="none" stroke="'+color+'" stroke-width="1.8" vector-effect="non-scaling-stroke"/>'
     + maLine + dots + '</svg>';
@@ -488,17 +628,149 @@ function vbars(series, opts){
   opts = opts || {};
   if(!series || !series.length) return empty("Keine Daten", opts.emptyWhy||"");
   var W=1000, H=200;
-  var max = series.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var raw = series.reduce(function(m,d){ return Math.max(m, d.count||0); }, 0) || 1;
+  var max = niceMax(raw);
   var n = series.length, gap = n>60?0.5:2;
   var bw = W/n - gap;
   var color = opts.color || "var(--easy)";
+  var ys = function(v){ return H - ((v||0)/max)*(H-4); };
   var bars = series.map(function(d,i){
     var h = Math.round(((d.count||0)/max)*(H-4));
     var x = i*(W/n);
-    return '<rect x="'+x.toFixed(1)+'" y="'+(H-h)+'" width="'+Math.max(1,bw).toFixed(1)+'" height="'+h+'" rx="1.5" style="fill:'+color+'"><title>'+esc(d.day)+': '+esc(fmtN(d.count||0))+'</title></rect>';
+    var tip = esc(opts.xlabel? opts.xlabel(d) : d.day)+" · "+esc(fmtN(d.count||0));
+    return '<rect x="'+x.toFixed(1)+'" y="'+(H-h)+'" width="'+Math.max(1,bw).toFixed(1)+'" height="'+h+'" rx="1.5" style="fill:'+color+'" data-tip="'+tip+'"/>';
   }).join("");
-  var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true" focusable="false">'+bars+'</svg>';
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+    + gridLines(W, ys, max) + bars + '</svg>';
   return chartFrame(svg, max, xLabels(series, opts.xlabel), "", seriesSummary(series, opts.unit));
+}
+
+// Donut für Anteils-Fragen (Plattform, Edition): bei 2–6 Kategorien liest sich
+// "wie verteilt sich das Ganze?" als Kreis schneller als als Balkenliste.
+// Ab der 7. Kategorie wird zu "Andere" zusammengefasst — mehr Segmente kann
+// niemand mehr einer Legende zuordnen. Anteile stehen als TEXT in der Legende
+// und als sr-Absatz; der Kreis ist nur der zweite Kanal.
+var DONUT_COLORS = ["var(--brand)","var(--easy)","var(--ok)","var(--warn)","var(--no)","var(--brand-ink)"];
+function donut(data, opts){
+  opts = opts || {};
+  data = (data||[]).filter(function(d){ return (d.count||0) > 0; });
+  if(!data.length) return empty(opts.emptyWhat||"Keine Daten", opts.emptyWhy||"");
+  var sorted = data.slice().sort(function(a,b){ return (b.count||0)-(a.count||0); });
+  var main = sorted.slice(0, 5), rest = sorted.slice(5);
+  if(rest.length === 1) main = sorted.slice(0, 6);
+  else if(rest.length) main.push({ label:"Andere ("+rest.length+")", count:rest.reduce(function(s,d){ return s+(d.count||0); },0) });
+  var total = main.reduce(function(s,d){ return s+(d.count||0); }, 0) || 1;
+  var R=48, CX=60, CY=60, C=2*Math.PI*R;
+  var off = 0;
+  var slices = main.map(function(d,i){
+    var frac = (d.count||0)/total;
+    var len = frac*C;
+    var s = '<circle cx="'+CX+'" cy="'+CY+'" r="'+R+'" fill="none" stroke="'+DONUT_COLORS[i%DONUT_COLORS.length]+'" stroke-width="22" '
+      + 'stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+CX+' '+CY+')"/>';
+    off += len;
+    return s;
+  }).join("");
+  var legend = main.map(function(d,i){
+    var label = d.label!=null?d.label:d.key;
+    var p = Math.round(((d.count||0)/total)*100);
+    return '<div class="legend__i"><span class="sw" style="background:'+DONUT_COLORS[i%DONUT_COLORS.length]+'"></span>'
+      + '<span class="k" title="'+esc(label)+'">'+esc(label)+'</span>'
+      + '<span class="n">'+esc(fmtN(d.count||0))+'</span><span class="p">'+p+' %</span></div>';
+  }).join("");
+  var sr = fmtN(total)+" gesamt. " + main.map(function(d){
+    var label = d.label!=null?d.label:d.key;
+    return label+": "+fmtN(d.count||0)+" ("+Math.round(((d.count||0)/total)*100)+" %)";
+  }).join(", ")+".";
+  return '<div class="donutwrap"><p class="sr">'+esc(sr)+'</p>'
+    + '<svg viewBox="0 0 120 120" width="132" height="132" aria-hidden="true" focusable="false">'+slices
+    + '<text x="60" y="58" text-anchor="middle" class="donut__c">'+esc(fmtN(total))+'</text>'
+    + '<text x="60" y="74" text-anchor="middle" class="donut__cl">'+esc(opts.centerLabel||"gesamt")+'</text>'
+    + '</svg><div class="legend">'+legend+'</div></div>';
+}
+
+// Klartext-Zusammenfassung: die fünf Investor-Antworten als Sätze, nicht als
+// Kachelwand. Nur MESSBARES wird behauptet — eine n/a-Retention taucht als
+// "noch nicht messbar" auf, nicht als 0 %.
+function execSummary(s){
+  var u = s.users||{}, inv = s.investor||{};
+  if(!u.total) return "";
+  var nsm = inv.nsm||{}, act = inv.activation||{}, growth = inv.growth||{};
+  var parts = [];
+  parts.push('<b>'+fmtN(u.total)+'</b> Personen waren im '+esc(s.windowDays)+'-Tage-Fenster aktiv, '
+    + '<b>'+fmtN(nsm.wal||0)+'</b> davon haben in den letzten 7 Tagen mindestens eine Lernrunde beendet (WAL, '
+    + arrow((nsm.trend||{}).deltaPct)+' zur Vorwoche).');
+  if(act.newUsers){
+    parts.push('Von <b>'+fmtN(act.newUsers)+'</b> neuen Personen kamen <b>'+pct(act.ratePct||0)+'</b> bis zur ersten Lernrunde'
+      + ((act.ratePct||0) > 40 ? ' — über dem 40-%-Ziel.' : ' (Ziel: über 40 %).'));
+  }
+  var r7 = retEntry(u, 7);
+  if(!r7.na){
+    parts.push('D7-Retention: <b>'+r7.pct+' %</b>'+(r7.pct>=15?' — über dem 15-%-Ziel.':' (Ziel: ≥ 15 %).'));
+  } else {
+    parts.push('D7-Retention ist im gewählten Fenster noch nicht messbar.');
+  }
+  if(growth.churned || growth.newUsers || growth.resurrected){
+    var qr = growth.quickRatio||0;
+    parts.push('Quick Ratio <b>'+fmtN(qr)+'</b>: '+(qr>1?'es kommen mehr Personen hinzu als abwandern.':'die Abwanderung überwiegt die Zugänge.'));
+  }
+  var errs = (s.totals||{}).errors||0;
+  parts.push(errs ? '<b>'+fmtN(errs)+'</b> JS-Fehler im Fenster — siehe Bereich Qualität.' : 'Keine JS-Fehler im Fenster.');
+  return '<div class="digest"><span class="dt">Kurzfassung</span>'+parts.join(" ")+'</div>';
+}
+
+// Bereichs-Registry: EINE Quelle für Subnav (DOM-Teil) und Sektionsköpfe
+// (render()). id = Anker, q = Leitfrage, desc = Lesehilfe unter dem Kopf.
+var SECTIONS = [
+  { id:"overview",   title:"Überblick",             q:"Wie steht es insgesamt?",
+    desc:"North-Star-Metrik, Kurzfassung in Sätzen und die Kern-Bestandszahlen. Alles Weitere ist nach dem AARRR-Rahmen geordnet: erst gewinnen, dann aktivieren, dann halten." },
+  { id:"growth",     title:"Wachstum & Akquise",    q:"Woher kommen sie — und wächst es von selbst?",
+    desc:"Zugänge gegen Abwanderung (Growth Accounting), Herkunftskanäle der Erstkontakte und der virale Kreislauf aus Teilen und Share-Installs." },
+  { id:"activation", title:"Aktivierung",           q:"Kommen Neue bis zum ersten Lern-Erfolg?",
+    desc:"Der Weg von „App zum ersten Mal geöffnet“ bis „erste Lernrunde beendet“. Jede Stufe zeigt den Drop-off — dort, wo er am größten ist, lohnt Produktarbeit am meisten." },
+  { id:"retention",  title:"Retention",             q:"Bleiben sie? (Der Kern jeder Bewertung)",
+    desc:"Kommen Personen nach 1, 7, 30 Tagen wieder? Die Kohorten-Heatmap zeigt es je Startwoche: Kurven, die abflachen statt auf null zu fallen, heißen „das Produkt hält“." },
+  { id:"engagement", title:"Engagement",            q:"Wie oft, wie lange, wie tief?",
+    desc:"Tagesaktive Personen, Sitzungen und deren Dauer, Interaktionstiefe und wann gelernt wird — die Nutzungs-Rhythmik hinter den Kopfzahlen." },
+  { id:"learning",   title:"Lernen",                q:"Was wird gelernt — und wo hakt es?",
+    desc:"Lernrunden, Kartenbewertungen, Genauigkeit und Lernfortschritt. „Schwierigste Themen“ ist die direkte Arbeitsliste für die Inhalts-Pflege." },
+  { id:"segments",   title:"Segmente & Editionen",  q:"Wer nutzt es, worauf, in welcher Ausgabe?",
+    desc:"Plattformen, Editionen (B2B-Kanal), Sprachen, App-Versionen und Snapshot-Verteilungen wie Streaks — die Struktur der Nutzerschaft." },
+  { id:"quality",    title:"Qualität & Technik",    q:"Läuft es stabil?",
+    desc:"JS-Fehler gesamt, je App-Version und je Sitzung. Fehler kosten Retention doppelt: direkt (Abbruch) und indirekt (Vertrauensverlust)." }
+];
+function zoneOpen(sec, idx){
+  return '<section class="zone" id="'+esc(sec.id)+'">'
+    + '<div class="zone__head"><span class="znum" aria-hidden="true">'+(idx+1)+'</span><h2>'+esc(sec.title)+'</h2><small>'+esc(sec.q)+'</small></div>'
+    + '<p class="zone__desc">'+esc(sec.desc)+'</p>';
+}
+
+// Glossar: die Begriffe, die im Cockpit ohne Erklärung stehen. Einklappbar,
+// damit es Erstlesern hilft, ohne Stammlesern Platz zu kosten. Die Definitionen
+// sind deckungsgleich mit docs/INVESTOR-KPIS.md — bei Änderungen BEIDE anfassen.
+var GLOSSAR = '<details class="gloss"><summary>Glossar — was die Kennzahlen genau bedeuten</summary><dl>'
+  + '<dt>Person / clientId</dt><dd>Pseudonyme Zufalls-ID je Gerät. Keine Namen, keine E-Mails — „Nutzer“ heißt hier immer „distinkte clientId“.</dd>'
+  + '<dt>WAL (North Star)</dt><dd>Weekly Active Learners: Personen mit mindestens einer <b>beendeten</b> Lernrunde in den letzten 7 Tagen. Belohnt echtes Lernen, nicht bloßes Öffnen.</dd>'
+  + '<dt>DAU / WAU / MAU</dt><dd>Aktive Personen heute / in 7 / in 30 Tagen. „Aktiv“ = mindestens ein Event.</dd>'
+  + '<dt>Stickiness</dt><dd>Ø DAU geteilt durch MAU. 20 % heißt: der durchschnittliche Monatsnutzer ist an jedem fünften Tag da.</dd>'
+  + '<dt>Retention D1/D7/D30</dt><dd>Anteil der Personen, die genau N Tage nach ihrem Erst-Tag wieder aktiv waren. Gewertet werden nur Personen, deren Tag N schon erreichbar ist — sonst „n/a“, nie eine erfundene 0.</dd>'
+  + '<dt>Kohorte</dt><dd>Alle Personen mit demselben Erst-Tag. Die Heatmap verfolgt jede Kohorte über die Folgetage.</dd>'
+  + '<dt>Aktivierungsrate</dt><dd>Anteil der neuen Personen, die mindestens eine Lernrunde beendet haben — der „Aha-Moment“ des Produkts.</dd>'
+  + '<dt>Quick Ratio</dt><dd>(neu + reaktiviert) / abgewandert, jeweils letzte 7 Tage. Über 1 = die Basis wächst.</dd>'
+  + '<dt>K-Factor</dt><dd>Virale Neuzugänge (über geteilte Links) geteilt durch die Nutzerbasis der Vorwoche. Über 1 hieße: wächst ohne Marketing.</dd>'
+  + '<dt>Bounce</dt><dd>Anteil der Personen mit genau einem aktiven Tag — gekommen, geschaut, nie wiedergekehrt.</dd>'
+  + '<dt>Sitzung</dt><dd>Zusammenhängende Nutzung unter einer sessionId; endet nach Inaktivität.</dd>'
+  + '<dt>Snapshot</dt><dd>Einmal täglich gesendeter Zustands-Auszug (Karten, Streak, Features) — Quelle aller „Verteilungs“-Panels.</dd>'
+  + '</dl></details>';
+
+// Panel-Helfer: Überschrift + optionale Lesehilfe + Inhalt. Die Lesehilfe sagt
+// in einem Satz, WIE man das Diagramm liest — nicht, was ohnehin dransteht.
+function panelHtml(o){
+  return '<div class="panel"'+(o.style? ' style="'+o.style+'"' : '')+'>'
+    + '<h3'+(o.titleStyle? ' style="'+o.titleStyle+'"' : '')+'>'+o.title+(o.small? ' <small>'+o.small+'</small>' : '')+'</h3>'
+    + (o.desc? '<p class="panel__desc">'+esc(o.desc)+'</p>' : '')
+    + o.body
+    + (o.foot? '<div class="panel__foot">'+o.foot+'</div>' : '')
+    + '</div>';
 }
 
 // Trichter.
@@ -627,12 +899,14 @@ function render(s){
   // Fall, sondern immer wenn die Bezugsgröße fehlt.
   var noBasis = virgin || !u.total;
 
-  html += '<h2 class="sec">Investor-Cockpit <small>AARRR · pro Person · Sitzung · Tag · Kohorte · Edition</small></h2>';
+  // ======================= 1 · ÜBERBLICK ===================================
+  html += zoneOpen(SECTIONS[0], 0);
 
   if(inv.alerts && inv.alerts.length){
-    html += '<div class="panel" style="border-color:var(--no)"><h3 style="color:var(--no)">Regressions-Alarm <small>(Fehlerquote je App-Version über Schwelle)</small></h3>'
-      + hbars(inv.alerts.map(function(a){return {label:a.version+" · "+fmtN(a.errors)+"/"+fmtN(a.events)+" Events",count:a.ratePct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}})
-      + '</div>';
+    html += panelHtml({ style:"border-color:var(--no)", titleStyle:"color:var(--no)",
+      title:"Regressions-Alarm", small:"(Fehlerquote je App-Version über Schwelle)",
+      desc:"Schlägt an, wenn eine App-Version deutlich mehr Fehler je Event produziert als die übrigen — das typische Bild eines kaputten Releases. Steht hier etwas, zuerst handeln, dann weiterlesen.",
+      body: hbars(inv.alerts.map(function(a){return {label:a.version+" · "+fmtN(a.errors)+"/"+fmtN(a.events)+" Events",count:a.ratePct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}}) });
   }
 
   // ---- Erstlauf: erklären statt dreizehn Nullen zeigen --------------------
@@ -673,12 +947,100 @@ function render(s){
     + (noBasis?"":'<div class="hero__spark">'+spark(u.dauSeries,{color:"var(--brand)"})+'</div>')
     + '</div>';
 
-  // ---- Tier 1: Bleiben sie? ----------------------------------------------
+  // Gemeinsame Ableitungen für alle Bereiche.
+  var act = inv.activation||{}, ix = inv.interactions||{}, tot = inv.timeOnTask||{}, rounds = inv.rounds||{};
   var stick = u.stickinessPct||0;
-  var qr = (inv.growth&&inv.growth.quickRatio)||0;
+  var growth = inv.growth||{}, qr = growth.quickRatio||0;
+  var vir = inv.virality||{}, kf = vir.kFactor||0;
   var bounce = (inv.quality&&inv.quality.bouncePct)||0;
+  var eps = (inv.quality&&inv.quality.errorsPerSession)||0;
   var r1 = retEntry(u,1), r7 = retEntry(u,7), r30 = retEntry(u,30);
-  html += '<h3 class="eyebrow">Retention — bleiben sie?</h3><div class="kpis">'
+  var actRate = act.ratePct||0, compl = rounds.completionPct||0;
+
+  if(!noBasis) html += execSummary(s);
+
+  html += '<h3 class="eyebrow">Bestand im Fenster</h3><div class="kpis">'
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.total||0), label:"Personen (distinkt)", tone:"var(--brand)",
+            hint:"pseudonyme clientId · "+s.windowDays+"-Tage-Fenster" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.dauToday||0)+" / "+fmtN(u.wau||0)+" / "+fmtN(u.mau||0),
+            label:"DAU / WAU / MAU", hint:"aktiv heute / 7 T / 30 T · WAU vs. Vorwoche "+(((u.trendWau7||{}).deltaPct)|0)+" %" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(se.count||0), label:"Sitzungen",
+            hint:"Ø "+fmtN(se.avgEventsPerSession||0)+" Events je Sitzung" })
+    + kpi({ tier:2, empty:virgin, raw:fmtN(s.totals.events), label:"Events gesamt",
+            hint:fmtN(s.totals.snapshots)+" Snapshots im Fenster" })
+    + '</div>';
+
+  html += GLOSSAR;
+  html += '</section>';
+
+  // ================= 2 · WACHSTUM & AKQUISE ================================
+  html += zoneOpen(SECTIONS[1], 1);
+  html += '<div class="kpis">'
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(qr), label:"Quick Ratio",
+            target:{ok:qr>1,text:"Ziel > 1"}, tone:qr>1?"var(--ok)":"var(--no)",
+            hint:"(neu + reaktiviert) / abgewandert" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(kf), label:"K-Factor",
+            target:{ok:kf>0.5,text:"Ziel > 0,5"}, tone:kf>0.5?"var(--ok)":null,
+            hint:fmtN(vir.viralNew7||0)+" viral / Basis "+fmtN(vir.base7||0) })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(growth.newUsers||0), label:"Neu (7 Tage)", tone:"var(--ok)",
+            hint:fmtN(growth.resurrected||0)+" reaktiviert" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(growth.churned||0), label:"Abgewandert (7 Tage)",
+            tone:(growth.churned||0)?"var(--no)":null, hint:"zuvor aktiv, jetzt nicht mehr" })
+    + '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Growth Accounting", small:"(letzte 7 Tage vs. Vorwoche)",
+    desc:"Die Wachstums-Bilanz: Zugänge (neu + reaktiviert) müssen die Abwanderung übertreffen — genau das misst die Quick Ratio.",
+    body: hbars([{label:"Neu",count:growth.newUsers||0,color:"var(--ok)"},
+             {label:"Wiederkehrend",count:growth.retained||0,color:"var(--brand)"},
+             {label:"Reaktiviert",count:growth.resurrected||0,color:"var(--easy)"},
+             {label:"Abgewandert",count:growth.churned||0,color:"var(--no)"}]),
+    foot:'Zugänge vs. <span style="color:var(--no)">Abwanderung</span> · Quick Ratio <b>'+esc(fmtN(qr))+'</b> (&gt; 1 = Wachstum)' });
+  html += panelHtml({ title:"Akquise-Quelle", small:"(distinkte Personen nach erster Quelle)",
+    desc:"Woher der Erstkontakt kam. Wächst der Anteil außerhalb von „direct“, greifen die Kanäle (Links, Editionen, geteilte Module).",
+    body: hbars(((s.engagement&&s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})
+      + '<h4>Neu vs. wiederkehrend (App-Starts)</h4>'
+      + hbars([{label:"Neue Starts",count:u.newOpens,color:"var(--ok)"},{label:"Wiederkehrend",count:u.returningOpens,color:"var(--brand)"}]) });
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Virality / K-Factor",
+    desc:"Der virale Kreislauf: Wie viele teilen, wie oft — und wie viele Installationen kommen nachweislich über geteilte Links zurück?",
+    body: hbars([{label:"Teilende Personen",count:vir.sharers||0},
+             {label:"Shares gesamt",count:vir.shares||0},
+             {label:"Share-Installs",count:vir.sharedInstalls||0}],{color:"var(--ok)",emptyWhy:"entsteht mit dem ersten share-Event"})
+      + (((vir.content)||[]).length? '<h4>Geteilte Inhalte</h4>'+hbars(vir.content.map(function(c){return {label:c.key,count:c.count};})) : ''),
+    foot:'K-Factor <b>'+esc(fmtN(kf))+'</b> = '+esc(fmtN(vir.viralNew7||0))+' virale Neuzugänge (7 T) / '+esc(fmtN(vir.base7||0))+' Basis Vorwoche · Ø '+esc(fmtN(vir.sharesPerUser||0))+' Shares/Person' });
+  html += panelHtml({ title:"Teilen", small:"(geteilte Inhalte · share-Event)",
+    desc:"Was konkret geteilt wird — Sharepics, Module, Einladungen. Der Rohstoff für den K-Factor eine Spalte weiter links.",
+    body: hbars(((s.engagement&&s.engagement.share)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--ok)",emptyWhy:"entsteht mit dem ersten share-Event"}) });
+  html += '</div>';
+  html += '</section>';
+
+  // ==================== 3 · AKTIVIERUNG ====================================
+  html += zoneOpen(SECTIONS[2], 2);
+  html += '<div class="kpis">'
+    + kpi({ tier:1, empty:noBasis, raw:pct(actRate), label:"Aktivierungsrate",
+            target:{ok:actRate>40,text:"Ziel > 40 %"}, tone:actRate>40?"var(--ok)":null,
+            hint:fmtN(act.activated||0)+" von "+fmtN(act.newUsers||0)+" neuen Personen mit ≥ 1 Lernrunde" })
+    + kpi({ tier:2, empty:noBasis, raw:pct(compl), label:"Runden-Abschluss",
+            target:{ok:compl>=60,text:"Ziel ≥ 60 %"}, tone:compl>=60?"var(--ok)":null,
+            hint:fmtN(rounds.completed||0)+" von "+fmtN(rounds.started||0)+" Runden" })
+    + '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Aktivierungs-Funnel", small:"(neue Personen im Fenster · Drop-off je Stufe)",
+    desc:"Vom Erstkontakt zur Gewohnheit: neu → Onboarding beendet → erste Lernrunde → wiedergekommen. Die Stufe mit dem größten roten Drop-off ist die wichtigste Baustelle.",
+    body: funnelChart(act.funnel, "entsteht mit dem ersten app_open neuer Nutzer") });
+  html += panelHtml({ title:"Onboarding-Funnel", small:"(distinkte Personen · Drop-off je Stufe)",
+    desc:"Die Schritte INNERHALB des Onboardings. Zählt nur Personen, deren Statistik-Zustimmung schon während des Onboardings aktiv war.",
+    body: funnelChart(s.funnel, "greift nur bei Consent WÄHREND des Onboardings (z. B. Editionen mit vor-aktiviertem Consent)") });
+  html += '</div>';
+  html += '</section>';
+
+  // ===================== 4 · RETENTION =====================================
+  html += zoneOpen(SECTIONS[3], 3);
+  html += '<div class="kpis">'
     + kpi({ tier:1, empty:noBasis||r1.na, raw:retText(u,1), label:"Retention D1",
             target:r1.na?{na:true,text:"im Fenster nicht messbar"}:{ok:r1.pct>=25,text:"Ziel ≥ 25 %"},
             tone:r1.pct>=25?"var(--ok)":null, hint:r1.na?"braucht ≥ 2 Tage Historie":fmtN(r1.eligible)+" Personen gewertet" })
@@ -693,217 +1055,201 @@ function render(s){
             hint:"Ø DAU "+fmtN(u.avgDau||0)+" / MAU "+fmtN(u.mau||0) })
     + '</div>';
   html += '<div class="kpis">'
-    + kpi({ tier:2, empty:noBasis, raw:fmtN(qr), label:"Quick Ratio",
-            target:{ok:qr>1,text:"Ziel > 1"}, tone:qr>1?"var(--ok)":"var(--no)",
-            hint:"(neu + reaktiviert) / abgewandert" })
     + kpi({ tier:2, empty:noBasis, raw:pct(bounce), label:"Bounce",
             target:{ok:bounce<=40,text:"Ziel ≤ 40 %"}, tone:bounce>40?"var(--warn)":null,
             hint:"nur einen einzigen Tag aktiv" })
     + kpi({ tier:2, empty:noBasis, raw:pct(u.returnRatePct||0), label:"Wiederkehrrate", hint:"≥ 2 aktive Tage" })
-    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.dauToday||0)+" / "+fmtN(u.wau||0)+" / "+fmtN(u.mau||0),
-            label:"DAU / WAU / MAU", hint:"aktiv heute / 7 T / 30 T · WAU vs. Vorwoche siehe Details" })
     + '</div>';
 
-  // ---- Tier 2: Kommen sie rein, wie tief? --------------------------------
-  var act = inv.activation||{}, ix = inv.interactions||{}, tot = inv.timeOnTask||{}, rounds = inv.rounds||{};
-  var actRate = act.ratePct||0, compl = rounds.completionPct||0;
-  html += '<h3 class="eyebrow">Aktivierung &amp; Tiefe — kommen sie rein, wie weit?</h3><div class="kpis">'
-    + kpi({ tier:2, empty:noBasis, raw:pct(actRate), label:"Aktivierungsrate",
-            target:{ok:actRate>40,text:"Ziel > 40 %"}, tone:actRate>40?"var(--ok)":null,
-            hint:fmtN(act.activated||0)+" von "+fmtN(act.newUsers||0)+" neuen Personen" })
-    + kpi({ tier:2, empty:noBasis, raw:pct(compl), label:"Runden-Abschluss",
-            target:{ok:compl>=60,text:"Ziel ≥ 60 %"}, tone:compl>=60?"var(--ok)":null,
-            hint:fmtN(rounds.completed||0)+" von "+fmtN(rounds.started||0)+" Runden" })
-    + kpi({ tier:2, empty:noBasis, raw:fmtN((ix.perSession&&ix.perSession.avg)||0), label:"Ø Interaktionen / Sitzung",
-            hint:"Median "+fmtN((ix.perSession&&ix.perSession.median)||0) })
-    + kpi({ tier:2, empty:noBasis, raw:fmtDur(tot.avgSec||0), label:"Ø Lernzeit / Runde",
-            hint:"Median "+fmtDur(tot.medianSec||0)+" · "+fmtN(tot.rounds||0)+" Runden" })
-    + '</div>';
-
-  // ---- Tier 3: Wächst es von selbst, läuft es stabil? --------------------
-  var kf = (inv.virality&&inv.virality.kFactor)||0;
-  var eps = (inv.quality&&inv.quality.errorsPerSession)||0;
-  html += '<h3 class="eyebrow">Wachstum &amp; Stabilität</h3><div class="kpis">'
-    + kpi({ tier:3, empty:noBasis, raw:fmtN(kf), label:"K-Factor",
-            target:{ok:kf>0.5,text:"Ziel > 0,5"}, tone:kf>0.5?"var(--ok)":null,
-            hint:fmtN((inv.virality&&inv.virality.viralNew7)||0)+" viral / Basis "+fmtN((inv.virality&&inv.virality.base7)||0) })
-    + kpi({ tier:3, empty:noBasis, raw:fmtN((ix.perUser&&ix.perUser.avg)||0), label:"Ø Interaktionen / Person",
-            hint:"Median "+fmtN((ix.perUser&&ix.perUser.median)||0)+" · Ø "+fmtN((ix.perActiveDay&&ix.perActiveDay.avg)||0)+" je aktivem Tag" })
-    + kpi({ tier:3, empty:noBasis, raw:fmtN(eps), label:"Fehler / Sitzung",
-            target:{ok:eps<=0.1,text:"Ziel ≤ 0,1"}, tone:eps>0.1?"var(--no)":"var(--ok)",
-            hint:fmtN((inv.quality&&inv.quality.errors)||0)+" Fehler gesamt" })
-    + kpi({ tier:3, empty:virgin, raw:fmtN(s.totals.events), label:"Events gesamt",
-            hint:fmtN(s.totals.snapshots)+" Snapshots · "+fmtN(u.total||0)+" distinkte Personen" })
-    + '</div>';
-
-  html += '<div class="panel" style="margin-top:16px"><h3>Retention-Kohorten <small>(Erst-Tag × Tag-N, % wieder aktiv — UTC-Tagesgrenzen)</small></h3>'+heatmap(inv.cohorts)+'</div>';
+  html += panelHtml({ style:"margin-top:16px", title:"Retention-Kohorten", small:"(Erst-Tag × Tag-N, % wieder aktiv — UTC-Tagesgrenzen)",
+    desc:"Jede Zeile ist eine Startgruppe (Kohorte), jede Spalte ein Tag danach. Gesund ist eine Kurve, die abflacht statt auf null zu fallen — ein Sockel bleibender Nutzer. Der Punkt · heißt „noch nicht messbar“, nicht „0 %“.",
+    body: heatmap(inv.cohorts) });
 
   html += '<div class="grid">';
-  html += '<div class="panel"><h3>Growth Accounting <small>(letzte 7 Tage vs. Vorwoche)</small></h3>'
-    + hbars([{label:"Neu",count:(inv.growth&&inv.growth.newUsers)||0,color:"var(--ok)"},
-             {label:"Wiederkehrend",count:(inv.growth&&inv.growth.retained)||0,color:"var(--brand)"},
-             {label:"Reaktiviert",count:(inv.growth&&inv.growth.resurrected)||0,color:"var(--easy)"},
-             {label:"Abgewandert",count:(inv.growth&&inv.growth.churned)||0,color:"var(--no)"}])
-    + '<div class="h" style="margin-top:10px;font-size:11px;color:var(--muted)">Zugänge vs. <span style="color:var(--no)">Abwanderung</span> · Quick Ratio <b>'+esc(fmtN(qr))+'</b> (&gt; 1 = Wachstum)</div></div>';
-  html += '<div class="panel"><h3>Aktivierungs-Funnel <small>(neue Personen im Fenster · Drop-off je Stufe)</small></h3>'
-    + funnelChart(act.funnel, "entsteht mit dem ersten app_open neuer Nutzer")+'</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Virality / K-Factor</h3>'
-    + hbars([{label:"Teilende Personen",count:(inv.virality&&inv.virality.sharers)||0},
-             {label:"Shares gesamt",count:(inv.virality&&inv.virality.shares)||0},
-             {label:"Share-Installs",count:(inv.virality&&inv.virality.sharedInstalls)||0}],{color:"var(--ok)",emptyWhy:"entsteht mit dem ersten share-Event"})
-    + '<div style="margin-top:10px;font-size:11px;color:var(--muted)">K-Factor <b>'+esc(fmtN(kf))+'</b> = '+esc(fmtN((inv.virality&&inv.virality.viralNew7)||0))+' virale Neuzugänge (7 T) / '+esc(fmtN((inv.virality&&inv.virality.base7)||0))+' Basis Vorwoche · Ø '+esc(fmtN((inv.virality&&inv.virality.sharesPerUser)||0))+' Shares/Person</div>'
-    + (((inv.virality&&inv.virality.content)||[]).length? '<h4>Geteilte Inhalte</h4>'+hbars(inv.virality.content.map(function(c){return {label:c.key,count:c.count};})) : '')
-    + '</div>';
-  html += '<div class="panel"><h3>Interaktionstiefe</h3>'
-    + '<h4>pro Sitzung</h4>'
-    + hbars((((ix.perSession)||{}).histogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--easy)"})
-    + '<h4>pro Person</h4>'
-    + hbars((((ix.perUser)||{}).histogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--brand)"})
-    + '<div style="margin-top:10px;font-size:11px;color:var(--muted)">Ø '+esc(fmtN((ix.perActiveDay&&ix.perActiveDay.avg)||0))+' Interaktionen je aktivem Nutzer-Tag ('+esc(fmtN((ix.perActiveDay&&ix.perActiveDay.activeUserDays)||0))+' Nutzer-Tage)</div>'
-    + '</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Lernspiel: Start → Abschluss <small>(Abschlussquote je Spiel)</small></h3>'
-    + ((inv.featureFunnel&&inv.featureFunnel.length)? hbars(inv.featureFunnel.map(function(f){return {label:f.feature+" · "+fmtN(f.starts)+"→"+fmtN(f.completes), count:(f.completionPct==null?0:f.completionPct)};}),{color:"var(--warn)",fmt:function(d){return d.count+" %";}}) : empty("Keine Spiel-Daten","entsteht mit dem ersten feature_start"))+'</div>';
-  html += '<div class="panel"><h3>B2B: KPIs je Edition <small>(Umsatzkanal)</small></h3>'+editionTable(inv.editions)+'</div>';
-  html += '</div>';
-
-  html += '<hr class="sec-sep"/><h2 class="sec">Details</h2>';
-
-  html += '<div class="kpis">'
-    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.total||0), label:"Personen (distinkt)", tone:"var(--brand)", hint:"im "+s.windowDays+"-Tage-Fenster" })
-    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.dauToday||0), label:"Aktiv heute (DAU)", hint:s.today+" · Ø "+fmtN(u.avgDau||0)+" im Fenster" })
-    + kpi({ tier:2, empty:noBasis, raw:fmtN(u.wau||0), label:"Aktiv 7 Tage (WAU)", hint:"vs. Vorwoche "+(((u.trendWau7||{}).deltaPct)|0)+" %" })
-    + kpi({ tier:2, empty:noBasis, raw:fmtN(se.count||0), label:"Sitzungen", hint:"Ø "+fmtN(se.avgEventsPerSession||0)+" Events je Sitzung" })
-    + '</div>';
-  html += '<div class="kpis">'
-    + kpi({ tier:3, empty:noBasis, raw:fmtDur(se.avgDurationSec||0), label:"Ø Sitzungsdauer", tone:"var(--ok)", hint:"Median "+fmtDur(se.medianDurationSec||0) })
-    + kpi({ tier:3, empty:noBasis||!(s.search&&s.search.total), raw:pct((s.search&&s.search.noResultPct)||0), label:"Suche ohne Treffer",
-            target:{ok:!((s.search&&s.search.noResultPct)>20),text:"Ziel ≤ 20 %"}, tone:(s.search&&s.search.noResultPct)>20?"var(--warn)":null, hint:fmtN((s.search&&s.search.total)||0)+" Suchen" })
-    + kpi({ tier:3, empty:noBasis||noSnaps, raw:pct((s.trip&&s.trip.withGoalPct)||0), label:"mit Reiseziel", tone:"var(--brand)", hint:fmtN((s.trip&&s.trip.snapshots)||0)+" Snapshots" })
-    + kpi({ tier:3, empty:virgin, raw:fmtN(s.totals.errors||0), label:"Fehler", target:{ok:!s.totals.errors,text:s.totals.errors?"Fehler aufgetreten":"keine Fehler"}, tone:s.totals.errors?"var(--no)":null, hint:"im Fenster" })
-    + '</div>';
-
-  html += '<div class="panel" style="margin-top:16px"><h3>Aktive Personen pro Tag <small>(distinkte clientId · UTC-Tagesgrenzen)</small></h3>'+lineChart(u.dauSeries,{color:"var(--brand)",ma:7})+'</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Sitzungen pro Tag</h3>'+vbars(se.perDay,{color:"var(--easy)"})+'</div>';
-  html += '<div class="panel"><h3>Sitzungsdauer <small>(wie lange pro Besuch)</small></h3>'
-    + hbars((se.durationHistogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--ok)"})
-    + '<div style="margin-top:10px;font-size:11px;color:var(--muted)">Ø '+esc(fmtDur(se.avgDurationSec||0))+' · Median '+esc(fmtDur(se.medianDurationSec||0))+' · Ø '+esc(fmtN(se.avgEventsPerSession||0))+' Events/Sitzung</div></div>';
-  html += '</div>';
-
-  // Ereignis-Verteilung: einzige Sicht auf PWA-Installs und Consent-Wechsel.
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Ereignisse gesamt <small>(Verteilung je Event-Name)</small></h3>'
-    + hbars(((s.engagement&&s.engagement.events)||[]).map(function(e){return {label:e.key,count:e.count};}),{color:"var(--brand)",emptyWhy:"entsteht mit dem ersten Event"})
-    + '<div style="margin-top:10px;font-size:11px;color:var(--muted)">Enthält u. a. <code>pwa_installed</code> (Installationen) und <code>consent_change</code> (Opt-in/Opt-out).</div></div>';
-  html += '<div class="panel"><h3>Genutzte Bildschirme</h3>'+hbars((s.engagement&&s.engagement.screens)||[])+'</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Top-Aktionen</h3>'+hbars((s.engagement&&s.engagement.actions)||[])+'</div>';
-  html += '<div class="panel"><h3>Akquise-Quelle <small>(distinkte Personen nach erster Quelle)</small></h3>'
-    + hbars(((s.engagement&&s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})+'</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Teilen <small>(geteilte Inhalte · share-Event)</small></h3>'
-    + hbars(((s.engagement&&s.engagement.share)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--ok)",emptyWhy:"entsteht mit dem ersten share-Event"})+'</div>';
-  html += '<div class="panel"><h3>Lernspiele abgeschlossen <small>(Anzahl · perfekt-Quote)</small></h3>'
-    + hbars((le.features||[]).map(function(f){return {label:f.feature+" · "+f.perfectPct+" % perfekt", count:f.count};}),{color:"var(--warn)"})+'</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Karten-Bewertungen &amp; Genauigkeit</h3>'
-    + hbars([{label:"Nochmal",count:le.ratings.again,color:"var(--no)"},{label:"Gut",count:le.ratings.good,color:"var(--brand)"},{label:"Einfach",count:le.ratings.easy,color:"var(--ok)"}])
-    + '<h4>Runden-Genauigkeit</h4>'
-    + hbars(sortBuckets(le.accuracy).map(function(a){return {label:a.key+" %",count:a.count};}))
-    + '</div>';
-  html += '<div class="panel"><h3>Retention <small>(Tag-N wieder aktiv)</small></h3>'
-    // Muss dieselbe Unterscheidung treffen wie die Kachel oben: `eligible === 0`
-    // heißt "im Fenster nicht messbar", nicht "0 % kamen zurück". Sonst stünden
-    // auf EINER Seite drei Aussagen zum selben Wert: "—" (Kachel), "·" (Heatmap)
-    // und "0 %" (hier).
-    + hbars((u.retention||[]).map(function(r){
+  html += panelHtml({ title:"Retention", small:"(Tag-N wieder aktiv)",
+    desc:"Dieselben D1/D7/D30-Werte wie oben als Balken, plus die Verteilung der aktiven Tage: Wie viele bleiben einen Tag, wie viele werden Stammnutzer?",
+    body: hbars((u.retention||[]).map(function(r){
         return { label:"D"+r.day+(r.eligible? " · "+fmtN(r.eligible)+" gewertet" : " · nicht messbar"),
                  count:r.eligible?r.pct:0, na:!r.eligible };
       }),{color:"var(--ok)",fmt:function(d){ return d.na ? "n/a" : d.count+" %"; }})
-    + '<h4>Aktive Tage je Person</h4>'
-    + hbars((u.activeDaysHistogram||[]).map(function(d){return {label:d.bucket+(d.bucket==="1"?" Tag":" Tage"),count:d.count};}),{color:"var(--brand)"})+'</div>';
+      + '<h4>Aktive Tage je Person</h4>'
+      + hbars((u.activeDaysHistogram||[]).map(function(d){return {label:d.bucket+(d.bucket==="1"?" Tag":" Tage"),count:d.count};}),{color:"var(--brand)"}) });
+  html += panelHtml({ title:"Streak-Verteilung", small:"(Tages-Snapshot)",
+    desc:"Wie lange die aktuelle tägliche Lernserie der Nutzer ist. Lange Streaks sind das stärkste Halte-Signal, das die App kennt.",
+    body: hbars(sortBuckets(s.meta.snapshotStreak).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--warn)",emptyWhat:"Keine Streak-Daten",emptyWhy:"entsteht mit dem ersten Tages-Snapshot mit laufender Serie"}) });
+  html += '</div>';
+  html += '</section>';
+
+  // ==================== 5 · ENGAGEMENT =====================================
+  html += zoneOpen(SECTIONS[4], 4);
+  html += '<div class="kpis">'
+    + kpi({ tier:2, empty:noBasis, raw:fmtDur(se.avgDurationSec||0), label:"Ø Sitzungsdauer", tone:"var(--ok)",
+            hint:"Median "+fmtDur(se.medianDurationSec||0) })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN((ix.perSession&&ix.perSession.avg)||0), label:"Ø Interaktionen / Sitzung",
+            hint:"Median "+fmtN((ix.perSession&&ix.perSession.median)||0) })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN((ix.perUser&&ix.perUser.avg)||0), label:"Ø Interaktionen / Person",
+            hint:"Median "+fmtN((ix.perUser&&ix.perUser.median)||0)+" · Ø "+fmtN((ix.perActiveDay&&ix.perActiveDay.avg)||0)+" je aktivem Tag" })
+    + kpi({ tier:2, empty:noBasis||!(s.search&&s.search.total), raw:pct((s.search&&s.search.noResultPct)||0), label:"Suche ohne Treffer",
+            target:{ok:!((s.search&&s.search.noResultPct)>20),text:"Ziel ≤ 20 %"}, tone:(s.search&&s.search.noResultPct)>20?"var(--warn)":null, hint:fmtN((s.search&&s.search.total)||0)+" Suchen" })
+    + '</div>';
+
+  html += panelHtml({ style:"margin-top:16px", title:"Aktive Personen pro Tag", small:"(distinkte clientId · UTC-Tagesgrenzen)",
+    desc:"Die Tageskurve hinter DAU. Die orange Linie ist das 7-Tage-Mittel — sie zeigt den Trend, während die Tageswerte um Wochentage schwanken. Punkte antippen für den Tageswert.",
+    body: lineChart(u.dauSeries,{color:"var(--brand)",ma:7}) });
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Sitzungen pro Tag",
+    desc:"Nutzungsvolumen je Tag — mehr Sitzungen als DAU heißt: dieselben Personen kommen mehrfach am Tag.",
+    body: vbars(se.perDay,{color:"var(--easy)"}) });
+  html += panelHtml({ title:"Sitzungsdauer", small:"(wie lange pro Besuch)",
+    desc:"Verteilung statt Durchschnitt: viele kurze plus wenige sehr lange Sitzungen können denselben Ø ergeben wie lauter mittlere.",
+    body: hbars((se.durationHistogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--ok)"}),
+    foot:'Ø '+esc(fmtDur(se.avgDurationSec||0))+' · Median '+esc(fmtDur(se.medianDurationSec||0))+' · Ø '+esc(fmtN(se.avgEventsPerSession||0))+' Events/Sitzung' });
   html += '</div>';
 
   html += '<div class="grid">';
-  html += '<div class="panel"><h3>Schwierigste Themen <small>(„Nochmal“-Quote · Anzahl)</small></h3>'
-    + (le.difficult&&le.difficult.length? hbars(le.difficult.map(function(d){return {label:d.cat+" · "+fmtN(d.total),count:d.againPct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}}) : empty("Zu wenig Daten","ab 5 Bewertungen je Thema"))+'</div>';
-  html += '<div class="panel"><h3>Lernmodus <small>(je Sitzung)</small></h3>'
-    + hbars((le.modes||[]).map(function(m){return {label:m.key,count:m.count};}),{color:"var(--ok)"})+'</div>';
+  html += panelHtml({ title:"Interaktionstiefe",
+    desc:"Wie intensiv eine Sitzung bzw. eine Person die App nutzt (Antworten, Bewertungen, Navigation). Rechtslastige Verteilungen sind gut.",
+    body: '<h4>pro Sitzung</h4>'
+      + hbars((((ix.perSession)||{}).histogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--easy)"})
+      + '<h4>pro Person</h4>'
+      + hbars((((ix.perUser)||{}).histogram||[]).map(function(d){return {label:d.bucket,count:d.count};}),{color:"var(--brand)"}),
+    foot:'Ø '+esc(fmtN((ix.perActiveDay&&ix.perActiveDay.avg)||0))+' Interaktionen je aktivem Nutzer-Tag ('+esc(fmtN((ix.perActiveDay&&ix.perActiveDay.activeUserDays)||0))+' Nutzer-Tage)' });
+  html += panelHtml({ title:"Aktivität nach Uhrzeit", small:"(UTC)",
+    desc:"Wann gelernt wird. Achtung: UTC — für Kolumbien-Reisende −5 h, für Deutschland +1/+2 h denken.",
+    body: vbars(((s.time&&s.time.byHour)||[]).map(function(h){return {day:String(h.hour),count:h.count};}),{color:"var(--easy)",xlabel:function(d){return d.day+" h";}}) });
   html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Lernfortschritt <small>(% gemeisterte Karten)</small></h3>'
-    + (le.mastery&&le.mastery.length? hbars(sortBuckets(le.mastery).map(function(m){return {label:m.key+" %",count:m.count};}),{color:"var(--ok)"}) : empty("Keine Snapshots","entsteht mit dem ersten Tages-Snapshot"))+'</div>';
-  html += '<div class="panel"><h3>Tagesziel <small>('+esc(pct((s.trip&&s.trip.withGoalPct)||0))+' haben ein Reiseziel)</small></h3>'
-    + (s.trip&&s.trip.daily&&s.trip.daily.length? hbars(s.trip.daily.map(function(d){return {label:d.key,count:d.count};})) : empty("Keine Tagesziele","entsteht mit dem ersten Snapshot mit gesetztem Ziel"))+'</div>';
-  html += '</div>';
-
-  html += '<div class="panel"><h3>Aktivität nach Uhrzeit <small>(UTC)</small></h3>'
-    + vbars(((s.time&&s.time.byHour)||[]).map(function(h){return {day:String(h.hour),count:h.count};}),{color:"var(--easy)",xlabel:function(d){return d.day+" h";}})+'</div>';
 
   var WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
   html += '<div class="grid">';
-  html += '<div class="panel"><h3>Aktivität nach Wochentag</h3>'
-    + hbars(((s.time&&s.time.byWeekday)||[]).map(function(d){return {label:WD[d.weekday],count:d.count};}),{color:"var(--brand)"})+'</div>';
-  html += '<div class="panel"><h3>Onboarding-Funnel <small>(distinkte Personen · Drop-off je Stufe)</small></h3>'
-    + funnelChart(s.funnel, "greift nur bei Consent WÄHREND des Onboardings (z. B. Editionen mit vor-aktiviertem Consent)")+'</div>';
+  html += panelHtml({ title:"Aktivität nach Wochentag",
+    desc:"Wochen-Rhythmus der Nutzung — z. B. ob am Wochenende (Reisezeit) mehr gelernt wird als unter der Woche.",
+    body: hbars(((s.time&&s.time.byWeekday)||[]).map(function(d){return {label:WD[d.weekday],count:d.count};}),{color:"var(--brand)"}) });
+  // Ereignis-Verteilung: einzige Sicht auf PWA-Installs und Consent-Wechsel.
+  html += panelHtml({ title:"Ereignisse gesamt", small:"(Verteilung je Event-Name)",
+    desc:"Der rohe Event-Strom nach Namen — das Inhaltsverzeichnis der Telemetrie.",
+    body: hbars(((s.engagement&&s.engagement.events)||[]).map(function(e){return {label:e.key,count:e.count};}),{color:"var(--brand)",emptyWhy:"entsteht mit dem ersten Event"}),
+    foot:'Enthält u. a. <code>pwa_installed</code> (Installationen) und <code>consent_change</code> (Opt-in/Opt-out).' });
   html += '</div>';
 
   html += '<div class="grid">';
-  html += '<div class="panel"><h3>Plattformen <small>(distinkte Personen)</small></h3>'
-    + hbars((((s.segments&&s.segments.platforms))||[]).map(function(p){return {label:p.key,count:p.count};}),{color:"var(--easy)"})+'</div>';
-  html += '<div class="panel"><h3>Editionen <small>(distinkte Personen)</small></h3>'
-    + hbars((((s.segments&&s.segments.editions))||[]).map(function(e){return {label:e.key,count:e.count};}),{color:"var(--brand)"})+'</div>';
+  html += panelHtml({ title:"Genutzte Bildschirme",
+    desc:"Welche Bereiche der App tatsächlich geöffnet werden — die Realität hinter der Informationsarchitektur.",
+    body: hbars((s.engagement&&s.engagement.screens)||[]) });
+  html += panelHtml({ title:"Top-Aktionen",
+    desc:"Die häufigsten Einzel-Aktionen (Buttons, Abläufe) über alle Bildschirme hinweg.",
+    body: hbars((s.engagement&&s.engagement.actions)||[]) });
   html += '</div>';
+  html += '</section>';
 
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Feature-Adoption <small>(Snapshot: je Modus benutzt)</small></h3>'
-    + hbars(((s.meta.snapshotFeatureAdoption)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--ok)"})+'</div>';
-  html += '<div class="panel"><h3>Streak-Verteilung</h3>'
-    + hbars(sortBuckets(s.meta.snapshotStreak).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--warn)"})+'</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Karten heute <small>(Snapshot-Verteilung)</small></h3>'
-    + hbars(sortBuckets(s.meta.snapshotCardsToday).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--easy)"})+'</div>';
-  html += '<div class="panel"><h3>Bewertungen gesamt <small>(Lebenszeit)</small></h3>'
-    + hbars(sortBuckets(s.meta.snapshotReviews).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--easy)"})+'</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>App-Versionen</h3>'+hbars(s.meta.appVersions)+'</div>';
-  html += '<div class="panel"><h3>Sprachen &amp; Tracks</h3>'+hbars(s.meta.locales)
-    + '<h4>Lern-Tracks</h4>'+hbars(s.meta.tracks)+'</div>';
-  html += '</div>';
-
-  html += '<div class="grid">';
-  html += '<div class="panel"><h3>Neu vs. wiederkehrend <small>(App-Starts)</small></h3>'
-    + hbars([{label:"Neue Starts",count:u.newOpens,color:"var(--ok)"},{label:"Wiederkehrend",count:u.returningOpens,color:"var(--brand)"}])+'</div>';
-  html += '<div class="panel"><h3>Fehler <small>(Monitoring)</small></h3>'
-    + (s.errors.length? hbars(s.errors.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler im Fenster",""))
-    + '<h4>Fehler je App-Version</h4>'
-    + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler",""))
+  // ====================== 6 · LERNEN =======================================
+  html += zoneOpen(SECTIONS[5], 5);
+  html += '<div class="kpis">'
+    + kpi({ tier:2, empty:noBasis, raw:fmtDur(tot.avgSec||0), label:"Ø Lernzeit / Runde",
+            hint:"Median "+fmtDur(tot.medianSec||0)+" · "+fmtN(tot.rounds||0)+" Runden" })
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(rounds.completed||0), label:"Runden beendet",
+            hint:fmtN(rounds.started||0)+" gestartet · Abschlussquote "+pct(compl) })
+    + kpi({ tier:2, empty:noBasis||noSnaps, raw:pct((s.trip&&s.trip.withGoalPct)||0), label:"mit Reiseziel", tone:"var(--brand)",
+            hint:fmtN((s.trip&&s.trip.snapshots)||0)+" Snapshots" })
     + '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Lernspiel: Start → Abschluss", small:"(Abschlussquote je Spiel)",
+    desc:"Welche Lernspiele angefangen UND zu Ende gespielt werden. Eine niedrige Quote heißt: das Spiel verliert die Leute mittendrin.",
+    body: ((inv.featureFunnel&&inv.featureFunnel.length)? hbars(inv.featureFunnel.map(function(f){return {label:f.feature+" · "+fmtN(f.starts)+"→"+fmtN(f.completes), count:(f.completionPct==null?0:f.completionPct)};}),{color:"var(--warn)",fmt:function(d){return d.count+" %";}}) : empty("Keine Spiel-Daten","entsteht mit dem ersten feature_start")) });
+  html += panelHtml({ title:"Lernspiele abgeschlossen", small:"(Anzahl · perfekt-Quote)",
+    desc:"Beliebtheit nach absoluten Abschlüssen, mit dem Anteil fehlerfreier Durchläufe je Spiel.",
+    body: hbars((le.features||[]).map(function(f){return {label:f.feature+" · "+f.perfectPct+" % perfekt", count:f.count};}),{color:"var(--warn)"}) });
   html += '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Karten-Bewertungen &amp; Genauigkeit",
+    desc:"Selbsteinschätzung je Karte („Nochmal“ = nicht gewusst) und darunter die Trefferquote je Runde. Beides zusammen zeigt, ob der Schwierigkeitsgrad passt.",
+    body: hbars([{label:"Nochmal",count:le.ratings.again,color:"var(--no)"},{label:"Gut",count:le.ratings.good,color:"var(--brand)"},{label:"Einfach",count:le.ratings.easy,color:"var(--ok)"}])
+      + '<h4>Runden-Genauigkeit</h4>'
+      + hbars(sortBuckets(le.accuracy).map(function(a){return {label:a.key+" %",count:a.count};})) });
+  html += panelHtml({ title:"Schwierigste Themen", small:"(„Nochmal“-Quote · Anzahl)",
+    desc:"Themen mit der höchsten „Nochmal“-Quote — die direkte Arbeitsliste für die Inhalts-Überarbeitung. Erst ab 5 Bewertungen je Thema gewertet.",
+    body: (le.difficult&&le.difficult.length? hbars(le.difficult.map(function(d){return {label:d.cat+" · "+fmtN(d.total),count:d.againPct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}}) : empty("Zu wenig Daten","ab 5 Bewertungen je Thema")) });
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Lernmodus", small:"(je Sitzung)",
+    desc:"In welchem Modus gelernt wird (Wiederholen, Neues, Spiele) — zeigt, welche Lernwege wirklich tragen.",
+    body: hbars((le.modes||[]).map(function(m){return {label:m.key,count:m.count};}),{color:"var(--ok)"}) });
+  html += panelHtml({ title:"Lernfortschritt", small:"(% gemeisterte Karten)",
+    desc:"Verteilung des Karten-Fortschritts über alle Nutzer. Wandert die Masse nach rechts, lernt die Basis wirklich dazu.",
+    body: (le.mastery&&le.mastery.length? hbars(sortBuckets(le.mastery).map(function(m){return {label:m.key+" %",count:m.count};}),{color:"var(--ok)"}) : empty("Keine Snapshots","entsteht mit dem ersten Tages-Snapshot")) });
+  html += '</div>';
+
+  html += panelHtml({ title:"Tagesziel", small:"("+esc(pct((s.trip&&s.trip.withGoalPct)||0))+" haben ein Reiseziel)",
+    desc:"Wie ambitioniert die selbst gesetzten Tagesziele sind — nur von Personen mit gesetztem Reiseziel.",
+    body: (s.trip&&s.trip.daily&&s.trip.daily.length? hbars(s.trip.daily.map(function(d){return {label:d.key,count:d.count};})) : empty("Keine Tagesziele","entsteht mit dem ersten Snapshot mit gesetztem Ziel")) });
+  html += '</section>';
+
+  // ================ 7 · SEGMENTE & EDITIONEN ===============================
+  html += zoneOpen(SECTIONS[6], 6);
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Plattformen", small:"(distinkte Personen)",
+    desc:"Worauf die App läuft — steuert, welche Geräteklassen beim Testen Priorität haben.",
+    body: donut((((s.segments&&s.segments.platforms))||[]).map(function(p){return {label:p.key,count:p.count};}),{centerLabel:"Personen",emptyWhat:"Keine Plattform-Daten",emptyWhy:"entsteht mit dem ersten Event"}) });
+  html += panelHtml({ title:"Editionen", small:"(distinkte Personen)",
+    desc:"Verteilung über die Ausgaben (Standard, Schule, Hostel …). Editionen sind der B2B-Umsatzkanal.",
+    body: donut((((s.segments&&s.segments.editions))||[]).map(function(e){return {label:e.key,count:e.count};}),{centerLabel:"Personen",emptyWhat:"Keine Editions-Daten",emptyWhy:"entsteht mit dem ersten Event mit edition-Feld"}) });
+  html += '</div>';
+
+  html += panelHtml({ title:"B2B: KPIs je Edition", small:"(Umsatzkanal)",
+    desc:"Nutzung, Aktivierung und Wochenaktivität je verkaufter Edition — die Zahlen für das nächste Kundengespräch.",
+    body: editionTable(inv.editions) });
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Sprachen &amp; Tracks",
+    desc:"Oberflächensprache und gewählter Lern-Track (z. B. de-es, de-en) — zeigt, welche Zielgruppen real angekommen sind.",
+    body: hbars(s.meta.locales) + '<h4>Lern-Tracks</h4>' + hbars(s.meta.tracks) });
+  html += panelHtml({ title:"Feature-Adoption", small:"(Snapshot: je Modus benutzt)",
+    desc:"Wie viele Nutzer die jeweilige Funktion mindestens einmal benutzt haben — Adoption, nicht Häufigkeit.",
+    body: hbars(((s.meta.snapshotFeatureAdoption)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--ok)",emptyWhat:"Keine Feature-Daten",emptyWhy:"entsteht mit dem ersten Tages-Snapshot mit features-Feld"}) });
+  html += '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Karten heute", small:"(Snapshot-Verteilung)",
+    desc:"Tagespensum: wie viele Karten am Snapshot-Tag gelernt wurden.",
+    body: hbars(sortBuckets(s.meta.snapshotCardsToday).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--easy)",emptyWhat:"Keine Karten-Daten",emptyWhy:"entsteht mit dem ersten Tages-Snapshot mit gelernten Karten"}) });
+  html += panelHtml({ title:"Bewertungen gesamt", small:"(Lebenszeit)",
+    desc:"Kumulierte Karten-Bewertungen je Person seit Installation — trennt Neulinge von Vielnutzern.",
+    body: hbars(sortBuckets(s.meta.snapshotReviews).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--easy)",emptyWhat:"Keine Bewertungs-Daten",emptyWhy:"entsteht mit dem ersten Tages-Snapshot mit Lebenszeit-Bewertungen"}) });
+  html += '</div>';
+  html += '</section>';
+
+  // ================= 8 · QUALITÄT & TECHNIK ================================
+  html += zoneOpen(SECTIONS[7], 7);
+  html += '<div class="kpis">'
+    + kpi({ tier:2, empty:noBasis, raw:fmtN(eps), label:"Fehler / Sitzung",
+            target:{ok:eps<=0.1,text:"Ziel ≤ 0,1"}, tone:eps>0.1?"var(--no)":"var(--ok)",
+            hint:fmtN((inv.quality&&inv.quality.errors)||0)+" Fehler gesamt" })
+    + kpi({ tier:2, empty:virgin, raw:fmtN(s.totals.errors||0), label:"Fehler im Fenster",
+            target:{ok:!s.totals.errors,text:s.totals.errors?"Fehler aufgetreten":"keine Fehler"}, tone:s.totals.errors?"var(--no)":null,
+            hint:"JS-Fehler aus dem error-Event" })
+    + '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Fehler", small:"(Monitoring)",
+    desc:"Die häufigsten Fehlermeldungen und ihre Verteilung über App-Versionen. Häufen sich Fehler in genau EINER Version, ist es ein Release-Problem — siehe Regressions-Alarm im Überblick.",
+    body: (s.errors.length? hbars(s.errors.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler im Fenster",""))
+      + '<h4>Fehler je App-Version</h4>'
+      + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler","")) });
+  html += panelHtml({ title:"App-Versionen",
+    desc:"Wie schnell Updates die Nutzerschaft erreichen. Alte Versionen mit vielen Nutzern verlängern die Zeit, die ein Bugfix bis zur Wirkung braucht.",
+    body: hbars(s.meta.appVersions) });
+  html += '</div>';
+  html += '</section>';
 
   $("app").innerHTML = html;
   $("window").textContent = "Fenster: "+s.windowDays+" Tage";
   $("updated").textContent = "Stand: "+new Date(s.generatedAt).toLocaleString("de-DE");
   $("tools").hidden = false;
   $("foot").hidden = false;
+  $("subnav").hidden = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -967,6 +1313,7 @@ function showGate(msg){
   stopTimer(); // sonst würde der Poll-Tick das Eingabefeld beim Tippen leeren
   $("tools").hidden = true;
   $("foot").hidden = true;
+  $("subnav").hidden = true;
   $("window").textContent = "";
   $("updated").textContent = "";
   $("app").innerHTML = '<div class="gate"><h2>Admin-Zugang</h2>'
@@ -1075,6 +1422,66 @@ function download(path, filename, mime){
 }
 function downloadJson(){ download("/stats", "holaruta-stats.json", "application/json"); }
 
+// ---- Bereichs-Navigation + Scrollspy ---------------------------------------
+// Die Links kommen aus derselben SECTIONS-Registry wie die Sektionsköpfe in
+// render() — Subnav und Seite können nicht auseinanderlaufen.
+$("subnavwrap").innerHTML = SECTIONS.map(function(sec){
+  return '<a href="#'+esc(sec.id)+'">'+esc(sec.title)+'</a>';
+}).join("");
+// Scroll-Listener statt IntersectionObserver: wir brauchen "letzte Sektion,
+// deren Kopf über der Subnav liegt" — das ist mit Rechteck-Abfrage direkt
+// ausdrückbar, mit Observer-Schwellen nur über Umwege.
+var spyPending = false;
+function updateSpy(){
+  spyPending = false;
+  var cur = SECTIONS.length ? SECTIONS[0].id : "";
+  for(var i=0;i<SECTIONS.length;i++){
+    var el = document.getElementById(SECTIONS[i].id);
+    if(el && el.getBoundingClientRect().top <= 90) cur = SECTIONS[i].id;
+  }
+  var links = $("subnavwrap").querySelectorAll("a");
+  for(var j=0;j<links.length;j++){
+    var on = links[j].getAttribute("href") === "#"+cur;
+    if(on) links[j].setAttribute("aria-current","true");
+    else links[j].removeAttribute("aria-current");
+  }
+}
+window.addEventListener("scroll", function(){
+  if(spyPending) return;
+  spyPending = true;
+  requestAnimationFrame(updateSpy);
+}, { passive:true });
+
+// ---- Diagramm-Tooltip ------------------------------------------------------
+// EINE wiederverwendete Tooltip-Instanz, per Delegation gefüllt aus data-tip.
+// Der Text ist beim Rendern bereits esc()-maskiert; hier deshalb textContent,
+// nie innerHTML.
+var tipEl = document.createElement("div");
+tipEl.className = "tip";
+document.body.appendChild(tipEl);
+function moveTip(e){
+  var x = Math.min(e.clientX + 12, window.innerWidth - tipEl.offsetWidth - 8);
+  var y = e.clientY - tipEl.offsetHeight - 10;
+  if(y < 4) y = e.clientY + 16;
+  tipEl.style.left = x + "px";
+  tipEl.style.top = y + "px";
+}
+document.addEventListener("pointerover", function(e){
+  var t = e.target && e.target.closest ? e.target.closest("[data-tip]") : null;
+  if(!t) { tipEl.classList.remove("on"); return; }
+  tipEl.textContent = t.getAttribute("data-tip");
+  tipEl.classList.add("on");
+  moveTip(e);
+});
+document.addEventListener("pointermove", function(e){
+  if(tipEl.classList.contains("on")) moveTip(e);
+});
+document.addEventListener("pointerout", function(e){
+  var t = e.target && e.target.closest ? e.target.closest("[data-tip]") : null;
+  if(t) tipEl.classList.remove("on");
+});
+
+$("print").addEventListener("click", function(){ window.print(); });
 $("refresh").addEventListener("click", load);
 $("exp-json").addEventListener("click", downloadJson);
 $("exp-csv").addEventListener("click", function(){ download("/stats.csv", "holaruta-stats.csv", "text/csv"); });
