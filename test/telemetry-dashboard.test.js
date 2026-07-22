@@ -38,7 +38,7 @@ function loadHelpers() {
   const ctx = { module: {}, exports: {} };
   vm.createContext(ctx);
   vm.runInContext(pure, ctx);
-  return vm.runInContext("({esc,fmtN,fmtDur,pct,empty,hbars,funnelChart,kpi,retEntry,retText,heatmap,editionTable,sortBuckets,stepLabel,seriesSummary,lineChart,vbars})", ctx);
+  return vm.runInContext("({esc,fmtN,fmtDur,pct,empty,hbars,funnelChart,kpi,retEntry,retText,heatmap,editionTable,sortBuckets,stepLabel,seriesSummary,lineChart,vbars,niceMax,donut,execSummary,zoneOpen,panelHtml,SECTIONS,GLOSSAR})", ctx);
 }
 
 const H = loadHelpers();
@@ -189,4 +189,88 @@ test("empty: nennt immer, was Daten erzeugen würde", () => {
   const html = H.empty("Keine Kohorten", "entsteht ab dem ersten Nutzer mit ≥ 2 aktiven Tagen");
   assert.match(html, /Keine Kohorten/);
   assert.match(html, /entsteht ab/);
+});
+
+// --- Achsenskala: y-Achse zeigt runde Zahlen, nie den krummen Rohwert --------
+
+test("niceMax: rundet auf 1/2/4/5/10 × 10^n auf", () => {
+  assert.equal(H.niceMax(7), 10);
+  assert.equal(H.niceMax(3), 4);
+  assert.equal(H.niceMax(47), 50);
+  assert.equal(H.niceMax(120), 200);
+  assert.equal(H.niceMax(1000), 1000);
+  assert.equal(H.niceMax(0), 1, "0/leer darf keine 0-Skala erzeugen (Division!)");
+});
+
+test("lineChart: Skala nutzt den geglätteten Deckenwert", () => {
+  const html = H.lineChart([{ day: "2026-07-01", count: 1 }, { day: "2026-07-02", count: 47 }]);
+  assert.match(html, />50</, "y-Achse soll 50 zeigen, nicht 47");
+});
+
+// --- Donut: Anteile stehen als Text, Kleinkram wird zusammengefasst ----------
+
+test("donut: Legende trägt Anzahl UND Prozent als Text, sr-Fassung existiert", () => {
+  const html = H.donut([{ label: "android", count: 3 }, { label: "ios", count: 1 }]);
+  assert.match(html, /<p class="sr">/);
+  assert.match(html, /<svg[^>]*aria-hidden="true"/);
+  assert.match(html, /75 %/);
+  assert.match(html, /25 %/);
+  assert.match(html, /android/);
+});
+
+test("donut: ab der 7. Kategorie wird zu 'Andere' zusammengefasst", () => {
+  const data = "abcdefgh".split("").map((k, i) => ({ label: k, count: 10 - i }));
+  const html = H.donut(data);
+  assert.match(html, /Andere \(3\)/);
+  assert.doesNotMatch(html, />h</, "kleinste Kategorie darf nicht einzeln auftauchen");
+});
+
+test("donut: leere/nur-null-Daten -> Leer-Zustand, Fremdtext maskiert", () => {
+  assert.match(H.donut([], { emptyWhat: "Keine Plattform-Daten" }), /class="empty"/);
+  assert.match(H.donut([{ label: "a", count: 0 }]), /class="empty"/);
+  const html = H.donut([{ label: '<img src=x>', count: 1 }]);
+  assert.doesNotMatch(html, /<img/);
+});
+
+// --- Kurzfassung: behauptet nur Messbares ------------------------------------
+
+test("execSummary: ohne aktive Personen keine Aussage", () => {
+  assert.equal(H.execSummary({ users: { total: 0 }, totals: {} }), "");
+});
+
+test("execSummary: n/a-Retention wird als 'nicht messbar' benannt, nie als 0 %", () => {
+  const s = {
+    windowDays: 7,
+    totals: { errors: 0 },
+    users: { total: 5, retention: [{ day: 7, eligible: 0, pct: 0 }] },
+    investor: { nsm: { wal: 3, trend: { deltaPct: 10 } }, activation: {}, growth: {} },
+  };
+  const html = H.execSummary(s);
+  assert.match(html, /noch nicht messbar/);
+  assert.doesNotMatch(html, /D7-Retention: <b>0 %/);
+  assert.match(html, /Keine JS-Fehler/);
+});
+
+// --- Bereichs-Registry: Subnav und Sektionsköpfe aus EINER Quelle ------------
+
+test("SECTIONS: acht Bereiche, ids eindeutig, jede mit Lesehilfe", () => {
+  assert.equal(H.SECTIONS.length, 8);
+  const ids = H.SECTIONS.map((s) => s.id);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const sec of H.SECTIONS) {
+    assert.ok(sec.title && sec.q && sec.desc, sec.id + " unvollständig");
+  }
+});
+
+test("zoneOpen: erzeugt Anker-id, Titel, Leitfrage und Beschreibung", () => {
+  const html = H.zoneOpen(H.SECTIONS[0], 0);
+  assert.match(html, /id="overview"/);
+  assert.match(html, /Überblick/);
+  assert.match(html, /zone__desc/);
+});
+
+test("panelHtml: Lesehilfe wird maskiert, Fuß bleibt HTML", () => {
+  const html = H.panelHtml({ title: "T", desc: '<b>x</b>', body: "B", foot: "<b>ok</b>" });
+  assert.match(html, /&lt;b&gt;x&lt;\/b&gt;/, "desc ist Klartext und muss maskiert werden");
+  assert.match(html, /<b>ok<\/b>/, "foot ist bewusst HTML (kommt nur aus eigenem Code)");
 });
