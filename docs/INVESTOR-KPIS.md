@@ -172,13 +172,19 @@ Für einen europäischen Investor ist das ein **Verkaufsargument**: belastbare P
 ```
 App-Interaktion → analytics.track(<event>)  ──►  POST /v1/events (opt-in, Batch)
                                                         │
-                        tools/telemetry-server.js: aggregate(events, usage)
+                                          Supabase-Tabelle `event` (RLS, service_role)
+                                                        │
+                              GET /v1/admin/stats  (api/_v1/admin/stats.js)
+                                          │  paginiert Supabase → tools/telemetry-map.js
+                                          ▼
+                        aggregate(events, usage)  (tools/telemetry-server.js, geteilt mit Self-Host)
                                                         │  investor{ nsm, cohorts, growth,
                                                         │            activation, virality,
                                                         │            interactions, timeOnTask,
                                                         │            featureFunnel, editions }
                                                         ▼
                         tools/telemetry-dashboard.html  →  📈 Investor-Cockpit
+                        (?base=/api = Self-Host-JSONL · ?base=https://holaruta.com/v1/admin = Produktion)
 ```
 
 - **Events** (Taxonomie & Felder): `docs/TELEMETRIE.md §3` — inkl. der neuen `feature_start`,
@@ -190,6 +196,23 @@ App-Interaktion → analytics.track(<event>)  ──►  POST /v1/events (opt-in
 ---
 
 ## 6. Betrieb & Demo (für den Pitch)
+
+**Produktion (echte Zahlen von holaruta.com):**
+
+```bash
+# curl: Token als Header, nicht in der URL (landet sonst in Proxy-/Access-Logs):
+curl -H "Authorization: Bearer $ADMIN_TELEMETRY_TOKEN" https://holaruta.com/v1/admin/kpis.csv
+```
+
+Das Dashboard (statische Datei, `fetch()` aus dem Browser) kann den Header nicht setzen und braucht
+den Token zwangsläufig in der URL — `?base=https://holaruta.com/v1/admin&token=…`. Der Token ist damit
+log-sichtbar (Vercel-Access-Logs, Referer) und entsprechend als **rotierbar**, nicht als
+langlebiges Secret zu behandeln.
+
+Voraussetzung: Vercel-Env-Var `ADMIN_TELEMETRY_TOKEN` gesetzt (fail-closed ohne sie, 500). Liest live
+aus Supabase (`event`/`usage_snapshot`) — dieselbe `aggregate()` wie unten, keine separate Demo-Logik.
+
+**Self-Host/Demo (ohne Produktions-Zugang):**
 
 ```bash
 node tools/telemetry-server.js          # Collector + Dashboard auf :8789
@@ -203,9 +226,10 @@ In einer Edition den Endpunkt setzen und im Profil „Nutzungsstatistik teilen �
 analytics: { enabled: true, endpoint: "http://localhost:8789" }
 ```
 
-> ⚠️ Der mitgelieferte Collector ist ein **Self-Host-/Demo-Tool** (Datei-Storage, In-Memory-
-> Aggregation, optionaler Token). Für Produktion gehören ein echter Event-Store, Auth,
-> Rate-Limits und EU-Hosting davor — siehe [`BACKEND.md §17.6`](../BACKEND.md).
+> ⚠️ `tools/telemetry-server.js` bleibt ein **Self-Host-/Demo-Tool** (Datei-Storage, In-Memory-
+> Aggregation, optionaler Token) für lokales Ausprobieren ohne eigenes Backend. Der **Produktionspfad**
+> ist `/v1/admin/stats` — echter Event-Store (Supabase, RLS), Rate-Limits, EU-Hosting, siehe
+> [`BACKEND.md §17.6`](../BACKEND.md).
 
 ---
 

@@ -58,6 +58,11 @@ module.exports = async (req, res) => {
   // umgehen und den append-only event-Store fluten).
   if (!(await allow("events:" + clientIp(req), 120, 60))) return send(res, 429, { error: "rate limited" });
 
-  await db.from("event").insert(rows);
+  const { error } = await db.from("event").insert(rows);
+  // Fehler NICHT als 200 quittieren: der Client markiert Events erst nach `ok:true`
+  // als gesendet (analytics.js:flush) — ein stiller 200 bei DB-Fehler (z. B. Schema-
+  // Drift nach unvollständigem Migrations-Rollout) würde die Events unwiederbringlich
+  // aus der lokalen Retry-Queue entfernen, ohne dass sie je gespeichert wurden.
+  if (error) return send(res, 500, { error: "insert failed" });
   return send(res, 200, { ok: true });
 };
