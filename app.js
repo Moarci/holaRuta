@@ -3200,6 +3200,19 @@
         return;
       }
     }
+    // Onboarding-Profil: Fokus direkt ins Namensfeld – das einzige Pflicht-Gate des
+    // Onboardings. Die Tastatur erscheint sofort, ein Tap weniger bis „Weiter"
+    // (senkt die Friktion am kritischsten Schritt). preventScroll wie bei Suche/
+    // Diálogos, Cursor ans Ende eines ggf. vorbelegten Namens.
+    if (state.screen === "onboarding" && (state.onboardStep || "") === "profile") {
+      const input = document.getElementById("onboard-name");
+      if (input) {
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+        const len = input.value.length;
+        try { input.setSelectionRange(len, len); } catch (e) { /* egal */ }
+        return;
+      }
+    }
     const target = root.querySelector("h2, [data-action='card-back'], [data-action='home'], .topbar .iconbtn") || root.firstElementChild;
     if (target) {
       if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
