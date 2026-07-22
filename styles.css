@@ -4281,8 +4281,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Erklär-Slides am Onboarding-Anfang (Überblick: wie funktioniert die App, welcher Umfang). */
 .onboarding--intro .onboarding__inner { gap: 16px; text-align: center; }
-.onboarding__slide { display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 9.5rem; justify-content: center; }
-.onboarding__icon { font-size: 3rem; line-height: 1; }
+/* Slide als eigene Karte – gleiche Optik wie das Login-/Willkommen-Panel, damit
+   die Onboarding-Schritte wie eine Familie wirken. min-height hält die Karte über
+   alle Slides hinweg gleich hoch (der „Weiter"-Knopf springt sonst je Textlänge). */
+.onboarding__slide {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  min-height: 12.5rem; justify-content: center;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
+  padding: 26px 22px 28px;
+}
+/* Icon als Marken-Medaillon: terrakotta getönte Scheibe statt nacktem Strich-Icon
+   im Leerraum – gibt jedem Slide einen ruhigen Blickfang. */
+.onboarding__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 84px; height: 84px; font-size: 2.1rem; line-height: 1;
+  color: var(--brand-ink);
+  background: color-mix(in srgb, var(--brand) 12%, var(--card));
+  border: 1.5px solid color-mix(in srgb, var(--brand) 28%, transparent);
+  border-radius: 50%; box-shadow: var(--shadow);
+}
 .onboarding--intro .onboarding__intro { margin: 0; max-width: 24rem; }
 .onboarding__dots { display: flex; justify-content: center; gap: 2px; margin: 2px 0; }
 /* Tap-Ziel großzügig (≈34px, fingerfreundlich), sichtbarer Punkt klein über ::before.
@@ -4735,9 +4753,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     padding: 40px 44px 36px;
     gap: 14px;
   }
-  /* Die ganze Karte ist hier schon das Panel -> das innere .authcard flach halten
-     (kein Karte-in-Karte), nur die Gruppierung/Abstände bleiben erhalten. */
+  /* Die ganze Karte ist hier schon das Panel -> das innere .authcard bzw. die
+     Intro-Slide flach halten (kein Karte-in-Karte); Medaillon/Abstände bleiben. */
   .authcard { background: transparent; border: none; box-shadow: none; padding: 0; }
+  .onboarding--intro .onboarding__slide {
+    background: transparent; border: none; box-shadow: none; padding: 0;
+    min-height: 12rem;
+  }
   .onboarding__title { font-size: 1.9rem; }
   .onboarding__intro { font-size: 1.02rem; line-height: 1.55; }
   .onboarding--intro .onboarding__inner { gap: 20px; }
