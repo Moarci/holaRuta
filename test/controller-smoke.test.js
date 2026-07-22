@@ -194,6 +194,39 @@ test("open-search rendert den Suche-Screen mit Eingabefeld", () => {
 });
 
 // ---------------------------------------------------------------------------
+// 4b) Profil-Umbau: die Einstell-/Reise-Steuerung ist aus dem Profil AUSGELAGERT
+//     (Entschlackung) und vollständig auf den neuen Screens ANGEKOMMEN. Ein
+//     versehentliches Zurückrutschen ins Profil ODER ein verlorenes Bedienelement
+//     fällt damit sofort auf.
+// ---------------------------------------------------------------------------
+test("Profil ist entschlackt: Einstellungen & Reise liegen auf eigenen Screens", () => {
+  const root = freshApp();
+  const d = makeDriver(root);
+  d.setTab("profil");
+  const profil = d.html();
+  // Der Profil-Reiter selbst trägt KEINE Einstell-/Reise-Steuerung mehr …
+  for (const moved of ["set-mode", "set-dir", "set-theme", "set-ui-lang", "export-data", "import-data", "drag-trip-stop"]) {
+    assert.doesNotMatch(profil, new RegExp(`data-action="${moved}"`), `"${moved}" gehört nicht mehr aufs Profil`);
+  }
+  // … sondern nur noch die schlanke Sprungziel-Liste dorthin.
+  assert.match(profil, /data-action="open-settings"/, "Einstellungen-Sprungziel fehlt im Profil");
+  assert.match(profil, /data-action="open-reise"/, "Reise-Sprungziel fehlt im Profil");
+
+  // Einstellungen-Screen: alle globalen Vorgaben + der Daten-Block sind da.
+  assert.ok(d.click("open-settings"), "open-settings öffnet den Screen");
+  const settings = d.html();
+  for (const ctrl of ["set-theme", "save-name", "set-mode", "set-dir", "export-data", "import-data"]) {
+    assert.match(settings, new RegExp(`data-action="${ctrl}"`), `"${ctrl}" fehlt in den Einstellungen`);
+  }
+  assert.match(settings, /id="import-file"/, "verstecktes Import-Feld fehlt in den Einstellungen");
+
+  // Reise-Screen: die Reiseplanung rendert (leerer Zustand => Anlege-Knopf).
+  d.setTab("profil");
+  assert.ok(d.click("open-reise"), "open-reise öffnet den Screen");
+  assert.ok(d.nonEmpty(), "Reise-Screen rendert Inhalt");
+});
+
+// ---------------------------------------------------------------------------
 // 5) Statistik + Filter
 // ---------------------------------------------------------------------------
 test("open-stats rendert die Statistik; alle Filter sind durchschaltbar", () => {

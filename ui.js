@@ -363,7 +363,8 @@
   }
 
   // Trip-Ziel: read-only Countdown-Karte (bis zum Reisedatum + Tages-Fortschritt).
-  // action steuert den Tap (Dashboard -> "manage-trip" ins Profil, Profil -> "trip-edit").
+  // action steuert den Tap (Dashboard -> "manage-trip" öffnet den Reise-Screen,
+  // Reise-Screen -> "trip-edit" klappt das Bearbeiten-Formular auf).
   function tripDisplayCard(trip, action) {
     const dest = trip.destination ? esc(trip.destination) : esc(t("home.tripYourTrip"));
     const route = Array.isArray(trip.route) ? trip.route : [];
@@ -420,7 +421,7 @@
   // Schnellwechsel Reiseland: ein Tap hängt das Land an die Reise-Zeitleiste an
   // (Datum & Tagesziel bleiben) und schaltet damit auch die länderspezifischen
   // Pre-Arrival-Kacheln auf der Startseite um. Länder, die schon in der Route sind,
-  // leuchten. Nur im Profil unter dem Trip-Ziel sichtbar (siehe tripManage).
+  // leuchten. Nur auf dem Reise-Screen unter dem Trip-Ziel sichtbar (siehe tripManage).
   const TRIP_COUNTRIES = [
     { id: "colombia",  flag: "🇨🇴", dest: "Kolumbien" },
     { id: "peru",      flag: "🇵🇪", dest: "Peru" },
