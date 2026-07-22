@@ -1449,9 +1449,9 @@
       <nav class="profnav" aria-label="${esc(t("profile.progressTitle"))}">
         ${navrow("open-stats", "lc:bar-chart-3", t("profile.statistics"))}
         ${vm.hasBadges ? navrow("open-badges", "lc:award", t("profile.rutaPass"), vm.badgeCount || "") : ""}
+        ${vm.socialEnabled ? navrow("open-social", "lc:trophy", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
         ${navrow("open-favorites", "lc:star", t("profile.favorites"), vm.favCount || "")}
         ${navrow("open-editor", "lc:square-pen", t("profile.ownCards"))}
-        ${vm.socialEnabled ? navrow("open-social", "lc:trophy", t("social.navTitle"), vm.socialLoggedIn ? "✓" : "") : ""}
         ${vm.showTrip === false ? "" : navrow("open-reise", "lc:target", t("profile.myTrip"))}
         ${navrow("open-settings", "lc:settings", t("profile.settings"))}
       </nav>
