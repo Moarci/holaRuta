@@ -27,7 +27,12 @@ let _auth = null;
 function authClient() {
   if (!_auth) {
     _auth = createClient(env("SUPABASE_URL"), env("SUPABASE_ANON_KEY"), {
-      auth: { persistSession: false, autoRefreshToken: false },
+      // flowType "implicit": Der Google-OAuth-Redirect kommt mit dem Supabase-
+      // Access-Token im URL-Fragment zurück (kein PKCE-code_verifier, der über
+      // zwei zustandslose Function-Aufrufe hinweg erhalten bleiben müsste). Die
+      // Callback-Seite reicht das Token an /v1/auth/google/confirm, wo getUser()
+      // es validiert und wir daraus unseren eigenen Opaque-Session-Token minten.
+      auth: { persistSession: false, autoRefreshToken: false, flowType: "implicit" },
     });
   }
   return _auth;

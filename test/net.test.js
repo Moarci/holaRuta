@@ -316,3 +316,43 @@ test("request: kleiner opts.timeout wird benutzt (bricht VOR einer langsamen Ant
     /aborted/,
   );
 });
+
+// ---- Google-OAuth (net.googleStart / net.googleConfirm) ----------------------
+
+test("googleConfirm: tauscht Supabase-Token gegen Session-Token und speichert es", async () => {
+  reset();
+  stubFetch(() => res(200, JSON.stringify({ accessToken: "hr-google-1", account: { email: "g@x" } })));
+  const r = await net.googleConfirm("http://api", "supabase-jwt");
+  assert.equal(last.url, "http://api/v1/auth/google/confirm", "richtiger Pfad");
+  assert.equal(last.opts.method, "POST");
+  assert.deepEqual(JSON.parse(last.opts.body), { supabaseToken: "supabase-jwt" }, "sendet supabaseToken");
+  assert.equal(r.accessToken, "hr-google-1");
+  assert.equal(net.getToken(), "hr-google-1", "Token landet in localStorage");
+  assert.equal(net.loggedIn(), true);
+});
+
+test("googleConfirm: ohne accessToken -> wirft, kein Token (kein stilles Anmelden)", async () => {
+  reset();
+  stubFetch(() => res(401, JSON.stringify({ error: "invalid token" })));
+  await assert.rejects(() => net.googleConfirm("http://api", "bad"), /google confirm failed/);
+  assert.equal(net.getToken(), null);
+});
+
+test("googleConfirm: accessToken im Body, aber HTTP-Fehler -> wirft, kein Token", async () => {
+  reset();
+  stubFetch(() => res(400, JSON.stringify({ accessToken: "sneaky" })));
+  await assert.rejects(() => net.googleConfirm("http://api", "x"), /google confirm failed/);
+  assert.equal(net.getToken(), null, "r.ok zählt, nicht nur das Feld");
+});
+
+test("googleStart: baut die Start-URL mit encodetem redirect (kein window -> No-op)", () => {
+  reset();
+  // In der Testumgebung gibt es kein echtes window.location.href-Setter -> googleStart
+  // faengt das ab und liefert die URL trotzdem als Rueckgabe zurück.
+  const url = net.googleStart("http://api", "https://app.example/auth-callback.html");
+  assert.equal(
+    url,
+    "http://api/v1/auth/google/start?redirect=" + encodeURIComponent("https://app.example/auth-callback.html"),
+    "redirect ist URL-encodet und haengt an /v1/auth/google/start",
+  );
+});

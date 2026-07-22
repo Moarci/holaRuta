@@ -246,6 +246,14 @@ function buildDist() {
   // Screenshots, die sie zeigt. Bewusst NICHT im Service-Worker-Precache, damit der
   // PWA-Offline-Cache der App schlank bleibt (Marketing muss nicht offline laufen).
   for (const extra of [
+    // Google-OAuth-Callback: Bounce-Seite, die das Supabase-Token gegen unseren
+    // Session-Token tauscht (siehe api/_v1/auth/google/*). Muss in dist/ liegen,
+    // damit der redirectTo der OAuth-URL greift. Braucht kein Precache (Auth ist
+    // ohnehin online), lädt aber /net.js (bereits im App-Bundle/Precache).
+    "auth-callback.html",
+    // Datenschutzerklärung (Account-First -> personenbezogene Daten). Von der
+    // Login-Legal-Zeile und der App verlinkt; muss in dist/ erreichbar sein.
+    "datenschutz.html",
     "og-image.png",
     "og-image-square.png",
     // HelloAbroad-Edition (DE-EN): eigene Social-Vorschau für die Marketing-Landing.

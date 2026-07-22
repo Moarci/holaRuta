@@ -110,6 +110,23 @@
       .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("confirm failed"); });
   }
 
+  // Google-OAuth (BACKEND.md §7): den Browser zur serverseitig gebauten Google-URL
+  // navigieren. redirect = eigene Callback-Seite (auth-callback.html), die das
+  // zurückkommende Supabase-Token via googleConfirm gegen unseren Session-Token
+  // tauscht. Voll-Redirect statt eingebettetem Google-Script -> CSP bleibt eng
+  // (kein `script-src accounts.google.com`), keine Framework-Abhängigkeit im Client.
+  function googleStart(base, redirect) {
+    var url = base + "/v1/auth/google/start?redirect=" + encodeURIComponent(redirect || "");
+    try { window.location.href = url; } catch (e) { /* kein window -> No-op (Tests) */ }
+    return url;
+  }
+  // Von der Callback-Seite genutzt: das Supabase-Access-Token (aus dem Implicit-
+  // Redirect-Fragment) gegen unseren Opaque-Session-Token tauschen und speichern.
+  function googleConfirm(base, supabaseToken) {
+    return request(base, "POST", "/v1/auth/google/confirm", { supabaseToken: supabaseToken })
+      .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("google confirm failed"); });
+  }
+
   SC.net = {
     TOKEN_KEY: TOKEN_KEY,
     getToken: getToken,
@@ -119,5 +136,7 @@
     request: request,
     login: login,
     confirm: confirm,
+    googleStart: googleStart,
+    googleConfirm: googleConfirm,
   };
 })();

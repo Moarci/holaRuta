@@ -4214,6 +4214,22 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .onboarding__powered { margin: 1px 0 0; font-size: 0.68rem; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
 .onboarding__intro { color: var(--muted); margin: 0 0 4px; }
 
+/* Account-First-Login (Gate am Start). Google-Button + passwortloser E-Mail-Code. */
+.account__google { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #3c4043; border: 1px solid rgba(60,64,67,0.22); font-weight: 700; }
+.account__google:hover { background: #f7f8f8; }
+.account__google[disabled] { opacity: 0.6; }
+.account__gicon { flex: 0 0 auto; }
+.account__or { display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 0.85rem; margin: 2px 0; }
+.account__or::before, .account__or::after { content: ""; flex: 1; height: 1px; background: rgba(45,27,18,0.14); }
+.account__or span { padding: 0 12px; }
+.account__error { color: var(--bad, #c0392b); font-size: 0.9rem; margin: 2px 0 0; }
+.account__legal { color: var(--muted); font-size: 0.72rem; line-height: 1.4; margin: 6px 0 0; }
+.account__legal a { color: var(--brand-ink); }
+@media (prefers-color-scheme: dark) {
+  .account__google { background: #22303c; color: #e8eaed; border-color: rgba(232,234,237,0.2); }
+  .account__google:hover { background: #29404f; }
+}
+
 /* Erklär-Slides am Onboarding-Anfang (Überblick: wie funktioniert die App, welcher Umfang). */
 .onboarding--intro .onboarding__inner { gap: 16px; text-align: center; }
 .onboarding__slide { display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 9.5rem; justify-content: center; }

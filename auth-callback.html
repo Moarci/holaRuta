@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <meta name="color-scheme" content="light dark" />
+  <!-- Auth-Bounce-Seite: kein Nutzer-Input wird gerendert; die kleine Inline-Logik
+       braucht 'unsafe-inline'. connect-src 'self' -> nur die eigene /v1-API. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'" />
+  <title>HolaRuta – Anmeldung …</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex; align-items: center; justify-content: center;
+      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #fbf6f0; color: #2d1b12;
+    }
+    @media (prefers-color-scheme: dark) { body { background: #1b120c; color: #f3e7dd; } }
+    .box { text-align: center; padding: 24px; max-width: 22rem; }
+    .spinner {
+      width: 28px; height: 28px; margin: 0 auto 14px; border-radius: 50%;
+      border: 3px solid rgba(150,110,80,0.3); border-top-color: #c8642d;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    a { color: #c8642d; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="spinner" id="spin" aria-hidden="true"></div>
+    <p id="msg">Anmeldung wird abgeschlossen …</p>
+    <p id="fallback" hidden><a href="/">Zurück zu HolaRuta</a></p>
+  </div>
+  <!-- net.js liefert SC.net.googleConfirm; standalone lauffähig (nur window + fetch). -->
+  <script src="/net.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var origin = window.location.origin;
+      function fail(text) {
+        var s = document.getElementById("spin"); if (s) s.hidden = true;
+        var m = document.getElementById("msg"); if (m) m.textContent = text || "Anmeldung fehlgeschlagen.";
+        var f = document.getElementById("fallback"); if (f) f.hidden = false;
+        // Ohne Zutun nach kurzer Zeit zurück zur App (dort greift das Login-Gate erneut).
+        setTimeout(function () { try { window.location.replace("/"); } catch (e) {} }, 2500);
+      }
+      // Fragment nach access_token / error parsen (Implicit-Flow von Supabase).
+      var frag = (window.location.hash || "").replace(/^#/, "");
+      var params = new URLSearchParams(frag);
+      if (!frag && window.location.search) params = new URLSearchParams(window.location.search.replace(/^\?/, ""));
+      if (params.get("error")) { fail("Anmeldung abgebrochen."); return; }
+      var token = params.get("access_token");
+      if (!token || !(window.SC && window.SC.net && window.SC.net.googleConfirm)) { fail(); return; }
+      window.SC.net.googleConfirm(origin, token).then(function () {
+        // Token liegt jetzt in localStorage (spanischcard.synctoken.v1) -> App startet eingeloggt.
+        try { window.location.replace("/"); } catch (e) { window.location.href = "/"; }
+      }, function () { fail(); });
+    })();
+  </script>
+</body>
+</html>

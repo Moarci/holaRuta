@@ -30,6 +30,8 @@ const assignmentsState = require("../../_v1/assignments/id/state");
 const authStart = require("../../_v1/auth/start");
 const authConfirm = require("../../_v1/auth/confirm");
 const authLogout = require("../../_v1/auth/logout");
+const authGoogleStart = require("../../_v1/auth/google/start");
+const authGoogleConfirm = require("../../_v1/auth/google/confirm");
 const classesIndex = require("../../_v1/classes/index");
 const classesJoin = require("../../_v1/classes/id/join");
 const classesRoster = require("../../_v1/classes/id/roster");
@@ -69,6 +71,8 @@ module.exports = async (req, res) => {
   }
 
   if (segs.length === 3) {
+    if (a === "auth" && b === "google" && c === "start") return authGoogleStart(req, res);
+    if (a === "auth" && b === "google" && c === "confirm") return authGoogleConfirm(req, res);
     if (a === "assignments" && c === "state") { req.query.id = b; return assignmentsState(req, res); }
     if (a === "classes" && c === "join") { req.query.id = b; return classesJoin(req, res); }
     if (a === "classes" && c === "roster") { req.query.id = b; return classesRoster(req, res); }
