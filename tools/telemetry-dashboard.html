@@ -362,6 +362,43 @@ function empty(what, why){
   return '<p class="empty"><b>'+esc(what)+'</b>'+(why? ' — '+esc(why) : '')+'</p>';
 }
 
+// Trichter-Stufen kommen als stabile Event-Schlüssel vom Server (die gehören da
+// auch hin — CSV-Export und API dürfen sich nicht mit der Oberflächensprache
+// ändern). Übersetzt wird deshalb erst hier, in der Anzeigeschicht. Unbekannte
+// Schlüssel fallen absichtlich unübersetzt durch, damit eine neue Server-Stufe
+// sichtbar bleibt statt still zu verschwinden.
+var STEP_LABELS = {
+  // Onboarding (aggregate(): funnel)
+  intro: "Einstieg gesehen",
+  profile: "Profil angelegt",
+  trip: "Reiseziel gewählt",
+  complete: "Onboarding beendet",
+  // Aktivierung (aggregate(): investor.activation.funnel)
+  "new": "Neu im Fenster",
+  onboarding_complete: "Onboarding beendet",
+  first_session: "Erste Lernrunde",
+  returning: "Wiedergekommen"
+};
+function stepLabel(k){ return STEP_LABELS[k] || String(k==null?"":k); }
+
+// Textfassung einer Zeitreihe für Screenreader. Ein <svg> voller <title> auf
+// nicht-fokussierbaren Punkten ist per Tastatur unerreichbar — die Kernaussage
+// (Spanne, Höchstwert, aktueller Wert) muss als Text existieren.
+function seriesSummary(series, unit){
+  if(!series || !series.length) return "Keine Daten.";
+  var max = series[0], min = series[0];
+  series.forEach(function(d){
+    if((d.count||0) > (max.count||0)) max = d;
+    if((d.count||0) < (min.count||0)) min = d;
+  });
+  var last = series[series.length-1];
+  var u = unit || "";
+  return series.length + " Werte von " + series[0].day + " bis " + last.day
+    + ". Höchstwert " + fmtN(max.count||0) + u + " am " + max.day
+    + ", niedrigster " + fmtN(min.count||0) + u + " am " + min.day
+    + ", zuletzt " + fmtN(last.count||0) + u + ".";
+}
+
 // Horizontale Balkenliste: data = [{key/label, count, color?}]
 function hbars(data, opts){
   opts = opts || {};
@@ -401,11 +438,12 @@ function spark(series, opts){
 // Grund: das Plot-SVG wird mit preserveAspectRatio="none" auf die Panelbreite
 // gezogen; SVG-<text> darin würde mitverzerrt (auf dem Handy zu ~3px-Glyphen
 // zusammengequetscht). HTML-Labels bleiben in jeder Breite lesbar.
-function chartFrame(plotSvg, max, labels, legend){
+function chartFrame(plotSvg, max, labels, legend, summary){
   return '<div class="chart">'
-    + '<div class="chart__y"><span>'+esc(fmtN(max))+'</span><span>0</span></div>'
+    + (summary? '<p class="sr">'+esc(summary)+'</p>' : '')
+    + '<div class="chart__y" aria-hidden="true"><span>'+esc(fmtN(max))+'</span><span>0</span></div>'
     + '<div class="chart__plot">'+plotSvg+'</div>'
-    + '<div class="chart__x">'+labels.map(function(l){ return '<span>'+esc(l)+'</span>'; }).join("")+'</div>'
+    + '<div class="chart__x" aria-hidden="true">'+labels.map(function(l){ return '<span>'+esc(l)+'</span>'; }).join("")+'</div>'
     + (legend? '<div class="chart__legend">'+legend+'</div>' : '')
     + '</div>';
 }
@@ -435,12 +473,14 @@ function lineChart(series, opts){
     maLine = '<polyline points="'+mapts.join(" ")+'" fill="none" stroke="var(--warn)" stroke-width="2" vector-effect="non-scaling-stroke"/>';
   }
   var dots = series.map(function(d,i){ return '<circle cx="'+xs(i).toFixed(1)+'" cy="'+ys(d.count).toFixed(1)+'" r="2" fill="'+color+'" vector-effect="non-scaling-stroke"><title>'+esc(d.day)+': '+esc(fmtN(d.count||0))+'</title></circle>'; }).join("");
-  var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
     + '<path d="'+area+'" fill="'+color+'" opacity="0.14"/>'
     + '<polyline points="'+pts.join(" ")+'" fill="none" stroke="'+color+'" stroke-width="1.8" vector-effect="non-scaling-stroke"/>'
     + maLine + dots + '</svg>';
-  var legend = opts.ma ? '<span style="color:'+color+'">■</span> täglich · <span style="color:var(--warn)">■</span> '+opts.ma+'-Tage-Mittel' : "";
-  return chartFrame(svg, max, xLabels(series, opts.xlabel), legend);
+  // Die Quadrate tragen nur die Farbzuordnung; vorgelesen ergäben sie
+  // "schwarzes Quadrat täglich schwarzes Quadrat 7-Tage-Mittel".
+  var legend = opts.ma ? '<span style="color:'+color+'" aria-hidden="true">■</span> täglich · <span style="color:var(--warn)" aria-hidden="true">■</span> '+opts.ma+'-Tage-Mittel' : "";
+  return chartFrame(svg, max, xLabels(series, opts.xlabel), legend, seriesSummary(series, opts.unit));
 }
 
 // Vertikales Balkendiagramm.
@@ -457,8 +497,8 @@ function vbars(series, opts){
     var x = i*(W/n);
     return '<rect x="'+x.toFixed(1)+'" y="'+(H-h)+'" width="'+Math.max(1,bw).toFixed(1)+'" height="'+h+'" rx="1.5" style="fill:'+color+'"><title>'+esc(d.day)+': '+esc(fmtN(d.count||0))+'</title></rect>';
   }).join("");
-  var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+bars+'</svg>';
-  return chartFrame(svg, max, xLabels(series, opts.xlabel));
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true" focusable="false">'+bars+'</svg>';
+  return chartFrame(svg, max, xLabels(series, opts.xlabel), "", seriesSummary(series, opts.unit));
 }
 
 // Trichter.
@@ -474,7 +514,7 @@ function vbars(series, opts){
 // Wert skaliert (sonst stünden alle Stufen auf 100 % und der Balken trüge
 // überhaupt keine Information mehr), plus ein Hinweis, warum.
 function funnelChart(steps, emptyWhy){
-  steps = (steps||[]).map(function(s){ return { label: s.label!=null?s.label:s.step, count: s.count||0 }; });
+  steps = (steps||[]).map(function(s){ return { label: s.label!=null?s.label:stepLabel(s.step), count: s.count||0 }; });
   if(!steps.length || !steps.some(function(s){return s.count>0;})) return empty("Keine Trichter-Daten", emptyWhy||"");
   var top = steps[0].count;
   var peak = steps.reduce(function(m,s){ return Math.max(m, s.count); }, 0) || 1;

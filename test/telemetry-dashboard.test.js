@@ -37,8 +37,8 @@ function loadHelpers() {
   assert.ok(pure.includes("function funnelChart"), "Reiner Teil enthält die Render-Helfer nicht mehr");
   const ctx = { module: {}, exports: {} };
   vm.createContext(ctx);
-  vm.runInContext(pure + "\n;({esc,fmtN,fmtDur,pct,empty,hbars,funnelChart,kpi,retEntry,retText,heatmap,editionTable,sortBuckets});", ctx);
-  return vm.runInContext("({esc,fmtN,fmtDur,pct,empty,hbars,funnelChart,kpi,retEntry,retText,heatmap,editionTable,sortBuckets})", ctx);
+  vm.runInContext(pure, ctx);
+  return vm.runInContext("({esc,fmtN,fmtDur,pct,empty,hbars,funnelChart,kpi,retEntry,retText,heatmap,editionTable,sortBuckets,stepLabel,seriesSummary,lineChart,vbars})", ctx);
 }
 
 const H = loadHelpers();
@@ -142,6 +142,47 @@ test("fmtN: Tausendertrennung deutsch, Nicht-Zahlen unverändert", () => {
   assert.equal(H.fmtN(3.4), "3,4");
   assert.equal(H.fmtN("n/a"), "n/a");
   assert.equal(H.fmtN(undefined), undefined);
+});
+
+// --- Trichter-Beschriftung: Server liefert Schlüssel, Oberfläche ist deutsch ---
+
+test("stepLabel: übersetzt bekannte Schlüssel", () => {
+  assert.equal(H.stepLabel("onboarding_complete"), "Onboarding beendet");
+  assert.equal(H.stepLabel("first_session"), "Erste Lernrunde");
+  assert.equal(H.stepLabel("intro"), "Einstieg gesehen");
+});
+
+test("stepLabel: unbekannter Schlüssel bleibt sichtbar statt zu verschwinden", () => {
+  // Eine neue Server-Stufe soll auffallen, nicht still als leere Zeile enden.
+  assert.equal(H.stepLabel("brandneue_stufe"), "brandneue_stufe");
+  assert.equal(H.stepLabel(undefined), "");
+});
+
+test("funnelChart: zeigt Klartext statt roher Event-Namen", () => {
+  const html = H.funnelChart([{ step: "new", count: 40 }, { step: "onboarding_complete", count: 12 }]);
+  assert.match(html, /Neu im Fenster/);
+  assert.match(html, /Onboarding beendet/);
+  assert.doesNotMatch(html, /onboarding_complete/);
+});
+
+// --- Diagramme: Kernaussage muss auch ohne Grafik existieren ----------------
+
+test("seriesSummary: nennt Spanne, Höchst-, Tiefst- und letzten Wert", () => {
+  const s = H.seriesSummary([{ day: "2026-07-01", count: 3 }, { day: "2026-07-02", count: 9 }, { day: "2026-07-03", count: 5 }]);
+  assert.match(s, /3 Werte/);
+  assert.match(s, /2026-07-01 bis 2026-07-03/);
+  assert.match(s, /Höchstwert 9 am 2026-07-02/);
+  assert.match(s, /niedrigster 3/);
+  assert.match(s, /zuletzt 5/);
+});
+
+test("lineChart/vbars: Textfassung vorhanden, Grafik als dekorativ markiert", () => {
+  const data = [{ day: "2026-07-01", count: 1 }, { day: "2026-07-02", count: 4 }];
+  for (const html of [H.lineChart(data), H.vbars(data)]) {
+    assert.match(html, /<p class="sr">/, "keine Textfassung für Screenreader");
+    assert.match(html, /<svg[^>]*aria-hidden="true"/, "Grafik nicht als dekorativ markiert");
+    assert.match(html, /focusable="false"/, "SVG sonst in der Tab-Reihenfolge (IE/Edge-Altlast)");
+  }
 });
 
 test("empty: nennt immer, was Daten erzeugen würde", () => {
