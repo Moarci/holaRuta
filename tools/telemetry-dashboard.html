@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
 <title>HolaRuta — Telemetrie-Dashboard</title>
 <style>
   :root {
@@ -62,6 +63,14 @@
   .fstep .fbarwrap { flex:1; display:flex; justify-content:center; }
   .fstep .fbar { background:linear-gradient(90deg,var(--brand),var(--accent)); height:26px; border-radius:6px; min-width:36px; display:flex; align-items:center; justify-content:center; color:#0f1115; font-weight:700; font-size:12px; font-variant-numeric:tabular-nums; transition:width .3s; }
   .fstep .fmeta { width:96px; flex:none; text-align:right; font-size:12px; color:var(--mut); font-variant-numeric:tabular-nums; }
+  input[type=password] { background:#0d0f14; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:6px 10px; font:inherit; font-size:13px; min-width:220px; }
+  input[type=password]:focus { outline:none; border-color:var(--brand); }
+  .gate { max-width:420px; margin:60px auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px 24px; }
+  .gate h2 { font-size:16px; margin:0 0 6px; }
+  .gate p { color:var(--mut); font-size:13px; margin:0 0 14px; }
+  .gate form { display:flex; gap:8px; }
+  .gate input { flex:1; }
+  .gate .err { color:var(--bad); font-size:13px; margin-top:10px; }
 </style>
 </head>
 <body>
@@ -76,11 +85,12 @@
     <button id="exp-csv" title="Tagesreihe als CSV laden">CSV</button>
     <button id="exp-kpicsv" title="Investor-KPIs als CSV (Data-Room / Pitch-Deck)">KPI-CSV</button>
     <button id="refresh">Aktualisieren</button>
+    <button id="logout" title="Token aus diesem Browser entfernen">Abmelden</button>
   </span>
 </header>
 <main id="app"><p class="empty">Lade …</p></main>
 <footer>
-  Self-host-Tool · ungeschützt · Daten kommen nur von Geräten mit <b>aktivierter</b> opt-in-Statistik.
+  Zugriff per <code>ADMIN_TELEMETRY_TOKEN</code> · Daten kommen nur von Geräten mit <b>aktivierter</b> opt-in-Statistik.
   Felder: siehe <code>docs/TELEMETRIE.md</code>. Nutzer = distinkte pseudonyme <code>clientId</code>.
 </footer>
 <script>
@@ -426,22 +436,55 @@ function render(s){
   $("updated").textContent = "Stand: "+new Date(s.generatedAt).toLocaleString();
 }
 
-var TOKEN = (new URLSearchParams(location.search)).get("token") || "";
-// BASE: self-host (tools/telemetry-server.js, Standard) beantwortet unter
-// "/api/…"; Produktion (Vercel-Dispatcher, api/v1.js) unter "/v1/admin/…" auf
-// derselben Origin wie die App. Dashboard ist eine statische Datei -> beliebig
-// gehostet/lokal geöffnet, per ?base= auf die Produktions-Origin zeigen:
-//   telemetry-dashboard.html?base=https://holaruta.com/v1/admin&token=…
-var BASE = (new URLSearchParams(location.search)).get("base") || "/api";
+var QS = new URLSearchParams(location.search);
+var TOKEN_KEY = "holaruta.admintoken.v1";
+// Token-Quellen in dieser Reihenfolge: ?token= (einmalig/teilbar), sonst der im
+// Browser gemerkte Wert aus dem Login-Feld. Kommt beides nicht, rendert das Gate.
+var TOKEN = QS.get("token") || "";
+try { if (!TOKEN) TOKEN = window.localStorage.getItem(TOKEN_KEY) || ""; } catch (e) {}
+// BASE: als statische Datei self-host (tools/telemetry-server.js) unter "/api/…";
+// nach dist/ deployt liegt die Seite auf derselben Origin wie die Produktions-API
+// (Vercel-Dispatcher, api/v1.js) und spricht "/v1/admin/…" an. Heuristik: alles
+// außer localhost/file:// gilt als Produktion. Per ?base= überschreibbar.
+var IS_LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.protocol === "file:";
+var BASE = QS.get("base") || (IS_LOCAL ? "/api" : "/v1/admin");
 var DAYS = 30;
 function apiUrl(path){ var p=[]; if(DAYS) p.push("days="+DAYS); if(TOKEN) p.push("token="+encodeURIComponent(TOKEN)); return BASE + path + (p.length? "?"+p.join("&") : ""); }
 function renderDaysBtns(){ $("daysbtns").innerHTML = [7,14,30,90].map(function(d){ return '<button class="'+(d===DAYS?"active":"")+'" data-days="'+d+'">'+d+' T</button>'; }).join(""); }
+// Login-Gate: ohne Token gar nicht erst laden (die API antwortete sonst 401).
+// Der Token wird nur lokal im Browser gemerkt, nie irgendwo hin übertragen außer
+// an die eigene Admin-API.
+function showGate(msg){
+  $("app").innerHTML = '<div class="gate"><h2>Admin-Zugang</h2>'
+    + '<p>Token eingeben (Vercel-Env <code>ADMIN_TELEMETRY_TOKEN</code>).</p>'
+    + '<form id="gateform"><input type="password" id="gatetoken" placeholder="Token" autocomplete="current-password" /><button type="submit">Anmelden</button></form>'
+    + (msg ? '<p class="err">'+esc(msg)+'</p>' : '') + '</div>';
+  $("gateform").addEventListener("submit", function(e){
+    e.preventDefault();
+    var v = $("gatetoken").value.trim();
+    if(!v) return;
+    TOKEN = v;
+    try { window.localStorage.setItem(TOKEN_KEY, v); } catch (err) {}
+    load();
+  });
+}
 function load(){
-  fetch(apiUrl("/stats")).then(function(r){ if(r.status===401){throw new Error("Token erforderlich (?token=… an die URL anhängen)");} return r.json(); }).then(render).catch(function(e){
-    $("app").innerHTML = '<p class="empty">Fehler beim Laden: '+esc(e&&e.message)+'</p>';
+  if(!TOKEN) return showGate("");
+  fetch(apiUrl("/stats")).then(function(r){
+    if(r.status===401){ throw new Error("Token ungültig."); }
+    return r.json();
+  }).then(render).catch(function(e){
+    var msg = (e && e.message) || "Fehler";
+    if(/ungültig/.test(msg)){ TOKEN=""; try { window.localStorage.removeItem(TOKEN_KEY); } catch (err) {} return showGate(msg); }
+    $("app").innerHTML = '<p class="empty">Fehler beim Laden: '+esc(msg)+'</p>';
   });
 }
 $("refresh").addEventListener("click", load);
+$("logout").addEventListener("click", function(){
+  TOKEN = "";
+  try { window.localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+  showGate("");
+});
 $("daysbtns").addEventListener("click", function(e){ var b=e.target.closest("[data-days]"); if(!b) return; DAYS=Number(b.dataset.days); renderDaysBtns(); load(); });
 $("exp-csv").addEventListener("click", function(){ location.href = apiUrl("/stats.csv"); });
 $("exp-kpicsv").addEventListener("click", function(){ location.href = apiUrl("/kpis.csv"); });

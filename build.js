@@ -318,6 +318,14 @@ function buildDist() {
     if (fs.existsSync(p)) { writeDist(DIST, extra, fs.readFileSync(p)); copied.push(extra); }
   }
 
+  // Investor-/Telemetrie-Cockpit als /admin.html (Quelle: tools/telemetry-dashboard.html).
+  // Umbenannt, weil die Seite auf derselben Origin wie die Produktions-API liegen
+  // muss: nur so greift ihr Default-BASE "/v1/admin" ohne CORS-Umweg. Der Zugriff
+  // gate't ausschließlich über ADMIN_TELEMETRY_TOKEN in der API – das HTML selbst
+  // ist öffentlich, zeigt aber ohne gültigen Token nur die Login-Maske.
+  const dashSrc = path.join(DIR, "tools", "telemetry-dashboard.html");
+  if (fs.existsSync(dashSrc)) { writeDist(DIST, "admin.html", fs.readFileSync(dashSrc)); copied.push("admin.html"); }
+
   // GEO-Content-Seiten (Länder-/Städte-/Situationsguides) prerendern: erst JETZT,
   // weil dist/ bereits index.html + Icons + Fonts enthält (die relativen
   // Root-Prefix-Links der generierten Seiten, z. B. "../../icon.svg", zeigen
