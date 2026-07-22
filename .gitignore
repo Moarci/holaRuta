@@ -39,3 +39,6 @@ info-accordion.png
 
 # Subagent-driven-development scratch ledger (local only)
 .superpowers/
+
+.vercel
+.env*

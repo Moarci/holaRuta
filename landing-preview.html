@@ -416,6 +416,31 @@ body {
 .namefield__save { flex: 0 0 auto; min-height: 44px; }
 .namefield__hint { margin: 0; padding-left: 4px; font-size: 0.78rem; color: var(--muted); }
 
+/* Datenschutz-Zeile (Nutzungsstatistik, Opt-out): bewusst EINE kompakte Zeile –
+ * Text links, Mini-Umschalter rechts. Die Einstellung muss auffindbar bleiben,
+ * soll die Einstellungsseite aber nicht dominieren; der lange Erklärtext steht in
+ * der Datenschutzerklärung. Unter ~360px bricht die Zeile in zwei Ebenen um. */
+.privrow {
+  display: flex; align-items: center; gap: 12px;
+  margin: 12px 0 2px; padding-left: 4px;
+}
+.privrow__txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.privrow__cap { font-size: 0.9rem; font-weight: 700; color: var(--ink); }
+.privrow__hint { font-size: 0.74rem; color: var(--muted); line-height: 1.3; }
+.privrow .segmented--mini { flex: 0 0 auto; margin-left: auto; }
+/* Dezenter Textlink statt Knopf – der Reset ist ein Randfall, kein Hauptweg. */
+.privrow__reset {
+  margin: 2px 0 0; padding: 8px 4px; min-height: 44px;
+  border: 0; background: transparent; cursor: pointer;
+  font: inherit; font-size: 0.78rem; color: var(--muted);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.privrow__reset:hover { color: var(--ink); }
+@media (max-width: 360px) {
+  .privrow { flex-wrap: wrap; }
+  .privrow .segmented--mini { margin-left: 0; }
+}
+
 /* Segmented control (Modus) */
 .segmented {
   display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
@@ -423,12 +448,18 @@ body {
   padding: 4px; border-radius: 999px;
 }
 .seg {
-  border: none; background: transparent; cursor: pointer;
+  border: none; cursor: pointer;
   padding: 10px 12px; border-radius: 999px; min-height: 44px;
   font-size: 0.95rem; font-weight: 700; color: var(--ink-soft);
+  background: color-mix(in srgb, var(--card) 55%, transparent);
   transition: all 0.18s ease;
 }
 .seg.is-active { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+
+/* Mini-Variante für kompakte Zeilen (Datenschutz-Umschalter): schmaler und
+ * leiser, aber weiterhin 44px hoch – die Tap-Fläche bleibt WCAG-konform. */
+.segmented--mini { grid-template-columns: auto auto; gap: 3px; padding: 3px; }
+.seg--mini { padding: 10px 14px; font-size: 0.82rem; }
 
 /* Modus-Info (Profil): erklärt unter der Modus-Auswahl, was jeder Lernmodus
    kann und welche Aufgabe er hat. Aktiver Modus wird hervorgehoben. */
@@ -622,6 +653,47 @@ body {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
+/* Domain-Umzug-Banner (github.io -> holaruta.com): gleiche Optik wie .updbar,
+   aber höherer bottom-Offset – schwebt darüber, falls beide gleichzeitig
+   sichtbar sind (z.B. direkt nach einem Deploy, der auch einen SW-Update
+   auslöst). */
+.migbar {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 40;
+  bottom: calc(150px + env(safe-area-inset-bottom));
+  width: calc(100% - 24px); max-width: calc(var(--maxw) - 24px);
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--brand); color: var(--on-accent);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+  animation: updbar-in 0.2s ease;
+}
+.migbar__top { display: flex; align-items: flex-start; gap: 8px; }
+.migbar__text { flex: 1 1 auto; font-weight: 700; font-size: 0.85rem; line-height: 1.35; }
+.migbar__actions { display: flex; align-items: center; gap: 8px; }
+/* Neue Adresse als prominenter, tippbarer Link (führt direkt nach holaruta.com).
+   Heller Rahmen auf dem Terrakotta-Grund -> klarer Call-to-Action neben dem Export. */
+.migbar__link {
+  flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 40px; padding: 9px 14px; border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  color: var(--on-accent); font-weight: 800; font-size: 0.85rem; text-decoration: none;
+  white-space: nowrap;
+}
+.migbar__link svg { width: 16px; height: 16px; }
+.migbar__link:hover { background: rgba(255, 255, 255, 0.14); }
+.migbar__link:active { transform: translateY(1px); }
+.migbar__btn {
+  flex: 1 1 auto; border: none; cursor: pointer; font-family: inherit; font-weight: 800;
+  padding: 9px 16px; border-radius: 999px; min-height: 40px; font-size: 0.85rem;
+  background: #fff; color: #A23E20; white-space: nowrap;
+}
+.migbar__btn:active { transform: translateY(1px); }
+.migbar__close {
+  flex: none; margin: -2px -4px 0 0; border: none; background: transparent; cursor: pointer;
+  color: var(--on-accent); opacity: 0.75; font-size: 1rem; line-height: 1; min-height: 32px; min-width: 32px;
+}
+.migbar__close:hover { opacity: 1; }
+
 /* ---------- ENTDECKEN-REITER: Einstiegs-Kacheln ---------- */
 /* 2-spaltiges Raster (wie die Themen-Kacheln im Lernen-Reiter) statt einer
  * Kette voller-Breite-Buttons: halbiert die Höhe, die 17 Einträge sind ohne
@@ -760,6 +832,31 @@ body {
   border-radius: 999px; padding: 2px 10px; font-size: 0.8rem; font-weight: 800;
 }
 .navrow__chev { flex: none; color: var(--muted); font-size: 1.2rem; font-weight: 700; }
+
+/* Profil: die Sprungziel-Liste ist EINE Einheit – Zeilen enger gestaffelt als der
+   18px-Screen-Gap, damit sie als zusammengehörige Navigation liest, nicht als lose
+   Einzelkarten. .profnav/.proffoot sind selbst direkte .screen-Kinder (18px Luft). */
+.profnav { display: flex; flex-direction: column; gap: 10px; }
+/* Profil-Fuß: Über/Partner/Installieren stehen dezent abgesetzt und gedämpft, damit
+   sie nicht dasselbe Gewicht tragen wie die eigentlichen Sprungziele darüber. */
+.proffoot { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.navrow--quiet {
+  box-shadow: none; background: transparent; font-weight: 600; color: var(--ink-soft);
+  border-color: color-mix(in srgb, var(--line) 60%, transparent);
+}
+.navrow--quiet .navrow__icon { color: var(--muted); }
+
+/* Test-Karten (Ruta-Check / Nivel-Test): Detail-, Rückblick- und Verlaufsblöcke
+   liegen jetzt hinter einem Aufklapper, damit die Karte im Profil kompakt bleibt
+   (Level + Score + Wiederholen sofort sichtbar). */
+.plprof__more { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 2px; }
+.plprof__moresum {
+  cursor: pointer; list-style: none; padding: 4px 0;
+  font-size: 0.82rem; font-weight: 800; letter-spacing: 0.02em; color: var(--brand-ink);
+}
+.plprof__moresum::-webkit-details-marker { display: none; }
+.plprof__moresum::before { content: "▸ "; }
+details[open] > .plprof__moresum::before { content: "▾ "; }
 
 /* „Auf den Startbildschirm"-Hinweis: dezent abgesetzte Karte unter den Zeilen.
    Erscheint nur, wenn eine Installation möglich und die App noch nicht installiert
@@ -1335,10 +1432,20 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .dangerbtn:active { transform: translateY(1px); }
 
 /* ---------- STATISTIK ---------- */
-.kpis { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+/* KPI-Kacheln: minmax(0,1fr) statt 1fr, damit die Spalten unter ihre
+ * Inhalts-Mindestbreite schrumpfen dürfen. Sonst erzwingen lange, nicht
+ * umbrechbare Labels (z. B. "TREFFERQUOTE") eine Grid-Breite größer als der
+ * Viewport – die ganze Statistik-Seite bekäme dann horizontalen Overflow. */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .kpi {
+  min-width: 0;
   background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-sm);
   padding: 12px 8px; text-align: center; box-shadow: var(--shadow);
+}
+/* Auf schmalen Handys passen vier Spalten mit den langen deutschen Labels nicht
+ * nebeneinander – dann als gut lesbares 2×2-Raster stapeln statt zu quetschen. */
+@media (max-width: 430px) {
+  .kpis { grid-template-columns: 1fr 1fr; }
 }
 .kpi__num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--ink); }
 .kpi__of { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
@@ -2918,7 +3025,7 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .appbar, .teacher-actions, .teacher-x, .topbar, .hm-topbar, .tabbar, .teacher-sep,
   .no-print, .sheet-controls,
   /* schwebende Overlays nie mitdrucken (Toasts, Update-Banner/-Scrim) */
-  .btoast, .updbar, .upd-scrim, .tgt-scrim { display: none !important; }
+  .btoast, .updbar, .migbar, .upd-scrim, .tgt-scrim { display: none !important; }
   /* Aktivitätsblatt randlos, schwarz auf weiß drucken (unabhängig vom Theme). */
   .screen { padding: 0 !important; }
   /* Im Druck den @page-Rand nutzen: Blatt auf A4-Inhaltsbreite, ohne eigenes
@@ -4239,6 +4346,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Onboarding: einmaliger Willkommens-Bildschirm beim ersten Start. */
 .onboarding { min-height: 70vh; justify-content: center; }
+/* Formular-Schritte (Login-Gate, Name/Geschlecht) NICHT dead-center in den
+   Rest-Viewport hängen – das ließ oben eine große Leere. Stattdessen mit
+   ruhigem Abstand unter die Kopfzeile setzen; die Intro-Slides bleiben zentriert. */
+.onboarding:not(.onboarding--intro) {
+  min-height: auto; justify-content: flex-start;
+  padding-top: clamp(16px, 6vh, 56px); padding-bottom: 24px;
+}
 .onboarding__inner { display: flex; flex-direction: column; gap: 12px; max-width: 28rem; margin: 0 auto; width: 100%; }
 .onboarding__title { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; line-height: 1.2; margin: 0; }
 /* Partner-Branding im Onboarding (Edition / geteilter Link). */
@@ -4248,10 +4362,71 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .onboarding__powered { margin: 1px 0 0; font-size: 0.68rem; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
 .onboarding__intro { color: var(--muted); margin: 0 0 4px; }
 
+/* Auth-/Onboarding-Panel: fasst die Anmelde-Optionen (Google + E-Mail) bzw.
+   Name+Geschlecht zu EINER Karte zusammen – so wirken die Schritte gestaltet
+   statt lose gestapelt. Das innere Formular (.trip--flush) verzichtet dann auf
+   den eigenen Rahmen, damit keine Karte-in-Karte entsteht. */
+.authcard {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); padding: 16px; box-shadow: var(--shadow-lg);
+}
+.trip--flush { border: none; background: transparent; box-shadow: none; padding: 0; gap: 12px; }
+.trip--flush:active { transform: none; }
+
+/* Eingabefelder auf Login/Onboarding großzügiger + klar sichtbarer Fokusring
+   (Tastatur & Screenreader). Nur in diesen Ansichten – die Profil-Felder bleiben
+   kompakt. */
+.authcard .trip__field input,
+.onboarding .trip__field input {
+  min-height: 48px; padding: 12px 14px; font-size: 1rem;
+  border-radius: var(--r-sm); background: var(--surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.authcard .trip__field input:focus-visible,
+.onboarding .trip__field input:focus-visible {
+  outline: none; border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+/* Account-First-Login (Gate am Start). Google-Button + passwortloser E-Mail-Code. */
+.account__google { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #3c4043; border: 1px solid rgba(60,64,67,0.22); font-weight: 700; }
+.account__google:hover { background: #f7f8f8; }
+.account__google[disabled] { opacity: 0.6; }
+.account__gicon { flex: 0 0 auto; }
+.account__or { display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 0.85rem; margin: 0; }
+.account__or::before, .account__or::after { content: ""; flex: 1; height: 1px; background: var(--line-strong); }
+.account__or span { padding: 0 12px; }
+.account__error { color: var(--bad, #c0392b); font-size: 0.9rem; margin: 2px 0 0; }
+.account__legal { color: var(--muted); font-size: 0.72rem; line-height: 1.4; margin: 6px 0 0; }
+.account__legal a { color: var(--brand-ink); }
+@media (prefers-color-scheme: dark) {
+  .account__google { background: #22303c; color: #e8eaed; border-color: rgba(232,234,237,0.2); }
+  .account__google:hover { background: #29404f; }
+}
+
 /* Erklär-Slides am Onboarding-Anfang (Überblick: wie funktioniert die App, welcher Umfang). */
 .onboarding--intro .onboarding__inner { gap: 16px; text-align: center; }
-.onboarding__slide { display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 9.5rem; justify-content: center; }
-.onboarding__icon { font-size: 3rem; line-height: 1; }
+/* Slide als eigene Karte – gleiche Optik wie das Login-/Willkommen-Panel, damit
+   die Onboarding-Schritte wie eine Familie wirken. min-height hält die Karte über
+   alle Slides hinweg gleich hoch (der „Weiter"-Knopf springt sonst je Textlänge). */
+.onboarding__slide {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  min-height: 12.5rem; justify-content: center;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
+  padding: 26px 22px 28px;
+}
+/* Icon als Marken-Medaillon: terrakotta getönte Scheibe statt nacktem Strich-Icon
+   im Leerraum – gibt jedem Slide einen ruhigen Blickfang. */
+.onboarding__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 84px; height: 84px; font-size: 2.1rem; line-height: 1;
+  color: var(--brand-ink);
+  background: color-mix(in srgb, var(--brand) 12%, var(--card));
+  border: 1.5px solid color-mix(in srgb, var(--brand) 28%, transparent);
+  border-radius: 50%; box-shadow: var(--shadow);
+}
 .onboarding--intro .onboarding__intro { margin: 0; max-width: 24rem; }
 .onboarding__dots { display: flex; justify-content: center; gap: 2px; margin: 2px 0; }
 /* Tap-Ziel großzügig (≈34px, fingerfreundlich), sichtbarer Punkt klein über ::before.
@@ -4534,10 +4709,29 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* ===== Freunde & Tages-Rangliste (opt-in, BACKEND.md §16) =================== */
 .social-intro { color: var(--ink-soft); font-size: 0.95rem; margin: 6px 2px 14px; }
-.social-cta { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding: 24px 8px; }
+
+/* Anmelde-Einladung: zentrierte Karte mit großer Trophäe statt nacktem Text. */
+.social-cta {
+  display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center;
+  padding: 30px 18px; margin-top: 6px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand) 8%, var(--card)), var(--card));
+  border: 1.5px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow);
+}
+.social-cta__art { font-size: 3rem; line-height: 1; filter: drop-shadow(0 3px 0 rgba(45,27,18,0.12)); }
 .social-cta p { color: var(--ink-soft); margin: 0; max-width: 30ch; }
-.social-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0 10px; }
+.social-cta .cta { max-width: 260px; }
+
+.social-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0 12px; }
+.social-bar__left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .social-bar .sectioncap { margin: 0; }
+.social-mypos {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.02em;
+  color: var(--brand-ink); background: color-mix(in srgb, var(--brand) 12%, transparent);
+  padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.social-refresh { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.social-refresh.is-loading { opacity: 0.7; animation: socialPulse 1s ease-in-out infinite; }
+@keyframes socialPulse { 50% { opacity: 0.4; } }
 
 /* Rangliste: kompakte, gut lesbare Zeilen; eigener Eintrag hervorgehoben. */
 .lboard { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -4547,7 +4741,14 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   border-radius: var(--r-md); box-shadow: var(--shadow);
 }
 .lboard__row.is-me { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 7%, var(--card)); }
+/* Podium-Akzent für die Plätze 1–3: dezente linke Kante in Gold/Silber/Bronze. */
+.lboard__row--top { position: relative; overflow: hidden; }
+.lboard__row--top::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.lboard__row--top1::before { background: #E0A83E; }
+.lboard__row--top2::before { background: #AEB4BC; }
+.lboard__row--top3::before { background: #C6864F; }
 .lboard__rank { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink-soft); text-align: center; }
+.lboard__rank--medal { font-size: 1.3rem; }
 .lboard__row.is-me .lboard__rank { color: var(--brand-ink); }
 .lboard__name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lboard__you { font-style: normal; font-size: 0.72rem; font-weight: 800; color: var(--brand-ink); margin-left: 6px; }
@@ -4556,13 +4757,65 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .lboard__cards b { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--ink); }
 .lboard__cards small { font-size: 0.62rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; }
 .lboard__rm { border: none; background: none; color: var(--ink-soft); cursor: pointer; font-size: 0.95rem; padding: 4px 6px; opacity: 0.6; }
+.lboard__rm:hover { opacity: 1; color: var(--brand-ink); }
 .lboard__rm:active { transform: translateY(1px); }
 
-/* Eigener Freundes-Code zum Teilen. */
-.social-code { margin-top: 18px; padding: 14px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
-.social-code__val { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; word-break: break-all; color: var(--ink-soft); background: color-mix(in srgb, var(--ink) 4%, transparent); padding: 8px 10px; border-radius: var(--r-sm, 10px); }
-.social-code__actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.social-code__actions .ghostbtn { flex: 1 1 auto; }
+/* Skeleton-Ladezustand: schimmernde Platzhalter in der Zeilengeometrie. */
+.lboard--sk .lboard__row--sk { grid-template-columns: 2.2rem 1fr auto; }
+.sk { display: block; height: 14px; border-radius: 7px; background: color-mix(in srgb, var(--ink) 9%, transparent);
+  position: relative; overflow: hidden; }
+.sk--rank { width: 1.4rem; height: 1.4rem; border-radius: 50%; margin: 0 auto; }
+.sk--name { width: 62%; }
+.sk--cards { width: 2.4rem; height: 22px; }
+.sk::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--card) 70%, #fff), transparent);
+  animation: skShimmer 1.25s ease-in-out infinite; }
+@keyframes skShimmer { 100% { transform: translateX(100%); } }
+
+/* Freundliche Leer-/Fehlerkarte statt nacktem Zentraltext. */
+.social-note {
+  display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+  padding: 26px 18px; background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); box-shadow: var(--shadow);
+}
+.social-note__icon { font-size: 2.2rem; line-height: 1; }
+.social-note p { margin: 0; color: var(--ink-soft); max-width: 32ch; }
+.social-note .cta { max-width: 240px; }
+.social-note--error { border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+
+/* Einladungskarte: QR zum Abscannen + derselbe Link zum Verschicken. */
+.social-code { margin-top: 18px; padding: 16px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; }
+.social-code--bare { align-items: stretch; }
+
+/* QR-Fläche: quadratisch, zentriert, IMMER hell hinterlegt – auch im Dark Mode,
+ * sonst ist der Code nicht scannbar. Das SVG aus qr.js bringt selbst weißen
+ * Grund und schwarze Module mit (kein currentColor); --cream ist in beiden
+ * Themes hell und rahmt das sauber ein. Das Padding ergänzt die Quiet-Zone. */
+.social-invite__qr {
+  align-self: center; width: 100%; max-width: 180px; aspect-ratio: 1;
+  padding: 10px; box-sizing: border-box;
+  background: var(--cream);
+  border: 1.5px solid var(--line); border-radius: var(--r-sm, 10px);
+}
+.social-invite__qr svg { display: block; width: 100%; height: 100%; }
+
+.social-invite__hint { margin: 0; text-align: center; font-size: 0.88rem; color: var(--ink-soft); }
+.social-invite__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.social-invite__actions .ghostbtn { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
+/* Manueller Weg (Code eintippen) bleibt erreichbar, aber dezent als Textlink. */
+.social-invite__manual {
+  align-self: center; margin-top: 2px; padding: 8px 10px; min-height: 44px;
+  border: 0; background: transparent; cursor: pointer;
+  font: inherit; font-size: 0.82rem; color: var(--ink-soft);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.social-invite__manual:hover { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk::after { animation: none; }
+  .social-refresh.is-loading { animation: none; }
+}
 
 /* ===================== A11Y: SKIP-LINK & MOTION-SICHERHEIT ===================== */
 /* Sprunglink "Zum Inhalt": für Sehende unsichtbar off-screen geparkt, springt
@@ -4684,10 +4937,17 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   .tab__label { font-size: 0.88rem; }
   .screen--tabbed { padding-bottom: 110px; } /* Platz fürs schwebende Dock */
   .updbar { bottom: 104px; max-width: 560px; }
+  .migbar { bottom: 168px; max-width: 560px; }
 
   /* Onboarding: zentrierte Willkommens-Karte statt nacktem Formular oben links.
    * Größere Typo (der Bildschirm ist weit weg), Panel im Karten-Look. */
   .onboarding { min-height: min(74vh, 900px); }
+  /* Auf großen Screens ist die zentrierte Karte gewünscht – auch für die
+     Formular-Schritte die mobile Oben-Ausrichtung wieder aufheben. */
+  .onboarding:not(.onboarding--intro) {
+    min-height: min(74vh, 900px); justify-content: center;
+    padding-top: 0; padding-bottom: 0;
+  }
   .onboarding__inner {
     max-width: 34rem;
     background: var(--card);
@@ -4696,6 +4956,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     box-shadow: var(--shadow-lg);
     padding: 40px 44px 36px;
     gap: 14px;
+  }
+  /* Die ganze Karte ist hier schon das Panel -> das innere .authcard bzw. die
+     Intro-Slide flach halten (kein Karte-in-Karte); Medaillon/Abstände bleiben. */
+  .authcard { background: transparent; border: none; box-shadow: none; padding: 0; }
+  .onboarding--intro .onboarding__slide {
+    background: transparent; border: none; box-shadow: none; padding: 0;
+    min-height: 12rem;
   }
   .onboarding__title { font-size: 1.9rem; }
   .onboarding__intro { font-size: 1.02rem; line-height: 1.55; }
@@ -6921,7 +7188,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
           </details>
           <details data-reveal style="--i:3">
             <summary data-i18n="faq.q4">Werden meine Daten gespeichert?</summary>
-            <div class="lp-faq__body" data-i18n="faq.a4">Dein Fortschritt bleibt lokal auf dem Gerät. Keine Werbung, keine Anmeldung, kein Server. Cloud-Sync und anonyme Nutzungsstatistik sind optional und standardmäßig aus.</div>
+            <div class="lp-faq__body" data-i18n="faq.a4">Dein Fortschritt bleibt lokal auf dem Gerät. Keine Werbung, keine Anmeldung, kein Server. Cloud-Sync ist optional; die anonyme Nutzungsstatistik läuft voreingestellt mit und ist in den Einstellungen mit einem Klick abschaltbar.</div>
           </details>
           <details data-reveal style="--i:4">
             <summary data-i18n="faq.q5">Auf welchen Geräten läuft es?</summary>
@@ -6995,6 +7262,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
           <ul>
             <li><a href="./" data-i18n="footer.open">App öffnen</a></li>
             <li><a href="./?start=onboarding" data-i18n="footer.start">Kostenlos starten</a></li>
+            <li><a href="hello-abroad/" data-i18n="aud.helloabroad">🇬🇧 HelloAbroad · Reiseenglisch</a></li>
             <li><a href="https://holaruta.com/HolaRuta.html" data-i18n="footer.single">Einzeldatei-Version</a></li>
           </ul>
         </div>
@@ -7106,12 +7374,12 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "faq.q1": "Brauche ich Internet?", "faq.a1": "Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.",
         "faq.q2": "Ist es wirklich kostenlos?", "faq.a2": "Ja. Komplett kostenlos, keine Werbung, keine In-App-Käufe, kein Konto.",
         "faq.q3": "Welches Spanisch lerne ich?", "faq.a3": "Lateinamerikanisches Reise-Spanisch — colectivo statt autobús, vuelto statt cambio. Die Wörter, die man dort wirklich hört.",
-        "faq.q4": "Werden meine Daten gespeichert?", "faq.a4": "Dein Fortschritt bleibt lokal auf dem Gerät. Keine Werbung, keine Anmeldung, kein Server. Cloud-Sync und anonyme Nutzungsstatistik sind optional und standardmäßig aus.",
+        "faq.q4": "Werden meine Daten gespeichert?", "faq.a4": "Dein Fortschritt bleibt lokal auf dem Gerät. Keine Werbung, keine Anmeldung, kein Server. Cloud-Sync ist optional; die anonyme Nutzungsstatistik läuft voreingestellt mit und ist in den Einstellungen mit einem Klick abschaltbar.",
         "faq.q5": "Auf welchen Geräten läuft es?", "faq.a5": "In jedem modernen Browser — Android, iPhone, Tablet, Laptop. Auf dem Handy als App installierbar.",
         "footer.blurb": "Dein Reise-Spanisch für echte Situationen — Karteikarten für Bus, Hotel, Essen, Geld und Notfall. Lateinamerika-korrekt, offline, kostenlos.",
         "footer.app": "App", "footer.open": "App öffnen", "footer.start": "Kostenlos starten", "footer.single": "Einzeldatei-Version",
         "footer.more": "Mehr", "footer.features": "Features", "footer.why": "Mehr als Sprache", "footer.how": "So funktioniert's", "footer.install": "Installieren",
-        "footer.audiences": "Für Partner", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter",
+        "footer.audiences": "Für Partner", "aud.schule": "🎓 Sprachschulen", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Reiseanbieter", "aud.helloabroad": "🇬🇧 HelloAbroad · Reiseenglisch",
         "footer.credit": "Mit <span class=\"lp-footer__heart\">♥</span> für Lateinamerika gebaut.",
         "final.eyebrow": "GLEICH GEHT'S LOS",
         "final.title": "Pack deinen Rucksack. Den Rest übernehmen wir.",
@@ -7199,12 +7467,12 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "faq.q1": "Do I need internet?", "faq.a1": "No. Once loaded, HolaRuta works offline — built for the dead zone on the night bus.",
         "faq.q2": "Is it really free?", "faq.a2": "Yes. Completely free, no ads, no in-app purchases, no account.",
         "faq.q3": "Which Spanish will I learn?", "faq.a3": "Latin-American travel Spanish — colectivo not autobús, vuelto not cambio. The words you'll actually hear there.",
-        "faq.q4": "Is my data collected?", "faq.a4": "Your progress stays local on your device. No ads, no sign-up, no server. Cloud sync and anonymous usage stats are optional and off by default.",
+        "faq.q4": "Is my data collected?", "faq.a4": "Your progress stays local on your device. No ads, no sign-up, no server. Cloud sync is optional; anonymous usage stats are on by default and can be switched off in settings with one tap.",
         "faq.q5": "Which devices does it run on?", "faq.a5": "Any modern browser — Android, iPhone, tablet, laptop. Installable as an app on your phone.",
         "footer.blurb": "Travel Spanish for real situations — flashcards for buses, hotels, food, money and emergencies. Latin-America-correct, offline, free.",
         "footer.app": "App", "footer.open": "Open app", "footer.start": "Start free", "footer.single": "Single-file version",
         "footer.more": "More", "footer.features": "Features", "footer.why": "More than language", "footer.how": "How it works", "footer.install": "Install",
-        "footer.audiences": "For partners", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators",
+        "footer.audiences": "For partners", "aud.schule": "🎓 Language schools", "aud.hostel": "🛏️ Hostels", "aud.reise": "🧭 Tour operators", "aud.helloabroad": "🇬🇧 HelloAbroad · Travel English",
         "footer.credit": "Built with <span class=\"lp-footer__heart\">♥</span> for Latin America.",
         "final.eyebrow": "ALMOST THERE",
         "final.title": "Pack your backpack. We'll handle the rest.",
@@ -7292,12 +7560,12 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "faq.q1": "¿Necesito internet?", "faq.a1": "No. Una vez cargada, HolaRuta funciona sin conexión — pensada para el bus nocturno sin señal.",
         "faq.q2": "¿De verdad es gratis?", "faq.a2": "Sí. Completamente gratis, sin anuncios, sin compras dentro de la app, sin cuenta.",
         "faq.q3": "¿Qué español aprendo?", "faq.a3": "Español latinoamericano de viaje — colectivo en vez de autobús, vuelto en vez de cambio. Las palabras que de verdad se oyen allí.",
-        "faq.q4": "¿Se guardan mis datos?", "faq.a4": "Tu progreso se queda local en tu dispositivo. Sin anuncios, sin registro, sin servidor. La sincronización en la nube y las estadísticas anónimas son opcionales y están desactivadas por defecto.",
+        "faq.q4": "¿Se guardan mis datos?", "faq.a4": "Tu progreso se queda local en tu dispositivo. Sin anuncios, sin registro, sin servidor. La sincronización en la nube es opcional; las estadísticas anónimas están activadas por defecto y se desactivan en los ajustes con un toque.",
         "faq.q5": "¿En qué dispositivos funciona?", "faq.a5": "En cualquier navegador moderno — Android, iPhone, tablet, portátil. Instalable como app en el móvil.",
         "footer.blurb": "Tu español de viaje para situaciones reales — tarjetas para bus, hotel, comida, dinero y emergencias. Correcto para Latinoamérica, sin conexión, gratis.",
         "footer.app": "App", "footer.open": "Abrir app", "footer.start": "Empezar gratis", "footer.single": "Versión de archivo único",
         "footer.more": "Más", "footer.features": "Funciones", "footer.why": "Más que idioma", "footer.how": "Cómo funciona", "footer.install": "Instalar",
-        "footer.audiences": "Para partners", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes",
+        "footer.audiences": "Para partners", "aud.schule": "🎓 Escuelas de idiomas", "aud.hostel": "🛏️ Hostales", "aud.reise": "🧭 Agencias de viajes", "aud.helloabroad": "🇬🇧 HelloAbroad · Inglés de viaje",
         "footer.credit": "Hecho con <span class=\"lp-footer__heart\">♥</span> para Latinoamérica.",
         "final.eyebrow": "YA CASI",
         "final.title": "Haz la maleta. Del resto nos encargamos nosotros.",

@@ -1,5 +1,5 @@
 /*
- * analytics.test.js – Tests für den REINEN Kern + das Opt-in-Gate der optionalen,
+ * analytics.test.js – Tests für den REINEN Kern + das Consent-Gate der optionalen,
  * anonymen Nutzungs-Telemetrie (analytics.js): Snapshot aus den vorhandenen
  * gamestats bauen, grob bucketen, Datenminimierung, und „ohne Config/ohne
  * Zustimmung wird NICHTS gesendet". Kein echter Server – genau der Teil, der laut
@@ -149,6 +149,18 @@ test("maybeSend: sendet NUR mit Endpunkt UND Zustimmung; max 1x/Tag; anonymer Bo
   r = await analytics.maybeSend(g, { day: "2026-07-01", consent: true });
   assert.equal(r.sent, true);
   assert.equal(calls.length, 2);
+});
+
+// Der Default lebt NICHT in analytics.js (das Modul verlangt immer strikt
+// consent === true), sondern im Controller app.js. Seit dem Wechsel auf OPT-OUT muss
+// dort ausnahmslos `!== false` stehen: ein `=== true` würde still auf Opt-in
+// zurückfallen und damit Bestandsprofile ohne gespeicherte Wahl ausschließen.
+test("app.js leitet den Consent als OPT-OUT ab (!== false, nirgends === true)", () => {
+  const src = require("fs").readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  const optOut = src.match(/settings\.analyticsConsent !== false/g) || [];
+  const optIn = src.match(/settings\.analyticsConsent === true/g) || [];
+  assert.equal(optIn.length, 0, "kein Opt-in-Rest (=== true) in app.js");
+  assert.equal(optOut.length, 2, "Consent wird an beiden Stellen (View-Model + analyticsCtx) als Opt-out abgeleitet");
 });
 
 test("dayKey: lokales YYYY-MM-DD (zweistellig)", () => {

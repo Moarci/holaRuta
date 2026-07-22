@@ -1,5 +1,5 @@
 /*
- * analytics.js  (SC.analytics) – OPTIONALE, opt-in, ANONYME Nutzungs-Telemetrie.
+ * analytics.js  (SC.analytics) – OPTIONALE, abschaltbare, ANONYME Nutzungs-Telemetrie.
  *
  * Zweck: dem Betreiber eine grobe Antwort auf „wie viele nutzen die App und was
  * machen sie?" geben – OHNE die Datensparsamkeit der App aufzugeben. Wie sync.js
@@ -9,10 +9,13 @@
  * BACKEND.md §17 spezifizierten Endpunkt.
  *
  * Prinzipien (identisch zu social.js / BACKEND.md §1):
- *  - Opt-in & DEFAULT AUS: gesendet wird NUR, wenn (1) eine Edition einen Endpunkt
- *    konfiguriert hat (SC.config.analytics.enabled + endpoint) UND (2) der Nutzer
- *    im Profil ausdrücklich zugestimmt hat (meta.consent === true). Sonst exakt
- *    0 Netzwerk-Calls – wie die App ohne dieses Modul.
+ *  - Doppeltes Gate: gesendet wird NUR, wenn (1) eine Edition einen Endpunkt
+ *    konfiguriert hat (SC.config.analytics.enabled + endpoint) UND (2) der Aufrufer
+ *    meta.consent === true übergibt. Sonst exakt 0 Netzwerk-Calls – wie die App ohne
+ *    dieses Modul. Dieses Modul kennt KEINEN Default: WER zustimmt bzw. was ohne
+ *    getroffene Wahl gilt, entscheidet allein der Controller (app.js). Seit dem
+ *    Wechsel auf OPT-OUT ist dort `settings.analyticsConsent !== false` an, d.h. nur
+ *    ein ausdrückliches „Aus" im Profil schaltet ab.
  *  - Datenminimierung: der Snapshot trägt NUR grobe, gebucketete Aggregate –
  *    KEINE PII, KEINE Karten-IDs, KEIN Suchtext, KEINE stabile Nutzer-ID. Alles
  *    wird aus dem schon vorhandenen gamestats abgeleitet; nichts Neues wird erfasst.
@@ -159,7 +162,7 @@
   // EVENT-PIPELINE (Interaktions-Tracking, BACKEND.md §17.6)
   // Detaillierter Event-Strom NEBEN dem Tages-Snapshot – für Weiterentwicklung
   // (Funnels/Retention/Drop-off) und Monitoring (Fehler/Performance). Gleiches
-  // Opt-in-Gate; ohne Endpunkt UND Zustimmung wird NICHTS gepuffert/gesendet.
+  // Gate; ohne Endpunkt UND ctx.consent wird NICHTS gepuffert/gesendet.
   // =========================================================================
 
   var EVENTS_PATH = "/v1/events";

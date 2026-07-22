@@ -565,25 +565,32 @@
       </div>`;
   }
 
-  // Nutzungsstatistik teilen (opt-in, Default aus). Nur sichtbar, wenn eine Edition
-  // einen Telemetrie-Endpunkt konfiguriert hat (vm.analyticsAvailable). Ohne
-  // Zustimmung verlässt KEIN Datum das Gerät; mit Zustimmung werden ein anonymer
+  // Nutzungsstatistik teilen (OPT-OUT, Default an). Nur sichtbar, wenn eine Edition
+  // einen Telemetrie-Endpunkt konfiguriert hat (vm.analyticsAvailable). Nach dem
+  // Abschalten verlässt KEIN Datum das Gerät; solange an, werden ein anonymer
   // Tages-Snapshot UND pseudonyme Interaktions-Events gesendet (keine PII, keine
-  // Karten-IDs, kein Suchtext). Bei „An" gibt es einen Knopf, die pseudonyme
+  // Karten-IDs, kein Suchtext). Bei „An" gibt es einen dezenten Link, die pseudonyme
   // Statistik-Id zurückzusetzen.
+  //
+  // Bewusst KOMPAKT (eine Zeile statt eigenem Block): bei Opt-out ist die Statistik
+  // kein Feature, dem man aktiv zustimmt, sondern eine Voreinstellung, die man
+  // abschalten können muss – sie soll auffindbar sein, aber die Einstellungen nicht
+  // dominieren. Der lange Erklärtext lebt jetzt in der Datenschutzerklärung.
   function analyticsConsentGroup(vm) {
     if (!vm.analyticsAvailable) return "";
     const on = !!vm.analyticsConsent;
     return `
-      <div class="switchgroup">
-        <span class="switchcap">${esc(t("home.analyticsCap"))}</span>
-        <div class="segmented" role="group" aria-label="${esc(t("home.analyticsAria"))}">
-          <button class="seg ${on ? "is-active" : ""}" type="button" data-action="set-analytics-consent" data-on="1" aria-pressed="${on}">${esc(t("home.analyticsOn"))}</button>
-          <button class="seg ${!on ? "is-active" : ""}" type="button" data-action="set-analytics-consent" data-on="0" aria-pressed="${!on}">${esc(t("home.analyticsOff"))}</button>
+      <div class="privrow">
+        <div class="privrow__txt">
+          <span class="privrow__cap">${esc(t("home.analyticsCap"))}</span>
+          <span class="privrow__hint">${esc(t("home.analyticsHint"))}</span>
         </div>
-        <p class="namefield__hint">${esc(t("home.analyticsHint"))}</p>
-        ${on ? `<button class="ghostbtn" type="button" data-action="reset-analytics-id">${esc(t("home.analyticsResetId"))}</button>` : ""}
-      </div>`;
+        <div class="segmented segmented--mini" role="group" aria-label="${esc(t("home.analyticsAria"))}">
+          <button class="seg seg--mini ${on ? "is-active" : ""}" type="button" data-action="set-analytics-consent" data-on="1" aria-pressed="${on}">${esc(t("home.analyticsOn"))}</button>
+          <button class="seg seg--mini ${!on ? "is-active" : ""}" type="button" data-action="set-analytics-consent" data-on="0" aria-pressed="${!on}">${esc(t("home.analyticsOff"))}</button>
+        </div>
+      </div>
+      ${on ? `<button class="privrow__reset" type="button" data-action="reset-analytics-id">${esc(t("home.analyticsResetId"))}</button>` : ""}`;
   }
 
   // Erklär-Slides ganz am Anfang des Onboardings: ein kurzer Überblick, WIE die App

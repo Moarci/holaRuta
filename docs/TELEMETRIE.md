@@ -121,7 +121,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 | Aspekt | Detail |
 |---|---|
-| **Gate** | sendet nur bei `SC.config.analytics.enabled` + `endpoint` **UND** `settings.analyticsConsent === true`. Sonst **0** Netzwerk-Calls **und** 0 Pufferung. |
+| **Gate** | sendet nur bei `SC.config.analytics.enabled` + `endpoint` **UND** aktiver Statistik (**Opt-out**: `settings.analyticsConsent !== false`, d.h. an, solange der Nutzer im Profil nicht ausdrücklich „Aus" wählt — auch für Bestandsprofile ohne gespeicherte Wahl). Sonst **0** Netzwerk-Calls **und** 0 Pufferung. |
 | **clientId** | pseudonym, zufällig, **resetbar** (Profil-Knopf „Statistik-Id zurücksetzen"); bei Opt-out gelöscht. LS-Key `spanischcard.analyticscid.v1`. |
 | **sessionId** | pro App-Start, rotiert nach 30 min Inaktivität; nur im Speicher. |
 | **Lokale Keys** | `…analyticssent.v1` (Snapshot-Tag), `…analyticsqueue.v1` (Event-Ring), `…analyticscid.v1` (clientId) – **keiner** in `store.KNOWN_KEYS`, reisen also **nicht** im Backup. |
@@ -133,7 +133,11 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 ## 6. DSGVO / Betroffenenrechte (Kurz)
 
-- **Rechtsgrundlage:** ausdrückliche Einwilligung (opt-in im Profil), jederzeit widerrufbar (Schalter → Aus; löscht `clientId` + Puffer).
+- **Rechtsgrundlage:** berechtigtes Interesse an Produktverbesserung/Fehlerdiagnose (Art. 6 Abs. 1 lit. f DSGVO) mit **Widerspruchsrecht**; die Statistik ist als **Opt-out** voreingestellt an und jederzeit im Profil abschaltbar (Schalter → Aus; löscht `clientId` + Puffer).
+  > ⚠️ **Offene Rechtsfrage:** Opt-out setzt voraus, dass das Ablegen der pseudonymen `clientId` im
+  > lokalen Speicher als „unbedingt erforderlich" i.S.v. § 25 Abs. 2 Nr. 2 TDDDG gilt — das ist für
+  > reine Produkt-Analytik **strittig**. Vor dem Launch anwaltlich prüfen lassen; Rückfallebenen:
+  > (a) zurück auf Opt-in, oder (b) `clientId` nur pro Session im Speicher halten (nichts persistieren).
 - **Löschung:** serverseitig per `clientId` möglich (Art. 17). Aufbewahrung befristet (s. BACKEND.md §17.6.4).
 - **Datenminimierung:** Snapshot ist anonym; Events sind pseudonym und enthalten nur Enums/Buckets.
 - Details & Server-Pflichten: **[BACKEND.md §17](../BACKEND.md)**.
@@ -236,7 +240,7 @@ loggt eintreffende Events nur im Terminal.
 
 | Datei | Rolle |
 |---|---|
-| [`analytics.js`](../analytics.js) | **Client-Modul** `SC.analytics`: reiner Kern (Snapshot, Event-Bau, Allowlist-Sanitizer, Buckets, IDs) + dünner opt-in-Adapter (`track`/`flush`/`maybeSend`, Ring-Queue, `sendBeacon`). |
+| [`analytics.js`](../analytics.js) | **Client-Modul** `SC.analytics`: reiner Kern (Snapshot, Event-Bau, Allowlist-Sanitizer, Buckets, IDs) + dünner Adapter hinter dem Consent-Gate (`track`/`flush`/`maybeSend`, Ring-Queue, `sendBeacon`). |
 | [`app.js`](../app.js) | **Instrumentierung**: `trackEvent`/`abucket`, Hooks (onClick, render, beginRound, finishRound, rate, updateSearchResults, Onboarding, setGameStats-Diff, Boot/Errors), `analyticsCtx`, `detectPlatform`, `detectAcquisitionSrc`, Consent-Handler. |
 | `ui.js` + `i18n.strings*.js` | Consent-Schalter „Nutzungsstatistik teilen" + „Statistik-Id zurücksetzen" (de/en/es). |
 | `config.js` | `SC.config.analytics = { enabled, endpoint }` (Default `null` = aus). |
@@ -255,7 +259,7 @@ loggt eintreffende Events nur im Terminal.
 ## 10. Status & offene Punkte (TODO)
 
 ### ✅ Fertig (end-to-end lauffähig, Client UND Produktion)
-- Opt-in-Snapshot + pseudonymer Event-Strom, Allowlist-Sanitizer, Ring-Queue, Batching/Beacon, Reset-Id.
+- Abschaltbarer (Opt-out) Snapshot + pseudonymer Event-Strom, Allowlist-Sanitizer, Ring-Queue, Batching/Beacon, Reset-Id.
 - Volle Instrumentierung (Screens, Aktionen, Sessions, Karten, Spiele, Suche, Onboarding, Fehler, PWA; Startzeit in `app_open.load_ms`).
 - **Produktions-Event-Store:** `POST /v1/events`/`/v1/usage` schreiben live nach Supabase (`event`/`usage_snapshot`, RLS an, nur `service_role` kommt ran), Rate-Limiting atomar über `rl_hit`-RPC, Retention-Cron (`purge-events.js`, fail-closed ohne `CRON_SECRET`), DSGVO-Löschung per `clientId` (`DELETE /v1/events?clientId=…`). Live gegen Produktion verifiziert (2026-07-22).
 - **Produktions-Aggregation:** `GET /v1/admin/stats(.csv|kpis.csv)` liest Supabase paginiert, mappt zurück aufs Envelope (`tools/telemetry-map.js`, unit-getestet) und füttert dieselbe `aggregate()` wie der Self-Host-Collector — das Investor-Cockpit (§7) läuft damit auch gegen echte Nutzerdaten, nicht nur die JSONL-Demo. Fail-closed ohne `ADMIN_TELEMETRY_TOKEN`.
