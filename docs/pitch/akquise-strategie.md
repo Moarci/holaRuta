@@ -2,7 +2,7 @@
 
 > **Datum:** 2026-06-23 · **Folgt auf:** [MARKT.md](../../MARKT.md), [STATUS.md](../../STATUS.md)
 > **Zweck:** Das *operative* Dokument. MARKT.md erklärt **warum** die Kanäle passen, [zielkunden.md](zielkunden.md) sagt **wen** zuerst, [anschreiben.md](anschreiben.md) liefert die **Erst-Nachrichten**. Dieses Playbook bündelt alles zu einem **Schritt-für-Schritt-Vorgehen**: Reihenfolge, Nachfass-Rhythmus, Einwand-Behandlung, ein 30-Tage-Plan und eine einfache Pipeline-Tabelle.
-> **Live-Demo:** https://moarci.github.io/holaRuta/ · **Pitch-Seite:** [docs/pitch/](index.html) · **Handouts:** [docs/anleitungen/](../anleitungen/index.html)
+> **Live-Demo:** https://holaruta.com/ · **Pitch-Seite:** [docs/pitch/](index.html) · **Handouts:** [docs/anleitungen/](../anleitungen/index.html)
 
 ---
 
@@ -82,7 +82,7 @@ Parallel zu den Ketten gezielt die Flaggschiff-Hostels je Hub anschreiben (hoher
 > „¡Hola! Soy [Name]. Hice *HolaRuta*, una app web **gratis** de español de viaje. Tiene un juego tipo *battle* de **5 minutos** ideal como actividad para la zona común — sin instalar nada, solo un código QR, funciona sin internet. ¿Les interesaría una **"Spanish Night"** con sus huéspedes? Les paso un póster listo para imprimir, sin costo. Para una cadena como la suya funcionaría igual en **todas las sedes**. 🙌“
 
 **Text — E-Mail an Ketten-Partnerships (EN, Betreff: *A free 5-minute "Spanish Night" for all your locations*):**
-> Hi [name], I built **HolaRuta** — a free, offline travel-Spanish web app with a one-tap **5-minute language battle** that works as a ready-made common-room activity. No app install, just a QR code. For a network like yours it would run identically across **every property**, so one rollout reaches all guests. I'd send a print-ready poster (EN/ES) and a 2-min video — no cost, I'd just love your team's honest take. Demo: https://moarci.github.io/holaRuta/ → *Modo hostal*.
+> Hi [name], I built **HolaRuta** — a free, offline travel-Spanish web app with a one-tap **5-minute language battle** that works as a ready-made common-room activity. No app install, just a QR code. For a network like yours it would run identically across **every property**, so one rollout reaches all guests. I'd send a print-ready poster (EN/ES) and a 2-min video — no cost, I'd just love your team's honest take. Demo: https://holaruta.com/ → *Modo hostal*.
 
 **Einwände & Antworten:**
 - *„Wir haben schon Aktivitäten.“* → „Genau dafür — das ist eine fertige, *zusätzliche* 5-Minuten-Option ohne Vorbereitung. Hängt nur ein QR-Code.“

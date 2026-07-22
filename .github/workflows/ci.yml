@@ -1,23 +1,14 @@
-# Testet & veröffentlicht HolaRuta.
+# Testet HolaRuta bei jedem Push/PR. Das Deployment selbst läuft NICHT mehr hier:
+# Vercel ist per GitHub-App direkt mit dem Repo verbunden und deployt bei jedem
+# Push auf main automatisch (Build-Settings in vercel.json). Dieser Workflow ist
+# ausschließlich das Test-/Merge-Gate.
 #
-# Zwei Modi in EINEM Workflow:
-#  - Pull Request gegen main  → `test` (Merge-Gate) + `e2e` (Browser-Check) laufen,
-#    kein Deploy.
-#  - Push auf main (oder manuell) → `test` + `e2e`, danach `deploy` auf GitHub Pages
-#    (der Deploy hängt nur am `test`-Job, nicht am Browser-`e2e`-Job).
-#
-# Damit bekommt die App eine feste Internet-Adresse (https://<user>.github.io/holaRuta/),
-# offline-fähig über den Service Worker. Kaputter Code wird so schon im PR gestoppt,
-# bevor er live geht und bei PWA-Nutzern offline gecacht wird.
-#
-# Die App ist statisches HTML/CSS/JS ohne Build-Schritt, deshalb wird der
-# Projektordner unverändert als Pages-Artefakt hochgeladen.
-#
-# Einmalig nötig: unter Settings → Pages als Quelle „GitHub Actions" wählen.
-# Empfohlen: unter Settings → Branches eine Schutzregel für `main` mit dem
-# erforderlichen Status-Check „test" – dann ist der Merge-Knopf erst grün, wenn
-# die Tests grün sind.
-name: Test & Deploy
+# Vorher lief hier zusätzlich ein `deploy`-Job, der den `dist/`-Build auf GitHub
+# Pages veröffentlicht hat (moarci.github.io/holaRuta). Mit dem Umzug auf die
+# eigene Domain (holaruta.com, Hosting bei Vercel, Registrar/DNS bei IONOS) ist
+# dieser Job entfallen — Vercels eigene GitHub-Integration übernimmt den Build
+# UND das Deployment, auch bei einem privaten Repo.
+name: Test
 
 on:
   push:
@@ -27,8 +18,6 @@ on:
   schedule:
     - cron: "0 4 * * *" # nächtlicher voller Mutations-Score (Job mutation-full)
 
-# Standardmäßig nur Lesezugriff; die Pages-Schreibrechte braucht nur der
-# deploy-Job (Least Privilege) – siehe unten.
 permissions:
   contents: read
 
@@ -42,14 +31,13 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-# Pro Ref serialisieren: gleichzeitige main-Deployments laufen nacheinander,
-# aber PR-Läufe blockieren keine main-Deploys (und umgekehrt).
+# Pro Ref serialisieren, damit parallele Läufe auf demselben Ref sich nicht überholen.
 concurrency:
-  group: pages-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # Test-Gate: kaputter Code darf nicht gemergt/live gehen (und würde von
+  # Test-Gate: kaputter Code darf nicht gemergt/deployt werden (und würde von
   # PWA-Nutzern offline gecacht). Prüft außerdem, dass die generierten Artefakte
   # zum Quellcode passen (kein Build-Drift): das Single-File-Build HolaRuta.html
   # UND der gestempelte Service-Worker-Cache-Name (CACHE_VERSION). Letzterer sorgt
@@ -85,9 +73,9 @@ jobs:
       - name: Coverage (Reporting, non-blocking)
         run: node --test --experimental-test-coverage || true
 
-      # HolaRuta.html ist nicht mehr eingecheckt (wird im deploy-Job frisch
-      # gebaut). Geprüft wird nur, dass der Build sauber läuft UND der
-      # committete service-worker.js (CACHE_VERSION) zum Quellcode passt.
+      # HolaRuta.html ist nicht eingecheckt. Geprüft wird nur, dass der Build
+      # sauber läuft UND der committete service-worker.js (CACHE_VERSION) zum
+      # Quellcode passt.
       - name: Verify build runs and service-worker is in sync
         run: |
           node build.js
@@ -108,9 +96,9 @@ jobs:
   # Sortierung, CSV-Export (inkl. Akzent-Namen), Re-Import-Dedupe und das
   # A4-Druck-Layout (keine geklippten Spalten). Suite: scripts/e2e/suites/p1-modo-profe.mjs.
   #
-  # Bewusst KEIN Deploy-Blocker: `deploy` hängt nur am schnellen, browserlosen
-  # `test`-Job; dieser e2e-Job ist ein zusätzliches PR-/Push-Signal (browser-
-  # basiert, daher etwas langsamer und potenziell seltener mal flaky).
+  # Bewusst KEIN Merge-Blocker: `test` ist das schnelle, browserlose Pflicht-Gate;
+  # dieser e2e-Job ist ein zusätzliches PR-/Push-Signal (browser-basiert, daher
+  # etwas langsamer und potenziell seltener mal flaky).
   #
   # Playwright ist KEINE Repo-Dependency (das Projekt bleibt laufzeit-dependency-
   # frei): hier flüchtig (--no-save) und versionsgepinnt installiert.
@@ -157,88 +145,6 @@ jobs:
 
       - name: Ausführliche Browser-Verifikation (Root + dist)
         run: npm run e2e:verify
-
-  deploy:
-    needs: test
-    # Nur bei Push auf main / manuellem Lauf deployen – NICHT bei Pull Requests.
-    if: github.event_name != 'pull_request'
-    # Schreibrechte für die Pages-Bereitstellung nur hier, nicht repo-weit.
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      # URL kommt von dem Versuch, der durchlief (siehe Retry-Kette unten).
-      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: "22"
-
-      # Minifizierter Multi-File-Build nach dist/: alle Modul-.js + styles.css
-      # einzeln per esbuild minifiziert, index.html/SW/Manifeste/Icons/Fonts kopiert,
-      # SW-Hash über die minifizierten dist-Assets gestempelt. esbuild ist KEINE
-      # Repo-Runtime-Dependency – hier flüchtig (--no-save) und versionsgepinnt.
-      # Fällt esbuild aus, baut build.js dist/ graceful roh (unminifiziert).
-      - name: Install esbuild (gepinnt, dev-only)
-        run: npm install --no-save esbuild@0.28.1
-
-      - name: Build dist (minifiziert)
-        run: node build.js --dist
-
-      # HolaRuta.html (Einzeldatei-Download) frisch bauen und in dist/ legen, damit
-      # sie unter https://<user>.github.io/holaRuta/HolaRuta.html verfügbar bleibt.
-      - name: Build single-file (HolaRuta.html) into dist/
-        run: |
-          node build.js
-          cp HolaRuta.html dist/HolaRuta.html
-
-      - name: Configure Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-        with:
-          enablement: true # Pages beim ersten Lauf einschalten, falls noch nicht aktiv
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
-        with:
-          path: ./dist # minifizierter Multi-File-Build (index.html ist die App-Startseite)
-
-      # GitHub Pages' Backend liefert gelegentlich transient
-      # "Deployment failed, try again later." – der Artefakt-Upload war ok, nur die
-      # Veröffentlichung auf GitHub-Seite schlug fehl. Genau das hat die Live-Seite
-      # mehrfach auf einem alten Stand hängen lassen (Deploy hängt an needs: test,
-      # aber DIESER Schritt scheiterte). Deshalb bis zu 3 Anläufe mit kurzem Backoff:
-      # die ersten beiden schlucken den Fehler (continue-on-error), erst der letzte
-      # bricht den Job hart ab. Bleibt es rot, ist es KEIN transienter Fehler mehr
-      # (dann Settings → Pages: Source = "GitHub Actions" prüfen).
-      - name: Deploy to GitHub Pages (Versuch 1)
-        id: deploy1
-        continue-on-error: true
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
-
-      - name: Backoff vor Versuch 2
-        if: steps.deploy1.outcome == 'failure'
-        run: sleep 30
-
-      - name: Deploy to GitHub Pages (Versuch 2)
-        id: deploy2
-        if: steps.deploy1.outcome == 'failure'
-        continue-on-error: true
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
-
-      - name: Backoff vor Versuch 3
-        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
-        run: sleep 60
-
-      - name: Deploy to GitHub Pages (Versuch 3, final)
-        id: deployment
-        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
 
   # Nächtlicher VOLLER Mutations-Score über ALLE Engine-Module (entkoppelt vom
   # schnellen PR-Gate, das nur geänderte Module fährt). Gated je Modul gegen den

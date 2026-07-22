@@ -194,8 +194,9 @@ Der Fortschritt ist **gut mergebar**, weil die Felder fast alle monoton oder men
 **Empfehlung:** Start mit **A** (schnell, EU, billig), Architektur aber providerneutral halten (DB hinter einem
 Repository-Interface), damit **C** für datensensible Schulkunden später möglich ist.
 
-> Nebeneffekt: Eine **eigene Domain** (statt `moarci.github.io`) löst zugleich die in MARKT.md §2 genannte
-> `github.io`-Shared-Origin-`localStorage`-Randbedingung und wirkt für Schulen/Partner seriöser.
+> Nebeneffekt: Die eigene Domain **holaruta.com** (statt `moarci.github.io`) löst zugleich die in
+> MARKT.md §2 genannte `github.io`-Shared-Origin-`localStorage`-Randbedingung und wirkt für
+> Schulen/Partner seriöser.
 
 ---
 

@@ -14,7 +14,7 @@ globalThis.window = {};
 const qr = require(path.join(__dirname, "..", "qr.js"));
 
 test("qr.svg: erzeugt ein skalierbares SVG für einen Link", () => {
-  const out = qr.svg("https://moarci.github.io/holaRuta/?task=HRT1.abc123");
+  const out = qr.svg("https://holaruta.com/?task=HRT1.abc123");
   assert.ok(out.startsWith("<svg"), "kein <svg>-Wurzelelement");
   assert.ok(out.includes("viewBox"), "kein viewBox – also nicht skalierbar");
   assert.ok(out.includes("<path"), "keine QR-Module gezeichnet");
@@ -29,7 +29,7 @@ test("qr.svg: leerer oder fehlender Input wirft nicht (liefert String)", () => {
 
 test("qr.svg: längere Links erzeugen ein größeres Modul-Raster (Auto-Version)", () => {
   const short = qr.svg("https://x.co/?t=A");
-  const long = qr.svg("https://moarci.github.io/holaRuta/?task=" + "Z".repeat(120));
+  const long = qr.svg("https://holaruta.com/?task=" + "Z".repeat(120));
   assert.ok(long.length > short.length, "längerer Inhalt sollte ein dichteres QR ergeben");
 });
 

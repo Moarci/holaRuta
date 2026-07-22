@@ -66,7 +66,7 @@
       // Asset hier als https:- oder data:image-URL setzen, dann erscheint es als Bild.
       logo: null,
       defaultDestination: "Cartagena",
-      appUrl: "https://moarci.github.io/holaRuta/",
+      appUrl: "https://holaruta.com/",
       sync: { enabled: false, apiBase: "https://sync.example-ecos.org", orgLabel: "ECOS Cartagena" },
       taskTab: true,
       teacherTab: true,
@@ -81,7 +81,7 @@
       // Asset hier als https:- oder data:image-URL setzen, dann erscheint es als Bild.
       logo: null,
       defaultDestination: "Colombia",
-      appUrl: "https://moarci.github.io/holaRuta/",
+      appUrl: "https://holaruta.com/",
       sync: { enabled: false, apiBase: "https://sync.example-weroad.com", orgLabel: "WeRoad Colombia" },
       taskTab: true,
       teacherTab: true,
@@ -99,7 +99,7 @@
       partner: { name: "Dein Hostel", url: null }, // pro Hostel: Name + Backlink zur Homepage
       logo: null,
       defaultDestination: null, // pro Hostel z.B. "Cartagena" → blendet die Pre-Arrival-Kachel ein
-      appUrl: "https://moarci.github.io/holaRuta/",
+      appUrl: "https://holaruta.com/",
       taskTab: false,
       teacherTab: false,
       hostel: {
@@ -121,7 +121,7 @@
       partner: { name: "ECOS · Cartagena", url: "https://www.ecosescuela.com/" },
       logo: null,
       defaultDestination: null,
-      appUrl: "https://moarci.github.io/holaRuta/",
+      appUrl: "https://holaruta.com/",
       track: "es-en",      // <- kehrt die Lernrichtung um (Spanisch lernt Englisch)
       taskTab: true,       // Tarea (Aufgaben) zentral für Schulen
       teacherTab: true,    // Modo profe (Klassenübersicht) zentral für Schulen
@@ -140,7 +140,7 @@
       partner: { name: "Your Venue", url: null }, // pro Venue: Name + Backlink
       logo: null,
       defaultDestination: null,
-      appUrl: "https://moarci.github.io/holaRuta/",
+      appUrl: "https://holaruta.com/",
       track: "es-en",      // Personal lernt Englisch (Frage = Spanisch, Antwort = Englisch)
       taskTab: false,      // kein Schul-Aufgaben-Workflow – Selbstlernen am Arbeitsplatz
       teacherTab: false,
@@ -159,7 +159,7 @@
       partner: { name: "Medellín", url: "https://www.medellin.gov.co/" }, // Backlink zur offiziellen Stadtseite (Bezug/Credit)
       logo: MEDELLIN_FLAG, // Stadtflagge (weiß/grün + Wappen) – siehe MEDELLIN_FLAG oben
       defaultDestination: null,
-      appUrl: "https://moarci.github.io/holaRuta/",
+      appUrl: "https://holaruta.com/",
       track: "es-en",      // Paisas lernen Englisch (Frage = Spanisch, Antwort = Englisch)
       taskTab: false,
       teacherTab: false,
@@ -182,7 +182,7 @@
       // shareText() hängt ?m=<slug> an appUrl an, share.js: linkBaseUrl() hängt
       // zusätzlich ?edition=hello-abroad an, damit die App im HelloAbroad-
       // Branding statt im HolaRuta-Standard startet).
-      appUrl: "https://moarci.github.io/holaRuta/",
+      appUrl: "https://holaruta.com/",
       track: "de-en",
       taskTab: false,
       teacherTab: false,

@@ -2,16 +2,18 @@
  * scripts/geo/config.mjs — zentrale Konstanten der GEO/SEO-Content-Pipeline.
  *
  * EINE Quelle der Wahrheit für Domain, Marke, Sprachen und Crawler-Politik.
- * Der Umstieg auf eine eigene Domain (holaruta.app) ist ein Einzeiler hier:
- * BASE_URL ändern, CNAME ergänzen, neu generieren – der Rest der Pipeline zieht
- * BASE_URL aus dieser Datei.
+ * Ein weiterer Domain-Umzug ist ein Einzeiler hier: BASE_URL ändern, neu
+ * generieren (npm run geo:generate && npm run geo:prerender) – der Rest der
+ * Pipeline zieht BASE_URL aus dieser Datei.
  *
- * WICHTIG: BASE_URL ohne abschließenden Slash. Der Pfad "/holaRuta" trägt ein
- * großes R – exakt so wie GitHub Pages die Seite ausliefert.
+ * WICHTIG: BASE_URL ohne abschließenden Slash. holaruta.com ist die primäre
+ * Domain (Vercel-Hosting, IONOS als Registrar/DNS); holaruta.de leitet als
+ * reine Domain-Weiterleitung auf holaruta.com um und hat keinen eigenen
+ * Seitenbestand.
  */
 "use strict";
 
-export const BASE_URL = "https://moarci.github.io/holaRuta";
+export const BASE_URL = "https://holaruta.com";
 
 export const BRAND = Object.freeze({
   name: "HolaRuta",
@@ -20,7 +22,7 @@ export const BRAND = Object.freeze({
     en: "Travel Spanish for real situations",
     es: "El inglés que tu trabajo necesita",
   },
-  email: "hola@holaruta.app",
+  email: "hola@holaruta.com",
   github: "https://github.com/Moarci/holaRuta",
   ogImage: `${BASE_URL}/og-image.png`,
   themeColor: "#241510",

@@ -10,7 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const { svg } = require(path.join(__dirname, "..", "..", "qr.js"));
 
-const BASE = "https://moarci.github.io/holaRuta/";
+const BASE = "https://holaruta.com/";
 
 // Hostel-/Reise-taugliche Co-Branding-Editionen. accent/brandInk gespiegelt aus
 // editions/registry.js; `tint` ist ein aufgehellter Partner-Ton für den Verlauf;
@@ -74,7 +74,7 @@ function sticker(e) {
   <text x="56" y="228" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="58" font-weight="800" fill="#2D1B12" letter-spacing="-1">Survival Spanish</text>
   <text x="56" y="286" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="58" font-weight="800" fill="${e.accent}" letter-spacing="-1">for your trip.</text>
   ${qr}
-  <text x="350" y="612" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="#6E5848" text-anchor="middle">moarci.github.io/holaRuta · ${e.tagline}</text>
+  <text x="350" y="612" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="#6E5848" text-anchor="middle">holaruta.com · ${e.tagline}</text>
   <rect x="96" y="628" width="508" height="50" rx="25" fill="#3F7355" fill-opacity="0.12"/>
   <path d="M128 653 l8 9 l14 -20" fill="none" stroke="#3F7355" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="162" y="662" font-family="Instrument Sans, Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" fill="#3F7355">Offline · ohne Konto · kostenlos</text>

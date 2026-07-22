@@ -6,8 +6,8 @@ und konfliktarm halten. (Solo-Projekt, aber die Disziplin zahlt sich aus.)
 ## Workflow
 
 - **Nicht direkt auf `main` pushen.** `main` ist geschützt (erforderlicher
-  Status-Check **`test`**) und wird bei jedem Merge automatisch nach
-  GitHub Pages deployt.
+  Status-Check **`test`**) und wird bei jedem Merge automatisch über Vercel
+  nach [holaruta.com](https://holaruta.com) deployt.
 - **Kleine, kurzlebige Branches, häufig mergen.** Ein Branch = ein Thema.
   Große, lang lebende Branches vermeiden — die erzeugen genau die Merge-,
   Versions- und Stückelungs-Not, die wir einmal hatten.
@@ -21,7 +21,7 @@ und konfliktarm halten. (Solo-Projekt, aber die Disziplin zahlt sich aus.)
 - **Generierte Artefakte:**
   - `HolaRuta.html` (eigenständige Versand-Einzeldatei) ist **nicht
     eingecheckt** (`.gitignore`) — CI baut sie beim Deploy und stellt sie unter
-    `https://moarci.github.io/holaRuta/HolaRuta.html` bereit. Lokal bei Bedarf
+    `https://holaruta.com/HolaRuta.html` bereit. Lokal bei Bedarf
     `node build.js`.
   - `service-worker.js` trägt die gestempelte `CACHE_VERSION`. Wenn du Assets
     änderst: `node build.js` ausführen und das aktualisierte

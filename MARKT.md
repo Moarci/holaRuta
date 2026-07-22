@@ -111,8 +111,8 @@ gegen `main` v1.24.0:
   aber **kein** Sign-off durch Muttersprachler/Lehrkraft. Für Schulen ist das Pflicht, für
   Gruppenreisen/Hostels weniger heikel.
 - **Privacy/Offline ist ein unterschätztes Verkaufsargument** (DSGVO, lokal-first, keine Werbung; anonyme Statistik nur opt-in).
-  ABER: Auf GitHub Pages teilen sich alle Projekte derselben `github.io`-Origin den `localStorage`
-  — beim ernsthaften Schul-/Partnereinsatz eine eigene Domain erwägen.
+  Die frühere `github.io`-Shared-Origin-Einschränkung ist mit dem Umzug auf die eigene Domain
+  (holaruta.com) erledigt.
 
 ---
 
@@ -249,7 +249,7 @@ Ziel-Kanal (**S**chule / **G**ruppenreise / **H**ostel / **B2C**).
 
 | Lücke | Aufwand | Kanal |
 |---|---|---|
-| Eigene Domain statt `github.io`-Subpfad (behebt `localStorage`-Shared-Origin, wirkt seriöser) | S–M | S/G |
+| ~~Eigene Domain statt `github.io`-Subpfad~~ — erledigt: holaruta.com (Vercel, IONOS-Registrar) | S–M | S/G |
 | Support-Kanal (Mail) + sichtbare Update-Kadenz | S | alle |
 | Mehrsprachige Landingpage (DE/EN/ES) | M | alle |
 
@@ -352,7 +352,7 @@ herstellen (Produkt / Partnerships / Operations / Community / DACH).
 > im Browser/als PWA und hat einen Hostel-/Gruppenmodus mit Battle und Rollenspielen. Könnte so was
 > für WeRoad-Reisen nach Lateinamerika spannend sein — als kleines Pre-Trip-Tool oder als
 > 5-Minuten-Challenge unterwegs? Magst du kurz reinschauen und mir ehrlich sagen, ob das für
-> Reisegruppen praktisch wäre? → https://moarci.github.io/holaRuta/
+> Reisegruppen praktisch wäre? → https://holaruta.com/
 
 **Sag ihr, worauf sie achten soll** (sonst zu viele Features): (1) Karten mit Kontext, (2) Hostel
 Mode / Battle, (3) Spickzettel / Notfall.
@@ -405,7 +405,7 @@ kein offizieller Prozess, erstmal nur Feedback (Nutzen, Verständlichkeit, Spaß
 ## 13. Risiken & offene Punkte
 
 - **Inhalts-Gegenprüfung durch Lehrkraft/Muttersprachler fehlt** — vor dem Schul-Pitch nachholen.
-- **`localStorage`-Shared-Origin auf GitHub Pages** — für ernsthaften Einsatz eigene Domain.
+- ~~`localStorage`-Shared-Origin auf GitHub Pages~~ — erledigt: eigene Domain (holaruta.com).
 - **Kein Mehrgeräte-Sync** — begrenzt Lehrer-Dashboard und Per-Seat-Modelle.
 - **B2C braucht Account-/Kauf-Backend** — ohne das kein Pro-Verkauf.
 - **Niveau-Kuration fehlt** — die Stufen sind nur ein Filter, kein Lernpfad.

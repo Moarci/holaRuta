@@ -2,7 +2,7 @@
 
 > Kurze, persönliche Erst-Nachrichten je Zielgruppe. **Ziel ist nicht der harte Verkauf, sondern
 > Feedback + ein kleiner Pilot** (niedrigschwellig, wirkt professionell). `[…]` ersetzen, gern kürzen.
-> Live-Demo: **https://moarci.github.io/holaRuta/** · Anleitungen: **/docs/anleitungen/** · Pitch: **/docs/pitch/**
+> Live-Demo: **https://holaruta.com/** · Anleitungen: **/docs/anleitungen/** · Pitch: **/docs/pitch/**
 
 ---
 
@@ -19,7 +19,7 @@
 >
 > Hättet ihr Lust auf einen **kostenlosen 4-Wochen-Pilot** mit 1–2 Gruppen? Ich bringe fertige Unterrichtsideen mit und sammle danach einfach euer Feedback.
 >
-> Kurz reinschauen: https://moarci.github.io/holaRuta/
+> Kurz reinschauen: https://holaruta.com/
 >
 > Viele Grüße, [dein Name]
 
@@ -32,7 +32,7 @@
 >
 > Would you be up for a **free 4-week pilot** with 1–2 groups? I’ll bring ready-made lesson ideas and just gather your feedback afterwards.
 >
-> Quick look: https://moarci.github.io/holaRuta/
+> Quick look: https://holaruta.com/
 >
 > Best, [your name]
 
@@ -45,7 +45,7 @@
 >
 > ¿Les interesaría un **piloto gratuito de 4 semanas** con 1–2 grupos? Llevo ideas de clase listas y al final me encantaría escuchar su opinión.
 >
-> Un vistazo rápido: https://moarci.github.io/holaRuta/
+> Un vistazo rápido: https://holaruta.com/
 > *(La interfaz está en alemán/inglés; el contenido es español de viaje.)*
 >
 > Saludos, [tu nombre]
@@ -63,7 +63,7 @@
 >
 > Would you be open to trying it as a casual “Spanish Night” with your guests? I can send a ready-to-print poster with the QR code. No cost – I’d just love your honest take on whether guests enjoy it.
 >
-> Try it: https://moarci.github.io/holaRuta/  →  Modo hostal  →  5-minute icebreaker
+> Try it: https://holaruta.com/  →  Modo hostal  →  5-minute icebreaker
 >
 > Cheers, [your name]
 
@@ -74,7 +74,7 @@
 >
 > ¿Se animarían a probarlo como una “Spanish Night” informal con sus huéspedes? Les puedo enviar un cartel listo para imprimir con el QR. Sin costo: solo me encantaría saber si a los huéspedes les gusta.
 >
-> Pruébenlo: https://moarci.github.io/holaRuta/  →  Modo hostal  →  icebreaker de 5 minutos
+> Pruébenlo: https://holaruta.com/  →  Modo hostal  →  icebreaker de 5 minutos
 >
 > Saludos, [tu nombre]
 
@@ -91,7 +91,7 @@
 >
 > Könnte so was für eure Lateinamerika-Reisen spannend sein – als kleines Pre-Trip-Tool oder als 5-Minuten-Challenge unterwegs? Magst du kurz reinschauen und mir ehrlich sagen, ob das für Reisegruppen praktisch wäre? Und: wen müsste man bei euch ansprechen, um einen Mini-Pilot zu testen?
 >
-> https://moarci.github.io/holaRuta/  →  schau dir am besten an: Karten + Kontext, Modo hostal/Battle, Spickzettel
+> https://holaruta.com/  →  schau dir am besten an: Karten + Kontext, Modo hostal/Battle, Spickzettel
 >
 > Danke dir! [dein Name]
 
@@ -102,7 +102,7 @@
 >
 > Could this be interesting for your Latin-America trips – as a small pre-trip tool or a 5-minute challenge on the road? Mind taking a quick look and telling me honestly whether it’d be practical for travel groups? And: who would one talk to on your side to test a mini-pilot?
 >
-> https://moarci.github.io/holaRuta/  →  best to look at: cards + context, Modo hostal/battle, cheat sheet
+> https://holaruta.com/  →  best to look at: cards + context, Modo hostal/battle, cheat sheet
 >
 > Thanks! [your name]
 

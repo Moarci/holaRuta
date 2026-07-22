@@ -17,7 +17,12 @@
 
 Schnell lernen · Großzügig prüfen · Komplett mit dem Daumen · Spricht Spanisch vor · Funktioniert ohne Netz
 
-### ▶️ [**Live öffnen → moarci.github.io/holaRuta**](https://moarci.github.io/holaRuta/)
+### ▶️ [**Live öffnen → holaruta.com**](https://holaruta.com/)
+
+> **Umzug in Vorbereitung:** Die App zieht gerade von `moarci.github.io/holaRuta` auf die eigene
+> Domain `holaruta.com` um (Vercel-Hosting, IONOS-Registrar). Bis DNS/Vercel scharf geschaltet
+> sind, ist der Link oben noch nicht live — bis dahin läuft die App unverändert unter
+> [`moarci.github.io/holaRuta`](https://moarci.github.io/holaRuta/) weiter.
 
 *Direkt im Browser starten — nichts installieren. Auf dem Handy „Zum Startbildschirm hinzufügen" tippen, und HolaRuta liegt als offline-fähige App auf dem Homescreen.*
 
@@ -308,7 +313,10 @@ SpanischCard/
 | **Event-Delegation** | Ein einziger Listener auf `#app`; Buttons tragen `data-action`. Keine Listener-Leaks beim Re-Render. |
 | **Single Source of Truth** | Ein `state`-Objekt im Controller; jede Aktion → `render()`. |
 
-> **Randbedingung GitHub Pages:** Alle Pages-Projekte eines GitHub-Accounts laufen unter derselben Origin (`https://<user>.github.io`) und teilen sich damit `localStorage` und Speicher-Quota. Jedes andere dort gehostete Projekt kann HolaRutas gespeicherte Daten lesen oder überschreiben, und der gemeinsame Speicherplatz zahlt auf dasselbe Quota ein. Die `spanischcard.*`-Schlüsselpräfixe vermeiden versehentliche Kollisionen, ersetzen aber keine echte Isolation.
+> **Eigene Domain:** HolaRuta läuft unter der eigenen Domain `holaruta.com` (Vercel-Hosting,
+> Registrar/DNS bei IONOS; `holaruta.de` leitet als Sekundärdomain auf `.com` um). Damit hat die
+> App eine eigene Origin und teilt sich `localStorage`/Speicher-Quota nicht mehr mit anderen
+> Projekten (frühere Randbedingung auf `github.io`, siehe RISIKO.md R16).
 
 ---
 
@@ -321,7 +329,7 @@ HolaRuta braucht **keine Installation und keinen Build**. Es ist statisches HTML
 ```bash
 # HolaRuta.html ist die fertige, eigenständige Version (alles eingebettet).
 # Nicht im Repo eingecheckt: einmal `node build.js` ausführen ODER von
-# https://moarci.github.io/holaRuta/HolaRuta.html laden.
+# https://holaruta.com/HolaRuta.html laden.
 # Dann Doppelklick — läuft offline, ohne Server.
 ```
 
@@ -340,13 +348,18 @@ python -m http.server 3000
 
 Im Browser öffnen → die App registriert den Service Worker, wird offline-fähig und lässt sich über „Zum Startbildschirm hinzufügen" installieren.
 
-### Variante C — als PWA online (GitHub Pages)
+### Variante C — als PWA online (holaruta.com)
+
+> Solange `holaruta.com` noch nicht live ist (DNS/Vercel-Umzug läuft, siehe Hinweis oben),
+> vorübergehend [`moarci.github.io/holaRuta`](https://moarci.github.io/holaRuta/) statt
+> `holaruta.com` verwenden — die Schritte sind identisch.
 
 Für die App auf dem **Android-Startbildschirm**, ohne die Datei je wieder zu suchen:
 
-1. In **Settings → Pages** als Quelle **„GitHub Actions"** wählen (einmalig). Der Workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) veröffentlicht den Projektordner bei jedem Push auf `main`.
-2. Die ausgespielte Adresse (`https://<user>.github.io/holaRuta/`) einmal auf dem Handy öffnen.
-3. Im Profil-Reiter auf **„📲 App installieren"** tippen (Android) bzw. der dort eingeblendeten **iOS-Anleitung** folgen.
+1. Die Live-Adresse [`https://holaruta.com`](https://holaruta.com) einmal auf dem Handy öffnen
+   (deployt über Vercel bei jedem Push auf `main`, siehe [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+   für das Test-Gate).
+2. Im Profil-Reiter auf **„📲 App installieren"** tippen (Android) bzw. der dort eingeblendeten **iOS-Anleitung** folgen.
 
 Danach liegt HolaRuta als eigenes App-Icon auf dem Startbildschirm – ein Tipp startet die App, offline-fähig, kein Datei-Suchen mehr.
 
@@ -379,7 +392,7 @@ node build.js
 - Entfernt PWA-Verweise (Manifest/Icon lösen unter `file://` nicht auf)
 - Externe Links (Google Fonts) bleiben unverändert
 
-> **Wichtig:** `HolaRuta.html` ist ein **Ergebnis** des Builds, wird nie von Hand bearbeitet und ist **nicht im Repo eingecheckt** (`.gitignore`). CI baut sie beim Deploy frisch und stellt sie unter `https://moarci.github.io/holaRuta/HolaRuta.html` bereit.
+> **Wichtig:** `HolaRuta.html` ist ein **Ergebnis** des Builds, wird nie von Hand bearbeitet und ist **nicht im Repo eingecheckt** (`.gitignore`). CI baut sie beim Deploy frisch und stellt sie unter `https://holaruta.com/HolaRuta.html` bereit.
 
 ### Co-Branding-Editionen
 
@@ -403,8 +416,8 @@ Die Auswahl steuert `hostel.featured` (Liste von Modul-Aktionen in Wunschreihenf
 **Teilbarer Link (ohne eigenen Build):** Auf der gehosteten App wählt der Parameter `?edition=<id>` die Edition zur Laufzeit, `?start=onboarding` startet direkt das Onboarding (inkl. HolaRuta-Check). So verschickt eine Schule/Partnerfirma EINEN gebrandeten Einstiegslink:
 
 ```
-https://moarci.github.io/holaRuta/?edition=ecos&start=onboarding
-https://moarci.github.io/holaRuta/?edition=hostel
+https://holaruta.com/?edition=ecos&start=onboarding
+https://holaruta.com/?edition=hostel
 ```
 
 Eine fest gebaute Edition (`--edition=…`) kann per URL **nicht** überschrieben werden.
@@ -415,7 +428,7 @@ Metro/Metrocable, medio ambiente, cultura paisa, Guatapé, nómadas, Feria de la
 `?edition=medellin` bzw. `node build.js --edition=medellin`. Siehe [LOCALS.md](LOCALS.md) und
 [LOCALS-MEDELLIN.md](LOCALS-MEDELLIN.md).
 
-> Logo/Name eines Partners nur mit dessen Freigabe verwenden; bis dahin neutral co-branded (Farbe + Textzusatz, ohne Logo). Auf GitHub Pages teilen sich Editionen derselben Origin den `localStorage` — echte Trennung erst bei eigenem Deploy/Domain.
+> Logo/Name eines Partners nur mit dessen Freigabe verwenden; bis dahin neutral co-branded (Farbe + Textzusatz, ohne Logo). Editionen teilen sich weiterhin dieselbe `holaruta.com`-Origin (und damit `localStorage`) — echte Trennung braucht ein eigenes Deploy/eine eigene Domain je Edition.
 
 ---
 

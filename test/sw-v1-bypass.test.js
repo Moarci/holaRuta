@@ -21,12 +21,12 @@ function bypass(url) {
 }
 
 test("Bypass greift für Backend-Pfade, nicht für App-Assets", () => {
-  assert.equal(bypass("https://holaruta.app/v1/sync"), true);
-  assert.equal(bypass("https://holaruta.app/v1/leaderboard?day=2026-07-10"), true);
-  assert.equal(bypass("https://holaruta.app/api/cron/purge-events"), true);
-  assert.equal(bypass("https://holaruta.app/index.html"), false);
-  assert.equal(bypass("https://holaruta.app/data.js"), false);
-  assert.equal(bypass("https://holaruta.app/"), false);
+  assert.equal(bypass("https://holaruta.com/v1/sync"), true);
+  assert.equal(bypass("https://holaruta.com/v1/leaderboard?day=2026-07-10"), true);
+  assert.equal(bypass("https://holaruta.com/api/cron/purge-events"), true);
+  assert.equal(bypass("https://holaruta.com/index.html"), false);
+  assert.equal(bypass("https://holaruta.com/data.js"), false);
+  assert.equal(bypass("https://holaruta.com/"), false);
 });
 
 test("fetch-Handler enthält den /v1-Bypass VOR respondWith (Drift-Wächter)", () => {
