@@ -1917,11 +1917,26 @@
     render();
   }
 
-  // Dashboard-Tap auf die Trip-Karte: ins Profil wechseln und das Bearbeiten-
-  // Formular aufklappen (dort wird das Ziel verwaltet). setTab() rendert selbst.
+  // Dashboard-Tap auf die Trip-Karte: den Reise-Screen öffnen und das Bearbeiten-
+  // Formular aufklappen (dort wird das Ziel verwaltet). Der Zurück-Knopf führt auf
+  // den zuletzt aktiven Reiter zurück (goHome lässt homeTab unangetastet).
   function openTripManage() {
+    dismissBadgeToast();
     state.tripEdit = true;
-    setTab("profil");
+    setState({ screen: "reise" });
+  }
+
+  // Reise-Screen aus der Profil-Nav öffnen (read-only Countdown + Routen-Editor).
+  function goReise() {
+    dismissBadgeToast();
+    state.tripEdit = false;
+    setState({ screen: "reise" });
+  }
+
+  // Einstellungen-Screen aus der Profil-Nav öffnen (alle Lern-/App-Vorgaben + Daten).
+  function goSettings() {
+    dismissBadgeToast();
+    setState({ screen: "settings" });
   }
 
   // Eine Bewertung in die Spiel-Zähler einbuchen: Streak fortschreiben,
@@ -2696,6 +2711,8 @@
       "search": () => ui.renderSearch(searchVM()),
       "onboarding": () => ui.renderOnboarding(homeVM()),
       "account": () => ui.renderAccount(accountVM()),
+      "settings": () => ui.renderSettings(homeVM()),
+      "reise": () => ui.renderReise(homeVM()),
     };
     const screenFn = SCREENS[state.screen];
     // Robustheit: Feature-/Screen-Module (features/*.js) werden als eigene
@@ -7640,6 +7657,8 @@
     "skip": (el) => { skip(); },
     "speak": (el) => { speakCurrent(); },
     "open-stats": (el) => { goStats(); },
+    "open-settings": (el) => { goSettings(); },
+    "open-reise": (el) => { goReise(); },
     "open-badges": (el) => { openBadges(); },
     "open-info": (el) => { openInfo(); },
     "open-historia": (el) => { openHistoria("sur"); },

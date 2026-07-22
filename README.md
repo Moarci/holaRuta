@@ -298,7 +298,7 @@ SpanischCard/
 ├── seo/geo-manifest.json        # Generiertes Seiten-Manifest (327 Seiten), eingecheckt für Review/Diff
 ├── sitemap.xml · robots.txt · llms.txt  # Generierte GEO-Artefakte (aus dem Manifest, nie von Hand editieren)
 │
-├── test/                        # 960 Tests in 93 Dateien (node:test, keine Dependencies)
+├── test/                        # 961 Tests in 93 Dateien (node:test, keine Dependencies)
 └── AUDIT.md                     # Vollständiges Code-/UX-/A11y-/Security-Audit
 ```
 
