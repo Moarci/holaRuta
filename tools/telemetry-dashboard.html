@@ -940,7 +940,7 @@ function showGate(msg){
     + '<details><summary>Woher kommt der Token?</summary>Vercel → Projekt <code>hola-ruta</code> → Settings → Environment Variables → <code>ADMIN_TELEMETRY_TOKEN</code>.</details>'
     + '</div>';
   var gi = $("gatetoken"); if(gi) gi.focus();
-  say(msg ? "Anmeldung fehlgeschlagen: "+msg : "Anmeldung erforderlich");
+  say(msg ? "Anmeldung fehlgeschlagen: "+msg : "Anmeldung erforderlich.");
   $("gateform").addEventListener("submit", function(e){
     e.preventDefault();
     var v = $("gatetoken").value.trim();
@@ -959,7 +959,10 @@ function httpMessage(status, body){
   // Body kürzen: bei einem Fehler von Edge/Proxy kommt eine ganze HTML-Seite
   // zurück, die sonst komplett in der Meldung landen würde.
   var b = String(body||"").slice(0, 120);
-  if(status === 401) return "Token ungültig.";
+  // Beim ersten Besuch wurde nie ein Token geschickt — dann ist "ungültig" eine
+  // Falschaussage, die aussieht, als hätte man sich vertippt. Leere Meldung
+  // heißt: die Maske erscheint kommentarlos, so wie sie soll.
+  if(status === 401) return TOKEN ? "Token ungültig." : "";
   if(status === 429) return "Zu viele Anfragen (Rate-Limit) — in einer Minute erneut versuchen.";
   if(status === 500 && /not configured/.test(b)) return "Server-Konfiguration: ADMIN_TELEMETRY_TOKEN ist auf dem Server nicht gesetzt.";
   if(status === 500) return "Server-Fehler beim Laden der Daten (" + (b||"500") + ").";
