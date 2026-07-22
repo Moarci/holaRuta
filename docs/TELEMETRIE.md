@@ -142,10 +142,27 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 ## 7. Dashboard — „wie viele nutzen es und wie lange?"
 
-Damit man die Daten **sieht**, gibt es einen self-host-tauglichen Collector **mit Dashboard**:
-[`tools/telemetry-server.js`](../tools/telemetry-server.js) (+ [`tools/telemetry-dashboard.html`](../tools/telemetry-dashboard.html)).
-Zero-Dependency (nur Node-Builtins), persistiert als JSONL, rechnet die Kennzahlen in einer
-**reinen, unit-getesteten** `aggregate()`-Funktion ([`test/telemetry-aggregate.test.js`](../test/telemetry-aggregate.test.js)).
+Es gibt **zwei** Wege, dieselbe **reine, unit-getestete** `aggregate()`-Funktion
+([`test/telemetry-aggregate.test.js`](../test/telemetry-aggregate.test.js)) mit Daten zu füttern:
+
+1. **Self-Host/Demo:** [`tools/telemetry-server.js`](../tools/telemetry-server.js) — Zero-Dependency
+   (nur Node-Builtins), persistiert als JSONL. Für lokales Ausprobieren/Editionen ohne eigenes Backend.
+2. **Produktion (holaruta.com):** `GET /v1/admin/stats(.csv)` · `GET /v1/admin/kpis.csv`
+   ([`api/_v1/admin/stats.js`](../api/_v1/admin/stats.js)) — liest die **echten** Ereignisse direkt aus
+   den Supabase-Tabellen `event`/`usage_snapshot` (paginiert, Mapper in
+   [`tools/telemetry-map.js`](../tools/telemetry-map.js)) und füttert damit **dieselbe** `aggregate()`.
+   Fail-closed ohne `ADMIN_TELEMETRY_TOKEN` (Vercel-Env-Var); Zugriff per
+   `Authorization: Bearer <token>` oder `?token=…`, rate-limitiert.
+
+   > ⚠️ **Rollout-Reihenfolge (Pflicht):** [`supabase/migrations/0003_telemetry_admin.sql`](../supabase/migrations/0003_telemetry_admin.sql)
+   > (neue Spalten `mastered_bucket`/`trip_goal`/`trip_daily_bucket` auf `usage_snapshot`) **muss vor**
+   > dem Deploy des `api/_v1/usage.js`-Codes angewendet sein — sonst schlägt **jeder** `/v1/usage`-Insert
+   > mit einem Schema-Fehler fehl. `usage.js`/`events.js` geben in diesem Fall jetzt `500` zurück (statt
+   > den Fehler stillschweigend als `200` zu quittieren), sodass der Client den Snapshot/die Events lokal
+   > behält und erneut versucht — aber besser ist, die Reihenfolge von vornherein einzuhalten.
+
+   [`tools/telemetry-dashboard.html`](../tools/telemetry-dashboard.html) zeigt beide: Standard
+   `?base=/api` (Self-Host) oder `?base=https://holaruta.com/v1/admin&token=…` (Produktion).
 
 ```bash
 node tools/telemetry-server.js            # Server + Dashboard auf :8789
@@ -196,10 +213,10 @@ node build.js --edition=<id>
 > anonym ohne Id). **„Wie lange"** = Sitzungsdauer als Spanne zwischen erstem und letztem Event
 > derselben `sessionId`.
 
-> ⚠️ **Kein Produktionsdienst.** Das Dashboard ist standardmäßig **offen** (optional per
-> `TELEMETRY_TOKEN` schützbar) und der Storage ist eine **Datei** (`tools/telemetry-data/`,
-> ge-`.gitignore`-t) mit In-Memory-Aggregation. Für echten Betrieb gehören davor **echte Auth**,
-> ein richtiger **Event-Store (DB)**, Rate-Limits und EU-Hosting (siehe [BACKEND.md §17.6.3](../BACKEND.md)).
+> ⚠️ **`tools/telemetry-server.js` ist kein Produktionsdienst** (Datei-Storage, Dashboard nur
+> optional per `TELEMETRY_TOKEN` geschützt) — nur für Self-Host/lokale Demo. Der **Produktions-Pfad
+> ist `/v1/admin/stats`**: echter Event-Store (Supabase, RLS aktiv, nur `service_role` liest/schreibt),
+> Rate-Limiting, fail-closed ohne Token, EU-Hosting (siehe [BACKEND.md §17.6.3](../BACKEND.md)).
 
 **Ultra-einfacher Smoke-Test** ohne Dashboard/Persistenz: [`tools/mock-events-server.js`](../tools/mock-events-server.js)
 loggt eintreffende Events nur im Terminal.
@@ -224,39 +241,41 @@ loggt eintreffende Events nur im Terminal.
 | `ui.js` + `i18n.strings*.js` | Consent-Schalter „Nutzungsstatistik teilen" + „Statistik-Id zurücksetzen" (de/en/es). |
 | `config.js` | `SC.config.analytics = { enabled, endpoint }` (Default `null` = aus). |
 | `index.html` · `service-worker.js` | Modul eingebunden + im PWA-Precache. |
-| [`tools/telemetry-server.js`](../tools/telemetry-server.js) | **Collector + Dashboard-Server**: nimmt `POST /v1/usage`+`/v1/events` an, persistiert JSONL, reine `aggregate()`-Funktion, `GET /api/stats(.csv)`, serviert das Dashboard; Token/Retention/Windowing. |
-| [`tools/telemetry-dashboard.html`](../tools/telemetry-dashboard.html) | **Dashboard-UI** (Vanilla, SVG-Charts, kein externes Framework). |
+| [`api/_v1/events.js`](../api/_v1/events.js) · [`api/_v1/usage.js`](../api/_v1/usage.js) | **Produktions-Ingest** (Vercel): schreiben `POST /v1/events`/`/v1/usage` nach Supabase (`event`/`usage_snapshot`), Allowlist/Größenlimit/Rate-Limit serverseitig gespiegelt. |
+| [`api/_v1/admin/stats.js`](../api/_v1/admin/stats.js) | **Produktions-Aggregation**: `GET /v1/admin/stats(.csv)`/`kpis.csv`, liest Supabase paginiert, mappt via `telemetry-map.js`, ruft `aggregate()`/`toCsv()`/`toKpiCsv()`. Fail-closed ohne `ADMIN_TELEMETRY_TOKEN`. Im Dispatcher [`api/v1.js`](../api/v1.js) verdrahtet. |
+| [`tools/telemetry-map.js`](../tools/telemetry-map.js) | Reine Mapper Supabase-Zeile (snake_case) → aggregate()-Envelope (camelCase); unit-getestet (`test/telemetry-map.test.js`). |
+| [`tools/telemetry-server.js`](../tools/telemetry-server.js) | **Self-Host Collector + Dashboard-Server**: nimmt `POST /v1/usage`+`/v1/events` an, persistiert JSONL, reine `aggregate()`/`toCsv()`/`toKpiCsv()`-Funktionen (auch von `admin/stats.js` genutzt), `GET /api/stats(.csv)`, serviert das Dashboard; Token/Retention/Windowing. |
+| [`tools/telemetry-dashboard.html`](../tools/telemetry-dashboard.html) | **Dashboard-UI** (Vanilla, SVG-Charts, kein externes Framework); `?base=` wählt Self-Host (`/api`, Standard) oder Produktion (`https://holaruta.com/v1/admin`). |
 | [`tools/mock-events-server.js`](../tools/mock-events-server.js) | Ultra-einfacher Smoke-Collector (nur Terminal-Log). |
-| `test/analytics.test.js` · `test/telemetry-aggregate.test.js` | Unit-Tests (Sanitizer/Gating/Queue/Envelope · Aggregation). |
+| `test/analytics.test.js` · `test/telemetry-aggregate.test.js` · `test/telemetry-map.test.js` | Unit-Tests (Sanitizer/Gating/Queue/Envelope · Aggregation · Supabase-Mapper). |
 | [`BACKEND.md §17`](../BACKEND.md) | Server-/DSGVO-Spec (Ziel-Endpunkte, Event-Store, Löschung, Sampling). |
 
 ---
 
 ## 10. Status & offene Punkte (TODO)
 
-### ✅ Fertig (client-seitig vollständig, end-to-end lauffähig)
+### ✅ Fertig (end-to-end lauffähig, Client UND Produktion)
 - Opt-in-Snapshot + pseudonymer Event-Strom, Allowlist-Sanitizer, Ring-Queue, Batching/Beacon, Reset-Id.
 - Volle Instrumentierung (Screens, Aktionen, Sessions, Karten, Spiele, Suche, Onboarding, Fehler, PWA; Startzeit in `app_open.load_ms`).
-- Collector mit Persistenz, `aggregate()`, Dashboard (Nutzer/Retention/Sessions/Content/Lernfortschritt/Zeit/Segmente/Monitoring), Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning.
+- **Produktions-Event-Store:** `POST /v1/events`/`/v1/usage` schreiben live nach Supabase (`event`/`usage_snapshot`, RLS an, nur `service_role` kommt ran), Rate-Limiting atomar über `rl_hit`-RPC, Retention-Cron (`purge-events.js`, fail-closed ohne `CRON_SECRET`), DSGVO-Löschung per `clientId` (`DELETE /v1/events?clientId=…`). Live gegen Produktion verifiziert (2026-07-22).
+- **Produktions-Aggregation:** `GET /v1/admin/stats(.csv|kpis.csv)` liest Supabase paginiert, mappt zurück aufs Envelope (`tools/telemetry-map.js`, unit-getestet) und füttert dieselbe `aggregate()` wie der Self-Host-Collector — das Investor-Cockpit (§7) läuft damit auch gegen echte Nutzerdaten, nicht nur die JSONL-Demo. Fail-closed ohne `ADMIN_TELEMETRY_TOKEN`.
+- Self-Host-Collector (`tools/telemetry-server.js`) mit Persistenz, Dashboard, Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning — für lokales Ausprobieren/Editionen ohne eigenes Backend.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
-- 746 Unit-Tests grün; Doku hier + BACKEND.md + README.
+- Unit-Tests grün (`analytics.test.js`, `telemetry-aggregate.test.js`, `telemetry-map.test.js`); Doku hier + BACKEND.md + README.
 
 ### ⚠️ Bekannte Grenzen (bewusst)
-- **Self-Host-/Dev-Tool:** Datei-Storage + In-Memory-Aggregation; Dashboard nur per optionalem Token geschützt.
+- **`/v1/admin/stats`-Fetch ist paginiert, aber gedeckelt** (30 Seiten × 1000 Zeilen/Tabelle ≈ 30k Zeilen) gegen die 15s-Vercel-Function-Laufzeit — bei sehr hohem Volumen müsste das auf serverseitige Aggregation (SQL) umgestellt werden.
 - **UTC-„heute":** Tages-Buckets nutzen den UTC-Tag des Servers vs. die lokale `day` des Clients → minimale Unschärfe an Tagesgrenzen.
 - **Onboarding-Funnel & Snapshot-Kennzahlen** liefern nur Daten von Nutzern **mit aktivem Consent** (der Consent-Schalter liegt hinter dem Onboarding → Funnel primär für Editionen mit vor-aktiviertem Consent aussagekräftig).
 - **Beacon-Flush** beim Schließen sendet höchstens **einen** Batch (≤ 50 Events); ein sehr großer Restpuffer kann beim harten Schließen verloren gehen.
 - **`mock-events-server.js`** und `telemetry-server.js` überlappen (bewusst: einfacher Smoke vs. voll).
 
-### 🔧 TODO — Produktion (server-seitig, außerhalb dieses Repos)
-- [ ] Echter **Event-Store** (DB/Spalten-DB) statt JSONL; Aggregation server-/query-seitig.
-- [ ] **Echte Auth** (statt einfachem Token), Rate-Limiting, Größenlimit server-seitig gespiegelt.
-- [ ] **DSGVO-Löschung per `clientId`** (Art. 17) + Aufbewahrungsfrist als Job; Auskunft/Export.
-- [ ] **EU-Hosting** + Datenschutzerklärung/AVV (vgl. BACKEND.md §12/§17.3).
+### 🔧 TODO — Produktion
 - [ ] Optional **Sampling** (`SC.config.analytics.sampleRate`) client- und/oder serverseitig verdrahten.
+- [ ] Bei wachsendem Volumen: `/v1/admin/stats` von Paginierung + In-Memory-`aggregate()` auf serverseitige SQL-Aggregation umstellen.
 
 ### 🧪 TODO — Tests/Qualität
-- [ ] **Integrationstest** der Server-Routen (Token-401, `?days=`, `/api/stats.csv`, 400 bei kaputtem POST) — aktuell manuell verifiziert.
+- [ ] **Integrationstest** der Server-Routen (Token-401, `?days=`, `/v1/admin/stats.csv`, 400 bei kaputtem POST) — aktuell manuell/live verifiziert.
 - [ ] Optional Controller-Smoke, der belegt, dass die App-Hooks ohne Fehler feuern (DOM-Stub vorhanden).
 
 ### 📈 Produkt-/Investor-Metriken

@@ -347,19 +347,25 @@ function render(s){
 }
 
 var TOKEN = (new URLSearchParams(location.search)).get("token") || "";
+// BASE: self-host (tools/telemetry-server.js, Standard) beantwortet unter
+// "/api/…"; Produktion (Vercel-Dispatcher, api/v1.js) unter "/v1/admin/…" auf
+// derselben Origin wie die App. Dashboard ist eine statische Datei -> beliebig
+// gehostet/lokal geöffnet, per ?base= auf die Produktions-Origin zeigen:
+//   telemetry-dashboard.html?base=https://holaruta.com/v1/admin&token=…
+var BASE = (new URLSearchParams(location.search)).get("base") || "/api";
 var DAYS = 30;
-function apiUrl(base){ var p=[]; if(DAYS) p.push("days="+DAYS); if(TOKEN) p.push("token="+encodeURIComponent(TOKEN)); return base + (p.length? "?"+p.join("&") : ""); }
+function apiUrl(path){ var p=[]; if(DAYS) p.push("days="+DAYS); if(TOKEN) p.push("token="+encodeURIComponent(TOKEN)); return BASE + path + (p.length? "?"+p.join("&") : ""); }
 function renderDaysBtns(){ $("daysbtns").innerHTML = [7,30,90].map(function(d){ return '<button class="'+(d===DAYS?"active":"")+'" data-days="'+d+'">'+d+' T</button>'; }).join(""); }
 function load(){
-  fetch(apiUrl("/api/stats")).then(function(r){ if(r.status===401){throw new Error("Token erforderlich (?token=… an die URL anhängen)");} return r.json(); }).then(render).catch(function(e){
+  fetch(apiUrl("/stats")).then(function(r){ if(r.status===401){throw new Error("Token erforderlich (?token=… an die URL anhängen)");} return r.json(); }).then(render).catch(function(e){
     $("app").innerHTML = '<p class="empty">Fehler beim Laden: '+esc(e&&e.message)+'</p>';
   });
 }
 $("refresh").addEventListener("click", load);
 $("daysbtns").addEventListener("click", function(e){ var b=e.target.closest("[data-days]"); if(!b) return; DAYS=Number(b.dataset.days); renderDaysBtns(); load(); });
-$("exp-csv").addEventListener("click", function(){ location.href = apiUrl("/api/stats.csv"); });
-$("exp-kpicsv").addEventListener("click", function(){ location.href = apiUrl("/api/kpis.csv"); });
-$("exp-json").addEventListener("click", function(){ fetch(apiUrl("/api/stats")).then(function(r){return r.text();}).then(function(t){ var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([t],{type:"application/json"})); a.download="holaruta-stats.json"; a.click(); }); });
+$("exp-csv").addEventListener("click", function(){ location.href = apiUrl("/stats.csv"); });
+$("exp-kpicsv").addEventListener("click", function(){ location.href = apiUrl("/kpis.csv"); });
+$("exp-json").addEventListener("click", function(){ fetch(apiUrl("/stats")).then(function(r){return r.text();}).then(function(t){ var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([t],{type:"application/json"})); a.download="holaruta-stats.json"; a.click(); }); });
 renderDaysBtns();
 load();
 setInterval(load, 30000);

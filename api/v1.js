@@ -27,6 +27,7 @@
 const { send } = require("./_http");
 
 const accountIndex = require("./_v1/account/index");
+const adminStats = require("./_v1/admin/stats");
 const accountExport = require("./_v1/account/export");
 const assignmentsIndex = require("./_v1/assignments/index");
 const assignmentsState = require("./_v1/assignments/id/state");
@@ -67,6 +68,9 @@ module.exports = async (req, res) => {
   }
 
   if (segs.length === 2) {
+    if (a === "admin" && b === "stats") { req.query.__adminFormat = "json"; return adminStats(req, res); }
+    if (a === "admin" && b === "stats.csv") { req.query.__adminFormat = "csv"; return adminStats(req, res); }
+    if (a === "admin" && b === "kpis.csv") { req.query.__adminFormat = "kpicsv"; return adminStats(req, res); }
     if (a === "account" && b === "export") return accountExport(req, res);
     if (a === "auth" && b === "start") return authStart(req, res);
     if (a === "auth" && b === "confirm") return authConfirm(req, res);

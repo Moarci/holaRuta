@@ -354,10 +354,11 @@ nicht aufweicht, ist die Telemetrie **opt-in, anonym und aggregiert**: standardm
 eingeschaltet verlässt **kein** Lernfortschritt, **keine** Karteninhalte und **keine** stabile
 Nutzer-ID das Gerät.
 
-> **Status:** Der **Client ist vorbereitet** (`analytics.js` reiner Kern + dünner fetch-Adapter über
-> `SC.net`, Consent-Schalter im Profil, `test/analytics.test.js`). Es fehlt **nur noch der Server**,
-> der den einen unten spezifizierten Endpunkt implementiert. Wie alle Stufe-3-Phasen kundengetrieben
-> bzw. erst mit eigener Domain/EU-Hosting.
+> **Status:** Client **und** Server sind live: `analytics.js` (reiner Kern + fetch-Adapter über
+> `SC.net`, Consent-Schalter im Profil, `test/analytics.test.js`) sendet an `POST /v1/usage`/`/v1/events`
+> (`api/_v1/usage.js`/`events.js`), die nach Supabase schreiben (RLS an, nur `service_role`). Die
+> Auswertung läuft über `GET /v1/admin/stats` (`api/_v1/admin/stats.js`, §17.6.3) — siehe
+> [docs/TELEMETRIE.md §7](docs/TELEMETRIE.md#7-dashboard--wie-viele-nutzen-es-und-wie-lange).
 
 ### 17.1 Leitplanken (zusätzlich zu §1, §12)
 
@@ -414,8 +415,9 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
 **Event-Strom** dazu — derselbe Opt-in-Schalter, dieselbe Datenminimierungs-DNA.
 
 > **Status:** Client fertig (`analytics.js`: `track`/`flush`/`buildEvent`/`sanitizeProps`, Queue,
-> pseudonyme IDs; Hooks in `app.js`; `test/analytics.test.js`). Es fehlt **nur** der Server
-> (Event-Store). Referenz-Collector für die lokale Demo: `tools/mock-events-server.js`.
+> pseudonyme IDs; Hooks in `app.js`; `test/analytics.test.js`). Server-Event-Store ist Supabase
+> (`event`-Tabelle, §17.6.3); lokale Demo ohne eigenes Backend: `tools/mock-events-server.js` oder
+> `tools/telemetry-server.js`.
 
 **17.6.1 Leitplanken (zusätzlich zu §17.1)**
 - **Doppelte Schranke unverändert:** ohne Endpunkt **und** ohne Zustimmung wird **nichts gepuffert
@@ -456,9 +458,15 @@ Vollständige Feldliste: [docs/TELEMETRIE.md](docs/TELEMETRIE.md). Der Referenz-
   (Content-Type `application/json`). Server: **Größenlimit** (z. B. ≤ 64 KB/Batch), **Rate-Limiting**
   pro `clientId`/IP, CORS strikt auf die App-Origin, Schema-/Allowlist-Validierung **serverseitig
   spiegeln** (nie mehr Felder akzeptieren als der Client sendet).
-- **Datenspeicher:** anders als der Snapshot (1 Zeile/Tag) braucht der Event-Strom einen echten
-  **append-only Event-Store** (z. B. Tabelle/Spalten-DB oder ein privacy-freundliches Analytics-
-  Backend). Aufbewahrung **befristet** (z. B. 90 Tage), danach nur Aggregate.
+- **Datenspeicher:** append-only in der Supabase-Tabelle `event` (RLS an, nur `service_role`
+  schreibt/liest); Aufbewahrung befristet auf `EVENT_RETENTION_DAYS` (Default 90, Vercel-Cron
+  `api/cron/purge-events.js`), danach nur die bereits gezogenen Aggregate.
+- **Auswertung:** `GET /v1/admin/stats` (`.csv` / `kpis.csv`) — `api/_v1/admin/stats.js` holt die
+  Rohdaten paginiert aus Supabase, mappt sie über `tools/telemetry-map.js` zurück aufs
+  Client-Envelope und füttert damit dieselbe `aggregate()`-Funktion, die auch der Self-Host-Collector
+  nutzt (`tools/telemetry-server.js`). Fail-closed ohne die Vercel-Env-Var `ADMIN_TELEMETRY_TOKEN`;
+  Zugriff per `Authorization: Bearer <token>` oder `?token=…`, IP-rate-limitiert. Details:
+  [docs/TELEMETRIE.md §7](docs/TELEMETRIE.md#7-dashboard--wie-viele-nutzen-es-und-wie-lange).
 
 **17.6.4 Datenschutz (Ergänzung zu §17.3)**
 - Einwilligung deckt Snapshot **und** Events (ein Schalter); Widerruf stoppt sofort und verwirft die

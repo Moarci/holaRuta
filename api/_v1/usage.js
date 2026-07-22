@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     for (const k of FEATURE_KEYS) features[k] = !!body.features[k];
   }
 
-  await service().from("usage_snapshot").insert({
+  const { error } = await service().from("usage_snapshot").insert({
     day: str(body.day, 10),
     app_version: str(body.appVersion, 20),
     locale: str(body.locale, 8),
@@ -35,7 +35,18 @@ module.exports = async (req, res) => {
     cards_bucket: str(body.cardsToday, 24),
     streak_bucket: str(body.streak, 24),
     reviews_bucket: str(body.reviews, 24),
+    // mastered/tripGoal/tripDaily: Client sendet sie seit TELEMETRIE.md §2, bis
+    // 2026-07-22 aber ohne Server-Spalte verworfen -> Mastery-/Reiseziel-Panels
+    // im Investor-Cockpit blieben leer (supabase/migrations/0003_telemetry_admin.sql).
+    mastered_bucket: str(body.mastered, 24),
+    trip_goal: body.tripGoal === true,
+    trip_daily_bucket: str(body.tripDaily, 24),
     features,
   });
+  // Fehler NICHT als 200 quittieren: der Client merkt sich den Tag erst nach
+  // `ok:true` als gesendet (analytics.js:maybeSend) — ein stiller 200 bei DB-
+  // Fehler (z. B. Migration 0003 noch nicht angewendet -> unbekannte Spalte)
+  // würde den Snapshot für den ganzen Tag unwiederbringlich verschlucken.
+  if (error) return send(res, 500, { error: "insert failed" });
   return send(res, 200, { ok: true });
 };

@@ -639,7 +639,18 @@ function toKpiCsv(stats) {
   return rows.map(function (r) { return r.join(","); }).join("\n") + "\n";
 }
 
-module.exports = { aggregate: aggregate, dayUTC: dayUTC, durationBucket: durationBucket, toKpiCsv: toKpiCsv };
+// Tages-Zeitreihe (Tag · DAU · Sitzungen) als CSV — reine Formatierung eines
+// bereits fertigen aggregate()-Ergebnisses (kein I/O).
+function toCsv(stats) {
+  var s = isObj(stats) ? stats : {};
+  var sByDay = {};
+  (isObj(s.sessions) && Array.isArray(s.sessions.perDay) ? s.sessions.perDay : []).forEach(function (r) { sByDay[r.day] = r.count; });
+  var rows = [["day", "dau", "sessions"]];
+  (isObj(s.users) && Array.isArray(s.users.dauSeries) ? s.users.dauSeries : []).forEach(function (r) { rows.push([r.day, r.count, sByDay[r.day] || 0]); });
+  return rows.map(function (r) { return r.join(","); }).join("\n") + "\n";
+}
+
+module.exports = { aggregate: aggregate, dayUTC: dayUTC, durationBucket: durationBucket, toCsv: toCsv, toKpiCsv: toKpiCsv };
 
 // ===================== Server (nur beim Direktstart) =========================
 
@@ -713,12 +724,6 @@ if (require.main === module) {
   function authed(q, req) { return !TOKEN || q.token === TOKEN || (req.headers && req.headers.authorization === "Bearer " + TOKEN); }
   var ALLOWED_DAYS = { 7: 1, 14: 1, 30: 1, 90: 1 };
   function windowDaysOf(q) { var d = Number(q.days); return ALLOWED_DAYS[d] ? d : 30; }
-  function toCsv(stats) {
-    var sByDay = {}; stats.sessions.perDay.forEach(function (r) { sByDay[r.day] = r.count; });
-    var rows = [["day", "dau", "sessions"]];
-    stats.users.dauSeries.forEach(function (r) { rows.push([r.day, r.count, sByDay[r.day] || 0]); });
-    return rows.map(function (r) { return r.join(","); }).join("\n") + "\n";
-  }
 
   var server = http.createServer(function (req, res) {
     if (req.method === "OPTIONS") return send(res, 204);
