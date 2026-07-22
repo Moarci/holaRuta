@@ -570,21 +570,36 @@ body {
   position: fixed; left: 50%; transform: translateX(-50%); z-index: 40;
   bottom: calc(150px + env(safe-area-inset-bottom));
   width: calc(100% - 24px); max-width: calc(var(--maxw) - 24px);
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: var(--r-md);
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 12px 14px; border-radius: var(--r-md);
   background: var(--brand); color: var(--on-accent);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
   animation: updbar-in 0.2s ease;
 }
-.migbar__text { flex: 1 1 auto; font-weight: 700; font-size: 0.85rem; }
-.migbar__btn {
-  flex: none; border: none; cursor: pointer; font-family: inherit; font-weight: 800;
-  padding: 9px 16px; border-radius: 999px; min-height: 40px;
-  background: #fff; color: #A23E20;
+.migbar__top { display: flex; align-items: flex-start; gap: 8px; }
+.migbar__text { flex: 1 1 auto; font-weight: 700; font-size: 0.85rem; line-height: 1.35; }
+.migbar__actions { display: flex; align-items: center; gap: 8px; }
+/* Neue Adresse als prominenter, tippbarer Link (führt direkt nach holaruta.com).
+   Heller Rahmen auf dem Terrakotta-Grund -> klarer Call-to-Action neben dem Export. */
+.migbar__link {
+  flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 40px; padding: 9px 14px; border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  color: var(--on-accent); font-weight: 800; font-size: 0.85rem; text-decoration: none;
+  white-space: nowrap;
 }
+.migbar__link svg { width: 16px; height: 16px; }
+.migbar__link:hover { background: rgba(255, 255, 255, 0.14); }
+.migbar__link:active { transform: translateY(1px); }
+.migbar__btn {
+  flex: 1 1 auto; border: none; cursor: pointer; font-family: inherit; font-weight: 800;
+  padding: 9px 16px; border-radius: 999px; min-height: 40px; font-size: 0.85rem;
+  background: #fff; color: #A23E20; white-space: nowrap;
+}
+.migbar__btn:active { transform: translateY(1px); }
 .migbar__close {
-  flex: none; border: none; background: transparent; cursor: pointer;
-  color: var(--on-accent); opacity: 0.75; font-size: 1rem; line-height: 1; min-height: 40px; min-width: 32px;
+  flex: none; margin: -2px -4px 0 0; border: none; background: transparent; cursor: pointer;
+  color: var(--on-accent); opacity: 0.75; font-size: 1rem; line-height: 1; min-height: 32px; min-width: 32px;
 }
 .migbar__close:hover { opacity: 1; }
 
@@ -4205,6 +4220,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Onboarding: einmaliger Willkommens-Bildschirm beim ersten Start. */
 .onboarding { min-height: 70vh; justify-content: center; }
+/* Formular-Schritte (Login-Gate, Name/Geschlecht) NICHT dead-center in den
+   Rest-Viewport hängen – das ließ oben eine große Leere. Stattdessen mit
+   ruhigem Abstand unter die Kopfzeile setzen; die Intro-Slides bleiben zentriert. */
+.onboarding:not(.onboarding--intro) {
+  min-height: auto; justify-content: flex-start;
+  padding-top: clamp(16px, 6vh, 56px); padding-bottom: 24px;
+}
 .onboarding__inner { display: flex; flex-direction: column; gap: 12px; max-width: 28rem; margin: 0 auto; width: 100%; }
 .onboarding__title { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; line-height: 1.2; margin: 0; }
 /* Partner-Branding im Onboarding (Edition / geteilter Link). */
@@ -4214,13 +4236,40 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 .onboarding__powered { margin: 1px 0 0; font-size: 0.68rem; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
 .onboarding__intro { color: var(--muted); margin: 0 0 4px; }
 
+/* Auth-/Onboarding-Panel: fasst die Anmelde-Optionen (Google + E-Mail) bzw.
+   Name+Geschlecht zu EINER Karte zusammen – so wirken die Schritte gestaltet
+   statt lose gestapelt. Das innere Formular (.trip--flush) verzichtet dann auf
+   den eigenen Rahmen, damit keine Karte-in-Karte entsteht. */
+.authcard {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); padding: 16px; box-shadow: var(--shadow-lg);
+}
+.trip--flush { border: none; background: transparent; box-shadow: none; padding: 0; gap: 12px; }
+.trip--flush:active { transform: none; }
+
+/* Eingabefelder auf Login/Onboarding großzügiger + klar sichtbarer Fokusring
+   (Tastatur & Screenreader). Nur in diesen Ansichten – die Profil-Felder bleiben
+   kompakt. */
+.authcard .trip__field input,
+.onboarding .trip__field input {
+  min-height: 48px; padding: 12px 14px; font-size: 1rem;
+  border-radius: var(--r-sm); background: var(--surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.authcard .trip__field input:focus-visible,
+.onboarding .trip__field input:focus-visible {
+  outline: none; border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
 /* Account-First-Login (Gate am Start). Google-Button + passwortloser E-Mail-Code. */
 .account__google { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #3c4043; border: 1px solid rgba(60,64,67,0.22); font-weight: 700; }
 .account__google:hover { background: #f7f8f8; }
 .account__google[disabled] { opacity: 0.6; }
 .account__gicon { flex: 0 0 auto; }
-.account__or { display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 0.85rem; margin: 2px 0; }
-.account__or::before, .account__or::after { content: ""; flex: 1; height: 1px; background: rgba(45,27,18,0.14); }
+.account__or { display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 0.85rem; margin: 0; }
+.account__or::before, .account__or::after { content: ""; flex: 1; height: 1px; background: var(--line-strong); }
 .account__or span { padding: 0 12px; }
 .account__error { color: var(--bad, #c0392b); font-size: 0.9rem; margin: 2px 0 0; }
 .account__legal { color: var(--muted); font-size: 0.72rem; line-height: 1.4; margin: 6px 0 0; }
@@ -4232,8 +4281,26 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
 /* Erklär-Slides am Onboarding-Anfang (Überblick: wie funktioniert die App, welcher Umfang). */
 .onboarding--intro .onboarding__inner { gap: 16px; text-align: center; }
-.onboarding__slide { display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 9.5rem; justify-content: center; }
-.onboarding__icon { font-size: 3rem; line-height: 1; }
+/* Slide als eigene Karte – gleiche Optik wie das Login-/Willkommen-Panel, damit
+   die Onboarding-Schritte wie eine Familie wirken. min-height hält die Karte über
+   alle Slides hinweg gleich hoch (der „Weiter"-Knopf springt sonst je Textlänge). */
+.onboarding__slide {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  min-height: 12.5rem; justify-content: center;
+  background: var(--card); border: 1.5px solid var(--line);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
+  padding: 26px 22px 28px;
+}
+/* Icon als Marken-Medaillon: terrakotta getönte Scheibe statt nacktem Strich-Icon
+   im Leerraum – gibt jedem Slide einen ruhigen Blickfang. */
+.onboarding__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 84px; height: 84px; font-size: 2.1rem; line-height: 1;
+  color: var(--brand-ink);
+  background: color-mix(in srgb, var(--brand) 12%, var(--card));
+  border: 1.5px solid color-mix(in srgb, var(--brand) 28%, transparent);
+  border-radius: 50%; box-shadow: var(--shadow);
+}
 .onboarding--intro .onboarding__intro { margin: 0; max-width: 24rem; }
 .onboarding__dots { display: flex; justify-content: center; gap: 2px; margin: 2px 0; }
 /* Tap-Ziel großzügig (≈34px, fingerfreundlich), sichtbarer Punkt klein über ::before.
@@ -4671,6 +4738,12 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
   /* Onboarding: zentrierte Willkommens-Karte statt nacktem Formular oben links.
    * Größere Typo (der Bildschirm ist weit weg), Panel im Karten-Look. */
   .onboarding { min-height: min(74vh, 900px); }
+  /* Auf großen Screens ist die zentrierte Karte gewünscht – auch für die
+     Formular-Schritte die mobile Oben-Ausrichtung wieder aufheben. */
+  .onboarding:not(.onboarding--intro) {
+    min-height: min(74vh, 900px); justify-content: center;
+    padding-top: 0; padding-bottom: 0;
+  }
   .onboarding__inner {
     max-width: 34rem;
     background: var(--card);
@@ -4679,6 +4752,13 @@ select.ed-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
     box-shadow: var(--shadow-lg);
     padding: 40px 44px 36px;
     gap: 14px;
+  }
+  /* Die ganze Karte ist hier schon das Panel -> das innere .authcard bzw. die
+     Intro-Slide flach halten (kein Karte-in-Karte); Medaillon/Abstände bleiben. */
+  .authcard { background: transparent; border: none; box-shadow: none; padding: 0; }
+  .onboarding--intro .onboarding__slide {
+    background: transparent; border: none; box-shadow: none; padding: 0;
+    min-height: 12rem;
   }
   .onboarding__title { font-size: 1.9rem; }
   .onboarding__intro { font-size: 1.02rem; line-height: 1.55; }
