@@ -234,7 +234,12 @@
   // NICHT Gelistete wird verworfen (Default deny). „bucket"-Felder erwartet der Kern
   // bereits als Bucket-STRING (Aufrufer nutzt SC.analytics.bucket).
   var EVENTS = {
-    app_open:         { returning: "bool", load_ms: "bucket", src: "slug" },
+    // src = grober Akquise-Enum (task/onboard-link/module-link/edition/direct). cta_src =
+    // WELCHER Landing-CTA/Abschnitt den Start auslöste (hero/nav/final/footer/install …),
+    // var = aktive A/B-Variante der Landing. Beide reine Slugs aus den `src=`/`var=`-
+    // Query-Params der Landing-Links – die Landing selbst trackt NICHTS, sie reicht nur
+    // den Slug durch. So wird der Landing→App-Funnel pro CTA/Variante messbar.
+    app_open:         { returning: "bool", load_ms: "bucket", src: "slug", cta_src: "slug", var: "slug" },
     screen_view:      { screen: "slug", tab: "slug" },
     action:           { action: "slug", mode: "slug", dir: "slug", level: "slug", tab: "slug", scope: "slug" },
     session_start:    { scope: "slug", origin: "slug", mode: "slug", cards: "bucket" },

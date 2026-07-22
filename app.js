@@ -1893,6 +1893,10 @@
       beginOnboarding();
       stripUrlParam("start");
     }
+    // CRO-Attributionsparameter der Landing (bereits einmalig in _rawSearch erfasst)
+    // aus der sichtbaren URL entfernen – sie haben ihren Zweck im app_open-Event getan.
+    stripUrlParam("src");
+    stripUrlParam("var");
     // Einladung per QR/Link zuletzt: sie öffnet den Freunde-Screen und soll das
     // Onboarding nicht überschreiben, wenn beides zusammenkommt (handleInviteLink
     // merkt sich den Code dann und finishOnboarding() holt ihn nach).
@@ -3193,6 +3197,19 @@
         try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
         const len = input.value.length;
         try { input.setSelectionRange(len, len); } catch (e) { /* type=search erlaubt das nicht überall */ }
+        return;
+      }
+    }
+    // Onboarding-Profil: Fokus direkt ins Namensfeld – das einzige Pflicht-Gate des
+    // Onboardings. Die Tastatur erscheint sofort, ein Tap weniger bis „Weiter"
+    // (senkt die Friktion am kritischsten Schritt). preventScroll wie bei Suche/
+    // Diálogos, Cursor ans Ende eines ggf. vorbelegten Namens.
+    if (state.screen === "onboarding" && (state.onboardStep || "") === "profile") {
+      const input = document.getElementById("onboard-name");
+      if (input) {
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+        const len = input.value.length;
+        try { input.setSelectionRange(len, len); } catch (e) { /* egal */ }
         return;
       }
     }
@@ -5583,6 +5600,20 @@
     if (/[?&]edition=/.test(s) || (window.SC.config && window.SC.config.edition)) return "edition";
     return "direct";
   }
+  // Reinen Slug (a-z0-9_.:+-, ≤32) aus einem Query-Param im rohen Start-Search lesen.
+  // Leerstring, wenn nicht vorhanden – der Sanitizer verwirft leere Slugs ohnehin.
+  function rawSlugParam(name) {
+    try {
+      var m = new RegExp("[?&]" + name + "=([a-z0-9_.:+-]{1,32})", "i").exec(_rawSearch);
+      return m ? m[1].toLowerCase() : "";
+    } catch (e) { return ""; }
+  }
+  // WELCHER Landing-CTA/Abschnitt löste den Start aus? (hero/nav/final/footer/install …)
+  // Die Landing hängt `&src=` an ihre Onboarding-Links; hier ausgelesen, um die
+  // CTA-Conversion messbar zu machen. Getrennt vom groben Akquise-Enum oben.
+  function detectCtaSrc() { return rawSlugParam("src"); }
+  // Aktive A/B-Variante der Landing (falls ein Experiment läuft), via `&var=`.
+  function detectExpVariant() { return rawSlugParam("var"); }
   // Ein Event erfassen – graceful, wenn das Modul fehlt. Das Modul prüft selbst
   // Endpunkt + Zustimmung; ohne beides wird NICHTS gepuffert.
   function trackEvent(name, props) {
@@ -8738,7 +8769,7 @@
     // App-Start + grobe Ladezeit (einmal pro Start).
     let loadMs = 0;
     try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }
-    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc() });
+    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc(), cta_src: detectCtaSrc(), var: detectExpVariant() });
 
     // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.
     try {

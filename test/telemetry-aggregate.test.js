@@ -194,6 +194,30 @@ test("aggregate: Retention D1/D7/D30 zählt keine Alt-Nutzer am Fenster-Rand (ko
   assert.equal(Object.keys(heat).length, 2, "genau die zwei Neu-Kohorten in der Heatmap");
 });
 
+test("aggregate: CRO — Landing-CTA-Conversion + A/B-Varianten-Funnel", () => {
+  const E = []; let q = 0;
+  const mk = (event, props, cid) => E.push({ v: 1, seq: q++, event, props, day: TODAY, ts: T0 + q, clientId: cid, sessionId: "x" + q });
+  // Drei Nutzer über die Hero-CTA, einer über den Footer; H1 & H2 in Variante a, F1 in b.
+  mk("app_open", { cta_src: "hero", var: "a" }, "H1");
+  mk("app_open", { cta_src: "hero", var: "a" }, "H2");
+  mk("app_open", { cta_src: "hero", var: "b" }, "H3");
+  mk("app_open", { cta_src: "footer" }, "F1");
+  // Nur H1 (Variante a) und H3 (Variante b) schließen das Onboarding ab.
+  mk("onboarding_complete", {}, "H1");
+  mk("onboarding_complete", {}, "H3");
+  // Aktivierung (erste Lernrunde): nur H1 aktiviert -> Variante a aktiviert, b nicht.
+  mk("activation", { milestone: "first_session" }, "H1");
+  const s = aggregate(E, [], { now: NOW });
+  const cta = {}; s.engagement.ctaSources.forEach((c) => { cta[c.key] = c.count; });
+  assert.equal(cta.hero, 3, "drei distinkte Personen über die Hero-CTA");
+  assert.equal(cta.footer, 1, "eine Person über den Footer");
+  const vf = {}; s.engagement.variantFunnel.forEach((v) => { vf[v.variant] = v; });
+  assert.equal(vf.a.users, 2, "Variante a: H1+H2"); assert.equal(vf.a.complete, 1); assert.equal(vf.a.pct, 50);
+  assert.equal(vf.a.activated, 1, "Variante a: nur H1 aktiviert"); assert.equal(vf.a.actPct, 50);
+  assert.equal(vf.b.users, 1, "Variante b: H3"); assert.equal(vf.b.complete, 1); assert.equal(vf.b.pct, 100);
+  assert.equal(vf.b.activated, 0, "Variante b: H3 schloss Onboarding ab, aktivierte aber nicht"); assert.equal(vf.b.actPct, 0);
+});
+
 // Fixture für die „nicht messbar"-Fälle: EIN echter Neu-Nutzer mit Erst-Tag vor 3
 // Tagen, der nie wiederkommt. Im 7-T-Fenster ist damit D1 ECHT gemessen (Erst-Tag+1
 // liegt in der Vergangenheit, Nutzer war nicht da -> 0 %), D7/D30 dagegen strukturell
