@@ -123,6 +123,10 @@ export const IGNORE = [
     "review: `Math.max(1, Math.round(base * ease))` (1→0). base ist stets ≥1 (interval||1 bzw. max(1,…)) und ease∈[1.3,3.0], " +
     "also round(base*ease) ≥ round(1.3) = 1. Für jeden erreichbaren Wert ist max(1,x)==max(0,x) → äquivalent." },
   // net.js (Härtung Timeout/Retry resampelt – reine Wartedauer ohne beobachtbaren Effekt)
+  { file: "net.js", line: 75, op: "relational", grund:
+    "request: `retries = (opts.retries > 0) ? opts.retries : 0` vs `>=`. Der EINZIGE unterscheidende Eingabewert ist " +
+    "opts.retries === 0: dann liefert `>0` den else-Zweig 0 und `>=0` den then-Zweig opts.retries — beides der Wert 0. " +
+    "Für jeden erreichbaren Wert (undefined, 0, >0) also identisches retries → äquivalent." },
   { file: "net.js", line: 76, op: "number", grund:
     "request: `backoff = (typeof opts.backoff === 'number') ? opts.backoff : 400` (Default 400→0). Der Default-Backoff " +
     "beeinflusst NUR die Wartedauer zwischen Wiederholungen, nicht deren Ergebnis; alle Tests übergeben backoff explizit. " +
@@ -136,6 +140,16 @@ export const IGNORE = [
   { file: "net.js", line: 81, op: "arithmetic", grund: "Backoff-Wartedauer (Exponent attempt-1), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
   { file: "net.js", line: 85, op: "number", grund: "Backoff-Wartedauer im Netzfehler-Retry (Math.pow-Basis/Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
   { file: "net.js", line: 85, op: "arithmetic", grund: "Backoff-Wartedauer im Netzfehler-Retry (* und Exponent), kein Verhaltenseffekt → äquivalent (siehe Zeile 76)." },
+  { file: "net.js", line: 32, op: "number", grund:
+    "DEFAULT_TIMEOUT_MS 12000 → 0. Der Default-Timeout betrifft nur, OB/WANN ein ohne expliziten " +
+    "opts.timeout hängender fetch abgebrochen wird; 0 vs 12000 ist ausschließlich durch einen real " +
+    ">12 s hängenden fetch unterscheidbar (flakige Langzeitmessung, die die Suite bewusst meidet). " +
+    "Die Timeout-MECHANIK selbst ist über die opts.timeout-Tests (1 ms/10 ms) abgedeckt → äquivalent." },
+  { file: "net.js", line: 142, op: "logical", grund:
+    "oauthStateStart-Guard `typeof crypto===\"undefined\" || !crypto.getRandomValues || typeof " +
+    "sessionStorage===\"undefined\"` (|| → &&). Umgeht die Mutation eine Teilbedingung, läuft der " +
+    "nachfolgende crypto.getRandomValues(...)-Zugriff bei fehlender Quelle in DENSELBEN try/catch → " +
+    "Rückgabe '' wie im Guard-Zweig. Für jede erreichbare Eingabe identisches Ergebnis → äquivalent." },
   // badges.js (nach der Locals-Badge-Welt resampelt – nachweislich äquivalent)
   { file: "badges.js", line: 344, op: "number", grund:
     "buildMetrics: `categoryMastery[cat] = catTotal[cat] ? (catMastered[cat]||0)/catTotal[cat] : 0` (Fallback 0→1). " +

@@ -25,19 +25,51 @@ async function start(email) {
   return { pending: true };
 }
 
-// POST /v1/auth/confirm – OTP verifizieren, profile upserten, Session-Token minten.
-async function confirm(email, token) {
-  const { data, error } = await authClient().auth.verifyOtp({ email, token, type: "email" });
-  if (error || !data || !data.user) throw new Error("confirm failed");
-  const uid = data.user.id;
+// profile upserten + neuen Opaque-Session-Token minten. Geteilt von ALLEN
+// Login-Wegen (E-Mail-OTP wie Google-OAuth), damit Identität/Token an genau
+// EINER Stelle entstehen (BACKEND.md §7). `extra` ergänzt optionale
+// Profil-Felder (z. B. display_name aus der Google-Identity); nur bekannte
+// Spalten – das Schema hat keine Avatar-Spalte.
+async function mintSession(uid, email, extra) {
   const db = service();
   await db.from("profile").upsert(
-    { id: uid, email: data.user.email || email },
+    Object.assign({ id: uid, email: email || null }, extra || {}),
     { onConflict: "id" }
   );
   const access = mintToken();
   await db.from("session").insert({ token: access, user_id: uid });
-  return { accessToken: access, account: { email: data.user.email || email } };
+  return { accessToken: access, account: { email: email || null } };
+}
+
+// POST /v1/auth/confirm – OTP verifizieren, profile upserten, Session-Token minten.
+async function confirm(email, token) {
+  const { data, error } = await authClient().auth.verifyOtp({ email, token, type: "email" });
+  if (error || !data || !data.user) throw new Error("confirm failed");
+  return mintSession(data.user.id, data.user.email || email);
+}
+
+// GET /v1/auth/google/start – die serverseitig gebaute Google-OAuth-URL liefern.
+// redirectTo = eigene Callback-Seite (auth-callback.html); der Aufrufer validiert
+// sie vorher gegen die eigene Origin (kein offener Redirector).
+async function googleUrl(redirectTo) {
+  const { data, error } = await authClient().auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo, skipBrowserRedirect: true },
+  });
+  if (error || !data || !data.url) throw new Error("google url failed");
+  return data.url;
+}
+
+// POST /v1/auth/google/confirm – das aus dem Implicit-Redirect stammende
+// Supabase-Access-Token validieren, profile upserten (E-Mail + display_name aus
+// der Google-Identity) und unseren eigenen Session-Token minten.
+async function googleConfirm(supabaseToken) {
+  const { data, error } = await authClient().auth.getUser(supabaseToken);
+  if (error || !data || !data.user) throw new Error("google confirm failed");
+  const u = data.user;
+  const meta = u.user_metadata || {};
+  const name = meta.full_name || meta.name || null;
+  return mintSession(u.id, u.email || null, name ? { display_name: name } : undefined);
 }
 
 // Bearer-Token -> user_id (oder null). Aktualisiert last_seen_at best-effort.
@@ -64,4 +96,4 @@ async function revoke(req) {
   await service().from("session").update({ revoked_at: new Date().toISOString() }).eq("token", token);
 }
 
-module.exports = { start, confirm, resolveUser, revoke, mintToken };
+module.exports = { start, confirm, resolveUser, revoke, mintToken, mintSession, googleUrl, googleConfirm };

@@ -147,9 +147,23 @@ Alle Endpunkte: HTTPS, Bearer-Token, Org-Scoping, strikte Eingabevalidierung, Gr
 
 ## 7. Auth-Design
 
-- **Passwortlos** (E-Mail-Magic-Link oder 6-stelliger OTP). Kein Passwort-Storage → kleinste Angriffsfläche,
-  einfachste DSGVO-Lage. Alternativ optionales OAuth (Google/Apple) später.
-- **Tokens:** kurzlebiger Access-Token (15 min) + Refresh-Token pro Gerät; Logout widerruft das Gerät.
+- **Zwei Login-Wege, eine Identität:**
+  - **Google-OAuth** (niedrigste Schwelle, 1 Klick). Umsetzung SDK-frei: `GET /v1/auth/google/start`
+    baut serverseitig die Supabase-Google-URL (`signInWithOAuth`, `flowType:"implicit"`) und leitet per
+    302 dorthin. Der Redirect kommt auf `auth-callback.html` mit dem Supabase-Access-Token im
+    URL-Fragment zurück; die Seite reicht es an `POST /v1/auth/google/confirm`, wo `getUser()` es
+    validiert. Bewusst **kein** eingebettetes Google-Script → die enge CSP (`script-src 'self'`) bleibt.
+  - **Passwortlos** (E-Mail-Magic-Link / 6-stelliger OTP) als Rückfall. Kein Passwort-Storage.
+- **Ein Token für alle Wege:** Nach erfolgreichem Login (Google wie E-Mail) mintet der Server über den
+  gemeinsamen Helfer `mintSession()` (siehe `api/_auth.js`) genau **einen langlebigen, opaken
+  Bearer-Token** (`hr_…`, in der `session`-Tabelle, per Logout widerrufbar). `net.js` hält bewusst nur
+  diesen einen Token und kennt **kein** Refresh — der kurzlebige Supabase-JWT wird nie im Client gehalten.
+- **Account-First (Launch-Edition):** `config.account = { required, google }` schaltet ein Login-Gate
+  direkt beim ersten Start (Onboarding erst danach). Greift nur, wenn zugleich Cloud-Sync aktiv ist
+  (truthy `apiBase`) — die `file://`-Offline-Variante bleibt anonym/gate-frei. Nach dem Login faltet der
+  vorhandene Sync-Merge (§8) evtl. lokal vorhandene Daten in den Account („Claim").
+- **Account-Linking:** In Supabase „Allow linking identities with same email" aktivieren, damit derselbe
+  Mensch via Google **und** E-Mail-OTP eine Identität bleibt (sonst zwei `profile` → doppelter Fortschritt).
 - **Schüler ohne E-Mail** (Minderjährige/Schulkontext): **Klassen-Code + Anzeigename** statt E-Mail
   (Pseudonym-Konto, von der Lehrkraft/Org verwaltet) — DSGVO-schonend, keine Schüler-Mailadressen nötig.
 

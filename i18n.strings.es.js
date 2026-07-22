@@ -689,7 +689,7 @@
     gGuide: "En una reunión de grupo, el código QR es lo más rápido: mostrar, escanear, listo. Por chat de grupo funciona mejor el enlace.",
     gLearnersH: "¿Qué ven los estudiantes?",
     gLearners: "Tras el toque, las tareas aparecen en «Tarea» con título, fecha y progreso. Varias tareas corren en paralelo; tocar el mismo enlace dos veces no hace daño.",
-    gPrivacy: "🔒 Privacidad: no hay cuenta ni servidor. El enlace solo contiene la descripción de la tarea, sin nombres ni datos de progreso.",
+    gPrivacy: "🔒 Privacidad: el enlace compartido solo contiene la descripción de la tarea, sin nombres, sin datos de progreso ni datos de cuenta.",
     linkRoster: "Vista de la clase",
     linkSheets: "Hojas de trabajo",
   });
@@ -721,5 +721,29 @@
     empty: "Aún no hay tareas. Toca el enlace de tu docente o pega el código abajo.",
     added: "Tarea añadida.",
     already: "Esa tarea ya está en tu lista.",
+  });
+
+  // ---------- account: puerta de inicio de sesión (Account-First + Google) ----------
+  reg("account", {
+    title: "Crea tu cuenta o inicia sesión",
+    intro: "Guarda tu progreso y sigue aprendiendo en cualquier dispositivo. La cuenta es gratis y se crea en segundos.",
+    google: "Continuar con Google",
+    or: "o",
+    emailLabel: "Correo electrónico",
+    emailPlaceholder: "tu@ejemplo.com",
+    emailSubmit: "Enviarme un código",
+    emailInvalid: "Escribe un correo electrónico válido.",
+    emailFailed: "No funcionó. Inténtalo de nuevo.",
+    codeTitle: "Escribe tu código",
+    codeIntro: function (p) { return "Enviamos un código de confirmación a " + p.email + "."; },
+    codeLabel: "Código de confirmación",
+    codePlaceholder: "Código de 6 dígitos",
+    codeSubmit: "Iniciar sesión",
+    codeInvalid: "Escribe el código del correo.",
+    codeFailed: "Ese código es incorrecto o caducó.",
+    back: "Elegir otro método",
+    offline: "Necesitas conexión a internet un momento para crear tu cuenta. Conéctate e inténtalo de nuevo.",
+    retry: "Reintentar",
+    legal: 'Al continuar aceptas nuestra <a href="datenschutz.html" target="_blank" rel="noopener">política de privacidad</a>. Solo guardamos tu correo para proteger tu cuenta.',
   });
 })();

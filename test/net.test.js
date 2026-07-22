@@ -316,3 +316,119 @@ test("request: kleiner opts.timeout wird benutzt (bricht VOR einer langsamen Ant
     /aborted/,
   );
 });
+
+// ---- Google-OAuth (net.googleStart / net.googleConfirm) ----------------------
+
+test("googleConfirm: tauscht Supabase-Token gegen Session-Token und speichert es", async () => {
+  reset();
+  stubFetch(() => res(200, JSON.stringify({ accessToken: "hr-google-1", account: { email: "g@x" } })));
+  const r = await net.googleConfirm("http://api", "supabase-jwt");
+  assert.equal(last.url, "http://api/v1/auth/google/confirm", "richtiger Pfad");
+  assert.equal(last.opts.method, "POST");
+  assert.deepEqual(JSON.parse(last.opts.body), { supabaseToken: "supabase-jwt" }, "sendet supabaseToken");
+  assert.equal(r.accessToken, "hr-google-1");
+  assert.equal(net.getToken(), "hr-google-1", "Token landet in localStorage");
+  assert.equal(net.loggedIn(), true);
+});
+
+test("googleConfirm: ohne accessToken -> wirft, kein Token (kein stilles Anmelden)", async () => {
+  reset();
+  stubFetch(() => res(401, JSON.stringify({ error: "invalid token" })));
+  await assert.rejects(() => net.googleConfirm("http://api", "bad"), /google confirm failed/);
+  assert.equal(net.getToken(), null);
+});
+
+test("googleConfirm: accessToken im Body, aber HTTP-Fehler -> wirft, kein Token", async () => {
+  reset();
+  stubFetch(() => res(400, JSON.stringify({ accessToken: "sneaky" })));
+  await assert.rejects(() => net.googleConfirm("http://api", "x"), /google confirm failed/);
+  assert.equal(net.getToken(), null, "r.ok zählt, nicht nur das Feld");
+});
+
+test("googleStart: baut die Start-URL mit encodetem redirect (kein window -> No-op)", () => {
+  reset();
+  // In der Testumgebung gibt es kein echtes window.location.href-Setter -> googleStart
+  // faengt das ab und liefert die URL trotzdem als Rueckgabe zurück.
+  const url = net.googleStart("http://api", "https://app.example/auth-callback.html");
+  assert.equal(
+    url,
+    "http://api/v1/auth/google/start?redirect=" + encodeURIComponent("https://app.example/auth-callback.html"),
+    "redirect ist URL-encodet und haengt an /v1/auth/google/start",
+  );
+});
+
+test("request: timeout-Grenze ist strikt > 0 (timeout:1 verdrahtet noch einen AbortController und bricht ab)", async () => {
+  reset();
+  // Langsame Antwort (120ms); der 1ms-Abort-Timer feuert zuverlässig davor.
+  globalThis.fetch = (url, opts) => new Promise((resolve, reject) => {
+    const sig = opts && opts.signal;
+    if (sig) sig.addEventListener("abort", () => reject(new Error("aborted")));
+    setTimeout(() => resolve(res(200, "{}")), 120);
+  });
+  // timeout:1 -> `timeout > 0` ist wahr -> AbortController + 1ms-Timer -> Abbruch.
+  // Tötet die Mutante `timeout > 1` (die bei timeout:1 KEINEN Controller verdrahtete
+  // und die 120ms-Antwort normal durchließe, statt abzubrechen).
+  await assert.rejects(
+    () => net.request("http://api", "GET", "/x", null, { timeout: 1, retries: 0 }),
+    /aborted/,
+  );
+});
+
+// ---- Login-CSRF-state (net.oauthStateStart / net.oauthStateCheck) -------------
+// sessionStorage- + crypto-Shim (net.js liest beide als globale Browser-APIs).
+const smem = {};
+globalThis.sessionStorage = {
+  getItem: (k) => (k in smem ? smem[k] : null),
+  setItem: (k, v) => { smem[k] = String(v); },
+  removeItem: (k) => { delete smem[k]; },
+};
+function sreset() { for (const k of Object.keys(smem)) delete smem[k]; }
+// Deterministische Zufallsquelle: buf[i] = i -> vorhersagbarer Hex-String. `crypto`
+// ist auf globalThis nur ein Getter -> per defineProperty (writable) überschreiben,
+// damit einzelne Tests es kurzfristig weiter anpassen können.
+const DETERMINISTIC_CRYPTO = { getRandomValues: (a) => { for (let i = 0; i < a.length; i++) a[i] = i; return a; } };
+Object.defineProperty(globalThis, "crypto", { value: DETERMINISTIC_CRYPTO, configurable: true, writable: true });
+const STATE_KEY = "spanischcard.oauthstate.v1";
+
+test("oauthStateStart: erzeugt 32-stelligen Hex-state und legt ihn im sessionStorage ab", () => {
+  sreset();
+  const st = net.oauthStateStart();
+  assert.match(st, /^[0-9a-f]{32}$/, "16 Bytes -> 32 Hex-Zeichen");
+  assert.equal(st, "000102030405060708090a0b0c0d0e0f", "deterministischer Shim (buf[i]=i)");
+  assert.equal(smem[STATE_KEY], st, "unter dem state-Key gespeichert");
+});
+
+test("oauthStateStart: ohne crypto.getRandomValues -> '' und nichts gespeichert (fail closed)", () => {
+  sreset();
+  const saved = globalThis.crypto;
+  globalThis.crypto = {};
+  try {
+    assert.equal(net.oauthStateStart(), "");
+    assert.equal(STATE_KEY in smem, false, "kein state abgelegt");
+  } finally { globalThis.crypto = saved; }
+});
+
+test("oauthStateCheck: exakte Übereinstimmung -> true UND state wird einmalig gelöscht (kein Replay)", () => {
+  sreset();
+  const st = net.oauthStateStart();
+  assert.equal(net.oauthStateCheck(st), true, "gleicher state -> ok");
+  assert.equal(STATE_KEY in smem, false, "nach der Prüfung gelöscht (Single-Use)");
+  assert.equal(net.oauthStateCheck(st), false, "zweiter Versuch (Replay) -> false");
+});
+
+test("oauthStateCheck: falscher state -> false (untergeschobener Angreifer-Link)", () => {
+  sreset();
+  net.oauthStateStart();
+  assert.equal(net.oauthStateCheck("deadbeefdeadbeefdeadbeefdeadbeef"), false);
+});
+
+test("oauthStateCheck: kein gespeicherter state (Flow nie in diesem Browser gestartet) -> false", () => {
+  sreset();
+  assert.equal(net.oauthStateCheck("000102030405060708090a0b0c0d0e0f"), false);
+});
+
+test("oauthStateCheck: leerer got -> false, selbst wenn ein state gespeichert ist", () => {
+  sreset();
+  net.oauthStateStart();
+  assert.equal(net.oauthStateCheck(""), false);
+});

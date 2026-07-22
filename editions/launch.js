@@ -23,6 +23,12 @@
         appUrl: origin,
         sync: { enabled: true, apiBase: origin, orgLabel: "HolaRuta" },
         social: { enabled: true }, // apiBase fällt auf sync.apiBase zurück
+        // Account-First: Login-Gate direkt beim ersten Start (Berater-Empfehlung –
+        // wer den Account nicht früh anlegt, claimt seine Daten später kaum noch).
+        // google:true blendet den Google-Button ein (niedrigste Schwelle); der
+        // passwortlose E-Mail-Code bleibt als Rückfall. Greift nur auf http(s)
+        // (isWeb) – die file://-Offline-Variante bleibt anonym/gate-frei.
+        account: { required: true, google: true },
         // WICHTIG: analytics.endpoint ist die BASIS-Origin; analytics.js hängt selbst
         // /v1/usage bzw. /v1/events an. Also NICHT den Pfad mit reingeben (sonst
         // entstünde …/v1/usage/v1/usage).

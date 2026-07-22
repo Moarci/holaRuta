@@ -2320,7 +2320,7 @@
     gGuide: "Die Vorlage „Komplett: Reiseziel“ deckt Plan, Starter-Set, Notfall und Geld ab – ideal 2–3 Wochen vor Abreise in den Gruppenchat. Beim Vortreffen funktioniert der QR-Code am schnellsten: zeigen, scannen, fertig.",
     gLearnersH: "Was sehen die Lernenden?",
     gLearners: "Nach dem Antippen erscheinen die Aufgaben unter „Tarea“ mit Titel, Frist und Fortschritt. Mehrere Aufgaben laufen parallel; erledigte lassen sich beliebig wiederholen. Ein zweites Antippen desselben Links schadet nicht.",
-    gPrivacy: "🔒 Datenschutz: Es gibt kein Konto und keinen Server. Der Link enthält nur die Aufgaben-Beschreibung – keine Namen, keine Fortschrittsdaten.",
+    gPrivacy: "🔒 Datenschutz: Der geteilte Link enthält nur die Aufgaben-Beschreibung – keine Namen, keine Fortschrittsdaten, keine Konto-Angaben.",
     linkRoster: "Klassenübersicht",
     linkSheets: "Arbeitsblätter",
   }, {
@@ -2403,7 +2403,7 @@
     gGuide: "The “Complete: destination” template covers plan, starter set, emergencies and money – ideal for the group chat 2–3 weeks before departure. At the pre-trip meeting the QR code is fastest: show, scan, done.",
     gLearnersH: "What do learners see?",
     gLearners: "After tapping, the tasks appear under “Tarea” with title, due date and progress. Several tasks run in parallel; finished ones can be repeated any time. Tapping the same link twice does no harm.",
-    gPrivacy: "🔒 Privacy: there is no account and no server. The link only contains the task description – no names, no progress data.",
+    gPrivacy: "🔒 Privacy: the shared link only contains the task description – no names, no progress data, no account details.",
     linkRoster: "Class overview",
     linkSheets: "Worksheets",
   });
@@ -3373,5 +3373,52 @@
     shareHead: "📒 Mi léxico – my favourite words & phrases",
     shareHeadDeEn: "📒 My vocabulary – my favourite words & phrases",
     copied: "List copied to clipboard.",
+  });
+
+  // ---------- account: Login-Gate am Start (Account-First + Google-OAuth) ----------
+  // "legal" darf HTML (Link zur Datenschutzseite) enthalten – wird bewusst NICHT
+  // escaped gerendert (statischer i18n-String, kein Nutzer-Input).
+  i18n.register("account", {
+    title: "Konto erstellen oder anmelden",
+    intro: "Sichere deinen Fortschritt und lerne auf allen Geräten weiter. Ein Konto ist kostenlos und in Sekunden erstellt.",
+    google: "Mit Google fortfahren",
+    or: "oder",
+    emailLabel: "E-Mail-Adresse",
+    emailPlaceholder: "du@beispiel.de",
+    emailSubmit: "Code per E-Mail senden",
+    emailInvalid: "Bitte gib eine gültige E-Mail-Adresse ein.",
+    emailFailed: "Das hat nicht geklappt. Bitte versuch es erneut.",
+    codeTitle: "Code eingeben",
+    codeIntro: (p) => `Wir haben dir einen Bestätigungscode an ${p.email} geschickt.`,
+    codeLabel: "Bestätigungscode",
+    codePlaceholder: "6-stelliger Code",
+    codeSubmit: "Anmelden",
+    codeInvalid: "Bitte gib den Code aus der E-Mail ein.",
+    codeFailed: "Der Code stimmt nicht oder ist abgelaufen.",
+    back: "Andere Anmeldung wählen",
+    offline: "Zum Anlegen deines Kontos brauchst du kurz eine Internetverbindung. Verbinde dich und versuch es erneut.",
+    retry: "Erneut versuchen",
+    legal: 'Mit dem Fortfahren stimmst du unserer <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> zu. Wir speichern nur deine E-Mail-Adresse, um dein Konto zu sichern.',
+  }, {
+    title: "Create your account or sign in",
+    intro: "Save your progress and keep learning on every device. An account is free and takes seconds.",
+    google: "Continue with Google",
+    or: "or",
+    emailLabel: "Email address",
+    emailPlaceholder: "you@example.com",
+    emailSubmit: "Email me a code",
+    emailInvalid: "Please enter a valid email address.",
+    emailFailed: "That didn't work. Please try again.",
+    codeTitle: "Enter your code",
+    codeIntro: (p) => `We sent a confirmation code to ${p.email}.`,
+    codeLabel: "Confirmation code",
+    codePlaceholder: "6-digit code",
+    codeSubmit: "Sign in",
+    codeInvalid: "Please enter the code from the email.",
+    codeFailed: "That code is wrong or has expired.",
+    back: "Choose a different sign-in",
+    offline: "You need a brief internet connection to create your account. Reconnect and try again.",
+    retry: "Try again",
+    legal: 'By continuing you agree to our <a href="datenschutz.html" target="_blank" rel="noopener">privacy policy</a>. We only store your email address to secure your account.',
   });
 })();

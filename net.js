@@ -110,6 +110,53 @@
       .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("confirm failed"); });
   }
 
+  // Google-OAuth (BACKEND.md §7): den Browser zur serverseitig gebauten Google-URL
+  // navigieren. redirect = eigene Callback-Seite (auth-callback.html), die das
+  // zurückkommende Supabase-Token via googleConfirm gegen unseren Session-Token
+  // tauscht. Voll-Redirect statt eingebettetem Google-Script -> CSP bleibt eng
+  // (kein `script-src accounts.google.com`), keine Framework-Abhängigkeit im Client.
+  function googleStart(base, redirect) {
+    var url = base + "/v1/auth/google/start?redirect=" + encodeURIComponent(redirect || "");
+    try { window.location.href = url; } catch (e) { /* kein window -> No-op (Tests) */ }
+    return url;
+  }
+  // Von der Callback-Seite genutzt: das Supabase-Access-Token (aus dem Implicit-
+  // Redirect-Fragment) gegen unseren Opaque-Session-Token tauschen und speichern.
+  function googleConfirm(base, supabaseToken) {
+    return request(base, "POST", "/v1/auth/google/confirm", { supabaseToken: supabaseToken })
+      .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("google confirm failed"); });
+  }
+
+  // ---- Login-CSRF-Schutz für den Google-Redirect-Flow -----------------------
+  // Der `state` bindet den OAuth-Roundtrip an DEN Browser, der ihn gestartet hat:
+  // beim Start zufällig erzeugt und im sessionStorage abgelegt, über redirectTo (?s=)
+  // zurückgespielt, im Callback exakt verglichen. Ein untergeschobenes fremdes Token
+  // trägt einen fremden state -> kein passender sessionStorage-Eintrag -> abgewiesen.
+  var OAUTH_STATE_KEY = "spanischcard.oauthstate.v1";
+
+  // Zufälligen state erzeugen + im sessionStorage ablegen; gibt ihn zurück. Leerer
+  // String, wenn keine sichere Zufallsquelle/kein sessionStorage vorhanden ist – der
+  // Aufrufer bricht dann ab (fail closed statt ungeschützt weiterzuleiten).
+  function oauthStateStart() {
+    try {
+      if (typeof crypto === "undefined" || !crypto.getRandomValues || typeof sessionStorage === "undefined") return "";
+      var buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      var st = Array.prototype.map.call(buf, function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+      sessionStorage.setItem(OAUTH_STATE_KEY, st);
+      return st;
+    } catch (e) { return ""; }
+  }
+
+  // Zurückgegebenen state gegen den gespeicherten prüfen und diesen EINMALIG löschen.
+  // true NUR bei nicht-leerer, exakter Übereinstimmung (fehlt/mismatcht er -> false).
+  function oauthStateCheck(got) {
+    var want = "";
+    try { want = sessionStorage.getItem(OAUTH_STATE_KEY) || ""; } catch (e) { want = ""; }
+    try { sessionStorage.removeItem(OAUTH_STATE_KEY); } catch (e) { /* egal */ }
+    return !!want && !!got && got === want;
+  }
+
   SC.net = {
     TOKEN_KEY: TOKEN_KEY,
     getToken: getToken,
@@ -119,5 +166,9 @@
     request: request,
     login: login,
     confirm: confirm,
+    googleStart: googleStart,
+    googleConfirm: googleConfirm,
+    oauthStateStart: oauthStateStart,
+    oauthStateCheck: oauthStateCheck,
   };
 })();

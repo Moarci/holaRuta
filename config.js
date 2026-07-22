@@ -45,6 +45,13 @@
     // Karten-IDs, keine stabile ID). Eine Edition kann sie vorkonfigurieren:
     //   analytics: { enabled: true, endpoint: "https://…" }
     analytics: null,
+    // Account-First (Login-Gate am Start). null = aus (Standard: offline/anonym wie
+    // bisher – keine Account-Pflicht). Eine vernetzte Edition (launch) schaltet es
+    // scharf: { required:true, google:true }. `required` greift NUR, wenn zugleich
+    // Cloud-Sync aktiv ist (truthy apiBase) – eine per file:// geöffnete Offline-
+    // Variante zeigt also KEIN Gate (graceful). `google` blendet den Google-Button
+    // ein; ohne ihn bleibt der passwortlose E-Mail-Code der einzige Weg.
+    account: null,
     // Kanonische Web-Adresse der App (für teilbare Aufgaben-/Onboarding-Links).
     // null = aktuelle Adresse (location) verwenden. Editionen setzen ihre Pages-URL,
     // damit ein Link auch dann stimmt, wenn die Lehrkraft die App als Datei öffnet.
@@ -109,5 +116,16 @@
     cardNativeLang: function () { return currentTrack().cardNativeLang; },
     // Stimme der Lernsprache (für speech.js).
     ttsLocale: function () { return currentTrack().ttsLocale; },
+  };
+
+  // SC.account – DOM-freie Helfer rund um Account-First. Lesen die gemergte
+  // SC.config.account. `required()` prüft NUR die Config-Absicht; ob das Gate real
+  // greift (zusätzlich: Cloud-Sync aktiv + nicht eingeloggt), entscheidet der
+  // Controller (app.js accountGateActive), da das SC.sync/SC.net voraussetzt.
+  var acc = function () { return (SC.config && SC.config.account) || null; };
+  SC.account = {
+    cfg: acc,
+    required: function () { var a = acc(); return !!(a && a.required); },
+    google: function () { var a = acc(); return !!(a && a.google); },
   };
 })();

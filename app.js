@@ -205,6 +205,8 @@
     assessment: null,        // HolaRuta Nivel-Test (ausführlich): { phase, asked, answers, difficulty, … } | null
     onboardStep: "intro",    // Onboarding-Teilschritt: 'intro' (Erklär-Slides) → 'profile' (Name+Geschlecht) → 'trip' (Reiseziel)
     onboardSlide: 0,         // aktuelle Erklär-Slide im Intro-Schritt (0-basiert)
+    account: null,           // Account-First-Login-Gate: { mode:'start'|'code', email, busy, error } | null
+
     queue: [],               // verbleibende Karten-Ids dieser Sitzung
     total: 0,                // Kartenzahl zu Sitzungsbeginn
     revealed: false,         // Karteikarte-Modus: Rückseite sichtbar?
@@ -1734,6 +1736,174 @@
     setState({ screen: "home" });
   }
 
+  // ---- Account-First (Login-Gate direkt am Start) ----------------------------
+  // Basis-Adresse der API (= Cloud-Sync-Origin). Fällt auf die aktuelle Origin
+  // zurück, falls keine Edition-Config gesetzt ist.
+  function accountApiBase() {
+    const s = window.SC.config && window.SC.config.sync;
+    const base = (s && s.apiBase) || (typeof location !== "undefined" ? location.origin : "");
+    return String(base || "").replace(/\/+$/, "");
+  }
+
+  // Greift das Login-Gate? Nur wenn (a) die Edition Account-First verlangt,
+  // (b) Cloud-Sync real aktiv ist (truthy apiBase -> KEIN file://-/Offline-Build)
+  // und (c) noch kein Token vorhanden ist. So bleibt die reine Offline-Variante
+  // anonym/gate-frei und Eingeloggte sehen das Gate nie.
+  function accountGateActive() {
+    const acc = window.SC.account;
+    if (!(acc && acc.required())) return false;
+    if (!(window.SC.sync && window.SC.sync.enabled())) return false;
+    return !window.SC.net.loggedIn();
+  }
+
+  function accountVM() {
+    const a = state.account || {};
+    return {
+      edition: editionInfo(),
+      google: !!(window.SC.account && window.SC.account.google()),
+      mode: a.mode || "start",
+      email: a.email || "",
+      busy: !!a.busy,
+      error: a.error || "",
+      online: (typeof navigator === "undefined") || navigator.onLine !== false,
+    };
+  }
+
+  // Gate betreten (Screen + frischer State). Kein render() hier – der Aufrufer
+  // (init) rendert ohnehin einmal nach dem Setup.
+  function showAccountGate() {
+    state.account = { mode: "start", email: "", busy: false, error: "" };
+    state.screen = "account";
+  }
+
+  // Google-Login: Voll-Redirect zur serverseitig gebauten OAuth-URL. Kommt über
+  // auth-callback.html mit gesetztem Token zurück -> App startet eingeloggt und
+  // der Boot-Claim (maybeBootClaim) faltet evtl. vorhandene lokale Daten ein.
+  function accountGoogle() {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      state.account = Object.assign({}, state.account, { error: t("account.offline") });
+      render();
+      return;
+    }
+    // CSRF-Schutz gegen Login-CSRF/Account-Fixation: einen zufälligen `state` erzeugen
+    // und im sessionStorage des STARTENDEN Browsers ablegen (net.oauthStateStart),
+    // über redirectTo (?s=) durch den OAuth-Roundtrip echoen. auth-callback.html
+    // tauscht das zurückkommende Token NUR ein, wenn der mitgeschickte `state` exakt
+    // dem gespeicherten entspricht (net.oauthStateCheck) – ein untergeschobenes fremdes
+    // Token trägt einen fremden `state` ohne passenden sessionStorage-Eintrag -> abgewiesen.
+    const st = window.SC.net.oauthStateStart();
+    if (!st) { // Ohne sichere Zufallsquelle NICHT ungeschützt weiterleiten (fail closed).
+      state.account = Object.assign({}, state.account, { error: t("account.emailFailed") });
+      render();
+      return;
+    }
+    var origin = (typeof location !== "undefined" ? location.origin : "");
+    var redirect = origin + "/auth-callback.html?s=" + encodeURIComponent(st);
+    window.SC.net.googleStart(accountApiBase(), redirect);
+  }
+
+  // Passwortloser E-Mail-Code, Schritt 1: Magic-Link/OTP anstoßen -> Code-Eingabe.
+  function accountEmailSubmit() {
+    const el = document.getElementById("account-email");
+    const email = (el ? el.value : "").trim();
+    if (!email || email.indexOf("@") < 1) {
+      state.account = Object.assign({}, state.account, { error: t("account.emailInvalid") });
+      render();
+      return;
+    }
+    state.account = Object.assign({}, state.account, { email: email, busy: true, error: "" });
+    render();
+    window.SC.sync.login(email).then(function () {
+      if (window.SC.sync.loggedIn()) { afterAccountAuthed(); return; } // Mock: sofort eingeloggt
+      state.account = Object.assign({}, state.account, { mode: "code", busy: false, error: "" });
+      render();
+    }).catch(function () {
+      state.account = Object.assign({}, state.account, { busy: false, error: t("account.emailFailed") });
+      render();
+    });
+  }
+
+  // Passwortloser E-Mail-Code, Schritt 2: Code bestätigen -> eingeloggt + Claim.
+  function accountCodeSubmit() {
+    const el = document.getElementById("account-code");
+    const code = (el ? el.value : "").trim();
+    if (!code) {
+      state.account = Object.assign({}, state.account, { error: t("account.codeInvalid") });
+      render();
+      return;
+    }
+    const email = (state.account && state.account.email) || "";
+    state.account = Object.assign({}, state.account, { busy: true, error: "" });
+    render();
+    window.SC.sync.confirm(email, code).then(function () {
+      afterAccountAuthed();
+    }).catch(function () {
+      state.account = Object.assign({}, state.account, { busy: false, error: t("account.codeFailed") });
+      render();
+    });
+  }
+
+  // Nach erfolgreichem Login (Google ODER E-Mail): bisher anonyme lokale Daten in
+  // den Account falten (Claim = vorhandener sync-Merge) und dann den regulären
+  // Erststart-Fluss fortsetzen. Änderte der Merge lokale Daten (Bestandsgerät mit
+  // Server-Stand), einmal frisch laden -> konsistenter In-Memory-State.
+  function afterAccountAuthed() {
+    state.account = null;
+    const proceed = function () {
+      if (settings.onboarded === true) { setState({ screen: "home" }); return; }
+      state.screen = "home";
+      runFirstRunFlow();
+      render();
+    };
+    if (window.SC.sync && window.SC.sync.enabled() && window.SC.sync.loggedIn()) {
+      window.SC.sync.syncNow().then(function (r) {
+        if (r && r.changedLocal) { try { location.reload(); return; } catch (e) { /* egal */ } }
+        proceed();
+      }, function () { proceed(); });
+    } else {
+      proceed();
+    }
+  }
+
+  // Erststart-Fluss: Onboarding (falls neu) + geteilte Deep-Links (?task/?start).
+  // Ausgelagert, damit er ENTWEDER sofort beim Start läuft (kein Gate) ODER erst
+  // nach erfolgreichem Login (Account-First) – ohne die Logik zu duplizieren.
+  function runFirstRunFlow() {
+    if (settings.onboarded !== true) {
+      const hasData = Object.keys(progress).length > 0 || (gamestats.reviews | 0) > 0 || !!gamestats.tripGoal;
+      if (hasData) {
+        settings = Object.assign({}, settings, { onboarded: true });
+        store.saveSettings(settings);
+      } else {
+        beginOnboarding();
+      }
+    }
+    const taskCode = urlParam("task");
+    if (taskCode) {
+      if (addByCode(taskCode, true) && settings.onboarded === true && state.screen !== "onboarding") {
+        openTaskScreen();
+      }
+      stripUrlParam("task");
+    }
+    if (urlParam("start").toLowerCase() === "onboarding") {
+      beginOnboarding();
+      stripUrlParam("start");
+    }
+  }
+
+  // Beim Start einmal claimen/syncen, falls bereits eingeloggt (z. B. nach dem
+  // Google-Redirect oder auf einem Bestandsgerät): lokale Daten wandern in den
+  // Account, Server-Stände fließen ein. Best effort, nicht blockierend; änderte
+  // der Merge lokale Daten, einmal frisch laden (wie der manuelle Cloud-Sync).
+  function maybeBootClaim() {
+    if (!(window.SC.sync && window.SC.sync.enabled() && window.SC.sync.loggedIn())) return;
+    try {
+      window.SC.sync.syncNow().then(function (r) {
+        if (r && r.changedLocal) { try { location.reload(); } catch (e) { /* egal */ } }
+      }, function () { /* egal */ });
+    } catch (e) { /* egal */ }
+  }
+
   function clearTripGoal() {
     // Auch die Startklar-Meilensteine zurücksetzen – sie gehören zu DIESER Reise; eine
     // später neu gesetzte Reise startet damit wieder bei null (kein Alt-Stand).
@@ -2325,6 +2495,15 @@
     // Erklär-Slides → einzelne Slides). Erst vom allerersten Slide überspringt „Zurück"
     // das Onboarding ganz (zählt als erledigt, kein Wiederzeigen). Der Ruta-Check bleibt
     // dann als offene Aufgabe (placementPending) im Dashboard sichtbar.
+    // Account-Gate: nicht per Zurück verlassen (Account-First). Vom Code-Schritt
+    // führt Zurück nur zurück auf die Login-Auswahl.
+    if (state.screen === "account") {
+      if (state.account && state.account.mode === "code") {
+        state.account = Object.assign({}, state.account, { mode: "start", error: "" });
+        render();
+      }
+      return true;
+    }
     if (state.screen === "onboarding") {
       if (state.onboardStep === "trip") { state.onboardStep = "profile"; render(); return true; }
       if (state.onboardStep === "profile") { state.onboardStep = "intro"; state.onboardSlide = onboardSlideCount() - 1; render(); return true; }
@@ -2516,6 +2695,7 @@
       "comprasQuizDone": () => compras.doneScreen(),
       "search": () => ui.renderSearch(searchVM()),
       "onboarding": () => ui.renderOnboarding(homeVM()),
+      "account": () => ui.renderAccount(accountVM()),
     };
     const screenFn = SCREENS[state.screen];
     // Robustheit: Feature-/Screen-Module (features/*.js) werden als eigene
@@ -7443,6 +7623,9 @@
     "onboard-slide-next": (el) => { advanceOnboardSlide(); }, // Erklär-Slide weiter (letzter -> Profil)
     "onboard-slide-skip": (el) => { onboardSlidesToProfile(); }, // Erklär-Slides überspringen -> Profil
     "onboard-slide-go": (el) => { goToOnboardSlide(el.dataset.idx); }, // Punkt-Navigation zu Slide N
+    "account-google": (el) => { accountGoogle(); }, // Account-Gate: Google-Login (Voll-Redirect)
+    "account-retry": (el) => { render(); }, // Account-Gate: Online-Status neu prüfen (Offline-Zustand)
+    "account-back": (el) => { state.account = Object.assign({}, state.account || {}, { mode: "start", error: "" }); render(); }, // vom Code-Schritt zurück
     "skip-onboarding": (el) => { openPlacement(true); }, // Trip übersprungen -> trotzdem Ruta-Check anbieten
     "placement-skip": (el) => { finishOnboarding(); }, // Ruta-Check im Onboarding überspringen -> fertig
     "placement-finish": (el) => { finishOnboarding(); }, // Ruta-Check fertig (aus Onboarding) -> Dashboard
@@ -7752,6 +7935,17 @@
     if (e.target.closest('[data-action="onboard-profile-next"]')) {
       e.preventDefault();
       advanceOnboardingProfile();
+      return;
+    }
+    // Account-Gate: E-Mail anstoßen (Schritt 1) bzw. Code bestätigen (Schritt 2).
+    if (e.target.closest('[data-action="account-email-submit"]')) {
+      e.preventDefault();
+      accountEmailSubmit();
+      return;
+    }
+    if (e.target.closest('[data-action="account-code-submit"]')) {
+      e.preventDefault();
+      accountCodeSubmit();
       return;
     }
     // Trip-Ziel speichern (Datum + Tagesziel + optionales Reiseziel). Beim
@@ -8279,29 +8473,21 @@
   // Erstkontakt: beim allerersten Start (noch nichts gespeichert) ins Onboarding
   // führen, das das Trip-Ziel abfragt. Bestandsnutzer (mit Fortschritt, Bewertungen
   // oder bereits gesetztem Ziel) werden still als „onboarded" markiert.
-  if (settings.onboarded !== true) {
-    const hasData = Object.keys(progress).length > 0 || (gamestats.reviews | 0) > 0 || !!gamestats.tripGoal;
-    if (hasData) {
-      settings = Object.assign({}, settings, { onboarded: true });
-      store.saveSettings(settings);
-    } else {
-      beginOnboarding();
-    }
-  }
-  // Geteilter Aufgaben-Link (?task=<code>): die Aufgabe still abonnieren (mehrere
-  // parallel möglich) und den Parameter entfernen. Onboarding hat Vorrang vor dem Screen.
-  const taskCode = urlParam("task");
-  if (taskCode) {
-    if (addByCode(taskCode, true) && settings.onboarded === true && state.screen !== "onboarding") {
-      openTaskScreen(); // direkt zur Aufgabenliste, wenn schon eingerichtet
-    }
-    stripUrlParam("task");
-  }
-  // Geteilter Link einer Schule/Partnerfirma (?start=onboarding): immer ins Onboarding
-  // – auch auf einem Bestandsgerät. Branding kommt aus der Edition (?edition=…, registry.js).
-  if (urlParam("start").toLowerCase() === "onboarding") {
-    beginOnboarding();
-    stripUrlParam("start"); // Parameter entfernen, damit ein Reload nicht erneut zwingt (Edition bleibt)
+  // Account-First: Verlangt die Edition einen Account und ist noch keiner
+  // vorhanden, kommt das Login-Gate VOR Onboarding/Deep-Links (Berater-Empfehlung:
+  // Account früh anlegen, sonst wird er später kaum noch geclaimt). Der Erststart-
+  // Fluss (Onboarding + ?task/?start) läuft erst NACH erfolgreichem Login
+  // (afterAccountAuthed -> runFirstRunFlow); die Deep-Link-Parameter bleiben bis
+  // dahin in der URL erhalten. Ohne aktives Gate (offline/anonym oder bereits
+  // eingeloggt) läuft der Erststart-Fluss wie bisher sofort.
+  if (accountGateActive()) {
+    showAccountGate();
+    // Offline geöffnet? Beim Wiederverbinden das Gate neu rendern (Hinweis -> Buttons).
+    try { window.addEventListener("online", () => { if (state.screen === "account") render(); }); } catch (e) { /* egal */ }
+  } else {
+    runFirstRunFlow();
+    // Bereits eingeloggt (Google-Redirect zurück / Bestandsgerät): einmal claimen.
+    maybeBootClaim();
   }
   // Feature-Module mit Controller-Diensten versorgen (Dependency-Injection): zentraler
   // State, Daten-Helfer und optionale Module. VOR dem ersten render() / Deep-Link, da

@@ -697,6 +697,100 @@
       </section>`;
   }
 
+  // Google-Wortmarke (offizielles 4-Farben-„G", inline-SVG). Kein externes Script/
+  // Bild -> die enge CSP (script-src 'self', img-src 'self' data:) bleibt erfüllt.
+  function googleMark() {
+    return `<svg class="account__gicon" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+      <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.71-1.57 2.68-3.89 2.68-6.62z"/>
+      <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
+      <path fill="#FBBC05" d="M3.97 10.72a5.41 5.41 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/>
+      <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
+    </svg>`;
+  }
+
+  // Account-First-Login-Screen (Gate am Start). Reihenfolge nach niedrigster
+  // Schwelle: Google-1-Klick zuerst, passwortloser E-Mail-Code als Rückfall. Der
+  // Offline-Zustand zeigt einen Hinweis statt eines toten Buttons (frisch
+  // installierte, offline geöffnete PWA soll nicht unbrauchbar wirken).
+  function renderAccount(vm) {
+    const e = vm.edition;
+    const logoOk = e && e.logo && /^(https:\/\/|data:image\/)/i.test(e.logo);
+    const brand = e
+      ? `<div class="onboarding__brand">
+           ${logoOk ? `<img class="onboarding__logo" src="${esc(e.logo)}" alt="${esc((e.partner && e.partner.name) || e.name)}" />` : ""}
+           ${e.partner && e.partner.name ? `<p class="onboarding__partner">${esc(e.partner.name)}</p>
+           <p class="onboarding__powered">${esc(t("profile.poweredBy"))}</p>` : ""}
+         </div>`
+      : "";
+    const errBox = vm.error ? `<p class="account__error" role="alert">${esc(vm.error)}</p>` : "";
+
+    // Offline: weder OAuth-Redirect noch OTP-Mail möglich.
+    if (!vm.online) {
+      return `
+        <section class="screen onboarding account">
+          <div class="onboarding__inner">
+            ${brand}
+            <h1 class="onboarding__title">${esc(t("account.title"))}</h1>
+            <p class="onboarding__intro">${esc(t("account.offline"))}</p>
+            <div class="trip__actions">
+              <button class="cta" type="button" data-action="account-retry">${esc(t("account.retry"))}</button>
+            </div>
+          </div>
+        </section>`;
+    }
+
+    // Schritt „Code": E-Mail wurde angestoßen, jetzt den zugeschickten Code eingeben.
+    if (vm.mode === "code") {
+      return `
+        <section class="screen onboarding account">
+          <div class="onboarding__inner">
+            ${brand}
+            <h1 class="onboarding__title">${esc(t("account.codeTitle"))}</h1>
+            <p class="onboarding__intro">${esc(t("account.codeIntro", { email: vm.email }))}</p>
+            <form class="trip trip--edit" data-action="account-code-submit">
+              <label class="trip__field"><span>${renderIcon("lc:key-round")} ${esc(t("account.codeLabel"))}</span>
+                <input id="account-code" type="text" inputmode="numeric" autocomplete="one-time-code"
+                       autocapitalize="off" autocorrect="off" spellcheck="false"
+                       placeholder="${esc(t("account.codePlaceholder"))}" /></label>
+              ${errBox}
+              <div class="trip__actions">
+                <button class="cta" type="submit"${vm.busy ? " disabled" : ""}>${esc(t("account.codeSubmit"))}</button>
+              </div>
+            </form>
+            <button class="ghostbtn" type="button" data-action="account-back">${esc(t("account.back"))}</button>
+          </div>
+        </section>`;
+    }
+
+    // Startschritt: Google-Button (optional) + passwortloser E-Mail-Code.
+    const googleBlock = vm.google
+      ? `<button class="cta account__google" type="button" data-action="account-google"${vm.busy ? " disabled" : ""}>
+           ${googleMark()} <span>${esc(t("account.google"))}</span>
+         </button>
+         <p class="account__or"><span>${esc(t("account.or"))}</span></p>`
+      : "";
+    return `
+      <section class="screen onboarding account">
+        <div class="onboarding__inner">
+          ${brand}
+          <h1 class="onboarding__title">${esc(t("account.title"))}</h1>
+          <p class="onboarding__intro">${esc(t("account.intro"))}</p>
+          ${googleBlock}
+          <form class="trip trip--edit" data-action="account-email-submit">
+            <label class="trip__field"><span>${renderIcon("lc:mail")} ${esc(t("account.emailLabel"))}</span>
+              <input id="account-email" type="email" inputmode="email" autocomplete="email"
+                     autocapitalize="off" autocorrect="off" spellcheck="false"
+                     placeholder="${esc(t("account.emailPlaceholder"))}" value="${esc(vm.email)}" /></label>
+            ${errBox}
+            <div class="trip__actions">
+              <button class="cta" type="submit"${vm.busy ? " disabled" : ""}>${esc(t("account.emailSubmit"))}</button>
+            </div>
+          </form>
+          <p class="account__legal">${t("account.legal")}</p>
+        </div>
+      </section>`;
+  }
+
   // Sucheinstieg: sieht aus wie ein Suchfeld, ist aber ein Knopf, der die
   // Such-Ansicht öffnet (ein echtes Eingabefeld im Dashboard würde bei jedem
   // Re-Render den Fokus verlieren – darum erst auf der eigenen Seite tippen).
@@ -4328,7 +4422,7 @@
       </section>`;
   }
 
-  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
+  window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderAccount, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
                    renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner, migrationBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,

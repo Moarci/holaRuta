@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Datenschutzerklärung – HolaRuta</title>
+  <style>
+    :root { color-scheme: light dark; --ink:#2d1b12; --bg:#fbf6f0; --brand:#c8642d; --muted:#6b5647; --line:rgba(45,27,18,0.14); }
+    @media (prefers-color-scheme: dark) { :root { --ink:#f3e7dd; --bg:#1b120c; --muted:#b7a495; --line:rgba(243,231,221,0.16); } }
+    * { box-sizing: border-box; }
+    body { max-width: 46rem; margin: 0 auto; padding: 24px 18px 72px; font: 16px/1.65 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+    h1 { font-size: 1.65rem; line-height: 1.2; margin: 0.2em 0 0.6em; }
+    h2 { font-size: 1.15rem; margin: 2em 0 0.4em; padding-top: 0.4em; border-top: 1px solid var(--line); }
+    h3 { font-size: 1rem; margin: 1.2em 0 0.3em; }
+    p, li { margin: 0.5em 0; }
+    ul { padding-left: 1.2em; }
+    a { color: var(--brand); }
+    code { background: var(--line); padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+    table { border-collapse: collapse; width: 100%; margin: 0.6em 0; font-size: 0.92rem; display: block; overflow-x: auto; }
+    th, td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+    th { background: rgba(200,100,45,0.10); }
+    .note { border: 1px solid var(--brand); background: rgba(200,100,45,0.12); padding: 12px 14px; border-radius: 10px; font-size: 0.92rem; }
+    .ph { background: rgba(200,100,45,0.20); padding: 0 4px; border-radius: 4px; font-weight: 700; }
+    .muted { color: var(--muted); }
+    footer { margin-top: 2.5em; padding-top: 1em; border-top: 1px solid var(--line); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <p class="note"><strong>Hinweis zur Fertigstellung.</strong> Diese Erklärung ist auf die tatsächlichen
+  Datenverarbeitungen von HolaRuta zugeschnitten und DSGVO-/TDDDG-konform strukturiert. Alle
+  <span class="ph">[eckig markierten]</span> Felder sind mandantenspezifisch und vor der
+  Veröffentlichung auszufüllen (Verantwortliche:r, Kontakt, Auftragsverarbeiter-Konkretisierung,
+  Drittland-Garantien, zuständige Aufsichtsbehörde, Stand-Datum). Sie ersetzt keine anwaltliche
+  Einzelfallprüfung; vor dem Scharfschalten der Konto-Pflicht sollte sie final abgenommen werden.</p>
+
+  <h1>Datenschutzerklärung</h1>
+  <p class="muted">Stand: <span class="ph">[Monat JJJJ]</span> · Diese Erklärung gilt für die
+  Web-App HolaRuta (installierbare PWA) unter <span class="ph">[holaruta.com / weitere Domains]</span>.</p>
+
+  <h2>1. Verantwortlicher</h2>
+  <p>Verantwortlich für die Verarbeitung personenbezogener Daten im Sinne von Art. 4 Nr. 7 DSGVO ist:</p>
+  <p><span class="ph">[Name / Firma]</span><br />
+     <span class="ph">[Straße, PLZ Ort, Land]</span><br />
+     E-Mail: <span class="ph">[datenschutz@…]</span></p>
+  <p class="muted">Datenschutzbeauftragte:r (sofern bestellt): <span class="ph">[Name, Kontakt – andernfalls diese Zeile entfernen]</span>.</p>
+
+  <h2>2. Überblick &amp; Grundsatz der Datensparsamkeit</h2>
+  <p>HolaRuta ist „lokal zuerst" gebaut: Dein Lernfortschritt entsteht und lebt zunächst
+  ausschließlich in deinem Browser (lokaler Speicher deines Geräts). Personenbezogene Daten
+  verlassen dein Gerät im Wesentlichen nur, wenn du dich anmeldest (dann Konto &amp; Cloud-Sync,
+  Abschnitt 4–5), freiwillig soziale Funktionen nutzt (Abschnitt 6) oder der optionalen,
+  standardmäßig ausgeschalteten Nutzungsstatistik ausdrücklich zustimmst (Abschnitt 8). Wir setzen
+  keine Werbe- oder Drittanbieter-Tracker ein.</p>
+
+  <h2>3. Hosting, Auslieferung &amp; Server-Protokolle</h2>
+  <p>Die App und ihre Programmierschnittstellen (API) werden bei unserem Hosting-Dienstleister
+  <span class="ph">[Vercel Inc.]</span> betrieben. Beim Abruf werden technisch notwendige
+  Verbindungsdaten verarbeitet (insbesondere IP-Adresse, Datum/Uhrzeit, angefragte Ressource,
+  Statuscode, User-Agent). Zur Abwehr von Missbrauch (Rate-Limiting der Anmelde- und
+  Sync-Endpunkte) wird die IP-Adresse kurzzeitig ausgewertet.</p>
+  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
+  sicherem, stabilem Betrieb und Missbrauchsabwehr).</p>
+
+  <h2>4. Konto &amp; Anmeldung</h2>
+  <p>Zur Nutzung der angemeldeten Funktionen legst du ein Konto an. Es stehen zwei Wege zur Verfügung:</p>
+  <ul>
+    <li><strong>Anmeldung mit Google (OAuth):</strong> Google übermittelt uns deine
+      <strong>E-Mail-Adresse</strong> und deinen <strong>angezeigten Namen</strong>. Zusätzlich
+      gelten die <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Datenschutzhinweise von Google</a>.</li>
+    <li><strong>Anmeldung per E-Mail-Code:</strong> Du gibst deine <strong>E-Mail-Adresse</strong>
+      ein und bestätigst einen einmaligen Code, den wir dir per E-Mail zusenden. Es wird kein
+      Passwort gespeichert.</li>
+  </ul>
+  <p>In deinem Kontoprofil werden gespeichert: E-Mail-Adresse, bei Google zusätzlich der
+  Anzeigename, sowie eine technische Sitzungskennung (Anmelde-Token). Zur Absicherung des
+  Anmeldevorgangs setzen wir einen einmaligen, kurzlebigen Sicherheitswert im lokalen Speicher
+  deines Browsers ein (CSRF-Schutz); dieser wird nach Abschluss der Anmeldung gelöscht.</p>
+  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung des Kontos und der
+  angemeldeten Funktionen auf deine Anfrage).</p>
+
+  <h2>5. Lernfortschritt, Cloud-Sync &amp; lokale Speicherung</h2>
+  <p>Damit dein Fortschritt gesichert und geräteübergreifend verfügbar ist, speichern wir für
+  angemeldete Nutzer:innen die folgenden Lerndaten im Konto und gleichen sie mit dem Gerät ab:
+  Karten-Lernstand, selbst erstellte Karten, Favoriten, abonnierte Aufgaben, Spiel-/Lernstatistik
+  (z. B. XP, Serien) sowie App- und Profileinstellungen (u. a. ein selbst gewählter Name und eine
+  gewählte Anrede/grammatikalische Form für die korrekte Ansprache). Ohne Anmeldung verbleiben
+  diese Daten ausschließlich lokal auf deinem Gerät.</p>
+  <p>Der lokale Speicher (localStorage/IndexedDB) wird für den Kernbetrieb und zur Speicherung
+  deines Fortschritts genutzt; dieser Zugriff ist zur Erbringung des von dir angeforderten Dienstes
+  <strong>unbedingt erforderlich</strong> (§ 25 Abs. 2 Nr. 2 TDDDG) und erfordert keine gesonderte
+  Einwilligung. Nicht notwendige Zugriffe (Nutzungsstatistik) erfolgen nur mit Einwilligung
+  (Abschnitt 8).</p>
+  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Vertrag/Nutzung des Dienstes);
+  für die lokale Speicherung ergänzend § 25 Abs. 2 Nr. 2 TDDDG.</p>
+
+  <h2>6. Soziale Funktionen (Freundesliste &amp; Tages-Rangliste)</h2>
+  <p>Wenn du die freiwilligen sozialen Funktionen nutzt, kannst du dich über Freundes-Codes mit
+  anderen verbinden und einen Tages-Snapshot veröffentlichen. Für die Rangliste unter deinen
+  bestätigten Freund:innen werden dein <strong>Anzeigename</strong> sowie aggregierte Kennzahlen
+  (z. B. gelernte Karten, Serie, Wiederholungen) sichtbar. Nutzt du diese Funktionen nicht, werden
+  keine solchen Daten veröffentlicht.</p>
+  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (auf deine Anfrage bereitgestellte
+  Funktion); die Teilnahme ist freiwillig und jederzeit einstellbar.</p>
+
+  <h2>7. Unterrichts-/Organisationskontext (nur in Schul-/Partner-Editionen)</h2>
+  <p>In eigens dafür bereitgestellten Editionen können Lehrkräfte Klassen und Aufgaben verwalten
+  (z. B. Klassen-Codes, Aufgaben-Zuweisungen, Bearbeitungsstände). In diesem Fall verarbeiten wir
+  die betreffenden Daten im Auftrag der jeweiligen Einrichtung. <span class="ph">[Sofern zutreffend:
+  Auftragsverarbeitung nach Art. 28 DSGVO mit der Einrichtung; andernfalls diesen Abschnitt entfernen.]</span></p>
+
+  <h2>8. Optionale, anonyme Nutzungsstatistik</h2>
+  <p>Standardmäßig ausgeschaltet und nur nach deiner <strong>ausdrücklichen Einwilligung</strong>
+  in der App senden wir eine anonyme, gebündelte Tages-Statistik sowie einen pseudonymen
+  Interaktions-Datenstrom zur Produktverbesserung und Fehlerdiagnose. Es werden <strong>keine</strong>
+  Suchtexte, Karteninhalte/-IDs oder Namen übertragen; die pseudonyme Statistik-Kennung ist
+  jederzeit zurücksetzbar. Aufbewahrung der Ereignisdaten: <span class="ph">[90 Tage]</span>.</p>
+  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO sowie § 25 Abs. 1 TDDDG
+  (Einwilligung). Den Widerruf kannst du jederzeit mit Wirkung für die Zukunft in der App erklären.</p>
+
+  <h2>9. Externe Inhalte: Kulturbilder von Wikimedia</h2>
+  <p>Einzelne Lerninhalte binden Bilder von <strong>Wikimedia</strong>
+  (<code>upload.wikimedia.org</code>, <code>commons.wikimedia.org</code>) ein. Beim Laden dieser
+  Bilder wird deine IP-Adresse an die Wikimedia Foundation übermittelt. Andere externe Verbindungen
+  finden im Normalbetrieb nicht statt.</p>
+  <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der
+  Darstellung passender, quelloffener Bildinhalte).</p>
+
+  <h2>10. Empfänger &amp; Auftragsverarbeiter</h2>
+  <p>Wir setzen sorgfältig ausgewählte Dienstleister ein, mit denen – soweit erforderlich –
+  Auftragsverarbeitungsverträge nach Art. 28 DSGVO bestehen:</p>
+  <table>
+    <tr><th>Empfänger</th><th>Zweck</th><th>Datenkategorien</th></tr>
+    <tr><td><span class="ph">[Supabase Inc.]</span></td><td>Konto, Authentifizierung, Datenbank &amp; Cloud-Sync (EU-Region)</td><td>E-Mail, Anzeigename, Sitzung, Lern-/Profildaten</td></tr>
+    <tr><td><span class="ph">[Vercel Inc.]</span></td><td>Hosting der App &amp; API, Auslieferung, Server-Logs</td><td>Verbindungs-/Protokolldaten, IP</td></tr>
+    <tr><td>Google <span class="ph">[Ireland Ltd./LLC]</span></td><td>Anmeldung mit Google (OAuth)</td><td>E-Mail, Anzeigename</td></tr>
+    <tr><td><span class="ph">[E-Mail-Versanddienst, z. B. Resend]</span></td><td>Versand der Anmelde-Codes/Magic-Links</td><td>E-Mail-Adresse</td></tr>
+    <tr><td>Wikimedia Foundation</td><td>Auslieferung eingebundener Kulturbilder</td><td>IP-Adresse (eigenständig verantwortlich)</td></tr>
+  </table>
+  <p>Eine Weitergabe zu Werbezwecken oder ein Verkauf von Daten findet nicht statt.</p>
+
+  <h2>11. Übermittlung in Drittländer</h2>
+  <p>Einzelne Dienstleister sind bzw. verarbeiten in Ländern außerhalb der EU/des EWR (insbesondere
+  USA). Soweit dabei personenbezogene Daten in ein Drittland übermittelt werden, stützen wir dies
+  auf geeignete Garantien nach Art. 44 ff. DSGVO – insbesondere das EU-US Data Privacy Framework
+  (sofern der Empfänger zertifiziert ist) und/oder Standardvertragsklauseln der EU-Kommission
+  (Art. 46 Abs. 2 lit. c DSGVO). <span class="ph">[Konkrete Garantie je Anbieter ergänzen; Kopie/
+  Nachweis auf Anfrage.]</span></p>
+
+  <h2>12. Speicherdauer</h2>
+  <ul>
+    <li><strong>Konto- und Lerndaten:</strong> bis zur Löschung deines Kontos durch dich (siehe Abschnitt 13).</li>
+    <li><strong>Anmelde-/Sitzungskennung:</strong> bis zum Logout bzw. Widerruf der Sitzung.</li>
+    <li><strong>Nutzungsstatistik-Ereignisse:</strong> <span class="ph">[90 Tage]</span>, danach automatische Löschung.</li>
+    <li><strong>Server-Protokolle:</strong> <span class="ph">[Aufbewahrung gemäß Hosting-Anbieter, i. d. R. kurzfristig]</span>.</li>
+  </ul>
+
+  <h2>13. Deine Rechte</h2>
+  <p>Dir stehen nach der DSGVO folgende Rechte zu: Auskunft (Art. 15), Berichtigung (Art. 16),
+  Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20)
+  sowie Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21). Eine
+  erteilte Einwilligung kannst du jederzeit mit Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3).</p>
+  <p>Besonders komfortabel: Du kannst dein Konto samt aller zugehörigen Daten <strong>direkt in der
+  App löschen</strong> und deine Daten dort <strong>exportieren</strong>. Für alle weiteren Anliegen
+  erreichst du uns unter <span class="ph">[datenschutz@…]</span>.</p>
+
+  <h2>14. Beschwerderecht bei einer Aufsichtsbehörde</h2>
+  <p>Unbeschadet anderweitiger Rechtsbehelfe hast du das Recht, dich bei einer
+  Datenschutz-Aufsichtsbehörde zu beschweren (Art. 77 DSGVO), insbesondere in dem Mitgliedstaat
+  deines Aufenthaltsorts oder des mutmaßlichen Verstoßes. Zuständige Behörde für uns:
+  <span class="ph">[zuständige Aufsichtsbehörde nach Sitz des Verantwortlichen]</span>.</p>
+
+  <h2>15. Keine automatisierte Entscheidungsfindung</h2>
+  <p>Eine ausschließlich automatisierte Entscheidungsfindung einschließlich Profiling mit
+  rechtlicher oder ähnlich erheblicher Wirkung im Sinne von Art. 22 DSGVO findet nicht statt.</p>
+
+  <h2>16. Änderungen dieser Erklärung</h2>
+  <p>Wir passen diese Datenschutzerklärung an, wenn sich die Verarbeitung oder die Rechtslage
+  ändert. Es gilt die jeweils hier veröffentlichte Fassung; wesentliche Änderungen machen wir in
+  der App kenntlich.</p>
+
+  <footer>
+    <p><a href="/">← Zurück zu HolaRuta</a></p>
+  </footer>
+</body>
+</html>
