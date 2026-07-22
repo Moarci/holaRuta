@@ -2000,6 +2000,19 @@
       </div>`;
   }
 
+  // Domain-Umzug-Banner: schwebt (höher als der SW-Update-Banner, siehe .migbar
+  // in styles.css) über der Reiter-Leiste, NUR auf der alten github.io-Origin
+  // (state.migrationBanner in app.js). Exportieren-Knopf löst denselben
+  // export-data-Pfad wie im Profil-Reiter aus (Datenmenge/Format identisch).
+  function migrationBanner() {
+    return `
+      <div class="migbar" role="status" aria-live="polite">
+        <span class="migbar__text">${esc(t("profile.migrationBannerText"))}</span>
+        <button class="migbar__btn" data-action="export-data">${esc(t("profile.migrationBannerBtn"))}</button>
+        <button class="migbar__close" data-action="dismiss-migration-banner" aria-label="${esc(t("common.cancel"))}">✕</button>
+      </div>`;
+  }
+
   // „Was ist neu?“-Fenster nach einem Update. Zeigt je Version, WAS sich
   // geändert hat, und erklärt, WIE man aktuell bleibt. Liegt als eigene Ebene
   // (Scrim + Karte) über dem Screen; Schließen führt zurück zur App.
@@ -4316,7 +4329,7 @@
   }
 
   window.SC.ui = { esc, renderHome, renderSearch, searchResults, renderOnboarding, renderStudy, renderDone, renderStats, renderCard, renderEditor, renderInfo, renderBebidas, renderTeacher, renderTask, renderPlacement, renderAssessment, renderPrintSheet,
-                   renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner,
+                   renderBadges, renderSocial, badgeToast, noticeToast, updateNotice, updateBanner, migrationBanner,
                    renderHostel, renderPretrip, renderBattleSetup, renderBattle, renderBattleDone, renderRoleplaySetup, renderRoleplay,
                    renderConjugacion,
                    renderFavorites, favoritesList,

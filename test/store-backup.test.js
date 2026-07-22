@@ -244,6 +244,20 @@ test("SheetFill: Strukturwächter wirft Müll raus und deckelt die Größe", () 
   } finally { env.restore(); }
 });
 
+test("SheetFill: leere oder überlange Blatt-ID wird verworfen (nicht nur ein Nicht-Objekt-Bucket)", () => {
+  const env = freshStore({ local: {} });
+  try {
+    const dirty = {
+      "": { "a:x#1": "y" },                    // leere ID -> raus
+      [("x").repeat(201)]: { "a:x#1": "y" },   // ID > 200 Zeichen -> raus
+      "gueltig|all": { "a:x#1": "y" },         // gültige ID -> bleibt
+    };
+    env.store.saveSheetFill(dirty);
+    const got = env.store.loadSheetFill();
+    assert.deepEqual(Object.keys(got), ["gueltig|all"], "nur die gültige ID bleibt");
+  } finally { env.restore(); }
+});
+
 test("SheetFill: gehört NICHT ins Backup (gerätelokal, kein Export)", () => {
   const env = freshStore({ local: {} });
   try {
