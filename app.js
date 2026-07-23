@@ -8751,14 +8751,16 @@
     trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc() });
 
     // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.
+    // `screen` = aktuelle Ansicht als Kontext (WO krachte es?) – nur der Screen-Slug,
+    // nie Inhalte. analytics.js deckelt error-Events zudem pro Session (Schleifen-Schutz).
     try {
       window.addEventListener("error", (ev) => {
         const file = ev && ev.filename ? String(ev.filename).split("/").pop() : "";
-        trackEvent("error", { type: "error", msg: ev && ev.message, src: ev && ev.lineno ? file + ":" + ev.lineno : file, line: (ev && ev.lineno) || 0 });
+        trackEvent("error", { type: "error", msg: ev && ev.message, src: ev && ev.lineno ? file + ":" + ev.lineno : file, line: (ev && ev.lineno) || 0, screen: state.screen });
       });
       window.addEventListener("unhandledrejection", (ev) => {
         const r = ev && ev.reason;
-        trackEvent("error", { type: "promise", msg: r && (r.message || String(r)), line: 0 });
+        trackEvent("error", { type: "promise", msg: r && (r.message || String(r)), line: 0, screen: state.screen });
       });
       window.addEventListener("appinstalled", () => trackEvent("pwa_installed", {}));
     } catch (e) { /* addEventListener fehlt – egal */ }

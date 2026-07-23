@@ -414,3 +414,36 @@ test("aggregate: PWA-Install-Funnel + Time-to-Value (investor.pwa / investor.tim
   assert.ok(csv0.indexOf("PWA-Install-Akzeptanz %,n/a") >= 0, "ohne Prompts keine erfundene 0");
   assert.ok(csv0.indexOf("Median Tage bis 1. Runde,n/a") >= 0, "ohne Aktivierungen keine erfundene 0");
 });
+
+test("aggregate: Aktivierung je Akquise-Quelle (welcher Kanal bringt Lernende?)", () => {
+  const ev = [
+    // A ueber task-Link, aktiviert; B direct, nicht aktiviert; C task, nicht aktiviert.
+    { event: "app_open", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { src: "task" } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1000, props: {} },
+    { event: "app_open", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { src: "direct" } },
+    { event: "app_open", day: TODAY, clientId: "C", sessionId: "s3", ts: T0, props: { src: "task" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  const by = new Map(s.investor.activation.bySource.map((r) => [r.src, r]));
+  assert.deepEqual(by.get("task"), { src: "task", users: 2, activated: 1, pct: 50 });
+  assert.deepEqual(by.get("direct"), { src: "direct", users: 1, activated: 0, pct: 0 });
+  assert.equal(s.investor.activation.bySource[0].src, "task", "groesste Quelle zuerst");
+
+  // Ohne app_open-Quelle: Nutzer landet unter "unknown" (statt zu verschwinden).
+  const s2 = aggregate([{ event: "session_complete", day: TODAY, clientId: "X", sessionId: "sx", ts: T0, props: {} }], [], { now: NOW });
+  assert.deepEqual(s2.investor.activation.bySource, [{ src: "unknown", users: 1, activated: 1, pct: 100 }]);
+});
+
+test("aggregate: Fehler je Screen (WO kracht es?)", () => {
+  const ev = fixtureEvents().concat([
+    { event: "error", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 500, props: { type: "error", msg: "boom", screen: "study" } },
+    { event: "error", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 600, props: { type: "promise", msg: "boom", screen: "study" } },
+    { event: "error", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 700, props: { type: "error", msg: "kaputt", screen: "home" } },
+  ]);
+  const s = aggregate(ev, [], { now: NOW });
+  const scr = new Map(s.errorsByScreen.map((r) => [r.key, r.count]));
+  assert.equal(scr.get("study"), 2);
+  assert.equal(scr.get("home"), 1);
+  // Das Fixture-error-Event ohne screen-Feld taucht hier nicht auf (kein "undefined"-Key).
+  assert.ok(!scr.has("undefined") && !scr.has(""), "nur Events mit screen-Feld");
+});

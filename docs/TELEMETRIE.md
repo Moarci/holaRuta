@@ -1,6 +1,6 @@
 # HolaRuta — Telemetrie: Was wird geloggt, wo und wie?
 
-> **Stand:** 2026-07-22 · **Code:** [`analytics.js`](../analytics.js) · **Spec/Server:** [BACKEND.md §17](../BACKEND.md) · **Demo-Collector:** [`tools/mock-events-server.js`](../tools/mock-events-server.js)
+> **Stand:** 2026-07-23 · **Code:** [`analytics.js`](../analytics.js) · **Spec/Server:** [BACKEND.md §17](../BACKEND.md) · **Demo-Collector:** [`tools/mock-events-server.js`](../tools/mock-events-server.js)
 >
 > Diese Datei ist die **einzige Quelle der Wahrheit**, welche Daten die App – **nur mit
 > ausdrücklicher Zustimmung** – an einen konfigurierten Telemetrie-Endpunkt sendet. Sie
@@ -94,7 +94,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | **`activation`** | `milestone`:slug · `day_n`:int | `app.js` · `finishRound()` | Aktivierungs-„Aha" – heute `milestone:first_session` (allererste je abgeschlossene Runde). `day_n` = **Tage seit der ersten (zugestimmten) Nutzung** (Time-to-Value; lokal gestempelter Erst-Tag, es reist nur die Differenz, ≤ 365) |
 | **`onboarding_step`** | `step`:`intro`/`profile`/`trip` · `n`:int | `app.js` · `beginOnboarding`/`onboardSlidesToProfile`/`advanceOnboardingProfile` | Onboarding-Schritt erreicht (Aktivierungs-Funnel). Greift nur mit Consent **während** des Onboardings (z. B. Editionen) |
 | **`onboarding_complete`** | – | `app.js` · `finishOnboarding` | Onboarding abgeschlossen |
-| **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen |
+| **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int · `screen`:slug | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen; `screen` = aktuelle Ansicht (WO krachte es – nur der Slug). **Gedeckelt auf 10 error-Events je Session** (Schutz vor Fehler-Schleifen, die die Queue fluten würden) |
 | **`consent_change`** | `on`:bool | `app.js` · `setAnalyticsConsent` | Zustimmung erteilt (nur `on:true`; ein Opt-out wird bewusst **nicht** gesendet) |
 | **`pwa_prompt`** | `outcome`:`accepted`/`dismissed` | `app.js` · `installApp()` | Ausgang des **nativen** Install-Dialogs (Android/Chromium) – zusammen mit `pwa_installed` der Install-Funnel. „Kein Dialog verfügbar" wird bewusst nicht gesendet |
 | **`pwa_installed`** | – | `app.js` · `window 'appinstalled'` | App als PWA installiert (alle Wege, auch iOS/Menü) |
@@ -116,6 +116,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
   bewusst feiner, aber weiterhin **ohne** PII/Freitext/Karteninhalt und mit gedeckelter `secs` (≤ 1 h)
   bzw. `day_n` gegen Fingerprinting. Es reist nie ein Datum, nur die Differenz in Tagen.
 - Hochfrequente Lern-Aktionen (`flip`/`rate`/`skip`/`speak`) erzeugen **kein** generisches `action`-Event (Rauschen/Queue-Schutz).
+- **`error`-Events sind pro Session auf 10 gedeckelt** – eine JS-Fehler-Schleife kann die Ring-Queue nicht fluten und die wertvollen Events (Sessions/Funnels) nicht verdrängen.
 
 ---
 
@@ -203,7 +204,7 @@ node build.js --edition=<id>
 |---|---|
 | **📈 Investor-Cockpit** (oben) | **North Star** (Weekly Active Learners + Trend), **DAU/WAU/MAU**, **Stickiness**, **Aktivierungsrate** + Funnel, **Retention-Kohorten-Heatmap** (Erst-Tag × Tag-N), **Growth Accounting** + **Quick Ratio**, **K-Faktor**/Virality, **Interaktionen pro Person/Sitzung/aktivem Tag**, **Ø Lernzeit/Runde**, **Start↔Abschluss je Lernspiel**, **B2B-KPIs je Edition**. Vollständige Definitionen: [`docs/INVESTOR-KPIS.md`](./INVESTOR-KPIS.md), Feld `investor` in `aggregate()` |
 | **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T, mit **Trend** vs. Vorwoche ▲/▼), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate**, **Stickiness** (Ø DAU/MAU); Balken „aktive Nutzer/Tag" |
-| **Akquise & Teilen** | **Akquise-Quelle** (`app_open.src`: task/onboarding-link/edition/direct), **Teilen**-Aktionen |
+| **Akquise & Teilen** | **Akquise-Quelle** (`app_open.src`: task/onboarding-link/edition/direct), **Aktivierungsquote je Quelle** (welcher Kanal bringt Lernende, nicht nur Installs), **Teilen**-Aktionen |
 | **Snapshot-Verteilungen** | **Feature-Adoption**, **Streak**, **Karten/Tag**, **Bewertungen gesamt** (Lebenszeit) |
 | **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer" |
 | **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
@@ -214,7 +215,7 @@ node build.js --edition=<id>
 | **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off), **Time-to-Value** (Tage bis zur 1. Lernrunde aus `activation.day_n`, Median + same-day-Quote), **PWA-Install-Funnel** (Prompt→angenommen→installiert, Akzeptanzquote) |
 | **Zeit** | Aktivität nach **Uhrzeit** (UTC) und **Wochentag** |
 | **Segmente** | **Plattformen** & **Editionen** (distinkte Nutzer) |
-| **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen) |
+| **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen), **Fehler je Screen** (WO kracht es) |
 | **Meta** | App-Versionen, Sprachen, Lern-Tracks; aus dem anonymen Snapshot: Feature-Adoption, Karten/Tag |
 
 > **„Wie viele Leute"** = distinkte `clientId` (nur aus dem Event-Strom; der Tages-Snapshot ist
@@ -271,6 +272,12 @@ loggt eintreffende Events nur im Terminal.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - Unit-Tests grün (`analytics.test.js`, `telemetry-aggregate.test.js`, `telemetry-map.test.js`); Doku hier + BACKEND.md + README.
 
+### ✅ Neu (2026-07-23): Fehlerflut-Deckel, Fehler-Screen-Kontext, Aktivierung je Quelle, Server-Routen-Tests
+- **Fehlerflut-Schutz:** `error`-Events sind clientseitig auf **10 je Session** gedeckelt — eine JS-Fehler-Schleife kann die 200er-Ring-Queue nicht mehr fluten und Sessions/Funnel-Events verdrängen.
+- **Fehler-Kontext:** `error.screen` (aktuelle Ansicht als Slug) + Auswertung **„Fehler je Screen"** im Monitoring-Panel — beantwortet „WO kracht es?" statt nur „was".
+- **Aktivierung je Akquise-Quelle:** `investor.activation.bySource` (Neu-Nutzer, Aktivierte, Quote je Erst-Quelle) + Dashboard-Block im Akquise-Panel — trennt Kanäle, die **Lernende** bringen, von teurer Fehlakquise.
+- **Integrationstests der Server-Routen** (vorher nur manuell): `test/telemetry-server-routes.test.js` fährt den Self-Host-Collector als echten Prozess hoch (PORT=0 → ephemerer Port, wird jetzt geloggt) und prüft Ingest/400/401/`?days`/CSV; `test/api-telemetry-routes.test.js` testet die Produktions-Handler (`events.js`/`usage.js`) mit gestubbter Supabase-Schicht: Methoden-Gate, Größenlimits, props-Sanitizer (inkl. `__proto__`), 429, 500-bei-Insert-Fehler, DSGVO-DELETE.
+
 ### ✅ Neu (2026-07-22): Sampling, Install-Funnel, Time-to-Value, Beacon-Vollflush, Server-Härtung
 - **Sampling:** `SC.config.analytics.sampleRate` (0…1) clientseitig verdrahtet — deterministisch pro Gerät (FNV-1a über die `clientId`), gilt für Events UND Snapshot (§5).
 - **PWA-Install-Funnel:** neues Event `pwa_prompt` (`outcome`: accepted/dismissed) + bestehendes `pwa_installed` → `investor.pwa` (Akzeptanzquote) im Cockpit + KPI-CSV.
@@ -290,7 +297,7 @@ loggt eintreffende Events nur im Terminal.
 - [ ] Bei wachsendem Volumen: `/v1/admin/stats` von Paginierung + In-Memory-`aggregate()` auf serverseitige SQL-Aggregation umstellen.
 
 ### 🧪 TODO — Tests/Qualität
-- [ ] **Integrationstest** der Server-Routen (Token-401, `?days=`, `/v1/admin/stats.csv`, 400 bei kaputtem POST) — aktuell manuell/live verifiziert.
+- [x] **Integrationstest** der Server-Routen — `test/telemetry-server-routes.test.js` (Self-Host end-to-end: Token-401, `?days=`, CSV, 400 bei kaputtem POST) + `test/api-telemetry-routes.test.js` (Produktions-Ingest mit Supabase-Stub). Offen bleibt nur `/v1/admin/stats` selbst (braucht einen Supabase-Lese-Stub über `telemetry-map.js`).
 - [ ] Optional Controller-Smoke, der belegt, dass die App-Hooks ohne Fehler feuern (DOM-Stub vorhanden).
 
 ### 📈 Produkt-/Investor-Metriken

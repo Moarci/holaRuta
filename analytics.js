@@ -195,6 +195,7 @@
   var QUEUE_CAP = 200;                 // höchstens so viele Events puffern (Ring)
   var BATCH_MAX = 50;                  // pro POST höchstens so viele
   var SESSION_GAP_MS = 30 * 60 * 1000; // >30 min Inaktivität -> neue Session
+  var ERROR_CAP = 10;                  // höchstens so viele error-Events je Session
 
   // Pseudonyme Id (kein Klarname, keine Krypto-Anforderung – nur Wiedererkennung).
   function randomId() {
@@ -300,7 +301,7 @@
     activation:       { milestone: "slug", day_n: "int" },
     onboarding_step:  { step: "slug", n: "int" },
     onboarding_complete: {},
-    error:            { type: "slug", msg: "text", src: "text", line: "int" },
+    error:            { type: "slug", msg: "text", src: "text", line: "int", screen: "slug" },
     consent_change:   { on: "bool" },
     // Install-Funnel: pwa_prompt = Ausgang des NATIVEN Install-Dialogs
     // (accepted/dismissed), pwa_installed = tatsächlich installiert (alle Wege).
@@ -370,6 +371,14 @@
     if (!EVENTS[str(name)]) return;
     var o = isObj(opts) ? opts : {};
     var now = typeof o.now === "number" ? o.now : Date.now();
+    // Fehler-Schleifen (z.B. ein Error pro Render-Frame) würden die Ring-Queue
+    // fluten und die WERTVOLLEN Events (Sessions, Funnels) verdrängen: error-Events
+    // pro Session hart deckeln. Der Zähler lebt auf der Session und rotiert mit ihr.
+    if (str(name) === "error") {
+      sessionId(now); // sess sicherstellen (rotiert ggf. nach Inaktivität)
+      sess.errs = (sess.errs || 0) + 1;
+      if (sess.errs > ERROR_CAP) return;
+    }
     stampFirstUse(now); // Time-to-Value-Anker: Tag des ersten (zugestimmten) Events
     var ev = buildEvent(name, props, {
       now: now,

@@ -997,8 +997,10 @@ function render(s){
              {label:"Abgewandert",count:growth.churned||0,color:"var(--no)"}]),
     foot:'Zugänge vs. <span style="color:var(--no)">Abwanderung</span> · Quick Ratio <b>'+esc(fmtN(qr))+'</b> (&gt; 1 = Wachstum)' });
   html += panelHtml({ title:"Akquise-Quelle", small:"(distinkte Personen nach erster Quelle)",
-    desc:"Woher der Erstkontakt kam. Wächst der Anteil außerhalb von „direct“, greifen die Kanäle (Links, Editionen, geteilte Module).",
+    desc:"Woher der Erstkontakt kam — und welcher Kanal LERNENDE bringt, nicht nur Installs: Quellen mit vielen Nutzern, aber niedriger Aktivierungsquote sind teure Fehlakquise.",
     body: hbars(((s.engagement&&s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})
+      + '<h4>Aktivierungsquote je Quelle</h4>'
+      + ((((inv.activation||{}).bySource)||[]).length? hbars(inv.activation.bySource.map(function(a){return {label:a.src+" · "+fmtN(a.activated)+" von "+fmtN(a.users),count:a.pct};}),{color:"var(--ok)",fmt:function(d){return d.count+" %";}}) : empty("Keine neuen Personen im Fenster","entsteht mit dem ersten app_open neuer Nutzer"))
       + '<h4>Neu vs. wiederkehrend (App-Starts)</h4>'
       + hbars([{label:"Neue Starts",count:u.newOpens,color:"var(--ok)"},{label:"Wiederkehrend",count:u.returningOpens,color:"var(--brand)"}]) });
   html += '</div>';
@@ -1247,10 +1249,12 @@ function render(s){
 
   html += '<div class="grid">';
   html += panelHtml({ title:"Fehler", small:"(Monitoring)",
-    desc:"Die häufigsten Fehlermeldungen und ihre Verteilung über App-Versionen. Häufen sich Fehler in genau EINER Version, ist es ein Release-Problem — siehe Regressions-Alarm im Überblick.",
+    desc:"Die häufigsten Fehlermeldungen, ihre Verteilung über App-Versionen und die Ansicht, auf der es krachte. Häufen sich Fehler in genau EINER Version, ist es ein Release-Problem — siehe Regressions-Alarm im Überblick.",
     body: (s.errors.length? hbars(s.errors.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler im Fenster",""))
       + '<h4>Fehler je App-Version</h4>'
-      + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler","")) });
+      + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler",""))
+      + '<h4>Fehler je Screen</h4>'
+      + ((s.errorsByScreen&&s.errorsByScreen.length)? hbars(s.errorsByScreen.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Screen-Daten","entsteht mit dem ersten error-Event mit screen-Feld")) });
   html += panelHtml({ title:"App-Versionen",
     desc:"Wie schnell Updates die Nutzerschaft erreichen. Alte Versionen mit vielen Nutzern verlängern die Zeit, die ein Bugfix bis zur Wirkung braucht.",
     body: hbars(s.meta.appVersions) });

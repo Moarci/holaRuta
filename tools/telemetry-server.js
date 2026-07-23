@@ -103,6 +103,7 @@ function aggregate(events, usage, opts) {
   var openNew = 0, openReturning = 0;
   var catStats = new Map();            // cat -> { total, again } (schwierigste Themen)
   var errorsByVersion = new Map();     // appVersion -> Fehleranzahl (Regressionen)
+  var errorsByScreen = new Map();      // screen -> Fehleranzahl (WO kracht es?)
   var searchTotal = 0, searchZero = 0; // Suchen gesamt / ohne Treffer
   var modeCount = new Map();           // Lernmodus je Session (flip/type/listen)
   var hourCount = []; for (var hi = 0; hi < 24; hi++) hourCount.push(0); // Aktivität je UTC-Stunde
@@ -211,6 +212,7 @@ function aggregate(events, usage, opts) {
       case "error":
         inc(errorCounts, (p.type || "error") + ": " + (p.msg || "?"));
         if (e.appVersion) inc(errorsByVersion, String(e.appVersion));
+        if (p.screen) inc(errorsByScreen, String(p.screen));
         break;
       default: break;
     }
@@ -429,6 +431,25 @@ function aggregate(events, usage, opts) {
     if (onboardComplete.has(c)) actOnboard++;
     var ds = clientsAll.get(c); if (ds && ds.size >= 2) actReturning++;
   });
+  // Aktivierung JE Akquise-Quelle: nicht nur „welcher Kanal bringt Installs",
+  // sondern „welcher bringt LERNENDE" – Quellen mit vielen Nutzern aber niedriger
+  // Quote sind teure Fehlakquise. Quelle = lebenslange Erst-Quelle (clientFirstOpenAll),
+  // Kohorte = dieselben Neu-Nutzer wie im Aktivierungs-Funnel (cohortNew).
+  var srcStats = new Map(); // src -> { users, activated }
+  cohortNew.forEach(function (c) {
+    var fo = clientFirstOpenAll.get(c);
+    var src = fo ? fo.src : "unknown";
+    var st = srcStats.get(src);
+    if (!st) { st = { users: 0, activated: 0 }; srcStats.set(src, st); }
+    st.users++;
+    if (activatedClients.has(c)) st.activated++;
+  });
+  var activationBySource = [];
+  srcStats.forEach(function (st, src) {
+    activationBySource.push({ src: src, users: st.users, activated: st.activated, pct: st.users ? Math.round((st.activated / st.users) * 100) : 0 });
+  });
+  activationBySource.sort(function (a, b) { return b.users - a.users || (a.src < b.src ? -1 : 1); });
+
   var activation = {
     newUsers: cohortNew.size,
     activated: actActivated,
@@ -439,6 +460,7 @@ function aggregate(events, usage, opts) {
       { step: "first_session", count: actActivated },
       { step: "returning", count: actReturning },
     ],
+    bySource: activationBySource,
   };
 
   // --- Virality / K-Faktor ---
@@ -642,6 +664,7 @@ function aggregate(events, usage, opts) {
     },
     errors: topCounts(errorCounts, 15),
     errorsByVersion: topCounts(errorsByVersion, 8),
+    errorsByScreen: topCounts(errorsByScreen, 8),
     segments: { editions: clientsByKey(editionClients), platforms: clientsByKey(platformClients) },
     meta: {
       appVersions: topCounts(appVersions, 8),
@@ -831,10 +854,14 @@ if (require.main === module) {
   });
 
   server.listen(PORT, function () {
-    console.log("HolaRuta Telemetrie-Server auf http://localhost:" + PORT);
-    console.log("  Dashboard:   http://localhost:" + PORT + "/" + (TOKEN ? "?token=…" : "") + (TOKEN ? "  (TELEMETRY_TOKEN gesetzt)" : ""));
+    // Tatsächlichen Port loggen: mit PORT=0 vergibt das OS einen freien (ephemeren)
+    // Port – so können Integrationstests den Server kollisionsfrei hochfahren und
+    // die Adresse aus dieser Zeile lesen (test/telemetry-server-routes.test.js).
+    var actualPort = (server.address() && server.address().port) || PORT;
+    console.log("HolaRuta Telemetrie-Server auf http://localhost:" + actualPort);
+    console.log("  Dashboard:   http://localhost:" + actualPort + "/" + (TOKEN ? "?token=…" : "") + (TOKEN ? "  (TELEMETRY_TOKEN gesetzt)" : ""));
     console.log("  API:         /api/stats?days=7|30|90 · /api/stats.csv · /api/kpis.csv");
     console.log("  Daten:       " + DATA_DIR + " (events=" + events.length + ", usage=" + usage.length + ", Aufbewahrung " + RETENTION_DAYS + " Tage)");
-    console.log("  Edition:     analytics: { enabled: true, endpoint: \"http://localhost:" + PORT + "\" }");
+    console.log("  Edition:     analytics: { enabled: true, endpoint: \"http://localhost:" + actualPort + "\" }");
   });
 }

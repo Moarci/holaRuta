@@ -447,3 +447,32 @@ test("daysSinceFirstUse: erstes getracktes Event stempelt den Tag; Differenz ged
   assert.equal(globalThis.localStorage.getItem(analytics.FIRST_KEY), null);
   assert.equal(analytics.daysSinceFirstUse(), undefined);
 });
+
+test("track: error-Events werden pro Session gedeckelt (Schutz vor Fehler-Schleifen)", async () => {
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  analytics.configure({ consent: true });
+  let sent = [];
+  globalThis.window.SC.net = { request: (b, m, p, body) => { sent = sent.concat(body.events); return Promise.resolve({ ok: true }); } };
+
+  // Eine Fehler-Schleife (30 Errors) darf die Ring-Queue nicht fluten.
+  const t0 = 1780000000000;
+  for (let i = 0; i < 30; i++) analytics.track("error", { type: "error", msg: "boom" }, { now: t0 + i });
+  analytics.track("action", { action: "still-works" }, { now: t0 + 1000 });
+  let r; do { r = await analytics.flush(); } while (r.sent > 0);
+  assert.equal(sent.filter((e) => e.event === "error").length, 10, "hoechstens 10 error-Events je Session");
+  assert.equal(sent.filter((e) => e.event === "action").length, 1, "normale Events fliessen weiter");
+
+  // Neue Session (>30 min Inaktivitaet) -> der Deckel beginnt von vorn.
+  sent = [];
+  analytics.track("error", { type: "error", msg: "spaeter" }, { now: t0 + 40 * 60 * 1000 });
+  do { r = await analytics.flush(); } while (r.sent > 0);
+  assert.equal(sent.length, 1, "neue Session -> error wieder erlaubt");
+});
+
+test("sanitizeProps: error traegt den Screen-Kontext (nur Slug, keine Inhalte)", () => {
+  const out = analytics.sanitizeProps("error", { type: "error", msg: "boom", screen: "study", dom: "<div>x</div>" });
+  assert.equal(out.screen, "study");
+  assert.ok(!("dom" in out), "nur die Allowlist");
+  assert.equal(analytics.sanitizeProps("error", { type: "error", screen: "hola que tal" }).screen, undefined, "Freitext faellt strukturell durch");
+});
