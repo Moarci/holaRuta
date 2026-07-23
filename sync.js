@@ -242,7 +242,9 @@
   }
   function confirm(email, token) {
     if (!enabled()) return Promise.reject(new Error("sync disabled"));
-    return SC.net.confirm(apiBase(), email, token);
+    // UI-Sprache mitgeben -> landet in profile.locale (für spätere Mails in der
+    // richtigen Sprache, siehe net.confirm).
+    return SC.net.confirm(apiBase(), email, token, SC.i18n && SC.i18n.getLang());
   }
   function logout() {
     // Server-Session widerrufen (best effort, fire-and-forget), BEVOR der Token
