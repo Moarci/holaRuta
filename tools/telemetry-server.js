@@ -40,6 +40,23 @@ function num(v) { return typeof v === "number" && isFinite(v) ? v : 0; }
 // (z. B. event="__proto__"). Map.set/.get sind Methodenaufrufe -> keine Senke.
 function inc(map, key, n) { map.set(key, (map.get(key) || 0) + (typeof n === "number" ? n : 1)); }
 function addToSet(map, key, member) { var s = map.get(key); if (!s) { s = new Set(); map.set(key, s); } s.add(member); }
+// Nutzung je Person und Tag: key -> Map(clientId -> Set(day)). Grundlage für
+// „Stammnutzer" (>= 3 verschiedene Tage). Verschachtelte Maps statt Objekte,
+// weil key/clientId aus ungeprüften Event-Daten stammen (siehe oben).
+function useByClientDay(map, key, cid, day) {
+  var per = map.get(key); if (!per) { per = new Map(); map.set(key, per); }
+  var ds = per.get(cid); if (!ds) { ds = new Set(); per.set(cid, ds); }
+  if (day) ds.add(day);
+}
+// Zählt distinkte Nutzer und Stammnutzer (>= 3 verschiedene aktive Tage) für
+// einen Schlüssel aus einer useByClientDay-Map.
+function usersRegulars(useMap, key) {
+  var per = useMap.get(key);
+  var users = per ? per.size : 0;
+  var regulars = 0;
+  if (per) per.forEach(function (ds) { if (ds.size >= 3) regulars++; });
+  return { users: users, regulars: regulars };
+}
 
 // Nimmt eine `Map<string, number>` und gibt eine nach Anzahl absteigend sortierte
 // Liste [{ key, count }] zurück (optional gekürzt).
@@ -133,6 +150,14 @@ function aggregate(events, usage, opts) {
   var editionSessions = new Map();     // edition -> Set(sessionId)
   var editionActivated = new Map();    // edition -> Set(clientId mit session_complete)
   var editionActive7 = new Map();      // edition -> Set(clientId) aktiv in letzten 7 Tagen
+  // ABGESCHLOSSENE Runden je Lernmodus inkl. Genauigkeit (session_complete.mode).
+  // Unterschied zu modeCount oben: modeCount zählt BEGONNENE Runden (session_start.mode),
+  // modeStats nur abgeschlossene – erst dort gibt es answered_n/correct_n.
+  var modeStats = new Map();           // mode -> { rounds, answered, correct }
+  var ttsTotal = 0, ttsRounds = 0;         // Sprachausgabe: Summe speak_n / Runden mit >= 1 Nutzung
+  var contextTotal = 0, contextRounds = 0; // Kontext-Aufrufe analog (context_n)
+  var moduleUse = new Map();           // feature -> Map(clientId -> Set(day)) (Regelmäßigkeit je Modul)
+  var screenUse = new Map();           // screen -> Map(clientId -> Set(day)) (Screen-Reichweite)
 
   ev.forEach(function (e) {
     var day = String(e.day || "");
@@ -176,7 +201,11 @@ function aggregate(events, usage, opts) {
         if (p.standalone === true) standaloneOpens++;
         if (p.load_ms) inc(loadMsDist, String(p.load_ms));
         break;
-      case "screen_view": if (p.screen) inc(screenCounts, String(p.screen)); break;
+      case "screen_view":
+        // Neben der reinen View-Zahl auch WER (distinkt) und an wie vielen TAGEN –
+        // Reichweite statt bloßer Klickzahl (engagement.screenReach).
+        if (p.screen) { inc(screenCounts, String(p.screen)); if (cid) useByClientDay(screenUse, String(p.screen), cid, day); }
+        break;
       case "action": if (p.action) inc(actionCounts, String(p.action)); break;
       case "card_rated":
         if (p.rating === "again") ratingCounts.again++;
@@ -193,8 +222,26 @@ function aggregate(events, usage, opts) {
         if (cid) { activatedClients.add(cid); addToSet(editionActivated, edi, cid); } // Aktivierung
         if (typeof p.secs === "number" && p.secs > 0) secsList.push(p.secs);          // exakte Time-on-Task
         if (sid) { var rc = roundCompletesBySess.get(sid); if (!rc) { rc = []; roundCompletesBySess.set(sid, rc); } rc.push(ts); }
+        // Genauigkeit je Lernmodus: nur Runden MIT props.mode zählen in modeStats;
+        // answered_n/correct_n nur übernehmen, wenn sie plausible Zahlen sind
+        // (endlich, >= 0) – der Client ist eine ungeprüfte Quelle.
+        if (p.mode) {
+          var mst = modeStats.get(String(p.mode));
+          if (!mst) { mst = { rounds: 0, answered: 0, correct: 0 }; modeStats.set(String(p.mode), mst); }
+          mst.rounds++;
+          if (typeof p.answered_n === "number" && isFinite(p.answered_n) && p.answered_n >= 0) mst.answered += p.answered_n;
+          if (typeof p.correct_n === "number" && isFinite(p.correct_n) && p.correct_n >= 0) mst.correct += p.correct_n;
+        }
+        // Sprachausgabe/Kontexte je Runde (learning.tools): nur speak_n/context_n > 0
+        // zählen – 0 oder fehlend heißt „in dieser Runde nicht genutzt".
+        if (typeof p.speak_n === "number" && isFinite(p.speak_n) && p.speak_n > 0) { ttsTotal += p.speak_n; ttsRounds++; }
+        if (typeof p.context_n === "number" && isFinite(p.context_n) && p.context_n > 0) { contextTotal += p.context_n; contextRounds++; }
         break;
-      case "feature_start": if (p.feature) inc(featureStarts, String(p.feature)); break;
+      case "feature_start":
+        // Zusätzlich zur Startanzahl auch Nutzer + aktive Tage je Modul erfassen
+        // (engagement.modules: wer nutzt ein Modul REGELMÄSSIG, nicht nur oft?).
+        if (p.feature) { inc(featureStarts, String(p.feature)); if (cid) useByClientDay(moduleUse, String(p.feature), cid, day); }
+        break;
       case "feature_complete":
         if (p.feature) { var ft = String(p.feature); var f = featureCompletes.get(ft); if (!f) { f = { count: 0, perfect: 0 }; featureCompletes.set(ft, f); } f.count++; if (p.perfect) f.perfect++; }
         break;
@@ -567,6 +614,60 @@ function aggregate(events, usage, opts) {
   });
   featureFunnel.sort(function (a, b) { return b.starts - a.starts || b.completes - a.completes; });
 
+  // --- Runden & Genauigkeit je Lernmodus (learning.modeRounds) ---
+  // Unterschied zu learning.modes: modes = BEGONNENE Runden je Modus (session_start),
+  // modeRounds = ABGESCHLOSSENE Runden inkl. Antwort-Genauigkeit (session_complete).
+  var modeRounds = [];
+  modeStats.forEach(function (v, mo) {
+    modeRounds.push({
+      mode: mo, rounds: v.rounds, answered: v.answered,
+      accuracyPct: v.answered > 0 ? Math.round((100 * v.correct) / v.answered) : 0,
+    });
+  });
+  modeRounds.sort(function (a, b) { return b.rounds - a.rounds || (a.mode < b.mode ? -1 : 1); });
+
+  // --- Sprachausgabe & Kontexte auf Karten (learning.tools) ---
+  // Bezugsgröße ist IMMER die Gesamtzahl der abgeschlossenen Runden im Fenster
+  // (roundsAll), nicht nur Runden mit mode – sonst würde der Nutzungsanteil
+  // steigen, sobald alte Clients ohne die neuen Felder aus dem Fenster fallen.
+  var roundsAll = eventCounts.get("session_complete") || 0;
+  function toolStats(total, roundsN) {
+    return {
+      total: total, rounds: roundsN,
+      perRound: roundsAll ? Math.round((total / roundsAll) * 10) / 10 : 0,
+      roundSharePct: roundsAll ? Math.round((100 * roundsN) / roundsAll) : 0,
+    };
+  }
+  var learningTools = {
+    rounds: roundsAll,
+    tts: toolStats(ttsTotal, ttsRounds),
+    context: toolStats(contextTotal, contextRounds),
+  };
+
+  // --- Modul-Nutzung & Regelmäßigkeit (engagement.modules) ---
+  // „Stammnutzer" = Modul an >= 3 VERSCHIEDENEN Tagen gestartet: unterscheidet
+  // echte Gewohnheit von einmaligem Ausprobieren (viele Starts an EINEM Tag).
+  var modules = [];
+  featureStarts.forEach(function (starts, feat) {
+    var ur = usersRegulars(moduleUse, feat);
+    modules.push({
+      module: feat, starts: starts, users: ur.users, regulars: ur.regulars,
+      regularPct: ur.users ? Math.round((100 * ur.regulars) / ur.users) : 0,
+    });
+  });
+  modules.sort(function (a, b) { return b.starts - a.starts || (a.module < b.module ? -1 : 1); });
+
+  // --- Screen-Reichweite (engagement.screenReach) ---
+  // Ergänzt engagement.screens (reine View-Zählung) um distinkte Nutzer und
+  // Stammnutzer (>= 3 verschiedene Tage) je Screen; Top 15 reicht fürs Dashboard.
+  var screenReach = [];
+  screenCounts.forEach(function (views, sc) {
+    var sr = usersRegulars(screenUse, sc);
+    screenReach.push({ screen: sc, views: views, users: sr.users, regulars: sr.regulars });
+  });
+  screenReach.sort(function (a, b) { return b.views - a.views || (a.screen < b.screen ? -1 : 1); });
+  screenReach = screenReach.slice(0, 15);
+
   // --- PWA-Install-Funnel: Prompt gezeigt -> angenommen -> installiert -> BENUTZT ---
   // "installiert" zählt ALLE Wege (appinstalled-Event feuert auch bei iOS/Menü),
   // kann also größer als "angenommen" sein. standaloneOpenPct = Anteil der App-Starts
@@ -677,6 +778,8 @@ function aggregate(events, usage, opts) {
     engagement: {
       events: topCounts(eventCounts),
       screens: topCounts(screenCounts, 12),
+      screenReach: screenReach, // Views + distinkte Nutzer + Stammnutzer (>= 3 Tage) je Screen
+      modules: modules,         // feature_start: Starts, Nutzer, Stammnutzer je Modul
       actions: topCounts(actionCounts, 15),
       share: topCounts(shareContentCounts), // aus dem dedizierten share-Event (content)
       acquisition: topCounts(acquisition),
@@ -702,7 +805,9 @@ function aggregate(events, usage, opts) {
     learning: {
       ratings: ratingCounts,
       accuracy: topCounts(accuracyDist),
-      modes: topCounts(modeCount),
+      modes: topCounts(modeCount),        // BEGONNENE Runden je Modus (session_start.mode)
+      modeRounds: modeRounds,             // ABGESCHLOSSENE Runden je Modus inkl. Genauigkeit (session_complete)
+      tools: learningTools,               // Sprachausgabe (speak_n) & Kontexte (context_n) je Runde
       difficult: difficult,
       mastery: topCounts(masteryDist),
       placementLevels: topCounts(placementLevels), // Einstufungs-Verteilung (A1/A2/B1 …)
@@ -744,6 +849,7 @@ function toKpiCsv(stats) {
   var s = isObj(stats) ? stats : {};
   var i = isObj(s.investor) ? s.investor : {};
   var u = isObj(s.users) ? s.users : {};
+  var l = isObj(s.learning) ? s.learning : {};
   // Retention-Wert für den Data-Room. eligible === 0 heißt NICHT „0 % Retention",
   // sondern „im gewählten Fenster nicht messbar": bei windowDays=7 liegt Erst-Tag+7
   // (und +30) strukturell IMMER in der Zukunft, weil die Kohorte per cutoff auf
@@ -778,6 +884,8 @@ function toKpiCsv(stats) {
     ["PWA-Install-Akzeptanz %", g(i, "pwa.prompts", 0) ? g(i, "pwa.acceptPct", 0) : "n/a"],
     ["Standalone-Starts %", g(i, "pwa.opens", 0) ? g(i, "pwa.standaloneOpenPct", 0) : "n/a"],
     ["Habit: 7-Tage-Serie (Personen)", ((g(i, "habit.funnel", []) || []).filter(function (f) { return f && f.step === "streak_7"; })[0] || { count: 0 }).count],
+    // Ohne abgeschlossene Runden ist der Anteil nicht messbar -> ehrliches n/a (wie ret()).
+    ["Runden mit Sprachausgabe %", g(l, "tools.rounds", 0) ? g(l, "tools.tts.roundSharePct", 0) : "n/a"],
     ["Bounce %", g(i, "quality.bouncePct", 0)],
     ["Fehler/Sitzung", g(i, "quality.errorsPerSession", 0)],
   ];

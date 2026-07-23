@@ -443,7 +443,9 @@ nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Al
 (`analytics.js: EVENTS`) ist erweiterbar. `session_start` deckt **alle** Lern-Startpfade ab
 (zentral aus `beginRound`); `feature_start`/`feature_complete` **alle** Lernspiele (zentral aus
 `onClick` bzw. `setGameStats`). `session_complete` trägt neben den Buckets exakte Ints
-(`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe; `share`/`activation`
+(`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe sowie den Lernmodus
+(`mode`: flip/type/listen) und `speak_n`/`context_n` — TTS-/Kontext-Nutzung auf Karten als
+**Runden-Summen** statt Einzel-Events (Queue-Schutz); `share`/`activation`
 speisen Virality- und Aktivierungs-KPIs (`activation.day_n` = Tage seit Erstnutzung → Time-to-Value;
 Meilensteine `first_session` + `streak_3/7/30` → Habit-Funnel); `pwa_prompt`/`pwa_installed`/
 `app_open.standalone` bilden den Install-Funnel bis „benutzt"; `placement_result` trägt nur das

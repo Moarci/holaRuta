@@ -510,3 +510,73 @@ test("aggregate: Habit-Funnel, Einstufung, Startzeit-Verteilung, Standalone-Ante
   const csv0 = toKpiCsv(aggregate([], [], { now: NOW }));
   assert.ok(csv0.indexOf("Standalone-Starts %,n/a") >= 0, "ohne App-Starts ehrliches n/a");
 });
+
+// ===== Neue Auswertungen: Modus-Genauigkeit, TTS/Kontext, Module, Screen-Reichweite =====
+
+test("aggregate: modeRounds — abgeschlossene Runden & Genauigkeit je Lernmodus", () => {
+  const ev = [
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { mode: "flip", answered_n: 10, correct_n: 9 } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1000, props: { mode: "flip", answered_n: 8, correct_n: 6 } },
+    { event: "session_complete", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { mode: "listen" } },
+    { event: "session_complete", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 2000, props: {} }, // ohne mode -> taucht nicht auf
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  // flip: 15/18 richtig -> 83 %; listen ohne answered_n -> gemessene 0 statt NaN.
+  // Sortierung: rounds absteigend -> flip zuerst.
+  assert.deepEqual(s.learning.modeRounds, [
+    { mode: "flip", rounds: 2, answered: 18, accuracyPct: 83 },
+    { mode: "listen", rounds: 1, answered: 0, accuracyPct: 0 },
+  ]);
+});
+
+test("aggregate: learning.tools — Sprachausgabe & Kontexte je Runde + KPI-CSV", () => {
+  const ev = [
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { mode: "flip", speak_n: 4, context_n: 2 } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1000, props: { mode: "type", speak_n: 0, context_n: 1 } },
+    { event: "session_complete", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { mode: "listen" } }, // speak_n/context_n fehlen
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  // speak_n 4/0/fehlend -> nur die 4 zaehlt (1 Runde); context_n 2/1/fehlend -> 3 in 2 Runden.
+  assert.deepEqual(s.learning.tools, {
+    rounds: 3,
+    tts: { total: 4, rounds: 1, perRound: 1.3, roundSharePct: 33 },
+    context: { total: 3, rounds: 2, perRound: 1, roundSharePct: 67 },
+  });
+  // KPI-CSV: echter Wert mit Daten, ehrliches n/a ohne einzige Runde.
+  const csv = toKpiCsv(s);
+  assert.ok(csv.indexOf("Runden mit Sprachausgabe %,33") >= 0, csv);
+  const csv0 = toKpiCsv(aggregate([], [], { now: NOW }));
+  assert.ok(csv0.indexOf("Runden mit Sprachausgabe %,n/a") >= 0, "ohne Runden keine erfundene 0");
+});
+
+test("aggregate: engagement.modules — Starts, Nutzer, Stammnutzer (>= 3 Tage)", () => {
+  const ev = [
+    // A startet "precios" an 3 VERSCHIEDENEN Tagen -> Stammnutzer; B nur heute.
+    { event: "feature_start", day: "2026-06-28", clientId: "A", sessionId: "s1", ts: T0 - 2 * 86400000, props: { feature: "precios" } },
+    { event: "feature_start", day: "2026-06-29", clientId: "A", sessionId: "s2", ts: T0 - 86400000, props: { feature: "precios" } },
+    { event: "feature_start", day: TODAY, clientId: "A", sessionId: "s3", ts: T0, props: { feature: "precios" } },
+    { event: "feature_start", day: TODAY, clientId: "B", sessionId: "s4", ts: T0, props: { feature: "precios" } },
+    { event: "feature_start", day: TODAY, clientId: "A", sessionId: "s3", ts: T0 + 1000, props: { feature: "dialogos" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  assert.deepEqual(s.engagement.modules, [
+    { module: "precios", starts: 4, users: 2, regulars: 1, regularPct: 50 },
+    { module: "dialogos", starts: 1, users: 1, regulars: 0, regularPct: 0 },
+  ]);
+});
+
+test("aggregate: engagement.screenReach — Views, Nutzer, Stammnutzer je Screen", () => {
+  const ev = [
+    // A sieht "home" an 3 verschiedenen Tagen -> Stammnutzer; B einmal; "stats" 1x.
+    { event: "screen_view", day: "2026-06-28", clientId: "A", sessionId: "s1", ts: T0 - 2 * 86400000, props: { screen: "home" } },
+    { event: "screen_view", day: "2026-06-29", clientId: "A", sessionId: "s2", ts: T0 - 86400000, props: { screen: "home" } },
+    { event: "screen_view", day: TODAY, clientId: "A", sessionId: "s3", ts: T0, props: { screen: "home" } },
+    { event: "screen_view", day: TODAY, clientId: "B", sessionId: "s4", ts: T0, props: { screen: "home" } },
+    { event: "screen_view", day: TODAY, clientId: "A", sessionId: "s3", ts: T0 + 1000, props: { screen: "stats" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  assert.deepEqual(s.engagement.screenReach, [
+    { screen: "home", views: 4, users: 2, regulars: 1 },
+    { screen: "stats", views: 1, users: 1, regulars: 0 },
+  ]);
+});

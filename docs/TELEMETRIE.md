@@ -85,7 +85,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | **`screen_view`** | `screen`:slug · `tab`:slug | `app.js` · `render()` → `trackScreenView` | Ansicht gewechselt (nur bei echtem Wechsel; `tab` nur auf Home) |
 | **`action`** | `action`:slug · `mode` · `dir` · `level` · `tab` · `scope` | `app.js` · `onClick` (Aktions-Dispatch) | jeder Button-Klick mit `data-action`; **ausgenommen** die Hochfrequenz-Aktionen `flip`/`rate`/`skip`/`speak` (separat erfasst) |
 | **`session_start`** | `scope`:slug · `origin`:slug · `mode` · `cards`:Bucket`[5,10,20,40]` | `app.js` · `beginRound()` | Lernrunde gestartet – deckt **alle 6** Startpfade ab (Kategorie/Alles, Preset, Pre-Trip-Tag, Ruta del día, Favoriten, Einzelkarte). `scope` = `"all"`/Kategorie-Slug |
-| **`session_complete`** | `answered`/`accuracy`/`xp`/`again`:Buckets · **`answered_n`/`correct_n`/`xp_n`/`secs`**:int | `app.js` · `finishRound()` | Lernrunde beendet. Buckets (grob) **plus** exakte Ints für die Investor-Interaktions-Tiefe pro Sitzung; `secs` = Dauer **dieser** Runde (auf 1 h gedeckelt) |
+| **`session_complete`** | `answered`/`accuracy`/`xp`/`again`:Buckets · `mode`:slug · **`answered_n`/`correct_n`/`xp_n`/`secs`/`speak_n`/`context_n`**:int | `app.js` · `beginRound()`/`finishRound()` | Lernrunde beendet. Buckets (grob) **plus** exakte Ints für die Investor-Interaktions-Tiefe pro Sitzung; `secs` = Dauer **dieser** Runde (auf 1 h gedeckelt); `mode` = Lernmodus (`flip`/`type`/`listen`); `speak_n`/`context_n` = TTS-Nutzungen bzw. Kontext-Aufrufe auf Karten als **Runden-Summen** (**kein** Einzel-Event je Tastendruck — Queue-Schutz) |
 | **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug | `app.js` · `rate()` | eine Karte bewertet – **nur** Bewertung/Modus/Stufe/**Kategorie**, **nie** Karten-Id/-Text |
 | **`feature_start`** | `feature`:slug · `mode`:slug | `app.js` · `onClick` (`FEATURE_STARTS`-Map bei `start-*`); **Battle** zentral in `startBattle()` (deckt alle Einstiegspfade ab) | Lernspiel-Runde **gestartet** – Gegenstück zu `feature_complete` (ergibt die Abschlussquote). `feature` gleich benannt wie unten |
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
@@ -116,7 +116,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
   für die Interaktions-Tiefe sowie `activation.day_n` (Tage seit Erstnutzung, ≤ 365) für die Time-to-Value –
   bewusst feiner, aber weiterhin **ohne** PII/Freitext/Karteninhalt und mit gedeckelter `secs` (≤ 1 h)
   bzw. `day_n` gegen Fingerprinting. Es reist nie ein Datum, nur die Differenz in Tagen.
-- Hochfrequente Lern-Aktionen (`flip`/`rate`/`skip`/`speak`) erzeugen **kein** generisches `action`-Event (Rauschen/Queue-Schutz).
+- Hochfrequente Lern-Aktionen (`flip`/`rate`/`skip`/`speak`) erzeugen weiterhin **kein** generisches `action`-Event (Rauschen/Queue-Schutz); Sprachausgabe (`speak`) und Kontext-Aufrufe auf Karten reisen stattdessen als **Runden-Summen** in `session_complete` (`speak_n`/`context_n`).
 - **`error`-Events sind pro Session auf 10 gedeckelt** – eine JS-Fehler-Schleife kann die Ring-Queue nicht fluten und die wertvollen Events (Sessions/Funnels) nicht verdrängen.
 
 ---
@@ -209,8 +209,8 @@ node build.js --edition=<id>
 | **Snapshot-Verteilungen** | **Feature-Adoption**, **Streak**, **Karten/Tag**, **Bewertungen gesamt** (Lebenszeit) |
 | **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer", **Habit-Meilensteine** (erste Runde → 3 → 7 → 30 Serientage, distinkte Personen) |
 | **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
-| **Engagement** | meistgenutzte Bildschirme, Top-Aktionen |
-| **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen) |
+| **Engagement** | meistgenutzte Bildschirme, Top-Aktionen, **Modul-Nutzung & Regelmäßigkeit** (Stammnutzer = Starts an ≥ 3 verschiedenen Tagen), **Screen-Reichweite** (Personen je Screen, Top 15) |
+| **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen), **Runden & Genauigkeit je Modus**, **Sprachausgabe/Kontext-Nutzung je Runde** |
 | **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **Suche-ohne-Treffer-Quote** |
 | **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Einstufungs-Verteilung** (Niveau aus `placement_result`), **Reiseziel-Adoption** + Tagesziel |
 | **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off), **Time-to-Value** (Tage bis zur 1. Lernrunde aus `activation.day_n`, Median + same-day-Quote), **PWA-Install-Funnel** (Prompt→angenommen→installiert→**benutzt**: Standalone-Anteil der Starts), **Runden-Abschluss je Startpfad** (`session_start.origin` ↔ `session_complete` über die sessionId – welcher Einstieg verliert Lernende?) |
@@ -272,6 +272,12 @@ loggt eintreffende Events nur im Terminal.
 - Self-Host-Collector (`tools/telemetry-server.js`) mit Persistenz, Dashboard, Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning — für lokales Ausprobieren/Editionen ohne eigenes Backend.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - Unit-Tests grün (`analytics.test.js`, `telemetry-aggregate.test.js`, `telemetry-map.test.js`); Doku hier + BACKEND.md + README.
+
+### ✅ Neu (2026-07-23, Welle 4): Modus-, TTS-/Kontext- und Modul-Nutzungs-Auswertung
+- **`session_complete`** trägt jetzt `mode` (flip/type/listen) sowie `speak_n`/`context_n` — TTS-Nutzungen und Kontext-Aufrufe auf Karten als **Runden-Summen** (kein Event je Tastendruck; `speak` bleibt in den Hochfrequenz-Ausnahmen, §4).
+- **`learning.modeRounds`** (abgeschlossene Runden + Genauigkeit je Lernmodus; `learning.modes` zählt weiter **begonnene** Runden aus `session_start`) und **`learning.tools`** (TTS/Kontext: Gesamt, Runden mit Nutzung, Ø je Runde, Anteil der Runden) in `aggregate()` → erweitertes „Lernmodus"-Panel + neues Panel „Sprachausgabe & Kontexte".
+- **`engagement.modules`** (Modul-Starts aus `feature_start`: Starts, Personen, **Stammnutzer** = Starts an ≥ 3 verschiedenen Tagen) und **`engagement.screenReach`** (Reichweite + Regelmäßigkeit je Screen, Top 15) → zwei neue Engagement-Panels.
+- **KPI-CSV** (`toKpiCsv`) um die Zeile „Runden mit Sprachausgabe %" erweitert.
 
 ### ✅ Neu (2026-07-23, Welle 3): Habit-Funnel, Einstufung, Standalone-Nutzung, Startpfad-Abschluss, Startzeit
 - **Habit-Meilensteine:** `activation` mit `streak_3`/`streak_7`/`streak_30` (genau beim Erreichen, mit `day_n`) → **Habit-Funnel** im Retention-Bereich (erste Runde → 3 → 7 → 30 Serientage, distinkte Personen) + KPI-CSV-Zeile.
