@@ -748,6 +748,6 @@
     back: "Elegir otro método",
     offline: "Necesitas conexión a internet un momento para crear tu cuenta. Conéctate e inténtalo de nuevo.",
     retry: "Reintentar",
-    legal: 'Al continuar aceptas nuestra <a href="datenschutz.html" target="_blank" rel="noopener">política de privacidad</a>. Solo guardamos tu correo para proteger tu cuenta.',
+    legal: 'Al continuar aceptas nuestra <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>. Solo guardamos tu correo para proteger tu cuenta.',
   });
 })();

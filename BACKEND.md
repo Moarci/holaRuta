@@ -167,6 +167,26 @@ Alle Endpunkte: HTTPS, Bearer-Token, Org-Scoping, strikte Eingabevalidierung, Gr
 - **Schüler ohne E-Mail** (Minderjährige/Schulkontext): **Klassen-Code + Anzeigename** statt E-Mail
   (Pseudonym-Konto, von der Lehrkraft/Org verwaltet) — DSGVO-schonend, keine Schüler-Mailadressen nötig.
 
+### Ausblick: Telefon-Login (WhatsApp/SMS-OTP) — nicht umgesetzt, nur Konzept
+
+Für den Locals-Track (Südamerika, `es-en`-Editionen) ist E-Mail-Login eine reale Hürde:
+WhatsApp ist dort der Standard-Kanal, viele Nutzer:innen checken E-Mail selten. Falls sich
+das im Feld als Conversion-Blocker zeigt, wäre der Weg:
+
+- **Supabase Phone-Auth** braucht einen SMS-Provider — Empfehlung **Twilio Verify** (unterstützt
+  auch den **WhatsApp-Kanal**, für Kolumbien wegen Verbreitung + SMS-Zustellbarkeit/-Kosten in
+  LatAm zu bevorzugen). Kosten laufend: ~0,05 US$ pro Verifizierung + Nachrichtengebühren —
+  **jeder Login kostet**, anders als E-Mail-OTP.
+- **Code-Änderungen** (überschaubar, gleiche Architektur wie §7): `_auth.js` bekommt
+  `signInWithOtp({ phone })` + `verifyOtp(type:"sms"/"whatsapp")` und mündet in dasselbe
+  `mintSession()`; Phone-Varianten von `login/confirm` in `net.js`/`sync.js`; Gate-UI in
+  `app.js` (E.164-Eingabe mit Ländervorwahl-Default +57, i18n-Strings); Rate-Limit **pro
+  Nummer** zusätzlich zu pro IP; Migration `alter table profile add column phone text`;
+  Rechtstexte (datenschutz/privacidad) um die Telefonnummer ergänzen.
+- **Risiko SMS-Pumping-Fraud** (automatisierte Verifizierungen auf Premium-Nummern):
+  Twilio Fraud Guard aktivieren + strikte Limits, sonst drohen vierstellige Rechnungen.
+- **Aufwand grob:** 3–5 Entwicklertage + Provider-Setup/Verträge.
+
 ---
 
 ## 8. Sync- & Merge-Strategie

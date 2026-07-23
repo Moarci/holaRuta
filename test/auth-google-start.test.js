@@ -51,6 +51,15 @@ test("safeRedirect: gültiges Same-Origin-Ziel auf /auth-callback.html wird akze
   });
 });
 
+test("safeRedirect: zusätzlicher UI-Sprach-Param (&l=) überlebt den Roundtrip (profile.locale beim Google-Weg)", () => {
+  withEnv("https://holaruta.com", () => {
+    assert.equal(
+      safeRedirect(req({}, { redirect: "https://holaruta.com/auth-callback.html?s=abc123&l=es" })),
+      "https://holaruta.com/auth-callback.html?s=abc123&l=es",
+    );
+  });
+});
+
 test("safeRedirect: fremde Origin wird abgewiesen -> Fallback auf erlaubten Default-Callback (kein Open-Redirect)", () => {
   withEnv("https://holaruta.com", () => {
     assert.equal(

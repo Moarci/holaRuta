@@ -1,4 +1,4 @@
-/* POST /v1/auth/google/confirm { supabaseToken } -> { accessToken, account }.
+/* POST /v1/auth/google/confirm { supabaseToken, locale? } -> { accessToken, account }.
  *
  * Die Callback-Seite (auth-callback.html) liest das aus dem Implicit-Redirect
  * stammende Supabase-Access-Token aus dem URL-Fragment und schickt es hierher.
@@ -9,6 +9,7 @@
 const { send, readJson } = require("../../../_http");
 const { allow, clientIp } = require("../../../_ratelimit");
 const { googleConfirm } = require("../../../_auth");
+const { parseLocale } = require("../../../_locale");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method not allowed" });
@@ -17,7 +18,7 @@ module.exports = async (req, res) => {
   const token = body && String(body.supabaseToken || "").trim();
   if (!token) return send(res, 400, { error: "missing token" });
   try {
-    return send(res, 200, await googleConfirm(token));
+    return send(res, 200, await googleConfirm(token, parseLocale(body && body.locale)));
   } catch (e) {
     return send(res, 401, { error: "invalid token" });
   }

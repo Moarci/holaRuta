@@ -42,10 +42,11 @@ async function mintSession(uid, email, extra) {
 }
 
 // POST /v1/auth/confirm – OTP verifizieren, profile upserten, Session-Token minten.
-async function confirm(email, token) {
+// `locale` (optional, bereits via parseLocale validiert) landet in profile.locale.
+async function confirm(email, token, locale) {
   const { data, error } = await authClient().auth.verifyOtp({ email, token, type: "email" });
   if (error || !data || !data.user) throw new Error("confirm failed");
-  return mintSession(data.user.id, data.user.email || email);
+  return mintSession(data.user.id, data.user.email || email, locale ? { locale } : undefined);
 }
 
 // GET /v1/auth/google/start – die serverseitig gebaute Google-OAuth-URL liefern.
@@ -62,14 +63,18 @@ async function googleUrl(redirectTo) {
 
 // POST /v1/auth/google/confirm – das aus dem Implicit-Redirect stammende
 // Supabase-Access-Token validieren, profile upserten (E-Mail + display_name aus
-// der Google-Identity) und unseren eigenen Session-Token minten.
-async function googleConfirm(supabaseToken) {
+// der Google-Identity, optional locale wie beim OTP-Weg) und unseren eigenen
+// Session-Token minten.
+async function googleConfirm(supabaseToken, locale) {
   const { data, error } = await authClient().auth.getUser(supabaseToken);
   if (error || !data || !data.user) throw new Error("google confirm failed");
   const u = data.user;
   const meta = u.user_metadata || {};
   const name = meta.full_name || meta.name || null;
-  return mintSession(u.id, u.email || null, name ? { display_name: name } : undefined);
+  const extra = {};
+  if (name) extra.display_name = name;
+  if (locale) extra.locale = locale;
+  return mintSession(u.id, u.email || null, Object.keys(extra).length ? extra : undefined);
 }
 
 // Bearer-Token -> user_id (oder null). Aktualisiert last_seen_at best-effort.

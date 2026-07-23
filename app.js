@@ -1817,7 +1817,10 @@
       return;
     }
     var origin = (typeof location !== "undefined" ? location.origin : "");
-    var redirect = origin + "/auth-callback.html?s=" + encodeURIComponent(st);
+    // `l` = aktuelle UI-Sprache: auth-callback.html reicht sie an googleConfirm
+    // weiter, damit profile.locale auch beim Google-Weg gesetzt wird.
+    var redirect = origin + "/auth-callback.html?s=" + encodeURIComponent(st)
+      + "&l=" + encodeURIComponent(state.uiLang || "");
     window.SC.net.googleStart(accountApiBase(), redirect);
   }
 
