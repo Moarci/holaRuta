@@ -408,7 +408,10 @@ Nutzer-ID das Gerät.
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies.
 - **Keine** Verknüpfung mit Sync/Social-Konten (ohne Token, eigene pseudonyme `clientId`).
 - **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen Enums/Buckets plus einzelne
-  nicht-identifizierende Ganzzahlen (Interaktionszähler/Rundendauer), aber **keine** Inhalte (s. §17.6).
+  nicht-identifizierende Ganzzahlen (Interaktionszähler/Rundendauer). **Katalog-Karten-REFERENZEN**
+  (Slugs der mitgelieferten Karten, z. B. `b02`) sind seit 2026-07-23 erlaubt — Karten-**Inhalte**
+  reisen weiterhin nie, **eigene** Nutzerkarten nie (nur der Platzhalter `"custom"`), und der
+  Suchbegriff reist **ausschließlich** bei Suchen **ohne** Treffer, PII-bereinigt und gekappt (s. §17.6).
 
 ### 17.6 Interaktions-Events — „was machen sie genau?" (Vollausbau, opt-in)
 
@@ -430,8 +433,9 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
   Consent-aus verwirft `clientId` + Puffer.
 - **Allowlist-Sanitizer (Default deny):** jedes Event hat eine feste Prop-Allowlist; Werte werden in
   **Enum/Slug/Zahl/Bucket** gezwungen. Freitext (Leerzeichen/Satzzeichen) fällt **strukturell** durch
-  → **kein Suchtext, keine Kartentexte/-IDs, keine Namen**. Fehler-Texte werden PII-bereinigt
-  (E-Mail/lange Ziffernfolgen raus) und auf 80 Zeichen gekappt.
+  → **keine Kartentexte, keine Namen**; Karten-Referenzen nur als Katalog-Slugs (eigene Karten:
+  `"custom"`), Suchbegriff nur bei 0 Treffern und nur durch den PII-Bereiniger. Fehler-Texte (und der
+  Fehlsuch-Begriff) werden PII-bereinigt (E-Mail/lange Ziffernfolgen raus) und auf 80 Zeichen gekappt.
 - **Lokale Pufferung & Batching:** Ring-Queue (≤ 200 Events) im `localStorage`; Versand gebündelt
   (≤ 50/Batch) periodisch und beim Verstecken/Schließen via `navigator.sendBeacon` (zuverlässig).
 
@@ -445,7 +449,11 @@ nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Al
 `onClick` bzw. `setGameStats`). `session_complete` trägt neben den Buckets exakte Ints
 (`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe sowie den Lernmodus
 (`mode`: flip/type/listen) und `speak_n`/`context_n` — TTS-/Kontext-Nutzung auf Karten als
-**Runden-Summen** statt Einzel-Events (Queue-Schutz); `share`/`activation`
+**Runden-Summen** statt Einzel-Events (Queue-Schutz); `card_rated` trägt seit 2026-07-23 die
+**Katalog-Karten-Referenz** `card` (Slug, z. B. `b02`; eigene Nutzerkarten nur als `"custom"`) plus
+`spoke`/`ctx` (bool: TTS/Kontext auf dieser Karte benutzt) für karten-genaue Content-Qualität;
+`search` trägt `q` — den PII-bereinigten, gekappten Suchbegriff **nur bei 0 Treffern**
+(bei Treffern weiterhin nie Suchtext); `share`/`activation`
 speisen Virality- und Aktivierungs-KPIs (`activation.day_n` = Tage seit Erstnutzung → Time-to-Value;
 Meilensteine `first_session` + `streak_3/7/30` → Habit-Funnel); `pwa_prompt`/`pwa_installed`/
 `app_open.standalone` bilden den Install-Funnel bis „benutzt"; `placement_result` trägt nur das

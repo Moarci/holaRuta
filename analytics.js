@@ -17,8 +17,13 @@
  *    Wechsel auf OPT-OUT ist dort `settings.analyticsConsent !== false` an, d.h. nur
  *    ein ausdrückliches „Aus" im Profil schaltet ab.
  *  - Datenminimierung: der Snapshot trägt NUR grobe, gebucketete Aggregate –
- *    KEINE PII, KEINE Karten-IDs, KEIN Suchtext, KEINE stabile Nutzer-ID. Alles
- *    wird aus dem schon vorhandenen gamestats abgeleitet; nichts Neues wird erfasst.
+ *    KEINE PII, KEINE stabile Nutzer-ID. Im Event-Strom sind seit der Rahmen-
+ *    Entscheidung 2026-07-23 zwei eng umrissene Ausnahmen erlaubt: Katalog-
+ *    Karten-IDs (Inhalts-Slugs, keine Personendaten; eigene Nutzerkarten nur
+ *    als "custom") und der PII-bereinigte Suchbegriff NUR bei 0 Treffern
+ *    (siehe EVENTS-Allowlist). Alles Weitere (Namen/E-Mails/Kartentexte)
+ *    bleibt verboten. Der Snapshot selbst wird komplett aus dem schon
+ *    vorhandenen gamestats abgeleitet; nichts Neues wird erfasst.
  *    Buckets sind bewusst grob (k-anonymity-freundlich): viele Nutzer teilen sich
  *    denselben Bereich, ein einzelner ist nicht herausrechenbar.
  *  - Reiner Kern: buildUsageSnapshot/bucket/featuresUsed sind seiteneffektfrei
@@ -294,12 +299,24 @@
     session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int",
                         answered_n: "int", correct_n: "int", xp_n: "int", secs: "int",
                         mode: "slug", speak_n: "int", context_n: "int" },
-    card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
+    // card = Katalog-Karten-ID (kurzer Inhalts-Slug wie "b02" – Referenz auf
+    // App-Inhalte, keine Personendaten; bewusste Rahmen-Entscheidung 2026-07-23).
+    // EIGENE Nutzerkarten (custom: true) reisen NIE mit ihrer Id/ihrem Inhalt,
+    // sondern nur als Platzhalter "custom". spoke/ctx = wurde auf DIESER Karte
+    // vor der Bewertung TTS bzw. das Kontext-Panel benutzt (karten-genaue
+    // Werkzeug-Nutzung, ohne zusätzliche Einzel-Events).
+    card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug",
+                        card: "slug", spoke: "bool", ctx: "bool" },
     // Start↔Abschluss je Lernspiel: feature_start am Rundenstart, feature_complete am
     // Rundenende – zusammen ergeben sie die Abschlussquote (Funnel je Spiel).
     feature_start:    { feature: "slug", mode: "slug" },
     feature_complete: { feature: "slug", perfect: "bool" },
-    search:           { qlen: "bucket", results: "bucket" },
+    // q = der Suchbegriff, NUR bei Suchen mit 0 Treffern gesetzt (Content-
+    // Lücken-Analyse: „was fehlt im Katalog?" – Rahmen-Entscheidung 2026-07-23).
+    // Der "text"-Sanitizer (cleanText) entfernt E-Mails/lange Ziffernfolgen und
+    // kappt hart auf 80 Zeichen. Bei Treffern reist weiterhin NIE der Suchtext,
+    // nur die groben qlen/results-Buckets.
+    search:           { qlen: "bucket", results: "bucket", q: "text" },
     // Virality-Funnel: content = WAS geteilt wird (stats/card/tips/module …),
     // NIE der Empfänger/Inhalt. (channel kann später ergänzt werden, wenn der
     // Client den Wel-Weg kennt – bewusst NICHT gelistet, solange nicht gesendet.)

@@ -1193,8 +1193,10 @@
     state.endless = false; // nur startEndless() schaltet den Endlos-Modus danach scharf
     // speak/context = Runden-Zähler für TTS bzw. Kontext-Panel auf den Karten
     // DIESER Runde – reisen als speak_n/context_n im session_complete (Summen
-    // statt Einzel-Events, siehe NOISY_ACTIONS).
-    state.session = { seen: new Set(), right: 0, wrong: 0, speak: 0, context: 0 };
+    // statt Einzel-Events, siehe NOISY_ACTIONS). curSpoke/curCtx = karten-genaue
+    // Flags: wurde auf der AKTUELLEN Karte TTS bzw. Kontext benutzt? Reisen als
+    // spoke/ctx im card_rated und werden in rate()/skip() zurückgesetzt.
+    state.session = { seen: new Set(), right: 0, wrong: 0, speak: 0, context: 0, curSpoke: false, curCtx: false };
     state.roundSnapshot = {
       unlocked: Object.assign({}, gamestats.unlocked),
       streak: currentStreak(),
@@ -5318,9 +5320,19 @@
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
-    // Karten-Bewertung als grobes Event (Bewertung + Modus + Stufe + Kategorie –
-    // NIE die Karten-Id oder den Karteninhalt).
-    trackEvent("card_rated", { rating: String(rating), mode: state.mode, level: String(card.lvl || ""), cat: card.cat });
+    // Karten-Bewertung als Event (Bewertung + Modus + Stufe + Kategorie). card =
+    // Katalog-Karten-ID (Inhalts-Slug, Rahmen-Entscheidung 2026-07-23) – EIGENE
+    // Nutzerkarten (custom: true) reisen NIE mit Id/Inhalt, nur als "custom".
+    // spoke/ctx = wurde auf DIESER Karte vor der Bewertung TTS bzw. Kontext benutzt.
+    trackEvent("card_rated", {
+      rating: String(rating), mode: state.mode, level: String(card.lvl || ""), cat: card.cat,
+      card: card.custom ? "custom" : String(card.id || ""),
+      spoke: !!(state.session && state.session.curSpoke),
+      ctx: !!(state.session && state.session.curCtx),
+    });
+    // Flags zurücksetzen: jede Bewertung misst nur die eigene Karte. Bei AGAIN
+    // kommt die Karte erneut – die Flags gelten je Bewertungs-Durchgang.
+    if (state.session) { state.session.curSpoke = false; state.session.curCtx = false; }
     if (state.mode === "listen") recordListenReview();
     syncBadges(now, true);
 
@@ -5351,6 +5363,9 @@
 
     state.queue = state.queue.slice(1);
     if (state.endless) refillEndless(); // Endlos-Modus: Übersprungene rückt nach, kein Rundenende
+    // Karten-genaue Werkzeug-Flags zurücksetzen: eine übersprungene Karte darf
+    // ihre TTS-/Kontext-Nutzung nicht der NÄCHSTEN Karte (deren card_rated) vererben.
+    if (state.session) { state.session.curSpoke = false; state.session.curCtx = false; }
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -6669,8 +6684,11 @@
     maybeTrackSearch();
   }
 
-  // Such-Event NUR als grobe Buckets: Länge der Anfrage + Trefferzahl. NIEMALS der
-  // Suchtext selbst. Gedrosselt, damit nicht jeder Tastendruck ein Event erzeugt.
+  // Such-Event als grobe Buckets: Länge der Anfrage + Trefferzahl. Der Suchtext
+  // selbst reist NUR bei 0 Treffern mit (PII-bereinigt und gekappt durch den
+  // "text"-Sanitizer in analytics.js) – Content-Lücken-Analyse „was fehlt im
+  // Katalog?" (Rahmen-Entscheidung 2026-07-23). Bei Treffern reist weiterhin
+  // nie der Suchtext. Gedrosselt, damit nicht jeder Tastendruck ein Event erzeugt.
   let lastSearchTrackAt = 0;
   function maybeTrackSearch() {
     const q = String(state.searchQuery || "").trim();
@@ -6679,7 +6697,10 @@
     if (now - lastSearchTrackAt < 1000) return;
     lastSearchTrackAt = now;
     const results = searchResultsData(q).groups.reduce((n, g) => n + g.items.length, 0);
-    trackEvent("search", { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [1, 5, 20]) });
+    const props = { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [1, 5, 20]) };
+    // 0 Treffer + sinnvolle Mindestlänge -> Suchbegriff mitsenden (Content-Lücke).
+    if (results === 0 && q.length >= 3) props.q = q;
+    trackEvent("search", props);
   }
 
   function clearSearch() {
@@ -7812,14 +7833,14 @@
     // Runden-Zähler: nur auf dem Lern-Screen zählen – toggle-context existiert
     // auch auf der Karten-Detailseite (contextBlock, state.screen === "card"),
     // das ist kein Runden-Kontext. Summe reist als context_n im session_complete.
-    "toggle-context": (el) => { if (state.screen === "study" && state.session) state.session.context++; toggleContext(); },
+    "toggle-context": (el) => { if (state.screen === "study" && state.session) { state.session.context++; state.session.curCtx = true; } toggleContext(); },
     "rate": (el) => { rate(el.dataset.rating); },
     "skip": (el) => { skip(); },
     // Runden-Zähler (analog toggle-context): "speak" rendert zwar nur auf den
     // Lernkarten, der Guard hält den Zähler trotzdem strikt auf die Runde
     // (fav-speak/speak-card/cuerpo-speak zählen bewusst NICHT). Summe reist
     // als speak_n im session_complete.
-    "speak": (el) => { if (state.screen === "study" && state.session) state.session.speak++; speakCurrent(); },
+    "speak": (el) => { if (state.screen === "study" && state.session) { state.session.speak++; state.session.curSpoke = true; } speakCurrent(); },
     "open-stats": (el) => { goStats(); },
     "open-settings": (el) => { goSettings(); },
     "open-reise": (el) => { goReise(); },

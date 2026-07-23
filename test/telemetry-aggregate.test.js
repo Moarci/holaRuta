@@ -580,3 +580,53 @@ test("aggregate: engagement.screenReach — Views, Nutzer, Stammnutzer je Screen
     { screen: "stats", views: 1, users: 1, regulars: 0 },
   ]);
 });
+
+// ===== Karten-genaue Auswertungen & Such-Lücken (props.card/spoke/ctx bzw. props.q) =====
+
+test("aggregate: difficultCards (Karten-Ebene, ohne custom) + cardToolUse (inkl. custom)", () => {
+  const E = []; let q = 0;
+  const mk = (props) => E.push({ v: 1, seq: q++, event: "card_rated", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props });
+  // b02: 6 Ratings, 3x again, 2x spoke, 1x ctx -> againPct 50, spokePct 33 (2/6), ctxPct 17 (1/6)
+  mk({ rating: "again", card: "b02", spoke: true, ctx: true });
+  mk({ rating: "again", card: "b02", spoke: true, ctx: false });
+  mk({ rating: "again", card: "b02", spoke: false, ctx: false });
+  mk({ rating: "good", card: "b02", spoke: false, ctx: false });
+  mk({ rating: "good", card: "b02" });
+  mk({ rating: "easy", card: "b02" });
+  // e07: 5 Ratings, 0x again, kein spoke/ctx -> zweiter Platz mit againPct 0
+  for (let i = 0; i < 5; i++) mk({ rating: "good", card: "e07" });
+  // x99: nur 3 Ratings -> unter Mindestvolumen 5, fliegt aus difficultCards raus
+  mk({ rating: "again", card: "x99", spoke: true, ctx: true });
+  mk({ rating: "again", card: "x99" });
+  mk({ rating: "again", card: "x99" });
+  // custom: eigene Nutzerkarten bleiben aus difficultCards draussen, zaehlen aber in cardToolUse
+  mk({ rating: "again", card: "custom", spoke: true, ctx: true });
+  mk({ rating: "good", card: "custom" });
+  const s = aggregate(E, [], { now: NOW });
+  assert.deepEqual(s.learning.difficultCards, [
+    { card: "b02", total: 6, againPct: 50, spokePct: 33, ctxPct: 17 },
+    { card: "e07", total: 5, againPct: 0, spokePct: 0, ctxPct: 0 },
+  ], "nur b02/e07 (>= 5 Ratings, ohne custom), sortiert againPct desc dann total desc");
+  // Werkzeug-Nutzung ueber ALLE 16 Bewertungen mit card-Feld (6+5+3+2, inkl. custom):
+  // spoke 4/16 = 25 %, ctx 3/16 = 18.75 -> 19 %.
+  assert.deepEqual(s.learning.cardToolUse, { ratings: 16, spokePct: 25, ctxPct: 19 });
+});
+
+test("aggregate: search.misses — normalisierte Null-Treffer-Begriffe, Bestandsfelder unveraendert", () => {
+  const E = []; let q = 0;
+  const mk = (props) => E.push({ v: 1, seq: q++, event: "search", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props });
+  mk({ results: "0", q: "Zollkontrolle" });
+  mk({ results: "0", q: "zollkontrolle " }); // Gross-/Kleinschreibung + Leerraum -> derselbe Begriff
+  mk({ results: "0", q: "Mietvertrag" });
+  mk({ results: "1-5", q: "hola" });         // Treffer -> q zaehlt NICHT, auch wenn es faelschlich mitkaeme
+  mk({ results: "0" });                      // Null-Treffer ohne q -> keine miss-Zeile
+  const s = aggregate(E, [], { now: NOW });
+  assert.deepEqual(s.search.misses, [
+    { key: "zollkontrolle", count: 2 },
+    { key: "mietvertrag", count: 1 },
+  ]);
+  // Bestehendes search-Objekt bleibt korrekt: 5 Suchen, davon 4 ohne Treffer.
+  assert.equal(s.search.total, 5);
+  assert.equal(s.search.zero, 4);
+  assert.equal(s.search.noResultPct, 80);
+});

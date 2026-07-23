@@ -177,8 +177,12 @@ test("sanitizeProps: behält nur die Allowlist, verwirft Freitext & unbekannte K
   );
   // Freitext (Leerzeichen) fällt strukturell durch den Slug-Filter.
   assert.deepEqual(analytics.sanitizeProps("action", { action: "hola que tal" }), {});
-  // search trägt NIE den Suchtext – nur Buckets.
-  assert.deepEqual(analytics.sanitizeProps("search", { qlen: "1-10", results: "1-5", q: "border crossing" }), { qlen: "1-10", results: "1-5" });
+  // search: q ist seit 2026-07-23 gelistet (als "text" PII-bereinigt); ob es
+  // überhaupt mitreist, entscheidet app.js (NUR bei 0 Treffern, s.u.).
+  assert.deepEqual(
+    analytics.sanitizeProps("search", { qlen: "1-10", results: "1-5", q: "border crossing" }),
+    { qlen: "1-10", results: "1-5", q: "border crossing" }
+  );
   // feature_complete: nur Feature-Slug + perfect-Bool.
   assert.deepEqual(analytics.sanitizeProps("feature_complete", { feature: "precios", perfect: true, score: 42 }), { feature: "precios", perfect: true });
   // onboarding_step: Schritt-Slug + Index, sonst nichts.
@@ -527,4 +531,68 @@ test("app.js zaehlt TTS/Kontext pro Runde und sendet sie im session_complete", (
   assert.ok(/context: 0/.test(src), "beginRound initialisiert den Kontext-Runden-Zaehler");
   assert.ok(/speak_n:/.test(src), "finishRound sendet speak_n im session_complete");
   assert.ok(/context_n:/.test(src), "finishRound sendet context_n im session_complete");
+});
+
+// ===== Rahmen-Entscheidung 2026-07-23: Karten-ID + Suchtext bei 0 Treffern ====
+// Katalog-Karten-IDs sind kurze Inhalts-Slugs (Referenzen auf App-Inhalte, keine
+// Personendaten); eigene Nutzerkarten reisen NUR als Platzhalter "custom".
+
+test("sanitizeProps: card_rated traegt Katalog-Slug/custom + spoke/ctx, nie Kartentext", () => {
+  // Katalog-Slug + karten-genaue Werkzeug-Bools kommen durch.
+  assert.deepEqual(
+    analytics.sanitizeProps("card_rated", { rating: "good", card: "b02", spoke: true, ctx: false }),
+    { rating: "good", card: "b02", spoke: true, ctx: false }
+  );
+  // Eigene Nutzerkarten: nur der Platzhalter "custom", nie die eigene Id.
+  assert.equal(analytics.sanitizeProps("card_rated", { card: "custom" }).card, "custom");
+  // Freitext-card faellt strukturell durch den Slug-Filter (Leerzeichen).
+  assert.deepEqual(
+    analytics.sanitizeProps("card_rated", { card: "hola que tal", spoke: false }),
+    { spoke: false }
+  );
+  // Fremdfelder (Kartentext/Uebersetzungen) fallen weg (Default deny).
+  assert.deepEqual(
+    analytics.sanitizeProps("card_rated", { card: "b02", de: "Hallo", es: "Hola", text: "voller Kartentext" }),
+    { card: "b02" }
+  );
+});
+
+test("sanitizeProps: search.q wird PII-bereinigt und gekappt; Buckets unveraendert", () => {
+  const out = analytics.sanitizeProps("search", {
+    qlen: "1-10",
+    results: "0",
+    q: "wo ist a@b.com nummer 123456789 " + "x".repeat(200),
+  });
+  assert.equal(out.qlen, "1-10", "qlen-Bucket unveraendert");
+  assert.equal(out.results, "0", "results-Bucket unveraendert");
+  assert.ok(out.q.indexOf("a@b.com") < 0 && out.q.indexOf("@") >= 0, "E-Mail entfernt (-> @)");
+  assert.ok(out.q.indexOf("123456789") < 0 && out.q.indexOf("#") >= 0, "lange Ziffernfolge entfernt (-> #)");
+  assert.ok(out.q.length <= 80, "hart gekappt");
+});
+
+// Die Instrumentierung lebt in app.js: rate() sendet die Karten-ID (eigene Karten
+// als Platzhalter "custom"), maybeTrackSearch() den Suchtext NUR im 0-Treffer-
+// Zweig, und skip() setzt die karten-genauen Werkzeug-Flags zurueck (eine
+// uebersprungene Karte vererbt ihre Werkzeug-Nutzung nicht der naechsten).
+test("app.js: card_rated-Karten-ID, q nur bei 0 Treffern, skip() setzt Flags zurueck", () => {
+  const src = require("fs").readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  assert.ok(
+    /card: card\.custom \? "custom" : String\(card\.id \|\| ""\)/.test(src),
+    "rate() sendet card mit custom-Platzhalter"
+  );
+  assert.ok(
+    /if \(results === 0 && q\.length >= 3\) props\.q = q;/.test(src),
+    "maybeTrackSearch sendet q nur im 0-Treffer-Zweig (>= 3 Zeichen)"
+  );
+  // Der Flag-Reset steht in rate() UND skip() (zweimal im Quelltext) ...
+  const resets = src.match(/state\.session\.curSpoke = false; state\.session\.curCtx = false;/g) || [];
+  assert.equal(resets.length, 2, "curSpoke/curCtx-Reset in rate() UND skip()");
+  // ... und davon nachweislich einer INNERHALB von skip().
+  const skipStart = src.indexOf("function skip()");
+  assert.ok(skipStart > 0, "skip() gefunden");
+  const skipSrc = src.slice(skipStart, src.indexOf("\n  function ", skipStart + 1));
+  assert.ok(
+    /state\.session\.curSpoke = false; state\.session\.curCtx = false;/.test(skipSrc),
+    "skip() setzt curSpoke/curCtx zurueck"
+  );
 });

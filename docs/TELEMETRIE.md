@@ -15,8 +15,10 @@ HolaRuta sendet **standardmäßig nichts**. Erst wenn (1) eine Edition einen End
 „Nutzungsstatistik teilen" auf **An** stellt, gehen zwei Dinge raus: ein **anonymer Tages-Snapshot**
 und ein **pseudonymer Interaktions-Event-Strom**. Der Snapshot ist rein gebucketet; der Event-Strom
 trägt grobe Enums/Buckets **plus** einzelne **exakte, nicht-identifizierende Ganzzahlen** (Interaktions-
-zähler & Rundendauer, für die Investor-Analytik) – aber **kein** Suchtext, **keine** Kartentexte/-IDs,
-**keine** Namen, **keine** Freitexte, **keine** stabile Identität.
+zähler & Rundendauer, für die Investor-Analytik) – aber **keine** Namen, **keine** Freitexte,
+**keine** stabile Identität. Karten-Referenzen reisen **nur für Katalog-Karten** (mitgelieferte
+Inhalte; **eigene** Nutzerkarten nie — nur der Platzhalter `"custom"`), und der Suchbegriff reist
+**ausschließlich bei Suchen ohne Treffer** — vorher PII-bereinigt und gekappt (bei Treffern **nie**).
 
 ---
 
@@ -86,10 +88,10 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | **`action`** | `action`:slug · `mode` · `dir` · `level` · `tab` · `scope` | `app.js` · `onClick` (Aktions-Dispatch) | jeder Button-Klick mit `data-action`; **ausgenommen** die Hochfrequenz-Aktionen `flip`/`rate`/`skip`/`speak` (separat erfasst) |
 | **`session_start`** | `scope`:slug · `origin`:slug · `mode` · `cards`:Bucket`[5,10,20,40]` | `app.js` · `beginRound()` | Lernrunde gestartet – deckt **alle 6** Startpfade ab (Kategorie/Alles, Preset, Pre-Trip-Tag, Ruta del día, Favoriten, Einzelkarte). `scope` = `"all"`/Kategorie-Slug |
 | **`session_complete`** | `answered`/`accuracy`/`xp`/`again`:Buckets · `mode`:slug · **`answered_n`/`correct_n`/`xp_n`/`secs`/`speak_n`/`context_n`**:int | `app.js` · `beginRound()`/`finishRound()` | Lernrunde beendet. Buckets (grob) **plus** exakte Ints für die Investor-Interaktions-Tiefe pro Sitzung; `secs` = Dauer **dieser** Runde (auf 1 h gedeckelt); `mode` = Lernmodus (`flip`/`type`/`listen`); `speak_n`/`context_n` = TTS-Nutzungen bzw. Kontext-Aufrufe auf Karten als **Runden-Summen** (**kein** Einzel-Event je Tastendruck — Queue-Schutz) |
-| **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug | `app.js` · `rate()` | eine Karte bewertet – **nur** Bewertung/Modus/Stufe/**Kategorie**, **nie** Karten-Id/-Text |
+| **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug · `card`:Katalog-slug oder `"custom"` · `spoke`/`ctx`:bool | `app.js` · `rate()` | eine Karte bewertet – seit 2026-07-23 mit **Katalog-Karten-Referenz** (`card`, z. B. `b02`; **eigene** Nutzerkarten reisen **nur** als Platzhalter `"custom"`, **nie** Id/Text) plus `spoke`/`ctx` = TTS bzw. Kontext auf **dieser** Karte benutzt — Basis für die karten-genaue Content-Qualität |
 | **`feature_start`** | `feature`:slug · `mode`:slug | `app.js` · `onClick` (`FEATURE_STARTS`-Map bei `start-*`); **Battle** zentral in `startBattle()` (deckt alle Einstiegspfade ab) | Lernspiel-Runde **gestartet** – Gegenstück zu `feature_complete` (ergibt die Abschlussquote). `feature` gleich benannt wie unten |
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
-| **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – **nur Länge & Trefferzahl**, **NIE** der Suchtext |
+| **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` · `q`:text (**nur bei 0 Treffern**, `cleanText`-bereinigt, gekappt) | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – bei Treffern reisen **nur Länge & Trefferzahl**, **nie** der Suchtext; **ausschließlich** bei Suchen **ohne** Treffer reist zusätzlich der PII-bereinigte Suchbegriff (`q`) — die Content-Wunschliste der Nutzer |
 | **`share`** | `content`:slug | `app.js` · `onClick` (`SHARE_ACTIONS`-Map bei `share-*`) | etwas geteilt (Virality-Funnel) – **nur** WAS (`content`: stats/card/tips/module …), **nie** Empfänger/Inhalt. Ersetzt das frühere generische `action`-Event für `share-*` |
 | **`activation`** | `milestone`:slug · `day_n`:int | `app.js` · `finishRound()` / `recordStudyEvent()` | Aktivierungs-/Habit-Meilensteine: `first_session` (allererste je abgeschlossene Runde) sowie `streak_3`/`streak_7`/`streak_30` (genau beim **Erreichen** von 3/7/30 Serientagen; nach einem Serien-Riss darf der Meilenstein erneut feuern). `day_n` = **Tage seit der ersten (zugestimmten) Nutzung** (Time-to-Value bzw. Zeit-bis-Gewohnheit; lokal gestempelter Erst-Tag, es reist nur die Differenz, ≤ 365) |
 | **`onboarding_step`** | `step`:`intro`/`profile`/`trip` · `n`:int | `app.js` · `beginOnboarding`/`onboardSlidesToProfile`/`advanceOnboardingProfile` | Onboarding-Schritt erreicht (Aktivierungs-Funnel). Greift nur mit Consent **während** des Onboardings (z. B. Editionen) |
@@ -108,7 +110,9 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 ## 4. Was bewusst **NICHT** geloggt wird
 
-- **Kein** Suchtext (`state.searchQuery`), **keine** Kartentexte oder **Karten-IDs**, **keine** eigenen Karten/Favoriten-Inhalte.
+- **Keine** Inhalte oder IDs **eigener** Nutzerkarten/Favoriten — selbst erstellte Karten reisen in `card_rated` **nur** als Platzhalter `"custom"`, nie mit Id oder Text.
+- **Kein** Suchtext bei Suchen **mit** Treffern (`state.searchQuery` reist dann nie). Nur bei Suchen **ohne** Treffer reist der Suchbegriff — vorher PII-bereinigt (E-Mail → `@`, lange Ziffern → `#`) und hart gekappt.
+- **Katalog-Karten-IDs** (Slugs der mitgelieferten Lernkarten, z. B. `b02`) sind seit **2026-07-23 erlaubt** — das sind Inhalts-Referenzen der App, keine Personendaten. Warum: karten-genaue Content-Qualität („Schwierigste Karten" statt nur „schwierigste Themen").
 - **Keine** Namen/E-Mails/PII; Fehler-Texte werden bereinigt (E-Mail → `@`, lange Ziffern → `#`) und auf 80 Zeichen gekappt.
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies, **keine** Drittanbieter-Tracker, **keine** Werbung.
 - **Snapshot:** keine exakten Zähler – Mengen reisen nur als **grobe Buckets** (k-anonymity-freundlich).
@@ -211,7 +215,7 @@ node build.js --edition=<id>
 | **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
 | **Engagement** | meistgenutzte Bildschirme, Top-Aktionen, **Modul-Nutzung & Regelmäßigkeit** (Stammnutzer = Starts an ≥ 3 verschiedenen Tagen), **Screen-Reichweite** (Personen je Screen, Top 15) |
 | **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen), **Runden & Genauigkeit je Modus**, **Sprachausgabe/Kontext-Nutzung je Runde** |
-| **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **Suche-ohne-Treffer-Quote** |
+| **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **schwierigste KARTEN** (karten-genau, `learning.difficultCards`, ab 5 Bewertungen, inkl. TTS-/Kontext-Anteil je Karte), **Suche-ohne-Treffer-Quote**, **Fehlsuch-Begriffe** (`search.misses`, Top 20) |
 | **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Einstufungs-Verteilung** (Niveau aus `placement_result`), **Reiseziel-Adoption** + Tagesziel |
 | **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off), **Time-to-Value** (Tage bis zur 1. Lernrunde aus `activation.day_n`, Median + same-day-Quote), **PWA-Install-Funnel** (Prompt→angenommen→installiert→**benutzt**: Standalone-Anteil der Starts), **Runden-Abschluss je Startpfad** (`session_start.origin` ↔ `session_complete` über die sessionId – welcher Einstieg verliert Lernende?) |
 | **Zeit** | Aktivität nach **Uhrzeit** (UTC) und **Wochentag** |
@@ -272,6 +276,12 @@ loggt eintreffende Events nur im Terminal.
 - Self-Host-Collector (`tools/telemetry-server.js`) mit Persistenz, Dashboard, Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning — für lokales Ausprobieren/Editionen ohne eigenes Backend.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - Unit-Tests grün (`analytics.test.js`, `telemetry-aggregate.test.js`, `telemetry-map.test.js`); Doku hier + BACKEND.md + README.
+
+### ✅ Neu (2026-07-23, Welle 5): Rahmen-Anpassung — karten-genaue Qualität + Such-Lücken
+- **Privacy-Rahmen bewusst gelockert** (Betreiber-Entscheidung 2026-07-23): Katalog-Karten-Referenzen sind jetzt erlaubt (Inhalts-Referenzen der App, keine Personendaten); **eigene** Nutzerkarten reisen weiterhin **nie** (nur `"custom"`-Platzhalter), Suchtext bei Treffern weiterhin **nie**.
+- **`card_rated`** trägt jetzt `card` (Katalog-Slug, z. B. `b02`, oder `"custom"`) plus `spoke`/`ctx` (TTS/Kontext auf dieser Karte benutzt) → `learning.difficultCards` (Top 15 ab 5 Bewertungen) + `learning.cardToolUse` in `aggregate()` → neues Panel „Schwierigste Karten" + erweitertes Panel „Sprachausgabe & Kontexte".
+- **`search`** trägt jetzt `q` — den PII-bereinigten (E-Mail → `@`, lange Ziffern → `#`, gekappt) Suchbegriff, **nur bei 0 Treffern** → `search.misses` (Top 20) → neues Panel „Suche ohne Treffer" (Content-Wunschliste).
+- **`datenschutz.html` §8** entsprechend aktualisiert (Rechtstext: Katalog-Karten-Kennungen ja, eigene Karten nie, Suchbegriff nur bei 0 Treffern bereinigt); Doku hier (§0/§3.1/§4/§7) und BACKEND.md §17 angepasst.
 
 ### ✅ Neu (2026-07-23, Welle 4): Modus-, TTS-/Kontext- und Modul-Nutzungs-Auswertung
 - **`session_complete`** trägt jetzt `mode` (flip/type/listen) sowie `speak_n`/`context_n` — TTS-Nutzungen und Kontext-Aufrufe auf Karten als **Runden-Summen** (kein Event je Tastendruck; `speak` bleibt in den Hochfrequenz-Ausnahmen, §4).

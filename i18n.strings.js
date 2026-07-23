@@ -398,7 +398,7 @@
     analyticsAria: "Nutzungsstatistik teilen an oder aus",
     analyticsOn: "An",
     analyticsOff: "Aus",
-    analyticsHint: "Pseudonym, keine Inhalte oder Namen. Standardmäßig an.",
+    analyticsHint: "Pseudonym, keine Namen, keine Inhalte eigener Karten. Standardmäßig an.",
     analyticsResetId: "Statistik-Id zurücksetzen",
     uiLanguage: "Sprache",
     // Karten-Prompt (Spanisch, beide Sprachen gleich). HelloAbroad (de-en) lernt
@@ -660,7 +660,7 @@
     analyticsAria: "Share usage stats on or off",
     analyticsOn: "On",
     analyticsOff: "Off",
-    analyticsHint: "Pseudonymous, no content or names. On by default.",
+    analyticsHint: "Pseudonymous, no names, no content of your own cards. On by default.",
     analyticsResetId: "Reset stats ID",
     uiLanguage: "Language",
     homePrompt: "¿Qué aprendemos hoy?",

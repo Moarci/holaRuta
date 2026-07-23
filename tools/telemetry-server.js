@@ -118,7 +118,15 @@ function aggregate(events, usage, opts) {
   var locales = new Map();
   var tracks = new Map();
   var openNew = 0, openReturning = 0;
+  // Schwierigkeit auf ZWEI Ebenen: catStats/difficult = THEMEN-Ebene (cat, immer
+  // verfügbar), cardStats/difficultCards = KARTEN-Ebene (props.card, erst seit der
+  // Rahmen-Anpassung 2026-07-23 vom Client geliefert; eigene Nutzerkarten kommen
+  // als fester Platzhalter "custom" und bleiben aus difficultCards draußen —
+  // Katalog-Slugs sind vergleichbar, private Karten nicht).
   var catStats = new Map();            // cat -> { total, again } (schwierigste Themen)
+  var cardStats = new Map();           // card -> { total, again, spoke, ctx } (schwierigste Karten, ohne "custom")
+  var cardRatings = 0, cardSpoke = 0, cardCtx = 0; // Werkzeug-Nutzung je Bewertung (ALLE card_rated mit card, inkl. "custom")
+  var searchMisses = new Map();        // normalisierter Suchbegriff -> Anzahl Null-Treffer (Inhalts-Lücken)
   var errorsByVersion = new Map();     // appVersion -> Fehleranzahl (Regressionen)
   var errorsByScreen = new Map();      // screen -> Fehleranzahl (WO kracht es?)
   var searchTotal = 0, searchZero = 0; // Suchen gesamt / ohne Treffer
@@ -212,6 +220,26 @@ function aggregate(events, usage, opts) {
         else if (p.rating === "good") ratingCounts.good++;
         else if (p.rating === "easy") ratingCounts.easy++;
         if (p.cat) { var cat = String(p.cat); var cs = catStats.get(cat); if (!cs) { cs = { total: 0, again: 0 }; catStats.set(cat, cs); } cs.total++; if (p.rating === "again") cs.again++; }
+        // Karten-genau (props.card seit 2026-07-23): Werkzeug-Nutzung über ALLE
+        // Bewertungen mit card-Feld zählen (auch "custom" — die Frage ist "wird
+        // TTS/Kontext beim Bewerten benutzt?", nicht "welche Karte"); in die
+        // Schwierigkeits-Map dagegen nur Katalog-Karten (card !== "custom"),
+        // weil der Platzhalter sonst alle privaten Karten zu EINER Pseudo-Karte
+        // verschmelzen und die Rangliste dominieren würde.
+        if (p.card) {
+          cardRatings++;
+          if (p.spoke === true) cardSpoke++;
+          if (p.ctx === true) cardCtx++;
+          var cardKey = String(p.card);
+          if (cardKey !== "custom") {
+            var cds = cardStats.get(cardKey);
+            if (!cds) { cds = { total: 0, again: 0, spoke: 0, ctx: 0 }; cardStats.set(cardKey, cds); }
+            cds.total++;
+            if (p.rating === "again") cds.again++;
+            if (p.spoke === true) cds.spoke++;
+            if (p.ctx === true) cds.ctx++;
+          }
+        }
         break;
       case "session_start":
         if (p.mode) inc(modeCount, String(p.mode));
@@ -268,7 +296,22 @@ function aggregate(events, usage, opts) {
         else if (p.outcome === "dismissed") pwaDismissed++;
         break;
       case "pwa_installed": pwaInstalls++; break;
-      case "search": searchTotal++; if (p.results === "0") searchZero++; break;
+      case "search":
+        searchTotal++;
+        if (p.results === "0") {
+          searchZero++;
+          // Such-Lücken: der Client sendet props.q NUR bei Null-Treffern (Daten-
+          // sparsamkeit). Trotzdem strikt an results === "0" koppeln — käme q
+          // fälschlich bei Treffern mit, würden erfolgreiche Suchen sonst als
+          // "Lücke" gezählt. Normalisieren (lowercase/trim, 60 Zeichen), damit
+          // "Zollkontrolle" und "zollkontrolle " EIN Begriff sind und kein
+          // überlanger Müll-String die Map aufbläht.
+          if (p.q) {
+            var qNorm = String(p.q).toLowerCase().trim().slice(0, 60);
+            if (qNorm) inc(searchMisses, qNorm);
+          }
+        }
+        break;
       case "onboarding_step": if (p.step && cid) addToSet(onboardSteps, String(p.step), cid); break;
       case "onboarding_complete": if (cid) onboardComplete.add(cid); break;
       case "error":
@@ -345,10 +388,38 @@ function aggregate(events, usage, opts) {
   var wau7Cur = activeUsersWindow(0, 7), wau7Prev = activeUsersWindow(7, 7);
 
   // --- Schwierigste Themen: „Nochmal"-Quote je Kategorie (ab Mindestvolumen 5) ---
+  // THEMEN-Ebene (cat): immer verfügbar, auch von alten Clients ohne card-Feld.
   var difficult = [];
   catStats.forEach(function (v, cat) { if (v.total >= 5) difficult.push({ cat: cat, total: v.total, againPct: Math.round((v.again / v.total) * 100) }); });
   difficult.sort(function (a, b) { return b.againPct - a.againPct || b.total - a.total; });
   difficult = difficult.slice(0, 12);
+
+  // --- Schwierigste Karten: dieselbe Logik auf KARTEN-Ebene (learning.difficultCards) ---
+  // props.card gibt es erst seit der Rahmen-Anpassung 2026-07-23; eigene Nutzer-
+  // karten ("custom") sind oben schon ausgefiltert. Mindestvolumen 5 wie bei den
+  // Themen (eine einzelne "Nochmal"-Bewertung ist keine schwere Karte), spoke/ctx
+  // zeigen, ob Lernende sich auf schweren Karten mit TTS/Kontext behelfen.
+  var difficultCards = [];
+  cardStats.forEach(function (v, card) {
+    if (v.total < 5) return;
+    difficultCards.push({
+      card: card, total: v.total,
+      againPct: Math.round((100 * v.again) / v.total),
+      spokePct: Math.round((100 * v.spoke) / v.total),
+      ctxPct: Math.round((100 * v.ctx) / v.total),
+    });
+  });
+  difficultCards.sort(function (a, b) { return b.againPct - a.againPct || b.total - a.total; });
+  difficultCards = difficultCards.slice(0, 15);
+
+  // --- Werkzeug-Nutzung je Bewertung (learning.cardToolUse) ---
+  // Ergänzt learning.tools (je RUNDE, aus session_complete) um die Karten-Sicht:
+  // bei welchem Anteil der einzelnen Bewertungen wurde TTS/Kontext benutzt?
+  var cardToolUse = {
+    ratings: cardRatings,
+    spokePct: cardRatings ? Math.round((100 * cardSpoke) / cardRatings) : 0,
+    ctxPct: cardRatings ? Math.round((100 * cardCtx) / cardRatings) : 0,
+  };
 
   // --- Aktive Tage je Nutzer ---
   var activeDaysHist = { "1": 0, "2": 0, "3-4": 0, "5-7": 0, "8+": 0 };
@@ -808,7 +879,9 @@ function aggregate(events, usage, opts) {
       modes: topCounts(modeCount),        // BEGONNENE Runden je Modus (session_start.mode)
       modeRounds: modeRounds,             // ABGESCHLOSSENE Runden je Modus inkl. Genauigkeit (session_complete)
       tools: learningTools,               // Sprachausgabe (speak_n) & Kontexte (context_n) je Runde
-      difficult: difficult,
+      difficult: difficult,               // schwierigste THEMEN (cat, immer verfügbar)
+      difficultCards: difficultCards,     // schwierigste KARTEN (props.card, seit 2026-07-23; ohne "custom")
+      cardToolUse: cardToolUse,           // TTS/Kontext-Anteil je einzelner Bewertung (inkl. "custom")
       mastery: topCounts(masteryDist),
       placementLevels: topCounts(placementLevels), // Einstufungs-Verteilung (A1/A2/B1 …)
       features: (function () {
@@ -819,7 +892,9 @@ function aggregate(events, usage, opts) {
       })(),
     },
     funnel: funnel,
-    search: { total: searchTotal, zero: searchZero, noResultPct: searchTotal ? Math.round((searchZero / searchTotal) * 100) : 0 },
+    // misses = die konkreten Null-Treffer-Begriffe (Inhalts-Lücken im Katalog);
+    // total/zero/noResultPct bleiben unverändert die Gesamtsicht.
+    search: { total: searchTotal, zero: searchZero, noResultPct: searchTotal ? Math.round((searchZero / searchTotal) * 100) : 0, misses: topCounts(searchMisses, 20) },
     trip: { snapshots: us.length, withGoalPct: us.length ? Math.round((tripGoalYes / us.length) * 100) : 0, daily: topCounts(tripDailyDist) },
     time: {
       byHour: hourCount.map(function (c, h) { return { hour: h, count: c }; }),

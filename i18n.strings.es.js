@@ -200,7 +200,7 @@
     analyticsAria: "Activar o desactivar el compartir estadísticas de uso",
     analyticsOn: "Sí",
     analyticsOff: "No",
-    analyticsHint: "Seudónimo, sin contenidos ni nombres. Activado por defecto.",
+    analyticsHint: "Seudónimo, sin nombres ni contenidos de tus propias tarjetas. Activado por defecto.",
     analyticsResetId: "Restablecer ID de estadísticas",
     uiLanguage: "Idioma",
     homePrompt: "¿Qué aprendemos hoy?",
