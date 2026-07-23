@@ -1191,7 +1191,10 @@
   // Pre-Trip) – NICHT in rate()/skip(). Speist die Belohnungs-Inszenierung (celebrate.js).
   function beginRound() {
     state.endless = false; // nur startEndless() schaltet den Endlos-Modus danach scharf
-    state.session = { seen: new Set(), right: 0, wrong: 0 };
+    // speak/context = Runden-Zähler für TTS bzw. Kontext-Panel auf den Karten
+    // DIESER Runde – reisen als speak_n/context_n im session_complete (Summen
+    // statt Einzel-Events, siehe NOISY_ACTIONS).
+    state.session = { seen: new Set(), right: 0, wrong: 0, speak: 0, context: 0 };
     state.roundSnapshot = {
       unlocked: Object.assign({}, gamestats.unlocked),
       streak: currentStreak(),
@@ -1271,6 +1274,11 @@
       correct_n: s.right,
       xp_n: xpGained,
       secs: secs,
+      // Lernmodus + Runden-Summen der Karten-Aktionen (TTS/Kontext): bewusst
+      // KEINE Einzel-Events (NOISY_ACTIONS), nur die Summe dieser Runde.
+      mode: state.mode,
+      speak_n: (s.speak | 0),
+      context_n: (s.context | 0),
     });
     // Aktivierung: die allererste je abgeschlossene Lernrunde ist der „Aha"-Moment.
     // snap.everStudied wurde in beginRound() VOR dem Runden-Update gelesen -> ist hier
@@ -7801,10 +7809,17 @@
     "search-clear": (el) => { clearSearch(); },
     "search-country": (el) => { openSearchCountry(el.dataset.id); },
     "flip": (el) => { flip(); },
-    "toggle-context": (el) => { toggleContext(); },
+    // Runden-Zähler: nur auf dem Lern-Screen zählen – toggle-context existiert
+    // auch auf der Karten-Detailseite (contextBlock, state.screen === "card"),
+    // das ist kein Runden-Kontext. Summe reist als context_n im session_complete.
+    "toggle-context": (el) => { if (state.screen === "study" && state.session) state.session.context++; toggleContext(); },
     "rate": (el) => { rate(el.dataset.rating); },
     "skip": (el) => { skip(); },
-    "speak": (el) => { speakCurrent(); },
+    // Runden-Zähler (analog toggle-context): "speak" rendert zwar nur auf den
+    // Lernkarten, der Guard hält den Zähler trotzdem strikt auf die Runde
+    // (fav-speak/speak-card/cuerpo-speak zählen bewusst NICHT). Summe reist
+    // als speak_n im session_complete.
+    "speak": (el) => { if (state.screen === "study" && state.session) state.session.speak++; speakCurrent(); },
     "open-stats": (el) => { goStats(); },
     "open-settings": (el) => { goSettings(); },
     "open-reise": (el) => { goReise(); },

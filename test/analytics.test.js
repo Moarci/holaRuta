@@ -498,3 +498,33 @@ test("app.js meldet Streak-Meilensteine 3/7/30 aus dem Streak-Update", () => {
   assert.ok(/g\.dailyStreak === 3 \|\| g\.dailyStreak === 7 \|\| g\.dailyStreak === 30/.test(src), "Meilenstein-Pruefung existiert");
   assert.ok(/milestone: "streak_" \+ g\.dailyStreak/.test(src), "activation-Event mit streak_-Meilenstein");
 });
+
+test("sanitizeProps: session_complete traegt mode/speak_n/context_n (Runden-Summen, kein Freitext)", () => {
+  // mode als Slug + exakte Ints kommen durch; Fremdfelder (Karteninhalt) fallen weg.
+  assert.deepEqual(
+    analytics.sanitizeProps("session_complete", { mode: "listen", speak_n: 4, context_n: 2, cardText: "hola" }),
+    { mode: "listen", speak_n: 4, context_n: 2 }
+  );
+  // Freitext-mode faellt strukturell durch den Slug-Filter (Leerzeichen).
+  assert.deepEqual(
+    analytics.sanitizeProps("session_complete", { mode: "hola que tal", speak_n: 1 }),
+    { speak_n: 1 },
+    "Freitext-mode reist nie"
+  );
+  // Ints werden nie negativ (Sanitizer klemmt auf >= 0).
+  assert.deepEqual(
+    analytics.sanitizeProps("session_complete", { speak_n: -3, context_n: 0 }),
+    { speak_n: 0, context_n: 0 }
+  );
+});
+
+// Die Zaehler-Instrumentierung lebt in app.js: beginRound() setzt die Runden-Summen
+// auf, finishRound() sendet sie als speak_n/context_n – bewusst KEINE Einzel-Events
+// (speak/flip/rate/skip sind als NOISY_ACTIONS vom generischen action-Event ausgenommen).
+test("app.js zaehlt TTS/Kontext pro Runde und sendet sie im session_complete", () => {
+  const src = require("fs").readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  assert.ok(/speak: 0/.test(src), "beginRound initialisiert den TTS-Runden-Zaehler");
+  assert.ok(/context: 0/.test(src), "beginRound initialisiert den Kontext-Runden-Zaehler");
+  assert.ok(/speak_n:/.test(src), "finishRound sendet speak_n im session_complete");
+  assert.ok(/context_n:/.test(src), "finishRound sendet context_n im session_complete");
+});

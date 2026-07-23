@@ -286,8 +286,14 @@
     // Interaktions-Tiefe PRO SITZUNG (opt-in, pseudonym – weiterhin KEIN Freitext,
     // KEINE Karten-IDs/-Inhalte). „secs" = Dauer DIESER Lernrunde (nicht die 30-min-
     // sessionId-Spanne) und wird aufrufer-seitig gegen Fingerprinting gedeckelt.
+    // mode = Lernmodus der Runde (flip/type/listen). speak_n/context_n sind
+    // RUNDEN-SUMMEN (wie oft TTS bzw. Kontext-Panel auf Karten DIESER Runde):
+    // bewusst KEIN Hochfrequenz-Event-Spam – die Aktionen speak/flip/rate/skip sind
+    // in app.js als NOISY_ACTIONS vom generischen action-Event ausgenommen und
+    // reisen stattdessen als Summen hier.
     session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int",
-                        answered_n: "int", correct_n: "int", xp_n: "int", secs: "int" },
+                        answered_n: "int", correct_n: "int", xp_n: "int", secs: "int",
+                        mode: "slug", speak_n: "int", context_n: "int" },
     card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
     // Start↔Abschluss je Lernspiel: feature_start am Rundenstart, feature_complete am
     // Rundenende – zusammen ergeben sie die Abschlussquote (Funnel je Spiel).
