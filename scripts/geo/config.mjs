@@ -15,6 +15,12 @@
 
 export const BASE_URL = "https://holaruta.com";
 
+// Eigene Subdomain für die PWA (App): "/" auf BASE_URL liefert seit dem
+// Host-Rewrite in vercel.json die Marketing-Landing-Page, nicht mehr die App.
+// Alle "App öffnen"-Verlinkungen aus dem GEO-Content MÜSSEN auf APP_URL zeigen,
+// sonst führt der CTA auf die Landing-Page statt in die App.
+export const APP_URL = "https://app.holaruta.com";
+
 export const BRAND = Object.freeze({
   name: "HolaRuta",
   tagline: {

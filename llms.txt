@@ -2,8 +2,8 @@
 
 > HolaRuta ist eine kostenlose Vanilla-JS-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: Karteikarten mit Spaced Repetition für echte Situationen (Bus, Hotel, Essen, Geld, Notfall, Smalltalk), Länder- und Städteguides, komplett offline nutzbar, ohne Konto. Zweiter Lernpfad 'HolaRuta · Inglés': spanischsprachiges Hostelería-/Tourismus-Personal lernt Englisch fürs Arbeiten.
 
-- App: https://holaruta.com/
-- Über HolaRuta: https://holaruta.com/landing.html
+- App: https://app.holaruta.com/
+- Über HolaRuta: https://holaruta.com/
 - HolaRuta · Inglés (Locals): https://holaruta.com/landing-locals.html
 - HelloAbroad · Reiseenglisch (DE→EN): https://holaruta.com/hello-abroad/
 

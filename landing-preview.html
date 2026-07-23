@@ -8,19 +8,23 @@
   <meta name="theme-color" content="#241510" />
   <title>HolaRuta – Reise-Spanisch für Lateinamerika</title>
   <meta name="description" content="HolaRuta – dein Reise-Spanisch für echte Situationen: 2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Lateinamerika-korrekt, komplett offline, kostenlos, ohne Konto." />
-  <link rel="canonical" href="https://holaruta.com/landing.html" />
+  <!-- Diese Datei wird sowohl unter "/" als auch unter "/landing.html" ausgeliefert
+       (siehe vercel.json-Rewrite) - Canonical zeigt bewusst auf "/", die
+       wertvollere Root-Domain-URL, damit SEO-Signale nicht zwischen beiden
+       URLs aufgeteilt werden. -->
+  <link rel="canonical" href="https://holaruta.com/" />
 
   <!-- Zweisprachig: teilbare Sprach-Links (?lang=) für Suche & Direktverlinkung. -->
-  <link rel="alternate" hreflang="de" href="https://holaruta.com/landing.html?lang=de" />
-  <link rel="alternate" hreflang="en" href="https://holaruta.com/landing.html?lang=en" />
-  <link rel="alternate" hreflang="x-default" href="https://holaruta.com/landing.html" />
+  <link rel="alternate" hreflang="de" href="https://holaruta.com/?lang=de" />
+  <link rel="alternate" hreflang="en" href="https://holaruta.com/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://holaruta.com/" />
 
   <!-- Social-Vorschau: nutzt das bestehende, gebaute og-image.png der Marke. -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
   <meta property="og:locale" content="de_DE" />
   <meta property="og:locale:alternate" content="en_US" />
-  <meta property="og:url" content="https://holaruta.com/landing.html" />
+  <meta property="og:url" content="https://holaruta.com/" />
   <meta property="og:title" content="HolaRuta – Reise-Spanisch für Lateinamerika" />
   <meta property="og:description" content="2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Offline, ohne Konto, kostenlos." />
   <meta property="og:image" content="https://holaruta.com/og-image.png" />
@@ -5369,7 +5373,12 @@ a { color: var(--brand-ink); }
 }
 .lp-hero__sub { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink-soft); margin: 0 0 var(--space-5); max-width: 52ch; }
 
-.lp-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-5); }
+.lp-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-3); }
+/* Friktions-Reducer direkt unter der primären CTA: adressiert die Einstiegshürde
+   (kein Download/Login) am Entscheidungspunkt – ergänzt die Zahlen-Badges darunter,
+   statt sie zu wiederholen. */
+.lp-hero__reassure { display: flex; align-items: center; gap: 7px; margin: 0 0 var(--space-5); font-size: 0.86rem; font-weight: 600; color: var(--ink-soft); }
+.lp-hero__reassure::before { content: "✓"; font-weight: 800; color: #3F7355; }
 /* Mobile: CTAs gestapelt & full-width -> große, saubere Tap-Ziele. */
 @media (max-width: 520px) {
   .lp-hero__cta { flex-direction: column; align-items: stretch; }
@@ -6314,6 +6323,12 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
        dieselbe Datei bedient auch die B2B-Landings (dort mit Pills). -->
   <script src="landing-carousel.js" defer></script>
 
+  <!-- PWA-Install: self-contained (SC.install), keine Deps, keine Netzwerkanfrage.
+       Fängt beforeinstallprompt ab, damit die Install-Sektion einen echten
+       „App installieren"-Knopf mit nativem Dialog anbieten kann (Android/Chromium).
+       iOS/Desktop ohne Prompt fallen still auf die manuelle Anleitung zurück. -->
+  <script src="install.js" defer></script>
+
   <!-- Sicherheits-Header analog index.html. Diese Seite nutzt keine externen
        Ressourcen (Fonts/Bilder self-hosted) – default-src 'self' genügt. -->
   <meta name="referrer" content="no-referrer" />
@@ -6397,7 +6412,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
           <button class="lp-langbtn" data-lang="es" aria-pressed="false">ES</button>
         </div>
         <button class="lp-iconbtn" id="lpTheme" data-i18n-aria="a11y.theme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">🌙</button>
-        <a class="lp-cta lp-cta--sm lp-header__cta" href="./?start=onboarding" data-i18n="nav.cta">Starten</a>
+        <a class="lp-cta lp-cta--sm lp-header__cta" href="https://app.holaruta.com/?start=onboarding&src=nav" data-i18n="nav.cta">Starten</a>
       </div>
     </div>
   </header>
@@ -6412,9 +6427,10 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
           <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, <span class="lp-hl">bevor der Bus kommt.</span></h1>
           <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Genau die Sätze, die du im Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
-            <a class="lp-cta lp-cta--lg" href="./?start=onboarding" data-i18n="hero.cta">Kostenlos starten →</a>
+            <a class="lp-cta lp-cta--lg" href="https://app.holaruta.com/?start=onboarding&src=hero" data-i18n="hero.cta">Kostenlos starten →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">Wie es funktioniert</a>
           </div>
+          <p class="lp-hero__reassure" data-reveal style="--i:3" data-i18n="hero.reassure">Kein Download, keine Anmeldung — einfach loslegen.</p>
           <div class="lp-trust">
             <div class="lp-trust__item" data-reveal style="--i:4; --accent:#C2502E">
               <span class="lp-trust__ico" aria-hidden="true"><svg width="1em" height="1em" aria-hidden="true"><use href="#lpi-cards"/></svg></span>
@@ -7170,17 +7186,21 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
           </article>
         </div>
         <div class="lp-install__cta" data-reveal>
-          <a class="lp-cta lp-cta--lg" href="./" data-i18n="install.cta">Jetzt im Browser öffnen →</a>
+          <!-- Nativer Install-Knopf: erscheint nur, wenn der Browser ihn anbietet
+               (SC.install.canPrompt, i. d. R. Android/Chromium). Sonst versteckt,
+               und die manuelle Anleitung oben trägt (iOS/Desktop). -->
+          <button type="button" class="lp-cta lp-cta--lg lp-cta--onbrand" id="lpInstallBtn" data-i18n="install.now" hidden>App installieren →</button>
+          <a class="lp-cta lp-cta--lg" href="./?src=install" data-i18n="install.cta">Jetzt im Browser öffnen →</a>
         </div>
 
         <div class="lp-faq">
           <details data-reveal style="--i:0">
-            <summary data-i18n="faq.q1">Brauche ich Internet?</summary>
-            <div class="lp-faq__body" data-i18n="faq.a1">Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.</div>
-          </details>
-          <details data-reveal style="--i:1">
             <summary data-i18n="faq.q2">Ist es wirklich kostenlos?</summary>
             <div class="lp-faq__body" data-i18n="faq.a2">Ja. Komplett kostenlos, keine Werbung, keine In-App-Käufe, kein Konto.</div>
+          </details>
+          <details data-reveal style="--i:1">
+            <summary data-i18n="faq.q1">Brauche ich Internet?</summary>
+            <div class="lp-faq__body" data-i18n="faq.a1">Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.</div>
           </details>
           <details data-reveal style="--i:2">
             <summary data-i18n="faq.q3">Welches Spanisch lerne ich?</summary>
@@ -7227,7 +7247,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
           </div>
         </div>
         <div data-reveal>
-          <a class="lp-cta lp-cta--lg lp-cta--onbrand" href="./?start=onboarding" data-i18n="final.cta">Kostenlos starten →</a>
+          <a class="lp-cta lp-cta--lg lp-cta--onbrand" href="https://app.holaruta.com/?start=onboarding&src=final" data-i18n="final.cta">Kostenlos starten →</a>
         </div>
       </div>
     </section>
@@ -7260,8 +7280,8 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         <div>
           <h4 data-i18n="footer.app">App</h4>
           <ul>
-            <li><a href="./" data-i18n="footer.open">App öffnen</a></li>
-            <li><a href="./?start=onboarding" data-i18n="footer.start">Kostenlos starten</a></li>
+            <li><a href="https://app.holaruta.com/" data-i18n="footer.open">App öffnen</a></li>
+            <li><a href="https://app.holaruta.com/?start=onboarding&src=footer" data-i18n="footer.start">Kostenlos starten</a></li>
             <li><a href="hello-abroad/" data-i18n="aud.helloabroad">🇬🇧 HelloAbroad · Reiseenglisch</a></li>
             <li><a href="https://holaruta.com/HolaRuta.html" data-i18n="footer.single">Einzeldatei-Version</a></li>
           </ul>
@@ -7303,9 +7323,11 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "nav.cta": "Starten",
         "hero.eyebrow": "REISE-SPANISCH FÜR LATEINAMERIKA",
         "hero.h1": "Sprich Spanisch, <span class=\"lp-hl\">bevor der Bus kommt.</span>",
+        "hero.h1.b": "Nie wieder sprachlos <span class=\"lp-hl\">in Lateinamerika.</span>",
         "hero.sub": "Genau die Sätze, die du im Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt.",
         "hero.cta": "Kostenlos starten →",
         "hero.cta2": "Wie es funktioniert",
+        "hero.reassure": "Kein Download, keine Anmeldung — einfach loslegen.",
         "trust.cards": "Karten", "trust.areas": "Bereiche", "trust.modes": "Lernmodi", "trust.free": "Offline · kein Konto",
         "card.hint": "Zum Umdrehen tippen", "card.lvl": "A1 · Einsteiger", "card.lvl2": "A2 · Mittel",
         "card.speakLabel": "Antwort vorlesen",
@@ -7370,6 +7392,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "install.a1": "Öffne HolaRuta im Browser.", "install.a2": "Tippe auf „Zum Startbildschirm hinzufügen\".", "install.a3": "Fertig — HolaRuta liegt als App auf dem Homescreen, offline-fähig.",
         "install.i1": "Öffne HolaRuta in Safari.", "install.i2": "Tippe auf das Teilen-Symbol, dann „Zum Home-Bildschirm\".", "install.i3": "Öffne HolaRuta vom Homescreen — läuft offline.",
         "install.note": "Kein App-Store, keine Anmeldung, keine Updates-Warteschlange.",
+        "install.now": "App installieren →",
         "install.cta": "Jetzt im Browser öffnen →",
         "faq.q1": "Brauche ich Internet?", "faq.a1": "Nein. Einmal geladen, läuft HolaRuta offline — gedacht fürs Funkloch im Nachtbus.",
         "faq.q2": "Ist es wirklich kostenlos?", "faq.a2": "Ja. Komplett kostenlos, keine Werbung, keine In-App-Käufe, kein Konto.",
@@ -7396,9 +7419,11 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "nav.cta": "Start",
         "hero.eyebrow": "TRAVEL SPANISH FOR LATIN AMERICA",
         "hero.h1": "Speak Spanish <span class=\"lp-hl\">before the bus arrives.</span>",
+        "hero.h1.b": "Never lost for words <span class=\"lp-hl\">in Latin America.</span>",
         "hero.sub": "Exactly the phrases you'll need on the bus, at the table and at the border — ready when it counts.",
         "hero.cta": "Start free →",
         "hero.cta2": "See how it works",
+        "hero.reassure": "No download, no sign-up — just start.",
         "trust.cards": "cards", "trust.areas": "areas", "trust.modes": "modes", "trust.free": "Offline · no account",
         "card.hint": "Tap to flip", "card.lvl": "A1 · Beginner", "card.lvl2": "A2 · Intermediate",
         "card.speakLabel": "Read answer aloud",
@@ -7463,6 +7488,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "install.a1": "Open HolaRuta in your browser.", "install.a2": "Tap \"Add to Home screen\".", "install.a3": "Done — HolaRuta sits on your home screen, offline-ready.",
         "install.i1": "Open HolaRuta in Safari.", "install.i2": "Tap the Share icon, then \"Add to Home Screen\".", "install.i3": "Launch HolaRuta from the home screen — it runs offline.",
         "install.note": "No app store, no sign-up, no update queue.",
+        "install.now": "Install the app →",
         "install.cta": "Open in your browser →",
         "faq.q1": "Do I need internet?", "faq.a1": "No. Once loaded, HolaRuta works offline — built for the dead zone on the night bus.",
         "faq.q2": "Is it really free?", "faq.a2": "Yes. Completely free, no ads, no in-app purchases, no account.",
@@ -7489,9 +7515,11 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "nav.cta": "Empezar",
         "hero.eyebrow": "ESPAÑOL DE VIAJE PARA LATINOAMÉRICA",
         "hero.h1": "Habla español <span class=\"lp-hl\">antes de que llegue el bus.</span>",
+        "hero.h1.b": "Nunca más sin palabras <span class=\"lp-hl\">en Latinoamérica.</span>",
         "hero.sub": "Justo las frases que necesitas en el bus, en la mesa y en la frontera — listas para cuando cuentan.",
         "hero.cta": "Empezar gratis →",
         "hero.cta2": "Cómo funciona",
+        "hero.reassure": "Sin descargas ni registro: empieza y ya.",
         "trust.cards": "tarjetas", "trust.areas": "áreas", "trust.modes": "modos", "trust.free": "Sin conexión · sin cuenta",
         "card.hint": "Toca para girar", "card.lvl": "A1 · Principiante", "card.lvl2": "A2 · Intermedio",
         "card.speakLabel": "Leer la respuesta en voz alta",
@@ -7556,6 +7584,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
         "install.a1": "Abre HolaRuta en tu navegador.", "install.a2": "Toca «Añadir a la pantalla de inicio».", "install.a3": "Listo — HolaRuta queda como app en tu pantalla de inicio, lista sin conexión.",
         "install.i1": "Abre HolaRuta en Safari.", "install.i2": "Toca el icono de Compartir y luego «Añadir a inicio».", "install.i3": "Abre HolaRuta desde la pantalla de inicio — funciona sin conexión.",
         "install.note": "Sin tienda de apps, sin registro, sin cola de actualizaciones.",
+        "install.now": "Instalar la app →",
         "install.cta": "Abrir ahora en el navegador →",
         "faq.q1": "¿Necesito internet?", "faq.a1": "No. Una vez cargada, HolaRuta funciona sin conexión — pensada para el bus nocturno sin señal.",
         "faq.q2": "¿De verdad es gratis?", "faq.a2": "Sí. Completamente gratis, sin anuncios, sin compras dentro de la app, sin cuenta.",
@@ -7579,7 +7608,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
       }
     };
     // Keys, deren Wert sicheres Inline-Markup enthält (kein User-Input → unkritisch).
-    var HTML_KEYS = { "hero.h1": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
+    var HTML_KEYS = { "hero.h1": true, "hero.h1.b": true, "footer.credit": true, "how.s1.b": true, "how.s2.b": true, "how.s3.b": true };
 
     var LANG_KEY = "holaruta.landing.lang";
 
@@ -7625,6 +7654,46 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
     var browserLang = browser.indexOf("de") === 0 ? "de" : (browser.indexOf("es") === 0 ? "es" : "en");
     var initial = (urlLang && SUPPORTED.indexOf(urlLang) >= 0) ? urlLang
       : (saved && SUPPORTED.indexOf(saved) >= 0) ? saved : browserLang;
+
+    // ── Leichtes, abhängigkeitsfreies A/B-Fundament ──────────────────────────
+    // DORMANT bis echter Traffic da ist: Solange EXP_ACTIVE = false, sieht JEDER die
+    // Kontroll-Variante (a = Bestands-Headline) und es wird KEIN &var= gesetzt. Grund:
+    // im Vor-Pilot (≈0 Besucher) wäre eine 50/50-Randomisierung nie signifikant und
+    // hätte keine Abschluss-Logik – sie würde nur dauerhaft der Hälfte der Besucher
+    // evtl. die schlechtere Headline zeigen. Zum Scharfschalten (sobald z. B. der
+    // Hostel-QR/Pilot Besucher bringt): die EINE Zeile unten auf `true` setzen. Die
+    // komplette Infrastruktur ist fertig: stabile Zuweisung (persistiert lokal, KEIN
+    // externer Call), Headline-Swap je Variante über den i18n-Key hero.h1.b (setLang
+    // rendert ihn in jeder Sprache), &var= an den Onboarding-CTAs -> app_open.var ->
+    // Auswertung als variantFunnel im Admin-Cockpit. Die Landing selbst trackt nichts.
+    var EXP_ACTIVE = false; // ← auf true stellen, um das A/B-Experiment scharf zu schalten
+    function lpExp() {
+      // Dormant: Kontrolle für alle, keine Randomisierung, keine &var=-Markierung.
+      if (!EXP_ACTIVE) { document.documentElement.setAttribute("data-exp", "off"); return "a"; }
+      var EXP_KEY = "holaruta.landing.exp.v1";
+      var VARIANTS = ["a", "b"]; // a = Bestands-Headline (Kontrolle), b = Alternative
+      var v = null;
+      try { v = localStorage.getItem(EXP_KEY); } catch (e) {}
+      if (VARIANTS.indexOf(v) < 0) {
+        v = VARIANTS[(Math.random() * VARIANTS.length) | 0]; // 50/50, framework-frei
+        try { localStorage.setItem(EXP_KEY, v); } catch (e) {}
+      }
+      document.documentElement.setAttribute("data-exp", v);
+      if (v === "b") {
+        var h1 = document.querySelector('h1[data-i18n="hero.h1"]');
+        if (h1) h1.setAttribute("data-i18n", "hero.h1.b");
+      }
+      var links = document.querySelectorAll('a[href*="start=onboarding"]');
+      for (var i = 0; i < links.length; i++) {
+        var href = links[i].getAttribute("href");
+        if (href && href.indexOf("var=") < 0) {
+          links[i].setAttribute("href", href + (href.indexOf("?") < 0 ? "?" : "&") + "var=" + v);
+        }
+      }
+      return v;
+    }
+    try { lpExp(); } catch (e) { /* Experiment darf die Seite nie brechen */ }
+
     setLang(initial);
 
     document.querySelectorAll(".lp-langbtn").forEach(function (b) {
@@ -7824,8 +7893,14 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
       var openMod = null;
       var currentAccent = "var(--brand)";
 
-      function lang() { return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "de"; }
-      function t(key) { var d = I18N[lang()] || {}; return d[key] || key; }
+      // UI-Sprache dreisprachig (de/en/es) – die Chrome-Strings liegen alle drei im
+      // I18N-Wörterbuch vor. (Früher fiel ES hier fälschlich auf DE zurück.)
+      function uiLang() { var l = document.documentElement.getAttribute("data-lang"); return (l === "en" || l === "es") ? l : "de"; }
+      // Die Modul-Beispieldaten (DATA) existieren nur auf DE/EN; für ES die englische
+      // Bedeutungsseite zeigen (die spanische Rückseite ist ohnehin sprachunabhängig) –
+      // für ein spanischsprachiges Publikum die passendere Fallback-Sprache als DE.
+      function dataLang() { return uiLang() === "de" ? "de" : "en"; }
+      function t(key) { var d = I18N[uiLang()] || {}; return d[key] || key; }
 
       function speak(text) {
         try {
@@ -7858,7 +7933,7 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
       function render(mod) {
         var m = DATA[mod];
         if (!m) return;
-        var l = lang();
+        var l = dataLang();
         var cat = l === "en" ? m.cat[1] : m.cat[0];
         var hint = t("card.hint"), speakLbl = t("card.speakLabel"), flipLbl = t("a11y.card");
         var ctxLbl = t("ctx.show"), ctxTitle = t("ctx.title"), sitLbl = t("ctx.situation"), noteLbl = t("ctx.note");
@@ -8193,6 +8268,27 @@ html:not(.js) .lp-carousel .face__hint { display: none; }
       });
     });
   })();
+  </script>
+
+  <!-- PWA-Install-Knopf verdrahten. Läuft auf DOMContentLoaded, also NACH dem
+       deferred install.js (SC.install ist dann garantiert da). Der Knopf ist per
+       Default versteckt und erscheint nur, wenn der Browser einen nativen
+       Install-Dialog anbietet (canPrompt) – setOnChange fängt auch ein spät
+       gefeuertes beforeinstallprompt ab. Bricht nie: alles in try/Guards. -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    try {
+      var I = window.SC && window.SC.install;
+      var btn = document.getElementById("lpInstallBtn");
+      if (!I || !btn) return;
+      function sync() { btn.hidden = !I.canPrompt(); }
+      I.setOnChange(sync);
+      sync();
+      btn.addEventListener("click", function () {
+        try { I.promptInstall(); } catch (e) {}
+      });
+    } catch (e) { /* Install-Knopf ist optional – Seite läuft ohne ihn weiter */ }
+  });
   </script>
 </body>
 </html>

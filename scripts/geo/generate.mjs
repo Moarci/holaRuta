@@ -14,7 +14,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { AI_CRAWLERS, BASE_URL, CONTENT_DATE, DEFAULT_LOCALE } from "./config.mjs";
+import { AI_CRAWLERS, APP_URL, BASE_URL, CONTENT_DATE, DEFAULT_LOCALE } from "./config.mjs";
 import { buildAllPages } from "./content-model.mjs";
 import { buildLocalsPages } from "./locals-content.mjs";
 import { loadLocalsData, loadReiseData, REPO_ROOT } from "./load-sc-data.mjs";
@@ -22,9 +22,12 @@ import { escapeXml } from "./text-utils.mjs";
 
 // Statische, handgepflegte Seiten (Marketing-Landings), die zusätzlich zu den
 // generierten Content-Seiten in Sitemap/llms.txt auftauchen sollen.
+// "/" liefert seit dem Host-Rewrite in vercel.json denselben Inhalt wie
+// "/landing.html" (Marketing-Landing statt App) - deshalb nur EIN Sitemap-
+// Eintrag dafür (sonst doppelter Content unter zwei URLs). landing.html
+// selbst canonicalisiert auf "/" (siehe dessen <link rel="canonical">).
 const STATIC_PAGES = [
   { loc: "/", priority: "1.0", changefreq: "weekly" },
-  { loc: "/landing.html", priority: "0.9", changefreq: "weekly" },
   { loc: "/landing-schule.html", priority: "0.6", changefreq: "monthly" },
   { loc: "/landing-hostel.html", priority: "0.6", changefreq: "monthly" },
   { loc: "/landing-reiseanbieter.html", priority: "0.6", changefreq: "monthly" },
@@ -171,8 +174,8 @@ function renderLlmsTxt(pages) {
     "",
     "> HolaRuta ist eine kostenlose Vanilla-JS-PWA für Reise-Spanisch beim Backpacking durch Lateinamerika: Karteikarten mit Spaced Repetition für echte Situationen (Bus, Hotel, Essen, Geld, Notfall, Smalltalk), Länder- und Städteguides, komplett offline nutzbar, ohne Konto. Zweiter Lernpfad 'HolaRuta · Inglés': spanischsprachiges Hostelería-/Tourismus-Personal lernt Englisch fürs Arbeiten.",
     "",
-    `- App: ${BASE_URL}/`,
-    `- Über HolaRuta: ${BASE_URL}/landing.html`,
+    `- App: ${APP_URL}/`,
+    `- Über HolaRuta: ${BASE_URL}/`,
     `- HolaRuta · Inglés (Locals): ${BASE_URL}/landing-locals.html`,
     `- HelloAbroad · Reiseenglisch (DE→EN): ${BASE_URL}/hello-abroad/`,
     "",

@@ -6,19 +6,23 @@
   <meta name="theme-color" content="#241510" />
   <title>HolaRuta – Reise-Spanisch für Lateinamerika</title>
   <meta name="description" content="HolaRuta – dein Reise-Spanisch für echte Situationen: 2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Lateinamerika-korrekt, komplett offline, kostenlos, ohne Konto." />
-  <link rel="canonical" href="https://holaruta.com/landing.html" />
+  <!-- Diese Datei wird sowohl unter "/" als auch unter "/landing.html" ausgeliefert
+       (siehe vercel.json-Rewrite) - Canonical zeigt bewusst auf "/", die
+       wertvollere Root-Domain-URL, damit SEO-Signale nicht zwischen beiden
+       URLs aufgeteilt werden. -->
+  <link rel="canonical" href="https://holaruta.com/" />
 
   <!-- Zweisprachig: teilbare Sprach-Links (?lang=) für Suche & Direktverlinkung. -->
-  <link rel="alternate" hreflang="de" href="https://holaruta.com/landing.html?lang=de" />
-  <link rel="alternate" hreflang="en" href="https://holaruta.com/landing.html?lang=en" />
-  <link rel="alternate" hreflang="x-default" href="https://holaruta.com/landing.html" />
+  <link rel="alternate" hreflang="de" href="https://holaruta.com/?lang=de" />
+  <link rel="alternate" hreflang="en" href="https://holaruta.com/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://holaruta.com/" />
 
   <!-- Social-Vorschau: nutzt das bestehende, gebaute og-image.png der Marke. -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="HolaRuta" />
   <meta property="og:locale" content="de_DE" />
   <meta property="og:locale:alternate" content="en_US" />
-  <meta property="og:url" content="https://holaruta.com/landing.html" />
+  <meta property="og:url" content="https://holaruta.com/" />
   <meta property="og:title" content="HolaRuta – Reise-Spanisch für Lateinamerika" />
   <meta property="og:description" content="2293 Karteikarten mit Spaced Repetition für Bus, Hotel, Essen, Geld & Notfall. Offline, ohne Konto, kostenlos." />
   <meta property="og:image" content="https://holaruta.com/og-image.png" />
@@ -157,7 +161,7 @@
           <button class="lp-langbtn" data-lang="es" aria-pressed="false">ES</button>
         </div>
         <button class="lp-iconbtn" id="lpTheme" data-i18n-aria="a11y.theme" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">🌙</button>
-        <a class="lp-cta lp-cta--sm lp-header__cta" href="./?start=onboarding&src=nav" data-i18n="nav.cta">Starten</a>
+        <a class="lp-cta lp-cta--sm lp-header__cta" href="https://app.holaruta.com/?start=onboarding&src=nav" data-i18n="nav.cta">Starten</a>
       </div>
     </div>
   </header>
@@ -172,7 +176,7 @@
           <h1 data-reveal style="--i:1" data-i18n="hero.h1">Sprich Spanisch, <span class="lp-hl">bevor der Bus kommt.</span></h1>
           <p class="lp-hero__sub" data-reveal style="--i:2" data-i18n="hero.sub">Genau die Sätze, die du im Bus, beim Essen und am Grenzposten brauchst — parat, wenn's drauf ankommt.</p>
           <div class="lp-hero__cta" data-reveal style="--i:3">
-            <a class="lp-cta lp-cta--lg" href="./?start=onboarding&src=hero" data-i18n="hero.cta">Kostenlos starten →</a>
+            <a class="lp-cta lp-cta--lg" href="https://app.holaruta.com/?start=onboarding&src=hero" data-i18n="hero.cta">Kostenlos starten →</a>
             <a class="lp-cta lp-cta--lg lp-cta--ghost" href="#how" data-i18n="hero.cta2">Wie es funktioniert</a>
           </div>
           <p class="lp-hero__reassure" data-reveal style="--i:3" data-i18n="hero.reassure">Kein Download, keine Anmeldung — einfach loslegen.</p>
@@ -992,7 +996,7 @@
           </div>
         </div>
         <div data-reveal>
-          <a class="lp-cta lp-cta--lg lp-cta--onbrand" href="./?start=onboarding&src=final" data-i18n="final.cta">Kostenlos starten →</a>
+          <a class="lp-cta lp-cta--lg lp-cta--onbrand" href="https://app.holaruta.com/?start=onboarding&src=final" data-i18n="final.cta">Kostenlos starten →</a>
         </div>
       </div>
     </section>
@@ -1025,8 +1029,8 @@
         <div>
           <h4 data-i18n="footer.app">App</h4>
           <ul>
-            <li><a href="./" data-i18n="footer.open">App öffnen</a></li>
-            <li><a href="./?start=onboarding&src=footer" data-i18n="footer.start">Kostenlos starten</a></li>
+            <li><a href="https://app.holaruta.com/" data-i18n="footer.open">App öffnen</a></li>
+            <li><a href="https://app.holaruta.com/?start=onboarding&src=footer" data-i18n="footer.start">Kostenlos starten</a></li>
             <li><a href="hello-abroad/" data-i18n="aud.helloabroad">🇬🇧 HelloAbroad · Reiseenglisch</a></li>
             <li><a href="https://holaruta.com/HolaRuta.html" data-i18n="footer.single">Einzeldatei-Version</a></li>
           </ul>

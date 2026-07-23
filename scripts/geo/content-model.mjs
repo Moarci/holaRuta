@@ -24,7 +24,7 @@
  */
 "use strict";
 
-import { BASE_URL, BRAND, absoluteUrl } from "./config.mjs";
+import { APP_URL, BASE_URL, BRAND, absoluteUrl } from "./config.mjs";
 import { slugify, truncate, plain, firstSentence, loc, stripParenthetical } from "./text-utils.mjs";
 import { buildPillarPages } from "./pillar-content.mjs";
 
@@ -184,7 +184,7 @@ function buildTitle(base, max = 70) {
 }
 
 function appLink(t) {
-  return { url: `${BASE_URL}/`, label: t.openApp };
+  return { url: `${APP_URL}/`, label: t.openApp };
 }
 
 // ---------------------------------------------------------------------------
