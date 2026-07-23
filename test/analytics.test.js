@@ -177,8 +177,12 @@ test("sanitizeProps: behält nur die Allowlist, verwirft Freitext & unbekannte K
   );
   // Freitext (Leerzeichen) fällt strukturell durch den Slug-Filter.
   assert.deepEqual(analytics.sanitizeProps("action", { action: "hola que tal" }), {});
-  // search trägt NIE den Suchtext – nur Buckets.
-  assert.deepEqual(analytics.sanitizeProps("search", { qlen: "1-10", results: "1-5", q: "border crossing" }), { qlen: "1-10", results: "1-5" });
+  // search: q ist seit 2026-07-23 gelistet (als "text" PII-bereinigt); ob es
+  // überhaupt mitreist, entscheidet app.js (NUR bei 0 Treffern, s.u.).
+  assert.deepEqual(
+    analytics.sanitizeProps("search", { qlen: "1-10", results: "1-5", q: "border crossing" }),
+    { qlen: "1-10", results: "1-5", q: "border crossing" }
+  );
   // feature_complete: nur Feature-Slug + perfect-Bool.
   assert.deepEqual(analytics.sanitizeProps("feature_complete", { feature: "precios", perfect: true, score: 42 }), { feature: "precios", perfect: true });
   // onboarding_step: Schritt-Slug + Index, sonst nichts.
@@ -209,8 +213,10 @@ test("sanitizeProps: neue Investor-Events (feature_start/share/activation) + gra
   // share: nur WAS geteilt wird (content), NIE Empfänger/Freitext/unbekannte Felder (channel nicht gelistet).
   assert.deepEqual(analytics.sanitizeProps("share", { content: "stats", channel: "native", to: "a@b.com" }), { content: "stats" });
   assert.deepEqual(analytics.sanitizeProps("share", { content: "eine ganze karte" }), {}, "Freitext fällt strukturell durch den Slug-Filter");
-  // activation: nur milestone-Slug, sonst nichts (day_n nicht gelistet, solange nicht gesendet).
-  assert.deepEqual(analytics.sanitizeProps("activation", { milestone: "first_session", day_n: 0, name: "x" }), { milestone: "first_session" });
+  // activation: milestone-Slug + day_n (Time-to-Value, exakter Int) – sonst nichts.
+  assert.deepEqual(analytics.sanitizeProps("activation", { milestone: "first_session", day_n: 3, name: "x" }), { milestone: "first_session", day_n: 3 });
+  // pwa_prompt: nur der Ausgang des nativen Install-Dialogs (Enum), keine URL o. Ä.
+  assert.deepEqual(analytics.sanitizeProps("pwa_prompt", { outcome: "accepted", url: "x y=1" }), { outcome: "accepted" });
   // session_complete: Buckets bleiben, exakte Ints kommen als int durch, Fremdfelder (Karteninhalt) raus.
   assert.deepEqual(
     analytics.sanitizeProps("session_complete", { answered: "5-10", accuracy: "75-90", xp: "30-60", again: "1-3", answered_n: 8, correct_n: 6, xp_n: 30, secs: 180, cardText: "hola" }),
@@ -322,6 +328,44 @@ test("flush({beacon}): nutzt navigator.sendBeacon und leert die Queue", async ()
   assert.ok(beacons[0].url.indexOf("/v1/events") >= 0);
 });
 
+test("flush({beacon}): leert die GANZE Queue in mehreren Batches (kein Restverlust beim Schließen)", async () => {
+  if (typeof Blob === "undefined") return;
+  if (typeof globalThis.navigator === "undefined") { try { globalThis.navigator = {}; } catch (e) { return; } }
+  const beacons = [];
+  try { globalThis.navigator.sendBeacon = () => { beacons.push(1); return true; }; }
+  catch (e) { return; }
+  if (typeof globalThis.navigator.sendBeacon !== "function") return;
+
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  globalThis.window.SC.net = { request: () => { throw new Error("beacon path darf net.request nicht nutzen"); } };
+  analytics.configure({ consent: true });
+  for (let i = 0; i < 120; i++) analytics.track("action", { action: "x" }); // > 2 Batches
+  const r = await analytics.flush({ beacon: true });
+  assert.equal(r.beacon, true);
+  assert.equal(r.sent, 120, "beim Schließen geht der GESAMTE Puffer raus (vorher nur 1 Batch = 50)");
+  assert.equal(beacons.length, 3, "3 Batches à <= 50");
+  const r2 = await analytics.flush({ beacon: true });
+  assert.equal(r2.sent, 0, "Queue ist danach leer");
+});
+
+test("flush({beacon}): abgelehnter Beacon lässt den Rest gepuffert (kein Verlust)", async () => {
+  if (typeof Blob === "undefined" || typeof globalThis.navigator === "undefined") return;
+  let calls = 0;
+  try { globalThis.navigator.sendBeacon = () => { calls++; return calls <= 1; }; } // nur der 1. Beacon geht durch
+  catch (e) { return; }
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  globalThis.window.SC.net = { request: () => Promise.resolve({ ok: true }) };
+  analytics.configure({ consent: true });
+  for (let i = 0; i < 80; i++) analytics.track("action", { action: "x" });
+  const r = await analytics.flush({ beacon: true });
+  assert.equal(r.sent, 50, "erster Batch gesendet, zweiter abgelehnt");
+  // Rest bleibt in der Queue und geht über den regulären Pfad raus.
+  let rest = 0, rr; do { rr = await analytics.flush(); rest += rr.sent; } while (rr.sent > 0);
+  assert.equal(rest, 30);
+});
+
 test("flush: nebenläufiger Beacon-Flush während eines Netz-Flushes verliert keine Events", async () => {
   if (typeof Blob === "undefined" || typeof globalThis.navigator === "undefined" || typeof globalThis.navigator.sendBeacon !== "function") return;
   analytics.resetClientId();
@@ -334,12 +378,226 @@ test("flush: nebenläufiger Beacon-Flush während eines Netz-Flushes verliert ke
   for (let i = 0; i < 60; i++) analytics.track("action", { action: "x" }); // > 1 Batch (>50)
 
   const netP = analytics.flush();                      // nimmt die ersten 50 (seq 0..49), Promise hängt
-  await analytics.flush({ beacon: true });             // nimmt aktuell dieselben 50 und entfernt sie per seq
+  const rb = await analytics.flush({ beacon: true });  // sendet die GANZE Queue (50+10) und entfernt per seq
   resolveNet();                                        // Netz-Flush löst auf -> removeSent ist No-op (schon weg)
   await netP;
 
-  // Die restlichen 10 Events dürfen NICHT verloren gegangen sein.
+  // ALLE 60 Events sind über den Beacon raus (schlimmstenfalls 50 doppelt, nie verloren);
+  // die Queue ist leer – nichts geht beim Überlappen verloren (removeSent per seq, nicht slice).
+  assert.equal(rb.sent, 60);
   globalThis.window.SC.net = { request: () => Promise.resolve({ ok: true }) };
   let rest = 0, r; do { r = await analytics.flush(); rest += r.sent; } while (r.sent > 0);
-  assert.equal(rest, 10, "die zweiten 10 Events bleiben erhalten (removeSent per seq, nicht slice)");
+  assert.equal(rest, 0, "kein Rest übrig und kein Verlust – alles reiste im Beacon-Flush");
+});
+
+// ===== Sampling + Time-to-Value ==========================================
+
+test("Sampling: sampleRate steuert deterministisch pro Geraet, ob gesendet wird", async () => {
+  analytics.resetClientId();
+  globalThis.window.SC.net = { request: () => Promise.resolve({ ok: true }) };
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/", sampleRate: 0 } };
+  analytics.configure({ consent: true });
+
+  // sampleRate 0: nichts wird gepuffert (auch kein Snapshot).
+  analytics.track("action", { action: "x" });
+  let r = await analytics.flush();
+  assert.equal(r.sent, 0, "sampleRate 0 -> track puffert nichts");
+  globalThis.localStorage.removeItem(analytics.SENT_KEY);
+  r = await analytics.maybeSend({}, { day: "2027-01-01", consent: true });
+  assert.equal(r.sent, false, "sampleRate 0 -> auch kein Tages-Snapshot");
+
+  // sampleRate 1 (bzw. fehlend): alles wie bisher.
+  globalThis.window.SC.config.analytics.sampleRate = 1;
+  analytics.track("action", { action: "x" });
+  r = await analytics.flush();
+  assert.equal(r.sent, 1, "sampleRate 1 -> sendet");
+
+  // Zwischenwert: die Entscheidung folgt exakt samplePct(clientId) – deterministisch,
+  // ein Geraet ist stabil drin oder draussen (keine zerrissenen Funnels).
+  globalThis.window.SC.config.analytics.sampleRate = 0.5;
+  const cid = globalThis.localStorage.getItem(analytics.CLIENT_KEY);
+  const inSample = analytics.samplePct(cid) < 50;
+  analytics.track("action", { action: "x" });
+  r = await analytics.flush();
+  assert.equal(r.sent, inSample ? 1 : 0, "Entscheidung == samplePct(clientId) < rate*100");
+
+  // Ungueltige Werte fallen auf 1 (alle senden) zurueck.
+  globalThis.window.SC.config.analytics.sampleRate = "0.5";
+  analytics.track("action", { action: "x" });
+  r = await analytics.flush();
+  assert.equal(r.sent, 1, "ungueltiger sampleRate -> wie 1 (alle)");
+  delete globalThis.window.SC.config.analytics.sampleRate;
+});
+
+test("samplePct: rein, stabil, in [0,100)", () => {
+  assert.equal(analytics.samplePct("abc"), analytics.samplePct("abc"), "deterministisch");
+  assert.notEqual(analytics.samplePct("abc"), analytics.samplePct("abd"), "verschiedene Ids streuen");
+  ["", "abc", "x1y2z3", "ffffffffffffffffff"].forEach((id) => {
+    const p = analytics.samplePct(id);
+    assert.ok(p >= 0 && p < 100, id + " -> " + p);
+  });
+});
+
+test("daysSinceFirstUse: erstes getracktes Event stempelt den Tag; Differenz gedeckelt; Reset loescht", async () => {
+  analytics.resetClientId(); // loescht auch FIRST_KEY
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  globalThis.window.SC.net = { request: () => Promise.resolve({ ok: true }) };
+  analytics.configure({ consent: true });
+  assert.equal(analytics.daysSinceFirstUse(), undefined, "vor dem ersten Event unbekannt -> Feld bleibt weg");
+
+  const t0 = new Date(2026, 5, 1, 12, 0, 0).getTime(); // 1. Juni, lokal
+  analytics.track("app_open", { returning: false }, { now: t0 });
+  assert.equal(analytics.daysSinceFirstUse(t0), 0, "gleicher Tag -> 0 (Aktivierung am Erst-Tag)");
+  assert.equal(analytics.daysSinceFirstUse(t0 + 3 * 86400000), 3);
+  assert.equal(analytics.daysSinceFirstUse(t0 + 1000 * 86400000), 365, "gegen Ausreisser/Fingerprints gedeckelt");
+
+  // Consent-aus/Reset verwirft den Stempel (nichts Wiedererkennbares bleibt).
+  analytics.resetClientId();
+  assert.equal(globalThis.localStorage.getItem(analytics.FIRST_KEY), null);
+  assert.equal(analytics.daysSinceFirstUse(), undefined);
+});
+
+test("track: error-Events werden pro Session gedeckelt (Schutz vor Fehler-Schleifen)", async () => {
+  analytics.resetClientId();
+  globalThis.window.SC.config = { analytics: { enabled: true, endpoint: "https://x.test/" } };
+  analytics.configure({ consent: true });
+  let sent = [];
+  globalThis.window.SC.net = { request: (b, m, p, body) => { sent = sent.concat(body.events); return Promise.resolve({ ok: true }); } };
+
+  // Eine Fehler-Schleife (30 Errors) darf die Ring-Queue nicht fluten.
+  const t0 = 1780000000000;
+  for (let i = 0; i < 30; i++) analytics.track("error", { type: "error", msg: "boom" }, { now: t0 + i });
+  analytics.track("action", { action: "still-works" }, { now: t0 + 1000 });
+  let r; do { r = await analytics.flush(); } while (r.sent > 0);
+  assert.equal(sent.filter((e) => e.event === "error").length, 10, "hoechstens 10 error-Events je Session");
+  assert.equal(sent.filter((e) => e.event === "action").length, 1, "normale Events fliessen weiter");
+
+  // Neue Session (>30 min Inaktivitaet) -> der Deckel beginnt von vorn.
+  sent = [];
+  analytics.track("error", { type: "error", msg: "spaeter" }, { now: t0 + 40 * 60 * 1000 });
+  do { r = await analytics.flush(); } while (r.sent > 0);
+  assert.equal(sent.length, 1, "neue Session -> error wieder erlaubt");
+});
+
+test("sanitizeProps: error traegt den Screen-Kontext (nur Slug, keine Inhalte)", () => {
+  const out = analytics.sanitizeProps("error", { type: "error", msg: "boom", screen: "study", dom: "<div>x</div>" });
+  assert.equal(out.screen, "study");
+  assert.ok(!("dom" in out), "nur die Allowlist");
+  assert.equal(analytics.sanitizeProps("error", { type: "error", screen: "hola que tal" }).screen, undefined, "Freitext faellt strukturell durch");
+});
+
+test("sanitizeProps: app_open.standalone + placement_result (nur Niveau, keine Antworten)", () => {
+  assert.deepEqual(
+    analytics.sanitizeProps("app_open", { returning: true, load_ms: "1-200", src: "direct", standalone: true, ua: "Mozilla x" }),
+    { returning: true, load_ms: "1-200", src: "direct", standalone: true }
+  );
+  assert.deepEqual(
+    analytics.sanitizeProps("placement_result", { level: "B1", finalScore: 0.87, answers: ["a", "b"], review: { q1: "x" } }),
+    { level: "B1" },
+    "nur das grobe Niveau reist - keine Punkte, keine Antworten"
+  );
+  // Streak-Meilensteine laufen ueber das bestehende activation-Event.
+  assert.deepEqual(analytics.sanitizeProps("activation", { milestone: "streak_7", day_n: 12 }), { milestone: "streak_7", day_n: 12 });
+});
+
+// Die Meilenstein-Instrumentierung lebt in app.js (Streak-Update): genau beim
+// Erreichen von 3/7/30 Serientagen, INNERHALB des Tageswechsel-Guards (1x/Tag).
+test("app.js meldet Streak-Meilensteine 3/7/30 aus dem Streak-Update", () => {
+  const src = require("fs").readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  assert.ok(/g\.dailyStreak === 3 \|\| g\.dailyStreak === 7 \|\| g\.dailyStreak === 30/.test(src), "Meilenstein-Pruefung existiert");
+  assert.ok(/milestone: "streak_" \+ g\.dailyStreak/.test(src), "activation-Event mit streak_-Meilenstein");
+});
+
+test("sanitizeProps: session_complete traegt mode/speak_n/context_n (Runden-Summen, kein Freitext)", () => {
+  // mode als Slug + exakte Ints kommen durch; Fremdfelder (Karteninhalt) fallen weg.
+  assert.deepEqual(
+    analytics.sanitizeProps("session_complete", { mode: "listen", speak_n: 4, context_n: 2, cardText: "hola" }),
+    { mode: "listen", speak_n: 4, context_n: 2 }
+  );
+  // Freitext-mode faellt strukturell durch den Slug-Filter (Leerzeichen).
+  assert.deepEqual(
+    analytics.sanitizeProps("session_complete", { mode: "hola que tal", speak_n: 1 }),
+    { speak_n: 1 },
+    "Freitext-mode reist nie"
+  );
+  // Ints werden nie negativ (Sanitizer klemmt auf >= 0).
+  assert.deepEqual(
+    analytics.sanitizeProps("session_complete", { speak_n: -3, context_n: 0 }),
+    { speak_n: 0, context_n: 0 }
+  );
+});
+
+// Die Zaehler-Instrumentierung lebt in app.js: beginRound() setzt die Runden-Summen
+// auf, finishRound() sendet sie als speak_n/context_n – bewusst KEINE Einzel-Events
+// (speak/flip/rate/skip sind als NOISY_ACTIONS vom generischen action-Event ausgenommen).
+test("app.js zaehlt TTS/Kontext pro Runde und sendet sie im session_complete", () => {
+  const src = require("fs").readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  assert.ok(/speak: 0/.test(src), "beginRound initialisiert den TTS-Runden-Zaehler");
+  assert.ok(/context: 0/.test(src), "beginRound initialisiert den Kontext-Runden-Zaehler");
+  assert.ok(/speak_n:/.test(src), "finishRound sendet speak_n im session_complete");
+  assert.ok(/context_n:/.test(src), "finishRound sendet context_n im session_complete");
+});
+
+// ===== Rahmen-Entscheidung 2026-07-23: Karten-ID + Suchtext bei 0 Treffern ====
+// Katalog-Karten-IDs sind kurze Inhalts-Slugs (Referenzen auf App-Inhalte, keine
+// Personendaten); eigene Nutzerkarten reisen NUR als Platzhalter "custom".
+
+test("sanitizeProps: card_rated traegt Katalog-Slug/custom + spoke/ctx, nie Kartentext", () => {
+  // Katalog-Slug + karten-genaue Werkzeug-Bools kommen durch.
+  assert.deepEqual(
+    analytics.sanitizeProps("card_rated", { rating: "good", card: "b02", spoke: true, ctx: false }),
+    { rating: "good", card: "b02", spoke: true, ctx: false }
+  );
+  // Eigene Nutzerkarten: nur der Platzhalter "custom", nie die eigene Id.
+  assert.equal(analytics.sanitizeProps("card_rated", { card: "custom" }).card, "custom");
+  // Freitext-card faellt strukturell durch den Slug-Filter (Leerzeichen).
+  assert.deepEqual(
+    analytics.sanitizeProps("card_rated", { card: "hola que tal", spoke: false }),
+    { spoke: false }
+  );
+  // Fremdfelder (Kartentext/Uebersetzungen) fallen weg (Default deny).
+  assert.deepEqual(
+    analytics.sanitizeProps("card_rated", { card: "b02", de: "Hallo", es: "Hola", text: "voller Kartentext" }),
+    { card: "b02" }
+  );
+});
+
+test("sanitizeProps: search.q wird PII-bereinigt und gekappt; Buckets unveraendert", () => {
+  const out = analytics.sanitizeProps("search", {
+    qlen: "1-10",
+    results: "0",
+    q: "wo ist a@b.com nummer 123456789 " + "x".repeat(200),
+  });
+  assert.equal(out.qlen, "1-10", "qlen-Bucket unveraendert");
+  assert.equal(out.results, "0", "results-Bucket unveraendert");
+  assert.ok(out.q.indexOf("a@b.com") < 0 && out.q.indexOf("@") >= 0, "E-Mail entfernt (-> @)");
+  assert.ok(out.q.indexOf("123456789") < 0 && out.q.indexOf("#") >= 0, "lange Ziffernfolge entfernt (-> #)");
+  assert.ok(out.q.length <= 80, "hart gekappt");
+});
+
+// Die Instrumentierung lebt in app.js: rate() sendet die Karten-ID (eigene Karten
+// als Platzhalter "custom"), maybeTrackSearch() den Suchtext NUR im 0-Treffer-
+// Zweig, und skip() setzt die karten-genauen Werkzeug-Flags zurueck (eine
+// uebersprungene Karte vererbt ihre Werkzeug-Nutzung nicht der naechsten).
+test("app.js: card_rated-Karten-ID, q nur bei 0 Treffern, skip() setzt Flags zurueck", () => {
+  const src = require("fs").readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  assert.ok(
+    /card: card\.custom \? "custom" : String\(card\.id \|\| ""\)/.test(src),
+    "rate() sendet card mit custom-Platzhalter"
+  );
+  assert.ok(
+    /if \(results === 0 && q\.length >= 3\) props\.q = q;/.test(src),
+    "maybeTrackSearch sendet q nur im 0-Treffer-Zweig (>= 3 Zeichen)"
+  );
+  // Der Flag-Reset steht in rate() UND skip() (zweimal im Quelltext) ...
+  const resets = src.match(/state\.session\.curSpoke = false; state\.session\.curCtx = false;/g) || [];
+  assert.equal(resets.length, 2, "curSpoke/curCtx-Reset in rate() UND skip()");
+  // ... und davon nachweislich einer INNERHALB von skip().
+  const skipStart = src.indexOf("function skip()");
+  assert.ok(skipStart > 0, "skip() gefunden");
+  const skipSrc = src.slice(skipStart, src.indexOf("\n  function ", skipStart + 1));
+  assert.ok(
+    /state\.session\.curSpoke = false; state\.session\.curCtx = false;/.test(skipSrc),
+    "skip() setzt curSpoke/curCtx zurueck"
+  );
 });

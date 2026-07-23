@@ -1191,7 +1191,12 @@
   // Pre-Trip) – NICHT in rate()/skip(). Speist die Belohnungs-Inszenierung (celebrate.js).
   function beginRound() {
     state.endless = false; // nur startEndless() schaltet den Endlos-Modus danach scharf
-    state.session = { seen: new Set(), right: 0, wrong: 0 };
+    // speak/context = Runden-Zähler für TTS bzw. Kontext-Panel auf den Karten
+    // DIESER Runde – reisen als speak_n/context_n im session_complete (Summen
+    // statt Einzel-Events, siehe NOISY_ACTIONS). curSpoke/curCtx = karten-genaue
+    // Flags: wurde auf der AKTUELLEN Karte TTS bzw. Kontext benutzt? Reisen als
+    // spoke/ctx im card_rated und werden in rate()/skip() zurückgesetzt.
+    state.session = { seen: new Set(), right: 0, wrong: 0, speak: 0, context: 0, curSpoke: false, curCtx: false };
     state.roundSnapshot = {
       unlocked: Object.assign({}, gamestats.unlocked),
       streak: currentStreak(),
@@ -1271,11 +1276,21 @@
       correct_n: s.right,
       xp_n: xpGained,
       secs: secs,
+      // Lernmodus + Runden-Summen der Karten-Aktionen (TTS/Kontext): bewusst
+      // KEINE Einzel-Events (NOISY_ACTIONS), nur die Summe dieser Runde.
+      mode: state.mode,
+      speak_n: (s.speak | 0),
+      context_n: (s.context | 0),
     });
     // Aktivierung: die allererste je abgeschlossene Lernrunde ist der „Aha"-Moment.
     // snap.everStudied wurde in beginRound() VOR dem Runden-Update gelesen -> ist hier
     // noch der Stand vor dieser Runde. Einmalig pro Nutzer, ohne extra Speicher.
-    if (!snap.everStudied && answered > 0) trackEvent("activation", { milestone: "first_session" });
+    // day_n = Tage seit der ersten (zugestimmten) Nutzung (Time-to-Value) – nur die
+    // Ganzzahl, nie ein Datum; ohne Erstnutzungs-Stempel bleibt das Feld einfach weg.
+    if (!snap.everStudied && answered > 0) {
+      const dayN = window.SC.analytics && window.SC.analytics.daysSinceFirstUse ? window.SC.analytics.daysSinceFirstUse() : undefined;
+      trackEvent("activation", { milestone: "first_session", day_n: dayN });
+    }
   }
 
   // ----- Trip-Ziel (Countdown + Tagesziel) -----
@@ -1976,6 +1991,14 @@
         g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
         g.lastStudyDate = today;
         g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+        // Habit-Meilensteine: genau beim ERREICHEN von 3/7/30 Serientagen einmal
+        // melden (der Tageswechsel-Guard außen herum begrenzt auf 1x/Tag; nach
+        // einem Serien-Riss darf der Meilenstein erneut feuern – Gewohnheit neu
+        // aufgebaut ist ein echtes Signal). day_n = Tage seit Erstnutzung.
+        if (g.dailyStreak === 3 || g.dailyStreak === 7 || g.dailyStreak === 30) {
+          const dayN = window.SC.analytics && window.SC.analytics.daysSinceFirstUse ? window.SC.analytics.daysSinceFirstUse() : undefined;
+          trackEvent("activation", { milestone: "streak_" + g.dailyStreak, day_n: dayN });
+        }
       }
     }
 
@@ -4728,6 +4751,10 @@
   function startPlacementTest() {
     const p = state.placement;
     if (!p) return;
+    // Einstufungstest gestartet (deckt alle Einstiege ab: Profil-Knopf UND
+    // Onboarding) – mit feature_complete in finishPlacement ergibt das die
+    // Abschlussquote im Lernspiel-Funnel.
+    trackEvent("feature_start", { feature: "placement" });
     p.phase = "running"; p.asked = []; p.answers = [];
     p.difficulty = placement.START_DIFFICULTY; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
     p.startedAt = Date.now();
@@ -4804,6 +4831,11 @@
     const result = placement.summarize(asked, p.answers);
     p.result = result;
     p.phase = "done";
+    // Einstufungstest fertig: Abschluss (Funnel-Gegenstück zum feature_start in
+    // startPlacementTest) + NUR das grobe Niveau (A1/A2/B1 …) – keine Antworten,
+    // keine Punkte, kein Frage-Rückblick.
+    trackEvent("feature_complete", { feature: "placement" });
+    trackEvent("placement_result", { level: String(result.level || "") });
     // Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
     // „placement" = letztes Ergebnis (Schnellzugriff), „placementHistory" = alle
     // Durchläufe für den Verlauf/Fortschritt im Profil (neueste zuletzt, gedeckelt).
@@ -5308,9 +5340,19 @@
 
     // Spiel-Zähler buchen und frisch erreichte Badges freischalten/anzeigen.
     recordStudyEvent(rating, now);
-    // Karten-Bewertung als grobes Event (Bewertung + Modus + Stufe + Kategorie –
-    // NIE die Karten-Id oder den Karteninhalt).
-    trackEvent("card_rated", { rating: String(rating), mode: state.mode, level: String(card.lvl || ""), cat: card.cat });
+    // Karten-Bewertung als Event (Bewertung + Modus + Stufe + Kategorie). card =
+    // Katalog-Karten-ID (Inhalts-Slug, Rahmen-Entscheidung 2026-07-23) – EIGENE
+    // Nutzerkarten (custom: true) reisen NIE mit Id/Inhalt, nur als "custom".
+    // spoke/ctx = wurde auf DIESER Karte vor der Bewertung TTS bzw. Kontext benutzt.
+    trackEvent("card_rated", {
+      rating: String(rating), mode: state.mode, level: String(card.lvl || ""), cat: card.cat,
+      card: card.custom ? "custom" : String(card.id || ""),
+      spoke: !!(state.session && state.session.curSpoke),
+      ctx: !!(state.session && state.session.curCtx),
+    });
+    // Flags zurücksetzen: jede Bewertung misst nur die eigene Karte. Bei AGAIN
+    // kommt die Karte erneut – die Flags gelten je Bewertungs-Durchgang.
+    if (state.session) { state.session.curSpoke = false; state.session.curCtx = false; }
     if (state.mode === "listen") recordListenReview();
     syncBadges(now, true);
 
@@ -5341,6 +5383,9 @@
 
     state.queue = state.queue.slice(1);
     if (state.endless) refillEndless(); // Endlos-Modus: Übersprungene rückt nach, kein Rundenende
+    // Karten-genaue Werkzeug-Flags zurücksetzen: eine übersprungene Karte darf
+    // ihre TTS-/Kontext-Nutzung nicht der NÄCHSTEN Karte (deren card_rated) vererben.
+    if (state.session) { state.session.curSpoke = false; state.session.curCtx = false; }
     state.revealed = false;
     state.contextOpen = false;
     state.typeResult = null;
@@ -6673,8 +6718,11 @@
     maybeTrackSearch();
   }
 
-  // Such-Event NUR als grobe Buckets: Länge der Anfrage + Trefferzahl. NIEMALS der
-  // Suchtext selbst. Gedrosselt, damit nicht jeder Tastendruck ein Event erzeugt.
+  // Such-Event als grobe Buckets: Länge der Anfrage + Trefferzahl. Der Suchtext
+  // selbst reist NUR bei 0 Treffern mit (PII-bereinigt und gekappt durch den
+  // "text"-Sanitizer in analytics.js) – Content-Lücken-Analyse „was fehlt im
+  // Katalog?" (Rahmen-Entscheidung 2026-07-23). Bei Treffern reist weiterhin
+  // nie der Suchtext. Gedrosselt, damit nicht jeder Tastendruck ein Event erzeugt.
   let lastSearchTrackAt = 0;
   function maybeTrackSearch() {
     const q = String(state.searchQuery || "").trim();
@@ -6683,7 +6731,10 @@
     if (now - lastSearchTrackAt < 1000) return;
     lastSearchTrackAt = now;
     const results = searchResultsData(q).groups.reduce((n, g) => n + g.items.length, 0);
-    trackEvent("search", { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [1, 5, 20]) });
+    const props = { qlen: abucket(q.length, [3, 6, 12, 24]), results: abucket(results, [1, 5, 20]) };
+    // 0 Treffer + sinnvolle Mindestlänge -> Suchbegriff mitsenden (Content-Lücke).
+    if (results === 0 && q.length >= 3) props.q = q;
+    trackEvent("search", props);
   }
 
   function clearSearch() {
@@ -6887,9 +6938,14 @@
   // „App installieren" (Android/Chromium): nativen Installations-Dialog zeigen.
   // Erfolg/Abbruch löst über den setOnChange-Callback in install.js ein Re-Render
   // aus (bei Erfolg verschwindet die Karte, weil die App dann standalone läuft).
+  // Der Ausgang speist den Install-Funnel (pwa_prompt -> pwa_installed);
+  // "unavailable" (kein Dialog gezeigt) ist bewusst kein Funnel-Schritt.
   function installApp() {
     const inst = window.SC && window.SC.install;
-    if (inst) inst.promptInstall();
+    if (!inst) return;
+    Promise.resolve(inst.promptInstall()).then((outcome) => {
+      if (outcome === "accepted" || outcome === "dismissed") trackEvent("pwa_prompt", { outcome: outcome });
+    }).catch(() => { /* Telemetrie darf die App nie stören */ });
   }
 
   function saveCard(input) {
@@ -7808,10 +7864,17 @@
     "search-clear": (el) => { clearSearch(); },
     "search-country": (el) => { openSearchCountry(el.dataset.id); },
     "flip": (el) => { flip(); },
-    "toggle-context": (el) => { toggleContext(); },
+    // Runden-Zähler: nur auf dem Lern-Screen zählen – toggle-context existiert
+    // auch auf der Karten-Detailseite (contextBlock, state.screen === "card"),
+    // das ist kein Runden-Kontext. Summe reist als context_n im session_complete.
+    "toggle-context": (el) => { if (state.screen === "study" && state.session) { state.session.context++; state.session.curCtx = true; } toggleContext(); },
     "rate": (el) => { rate(el.dataset.rating); },
     "skip": (el) => { skip(); },
-    "speak": (el) => { speakCurrent(); },
+    // Runden-Zähler (analog toggle-context): "speak" rendert zwar nur auf den
+    // Lernkarten, der Guard hält den Zähler trotzdem strikt auf die Runde
+    // (fav-speak/speak-card/cuerpo-speak zählen bewusst NICHT). Summe reist
+    // als speak_n im session_complete.
+    "speak": (el) => { if (state.screen === "study" && state.session) { state.session.speak++; state.session.curSpoke = true; } speakCurrent(); },
     "open-stats": (el) => { goStats(); },
     "open-settings": (el) => { goSettings(); },
     "open-reise": (el) => { goReise(); },
@@ -8772,17 +8835,22 @@
     // App-Start + grobe Ladezeit (einmal pro Start).
     let loadMs = 0;
     try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }
-    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc(), cta_src: detectCtaSrc(), var: detectExpVariant() });
+    // standalone = läuft gerade als installierte PWA (App-Fenster statt Browser-Tab):
+    // misst, ob Installationen auch BENUTZT werden (Gegenstück zum Install-Funnel).
+    const standalone = !!(window.SC.install && window.SC.install.isInstalled && window.SC.install.isInstalled());
+    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc(), cta_src: detectCtaSrc(), var: detectExpVariant(), standalone: standalone });
 
     // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.
+    // `screen` = aktuelle Ansicht als Kontext (WO krachte es?) – nur der Screen-Slug,
+    // nie Inhalte. analytics.js deckelt error-Events zudem pro Session (Schleifen-Schutz).
     try {
       window.addEventListener("error", (ev) => {
         const file = ev && ev.filename ? String(ev.filename).split("/").pop() : "";
-        trackEvent("error", { type: "error", msg: ev && ev.message, src: ev && ev.lineno ? file + ":" + ev.lineno : file, line: (ev && ev.lineno) || 0 });
+        trackEvent("error", { type: "error", msg: ev && ev.message, src: ev && ev.lineno ? file + ":" + ev.lineno : file, line: (ev && ev.lineno) || 0, screen: state.screen });
       });
       window.addEventListener("unhandledrejection", (ev) => {
         const r = ev && ev.reason;
-        trackEvent("error", { type: "promise", msg: r && (r.message || String(r)), line: 0 });
+        trackEvent("error", { type: "promise", msg: r && (r.message || String(r)), line: 0, screen: state.screen });
       });
       window.addEventListener("appinstalled", () => trackEvent("pwa_installed", {}));
     } catch (e) { /* addEventListener fehlt – egal */ }

@@ -381,7 +381,11 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
     { event: "session_start", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 1000, props: {} },
     { event: "session_complete", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 2000, props: { secs: 60 } },
   ], [], { now: NOW }).investor.rounds;
-  assert.deepEqual(r, { started: 2, completed: 1, completionPct: 50 });
+  assert.equal(r.started, 2);
+  assert.equal(r.completed, 1);
+  assert.equal(r.completionPct, 50);
+  // byOrigin: beide Starts ohne origin-Feld -> "?"-Pfad, 1 Abschluss LIFO-zugeordnet.
+  assert.deepEqual(r.byOrigin, [{ origin: "?", starts: 2, completes: 1, pct: 50 }]);
   // Qualität: keine Fehler im Fixture -> 0/Sitzung; Bounce = 2 von 3 Nutzern nur 1 Tag aktiv (B,C) = 67 %.
   assert.equal(inv.quality.errors, 0);
   assert.equal(inv.quality.errorsPerSession, 0);
@@ -401,4 +405,252 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
   const al = aggregate(withErrs, [], { now: NOW }).investor.alerts;
   assert.equal(al.length, 1);
   assert.deepEqual(al[0], { version: "9.9.9", errors: 2, events: 20, ratePct: 10 });
+});
+
+test("aggregate: PWA-Install-Funnel + Time-to-Value (investor.pwa / investor.timeToValue)", () => {
+  const ev = fixtureEvents().concat([
+    { event: "pwa_prompt", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 400000, props: { outcome: "accepted" } },
+    { event: "pwa_prompt", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 1000, props: { outcome: "dismissed" } },
+    { event: "pwa_installed", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 500000, props: {} },
+    { event: "activation", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 2000, props: { milestone: "first_session", day_n: 0 } },
+    { event: "activation", day: TODAY, clientId: "C", sessionId: "s4", ts: T0 + 2000, props: { milestone: "first_session", day_n: 5 } },
+  ]);
+  const s = aggregate(ev, USAGE, { now: NOW });
+
+  // Install-Funnel: 2 Prompts (1 angenommen, 1 abgelehnt), 1 Installation.
+  assert.deepEqual(s.investor.pwa, {
+    prompts: 2, accepted: 1, dismissed: 1, installs: 1, acceptPct: 50,
+    // Fixture: 3 app_open (A heute, B heute, A gestern), keins davon standalone.
+    opens: 3, standaloneOpens: 0, standaloneOpenPct: 0,
+  });
+
+  // Time-to-Value aus activation.day_n: [0, 5] -> Median 3 (gerundet), 50 % am selben Tag.
+  const ttv = s.investor.timeToValue;
+  assert.equal(ttv.count, 2);
+  assert.equal(ttv.medianDays, 3);
+  assert.equal(ttv.sameDayPct, 50);
+  const hist = new Map(ttv.histogram.map((r) => [r.bucket, r.count]));
+  assert.equal(hist.get("0"), 1, "same-day Aktivierung");
+  assert.equal(hist.get("4-7"), 1, "day_n=5");
+  assert.equal(ttv.histogram[0].bucket, "0", "der wichtigste Bucket (same-day) fuehrt immer an");
+
+  // day_n speist NUR first_session; kaputte Werte werden ignoriert.
+  const s2 = aggregate([{ event: "activation", day: TODAY, clientId: "X", sessionId: "sx", ts: T0, props: { milestone: "first_session", day_n: -3 } }], [], { now: NOW });
+  assert.equal(s2.investor.timeToValue.count, 0, "negative day_n verworfen");
+
+  // KPI-CSV: echte Werte mit Daten, ehrliches n/a ohne Datenbasis.
+  const csv = toKpiCsv(s);
+  assert.ok(csv.indexOf("PWA-Install-Akzeptanz %,50") >= 0, csv);
+  assert.ok(csv.indexOf("Median Tage bis 1. Runde,3") >= 0, csv);
+  const csv0 = toKpiCsv(aggregate([], [], { now: NOW }));
+  assert.ok(csv0.indexOf("PWA-Install-Akzeptanz %,n/a") >= 0, "ohne Prompts keine erfundene 0");
+  assert.ok(csv0.indexOf("Median Tage bis 1. Runde,n/a") >= 0, "ohne Aktivierungen keine erfundene 0");
+});
+
+test("aggregate: Aktivierung je Akquise-Quelle (welcher Kanal bringt Lernende?)", () => {
+  const ev = [
+    // A ueber task-Link, aktiviert; B direct, nicht aktiviert; C task, nicht aktiviert.
+    { event: "app_open", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { src: "task" } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1000, props: {} },
+    { event: "app_open", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { src: "direct" } },
+    { event: "app_open", day: TODAY, clientId: "C", sessionId: "s3", ts: T0, props: { src: "task" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  const by = new Map(s.investor.activation.bySource.map((r) => [r.src, r]));
+  assert.deepEqual(by.get("task"), { src: "task", users: 2, activated: 1, pct: 50 });
+  assert.deepEqual(by.get("direct"), { src: "direct", users: 1, activated: 0, pct: 0 });
+  assert.equal(s.investor.activation.bySource[0].src, "task", "groesste Quelle zuerst");
+
+  // Ohne app_open-Quelle: Nutzer landet unter "unknown" (statt zu verschwinden).
+  const s2 = aggregate([{ event: "session_complete", day: TODAY, clientId: "X", sessionId: "sx", ts: T0, props: {} }], [], { now: NOW });
+  assert.deepEqual(s2.investor.activation.bySource, [{ src: "unknown", users: 1, activated: 1, pct: 100 }]);
+});
+
+test("aggregate: Fehler je Screen (WO kracht es?)", () => {
+  const ev = fixtureEvents().concat([
+    { event: "error", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 500, props: { type: "error", msg: "boom", screen: "study" } },
+    { event: "error", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 600, props: { type: "promise", msg: "boom", screen: "study" } },
+    { event: "error", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 700, props: { type: "error", msg: "kaputt", screen: "home" } },
+  ]);
+  const s = aggregate(ev, [], { now: NOW });
+  const scr = new Map(s.errorsByScreen.map((r) => [r.key, r.count]));
+  assert.equal(scr.get("study"), 2);
+  assert.equal(scr.get("home"), 1);
+  // Das Fixture-error-Event ohne screen-Feld taucht hier nicht auf (kein "undefined"-Key).
+  assert.ok(!scr.has("undefined") && !scr.has(""), "nur Events mit screen-Feld");
+});
+
+test("aggregate: Runden-Abschluss je Startpfad (sessionId-Paarung, LIFO)", () => {
+  const ev = [
+    // s1: Runde 1 (ruta) abgeschlossen, Runde 2 (category) abgebrochen.
+    { event: "session_start", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { origin: "ruta", mode: "flip" } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 60000, props: {} },
+    { event: "session_start", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 120000, props: { origin: "category" } },
+    // s2: Start ohne Abschluss (ruta).
+    { event: "session_start", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { origin: "ruta" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  const by = new Map(s.investor.rounds.byOrigin.map((r) => [r.origin, r]));
+  assert.deepEqual(by.get("ruta"), { origin: "ruta", starts: 2, completes: 1, pct: 50 });
+  assert.deepEqual(by.get("category"), { origin: "category", starts: 1, completes: 0, pct: 0 });
+  assert.equal(s.investor.rounds.byOrigin[0].origin, "ruta", "meistgenutzter Startpfad zuerst");
+  // Globale Zaehler bleiben unveraendert konsistent.
+  assert.equal(s.investor.rounds.started, 3);
+  assert.equal(s.investor.rounds.completed, 1);
+});
+
+test("aggregate: Habit-Funnel, Einstufung, Startzeit-Verteilung, Standalone-Anteil", () => {
+  const ev = [
+    { event: "app_open", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { returning: false, load_ms: "201-500", standalone: true } },
+    { event: "app_open", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { returning: true, load_ms: "1-200", standalone: false } },
+    { event: "activation", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { milestone: "first_session", day_n: 0 } },
+    { event: "activation", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1, props: { milestone: "streak_3", day_n: 3 } },
+    { event: "activation", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 2, props: { milestone: "streak_7" } },
+    { event: "activation", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 3, props: { milestone: "streak_3" } },
+    { event: "activation", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 4, props: { milestone: "streak_3" } }, // Duplikat -> distinkt gezaehlt
+    { event: "placement_result", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { level: "A2" } },
+    { event: "placement_result", day: TODAY, clientId: "C", sessionId: "s3", ts: T0, props: { level: "A2" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  // Habit-Funnel: 1 aktiviert (A), 2x streak_3 (A,B distinkt), 1x streak_7 (A), 0x streak_30.
+  assert.deepEqual(s.investor.habit.funnel.map((f) => f.count), [1, 2, 1, 0]);
+  assert.deepEqual(s.investor.habit.funnel.map((f) => f.step), ["first_session", "streak_3", "streak_7", "streak_30"]);
+  // streak_-day_n verfaelscht die Time-to-Value NICHT (nur first_session zaehlt).
+  assert.equal(s.investor.timeToValue.count, 1);
+  // Einstufung: Niveau-Verteilung.
+  assert.deepEqual(s.learning.placementLevels, [{ key: "A2", count: 2 }]);
+  // Startzeit-Verteilung aus app_open.load_ms.
+  const lm = new Map(s.perf.loadMs.map((r) => [r.key, r.count]));
+  assert.equal(lm.get("201-500"), 1);
+  assert.equal(lm.get("1-200"), 1);
+  // Standalone-Anteil der App-Starts (installierte PWA wird BENUTZT).
+  assert.equal(s.investor.pwa.opens, 2);
+  assert.equal(s.investor.pwa.standaloneOpens, 1);
+  assert.equal(s.investor.pwa.standaloneOpenPct, 50);
+  // KPI-CSV: neue Zeilen.
+  const csv = toKpiCsv(s);
+  assert.ok(csv.indexOf("Standalone-Starts %,50") >= 0, csv);
+  assert.ok(csv.indexOf("Habit: 7-Tage-Serie (Personen),1") >= 0, csv);
+  const csv0 = toKpiCsv(aggregate([], [], { now: NOW }));
+  assert.ok(csv0.indexOf("Standalone-Starts %,n/a") >= 0, "ohne App-Starts ehrliches n/a");
+});
+
+// ===== Neue Auswertungen: Modus-Genauigkeit, TTS/Kontext, Module, Screen-Reichweite =====
+
+test("aggregate: modeRounds — abgeschlossene Runden & Genauigkeit je Lernmodus", () => {
+  const ev = [
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { mode: "flip", answered_n: 10, correct_n: 9 } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1000, props: { mode: "flip", answered_n: 8, correct_n: 6 } },
+    { event: "session_complete", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { mode: "listen" } },
+    { event: "session_complete", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 2000, props: {} }, // ohne mode -> taucht nicht auf
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  // flip: 15/18 richtig -> 83 %; listen ohne answered_n -> gemessene 0 statt NaN.
+  // Sortierung: rounds absteigend -> flip zuerst.
+  assert.deepEqual(s.learning.modeRounds, [
+    { mode: "flip", rounds: 2, answered: 18, accuracyPct: 83 },
+    { mode: "listen", rounds: 1, answered: 0, accuracyPct: 0 },
+  ]);
+});
+
+test("aggregate: learning.tools — Sprachausgabe & Kontexte je Runde + KPI-CSV", () => {
+  const ev = [
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { mode: "flip", speak_n: 4, context_n: 2 } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1000, props: { mode: "type", speak_n: 0, context_n: 1 } },
+    { event: "session_complete", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { mode: "listen" } }, // speak_n/context_n fehlen
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  // speak_n 4/0/fehlend -> nur die 4 zaehlt (1 Runde); context_n 2/1/fehlend -> 3 in 2 Runden.
+  assert.deepEqual(s.learning.tools, {
+    rounds: 3,
+    tts: { total: 4, rounds: 1, perRound: 1.3, roundSharePct: 33 },
+    context: { total: 3, rounds: 2, perRound: 1, roundSharePct: 67 },
+  });
+  // KPI-CSV: echter Wert mit Daten, ehrliches n/a ohne einzige Runde.
+  const csv = toKpiCsv(s);
+  assert.ok(csv.indexOf("Runden mit Sprachausgabe %,33") >= 0, csv);
+  const csv0 = toKpiCsv(aggregate([], [], { now: NOW }));
+  assert.ok(csv0.indexOf("Runden mit Sprachausgabe %,n/a") >= 0, "ohne Runden keine erfundene 0");
+});
+
+test("aggregate: engagement.modules — Starts, Nutzer, Stammnutzer (>= 3 Tage)", () => {
+  const ev = [
+    // A startet "precios" an 3 VERSCHIEDENEN Tagen -> Stammnutzer; B nur heute.
+    { event: "feature_start", day: "2026-06-28", clientId: "A", sessionId: "s1", ts: T0 - 2 * 86400000, props: { feature: "precios" } },
+    { event: "feature_start", day: "2026-06-29", clientId: "A", sessionId: "s2", ts: T0 - 86400000, props: { feature: "precios" } },
+    { event: "feature_start", day: TODAY, clientId: "A", sessionId: "s3", ts: T0, props: { feature: "precios" } },
+    { event: "feature_start", day: TODAY, clientId: "B", sessionId: "s4", ts: T0, props: { feature: "precios" } },
+    { event: "feature_start", day: TODAY, clientId: "A", sessionId: "s3", ts: T0 + 1000, props: { feature: "dialogos" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  assert.deepEqual(s.engagement.modules, [
+    { module: "precios", starts: 4, users: 2, regulars: 1, regularPct: 50 },
+    { module: "dialogos", starts: 1, users: 1, regulars: 0, regularPct: 0 },
+  ]);
+});
+
+test("aggregate: engagement.screenReach — Views, Nutzer, Stammnutzer je Screen", () => {
+  const ev = [
+    // A sieht "home" an 3 verschiedenen Tagen -> Stammnutzer; B einmal; "stats" 1x.
+    { event: "screen_view", day: "2026-06-28", clientId: "A", sessionId: "s1", ts: T0 - 2 * 86400000, props: { screen: "home" } },
+    { event: "screen_view", day: "2026-06-29", clientId: "A", sessionId: "s2", ts: T0 - 86400000, props: { screen: "home" } },
+    { event: "screen_view", day: TODAY, clientId: "A", sessionId: "s3", ts: T0, props: { screen: "home" } },
+    { event: "screen_view", day: TODAY, clientId: "B", sessionId: "s4", ts: T0, props: { screen: "home" } },
+    { event: "screen_view", day: TODAY, clientId: "A", sessionId: "s3", ts: T0 + 1000, props: { screen: "stats" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  assert.deepEqual(s.engagement.screenReach, [
+    { screen: "home", views: 4, users: 2, regulars: 1 },
+    { screen: "stats", views: 1, users: 1, regulars: 0 },
+  ]);
+});
+
+// ===== Karten-genaue Auswertungen & Such-Lücken (props.card/spoke/ctx bzw. props.q) =====
+
+test("aggregate: difficultCards (Karten-Ebene, ohne custom) + cardToolUse (inkl. custom)", () => {
+  const E = []; let q = 0;
+  const mk = (props) => E.push({ v: 1, seq: q++, event: "card_rated", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props });
+  // b02: 6 Ratings, 3x again, 2x spoke, 1x ctx -> againPct 50, spokePct 33 (2/6), ctxPct 17 (1/6)
+  mk({ rating: "again", card: "b02", spoke: true, ctx: true });
+  mk({ rating: "again", card: "b02", spoke: true, ctx: false });
+  mk({ rating: "again", card: "b02", spoke: false, ctx: false });
+  mk({ rating: "good", card: "b02", spoke: false, ctx: false });
+  mk({ rating: "good", card: "b02" });
+  mk({ rating: "easy", card: "b02" });
+  // e07: 5 Ratings, 0x again, kein spoke/ctx -> zweiter Platz mit againPct 0
+  for (let i = 0; i < 5; i++) mk({ rating: "good", card: "e07" });
+  // x99: nur 3 Ratings -> unter Mindestvolumen 5, fliegt aus difficultCards raus
+  mk({ rating: "again", card: "x99", spoke: true, ctx: true });
+  mk({ rating: "again", card: "x99" });
+  mk({ rating: "again", card: "x99" });
+  // custom: eigene Nutzerkarten bleiben aus difficultCards draussen, zaehlen aber in cardToolUse
+  mk({ rating: "again", card: "custom", spoke: true, ctx: true });
+  mk({ rating: "good", card: "custom" });
+  const s = aggregate(E, [], { now: NOW });
+  assert.deepEqual(s.learning.difficultCards, [
+    { card: "b02", total: 6, againPct: 50, spokePct: 33, ctxPct: 17 },
+    { card: "e07", total: 5, againPct: 0, spokePct: 0, ctxPct: 0 },
+  ], "nur b02/e07 (>= 5 Ratings, ohne custom), sortiert againPct desc dann total desc");
+  // Werkzeug-Nutzung ueber ALLE 16 Bewertungen mit card-Feld (6+5+3+2, inkl. custom):
+  // spoke 4/16 = 25 %, ctx 3/16 = 18.75 -> 19 %.
+  assert.deepEqual(s.learning.cardToolUse, { ratings: 16, spokePct: 25, ctxPct: 19 });
+});
+
+test("aggregate: search.misses — normalisierte Null-Treffer-Begriffe, Bestandsfelder unveraendert", () => {
+  const E = []; let q = 0;
+  const mk = (props) => E.push({ v: 1, seq: q++, event: "search", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props });
+  mk({ results: "0", q: "Zollkontrolle" });
+  mk({ results: "0", q: "zollkontrolle " }); // Gross-/Kleinschreibung + Leerraum -> derselbe Begriff
+  mk({ results: "0", q: "Mietvertrag" });
+  mk({ results: "1-5", q: "hola" });         // Treffer -> q zaehlt NICHT, auch wenn es faelschlich mitkaeme
+  mk({ results: "0" });                      // Null-Treffer ohne q -> keine miss-Zeile
+  const s = aggregate(E, [], { now: NOW });
+  assert.deepEqual(s.search.misses, [
+    { key: "zollkontrolle", count: 2 },
+    { key: "mietvertrag", count: 1 },
+  ]);
+  // Bestehendes search-Objekt bleibt korrekt: 5 Suchen, davon 4 ohne Treffer.
+  assert.equal(s.search.total, 5);
+  assert.equal(s.search.zero, 4);
+  assert.equal(s.search.noResultPct, 80);
 });

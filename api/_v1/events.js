@@ -12,6 +12,27 @@ const str = (v, n) => (typeof v === "string" ? v.slice(0, n) : null);
 const int = (v) => (typeof v === "number" && isFinite(v) ? Math.trunc(v) : null);
 const MAX_BATCH = 50;
 
+// props hart deckeln (≤16 Felder, nur bool/endliche Zahl/kurzer String): der echte
+// Client sendet ohnehin nur die Allowlist (analytics.js:EVENTS), aber der Endpunkt
+// ist auth-frei – ohne diese Schranke könnte JEDER bis zu 64 KB beliebig
+// verschachteltes JSON pro Event in den append-only Store schreiben.
+// Object.fromEntries DEFINIERT eigene Properties (kein Setter-Aufruf), daher ist
+// auch ein "__proto__"-Schlüssel hier keine Prototype-Pollution-Senke.
+const PROP_KEY = /^[a-z0-9_]{1,32}$/i;
+function cleanProps(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p)) return {};
+  const pairs = [];
+  for (const k of Object.keys(p)) {
+    if (pairs.length >= 16) break;
+    if (!PROP_KEY.test(k)) continue;
+    const v = p[k];
+    if (typeof v === "boolean") pairs.push([k, v]);
+    else if (typeof v === "number" && isFinite(v)) pairs.push([k, v]);
+    else if (typeof v === "string") pairs.push([k, v.slice(0, 80)]);
+  }
+  return Object.fromEntries(pairs);
+}
+
 function mapEvent(e) {
   if (!e || typeof e !== "object") return null;
   return {
@@ -27,7 +48,7 @@ function mapEvent(e) {
     edition: str(e.edition, 40),
     platform: str(e.platform, 24),
     event: str(e.event, 40),
-    props: e.props && typeof e.props === "object" && !Array.isArray(e.props) ? e.props : {},
+    props: cleanProps(e.props),
   };
 }
 
