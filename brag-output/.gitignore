@@ -1,0 +1,10 @@
+# Verifikations-Artefakte aus `npx hyperframes snapshot` – bei Bedarf neu erzeugen.
+composition/snapshots/
+
+# Musik-Bett bewusst NICHT versioniert: "Happy Beats / Business Moves" von ende.app,
+# gebündelt im /brag-Skill unter ~/.claude/skills/brag/assets/music/. Die Lizenzlage
+# für eine Weiterverbreitung der Rohdatei ist nicht geklärt (Hinweis im Skill-README),
+# deshalb liegt hier nur das Cue-Preset. Vor einem Re-Render zurückkopieren:
+#   cp ~/.claude/skills/brag/assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3 \
+#      brag-output/composition/assets/music/
+composition/assets/music/*.mp3

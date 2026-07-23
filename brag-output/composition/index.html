@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="de" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>HolaRuta Brag</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Bricolage Grotesque";
+        src: url("assets/fonts/bricolage-grotesque-600-800-latin.woff2") format("woff2");
+        font-weight: 600 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Instrument Sans";
+        src: url("assets/fonts/instrument-sans-400-700-latin.woff2") format("woff2");
+        font-weight: 400 700;
+        font-display: block;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #241510;
+      }
+      body { font-family: "Instrument Sans", system-ui, sans-serif; }
+
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+      .clip { position: absolute; inset: 0; }
+      .fill { position: absolute; inset: 0; background: #241510; }
+
+      /* ---------- Scene 1: Hook ---------- */
+      #hook-inner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 0 100px;
+        gap: 36px;
+      }
+      #hook-logo {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        margin-bottom: 20px;
+        opacity: 0;
+      }
+      #hook-logo svg { width: 92px; height: 92px; border-radius: 24px; display: block; }
+      #hook-wordmark {
+        font: 800 56px/1 "Bricolage Grotesque", sans-serif;
+        color: #fbf3e4;
+      }
+      #hook-wordmark span { color: #e06a40; }
+      .eyebrow {
+        font: 600 30px/1 "Instrument Sans", sans-serif;
+        letter-spacing: 0.22em;
+        color: rgba(251, 243, 228, 0.68);
+        opacity: 0;
+      }
+      .hookline {
+        font: 800 96px/1.08 "Bricolage Grotesque", sans-serif;
+        color: #fbf3e4;
+        max-width: 880px;
+        opacity: 0;
+      }
+      .hookline.hl { color: #e06a40; }
+
+      /* ---------- Scenes 2+3: App flow ---------- */
+      #app-inner { display: grid; place-items: center; opacity: 0; }
+      .app-col {
+        width: 880px;
+        height: 1390px;
+        background: #fbf3e4;
+        border-radius: 40px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 40px 90px rgba(0, 0, 0, 0.45);
+      }
+      .topstripe {
+        height: 12px;
+        flex: 0 0 12px;
+        background: linear-gradient(90deg, #c2502e, #e9a23b);
+      }
+      .appbar {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 28px 44px 22px;
+        border-bottom: 1.5px solid rgba(45, 27, 18, 0.12);
+      }
+      .appbar svg { width: 64px; height: 64px; border-radius: 16px; display: block; }
+      .appbar-name {
+        font: 800 44px/1 "Bricolage Grotesque", sans-serif;
+        color: #2d1b12;
+      }
+      .appbar-name span { color: #c2502e; }
+      .app-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 44px 44px;
+        gap: 36px;
+      }
+      .chips {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        width: 100%;
+      }
+      .chip {
+        position: relative;
+        font: 600 32px/1 "Instrument Sans", sans-serif;
+        color: #2d1b12;
+        background: #fffdf6;
+        border: 1.5px solid rgba(45, 27, 18, 0.18);
+        border-radius: 999px;
+        padding: 22px 34px;
+        opacity: 0;
+      }
+      .chip-active {
+        position: absolute;
+        inset: -2px;
+        border: 3px solid #c2502e;
+        border-radius: 999px;
+        opacity: 0;
+      }
+      .card-stage {
+        position: relative;
+        width: 792px;
+        height: 560px;
+        perspective: 1600px;
+        opacity: 0;
+      }
+      .card-3d {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+      }
+      .card-face {
+        position: absolute;
+        inset: 0;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        background: #fffdf6;
+        border: 1.5px solid rgba(45, 27, 18, 0.14);
+        border-radius: 32px;
+        box-shadow: 0 22px 50px rgba(45, 27, 18, 0.14);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 26px;
+        padding: 44px;
+        text-align: center;
+      }
+      .card-face.back { transform: rotateY(180deg); }
+      .card-kicker {
+        font: 600 26px/1 "Instrument Sans", sans-serif;
+        letter-spacing: 0.2em;
+        color: rgba(45, 27, 18, 0.5);
+      }
+      .card-q {
+        font: 700 66px/1.2 "Bricolage Grotesque", sans-serif;
+        color: #2d1b12;
+      }
+      .card-a {
+        font: 800 74px/1.15 "Bricolage Grotesque", sans-serif;
+        color: #a23e20;
+      }
+      .tip-pill {
+        font: 600 30px/1 "Instrument Sans", sans-serif;
+        color: #a23e20;
+        background: rgba(194, 80, 46, 0.13);
+        border-radius: 999px;
+        padding: 16px 28px;
+      }
+      /* Karten-Knöpfe auf der Rückseite (wie .cardbtn--ctx / --speak in der App) */
+      .cardbtn-speak {
+        position: absolute;
+        right: 26px;
+        bottom: 26px;
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 1.5px solid rgba(45, 27, 18, 0.22);
+        background: #fffdf6;
+        color: #2d1b12;
+      }
+      .cardbtn-speak svg { width: 38px; height: 38px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .cardbtn-ctx {
+        position: absolute;
+        left: 26px;
+        bottom: 26px;
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 1.5px solid rgba(45, 27, 18, 0.22);
+        background: #fffdf6;
+        color: #2d1b12;
+      }
+      .cardbtn-ctx svg { width: 40px; height: 40px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+      #ctx-btn-on {
+        position: absolute;
+        inset: -1.5px;
+        border-radius: 50%;
+        background: #c2502e;
+        opacity: 0;
+      }
+      .cardbtn-ctx .ico-wrap { position: relative; display: grid; place-items: center; }
+      #ctx-icon-on { position: absolute; inset: 0; display: grid; place-items: center; color: #fbf3e4; opacity: 0; }
+
+      /* Kontextfenster (1:1 nach .context-panel aus styles.css) */
+      .ctx-panel {
+        width: 100%;
+        text-align: left;
+        background: #fffdf6;
+        border: 1.5px solid rgba(45, 27, 18, 0.14);
+        border-radius: 26px;
+        padding: 28px 32px;
+        box-shadow: 0 2px 0 rgba(45, 27, 18, 0.1);
+        opacity: 0;
+      }
+      .ctx-title {
+        font: 800 34px/1.2 "Bricolage Grotesque", sans-serif;
+        color: #2d1b12;
+        margin-bottom: 18px;
+      }
+      .ctx-es {
+        font: 800 36px/1.35 "Instrument Sans", sans-serif;
+        color: #a23e20;
+        margin-bottom: 6px;
+      }
+      .ctx-de { font: 400 31px/1.4 "Instrument Sans", sans-serif; color: #6e5a4c; }
+      .ctx-block { margin-top: 18px; }
+      .ctx-label {
+        font: 800 23px/1 "Instrument Sans", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6e5848;
+      }
+      .ctx-text { font: 400 30px/1.45 "Instrument Sans", sans-serif; color: #6e5a4c; margin-top: 6px; }
+
+      .rating {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        width: 100%;
+        opacity: 0;
+      }
+      .rate-btn {
+        position: relative;
+        font: 600 34px/1 "Instrument Sans", sans-serif;
+        color: #2d1b12;
+        background: #fffdf6;
+        border: 1.5px solid #c2502e;
+        border-radius: 999px;
+        padding: 26px 44px;
+        overflow: hidden;
+      }
+      .rate-btn .btn-fill {
+        position: absolute;
+        inset: 0;
+        background: #c2502e;
+        border-radius: 999px;
+        opacity: 0;
+      }
+      .rate-btn .btn-label { position: relative; }
+      .rate-btn .btn-label-on {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: #ffffff;
+        opacity: 0;
+      }
+      /* ---------- Scene 4: Zahlen (eigene Seite) ---------- */
+      #stats-inner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0 110px;
+        opacity: 0;
+      }
+      #stats-eyebrow {
+        font: 600 30px/1 "Instrument Sans", sans-serif;
+        letter-spacing: 0.22em;
+        color: rgba(251, 243, 228, 0.6);
+        margin-bottom: 96px;
+        opacity: 0;
+      }
+      .stat-row {
+        width: 100%;
+        text-align: center;
+        padding: 52px 0;
+        opacity: 0;
+      }
+      .stat-row + .stat-row { border-top: 1.5px solid rgba(251, 243, 228, 0.16); }
+      .stat-num {
+        font: 800 132px/1 "Bricolage Grotesque", sans-serif;
+        color: #e06a40;
+      }
+      .stat-label {
+        font: 500 38px/1.3 "Instrument Sans", sans-serif;
+        color: rgba(251, 243, 228, 0.82);
+        margin-top: 16px;
+      }
+
+      .tap-ring {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border: 5px solid rgba(194, 80, 46, 0.85);
+        border-radius: 50%;
+        opacity: 0;
+        pointer-events: none;
+      }
+      #tap-ring-chip { left: 50%; top: 412px; margin-left: 6px; }
+      #tap-ring-gut { left: 50%; top: 1506px; margin-left: -49px; }
+
+      /* ---------- Scene 4: Outro ---------- */
+      #outro-inner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 44px;
+        opacity: 0;
+      }
+      #outro-logo { width: 230px; height: 230px; border-radius: 52px; display: block; opacity: 0; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5); }
+      #outro-name {
+        font: 800 108px/1 "Bricolage Grotesque", sans-serif;
+        color: #fbf3e4;
+        opacity: 0;
+      }
+      #outro-name span { color: #e06a40; }
+      #outro-tagline {
+        font: 500 40px/1.35 "Instrument Sans", sans-serif;
+        color: rgba(251, 243, 228, 0.85);
+        max-width: 760px;
+        text-align: center;
+        opacity: 0;
+      }
+      #outro-url {
+        font: 600 34px/1 "Instrument Sans", sans-serif;
+        letter-spacing: 0.08em;
+        color: rgba(251, 243, 228, 0.55);
+        opacity: 0;
+        margin-top: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="17.5"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- Scene 1 — Hook: the hero line (0–4.9) -->
+      <section id="scene-hook" class="clip" data-start="0" data-duration="4.9" data-track-index="1">
+        <div id="hook-inner" class="fill">
+          <div id="hook-logo">
+            <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+              <defs>
+                <linearGradient id="logoGHook" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#C2502E"/>
+                  <stop offset="1" stop-color="#E9A23B"/>
+                </linearGradient>
+              </defs>
+              <rect width="512" height="512" fill="url(#logoGHook)"/>
+              <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+              <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">&iquest;?</text>
+            </svg>
+            <div id="hook-wordmark">Hola<span>Ruta</span></div>
+          </div>
+          <div class="eyebrow" id="hook-eyebrow">REISE-SPANISCH F&Uuml;R LATEINAMERIKA</div>
+          <div class="hookline" id="hook-line1">Sprich Spanisch,</div>
+          <div class="hookline hl" id="hook-line2">bevor der Bus kommt.</div>
+        </div>
+      </section>
+
+      <!-- Scenes 2+3 — Card flow, context panel, rating (4.39–13.61) -->
+      <section id="scene-app" class="clip" data-start="4.39" data-duration="8.13" data-track-index="2">
+        <div class="fill"></div>
+        <div id="app-inner" class="fill" style="opacity: 0">
+          <div class="app-col">
+            <div class="topstripe"></div>
+            <div class="appbar">
+              <svg viewBox="0 0 512 512" role="img" aria-hidden="true">
+                <defs>
+                  <linearGradient id="logoGApp" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#C2502E"/>
+                    <stop offset="1" stop-color="#E9A23B"/>
+                  </linearGradient>
+                </defs>
+                <rect width="512" height="512" fill="url(#logoGApp)"/>
+                <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+                <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">&iquest;?</text>
+              </svg>
+              <div class="appbar-name">Hola<span>Ruta</span></div>
+            </div>
+            <div class="app-content">
+              <div class="chips">
+                <div class="chip" id="chip-bus">Bus</div>
+                <div class="chip" id="chip-essen">Essen</div>
+                <div class="chip" id="chip-geld">Geld<div class="chip-active" id="chip-geld-active"></div></div>
+                <div class="chip" id="chip-notfall">Notfall</div>
+              </div>
+
+              <div class="card-stage" id="card-stage">
+                <div class="card-3d" id="card-3d">
+                  <div class="card-face front" data-layout-allow-overlap>
+                    <div class="card-kicker">GELD</div>
+                    <div class="card-q">Wie viel kostet das?</div>
+                  </div>
+                  <div class="card-face back" data-layout-allow-overlap>
+                    <div class="card-a">&iquest;Cu&aacute;nto cuesta?</div>
+                    <div class="tip-pill">KUAN-to KUES-ta</div>
+                    <div class="cardbtn-speak" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                      </svg>
+                    </div>
+                    <div class="cardbtn-ctx" id="ctx-btn">
+                      <div id="ctx-btn-on"></div>
+                      <div class="ico-wrap">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                        </svg>
+                        <div id="ctx-icon-on">
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Kontextfenster: echter Eintrag zu Karte c01 aus contextdata.js -->
+              <div class="ctx-panel" id="ctx-panel">
+                <div class="ctx-title">So nutzt du es unterwegs</div>
+                <div class="ctx-es" lang="es">&iquest;Cu&aacute;nto cuesta esto?</div>
+                <div class="ctx-block">
+                  <div class="ctx-label">Situation</div>
+                  <div class="ctx-text">Im Laden oder auf dem Markt.</div>
+                </div>
+                <div class="ctx-block">
+                  <div class="ctx-label">Reisetipp</div>
+                  <div class="ctx-text">Auch &iquest;Cu&aacute;nto vale? oder auf dem Markt &iquest;A c&oacute;mo?</div>
+                </div>
+              </div>
+
+              <div class="rating" id="rating-row">
+                <div class="rate-btn" id="btn-nochmal"><span class="btn-label">Nochmal</span></div>
+                <div class="rate-btn" id="btn-gut">
+                  <div class="btn-fill" id="btn-gut-fill"></div>
+                  <span class="btn-label" data-layout-allow-overlap>Gut</span>
+                  <span class="btn-label-on" id="btn-gut-on" data-layout-allow-overlap>Gut</span>
+                </div>
+                <div class="rate-btn" id="btn-einfach"><span class="btn-label">Einfach</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="tap-ring" id="tap-ring-chip"></div>
+          <div class="tap-ring" id="tap-ring-gut"></div>
+        </div>
+      </section>
+
+      <!-- Scene 4 — Zahlen: eigene Seite (12.02–15.23) -->
+      <section id="scene-stats" class="clip" data-start="12.02" data-duration="3.21" data-track-index="3">
+        <div class="fill"></div>
+        <div id="stats-inner" class="fill" style="opacity: 0">
+          <div id="stats-eyebrow">HOLARUTA IN ZAHLEN</div>
+          <div class="stat-row" id="stat-1">
+            <div class="stat-num">2.293</div>
+            <div class="stat-label">Karten f&uuml;r echte Reise-Situationen</div>
+          </div>
+          <div class="stat-row" id="stat-2">
+            <div class="stat-num">72</div>
+            <div class="stat-label">Bereiche &mdash; Bus, Essen, Geld, Notfall</div>
+          </div>
+          <div class="stat-row" id="stat-3">
+            <div class="stat-num">0&nbsp;&euro;</div>
+            <div class="stat-label">offline &middot; ohne Konto</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 5 — Outro (14.73–17.5) -->
+      <section id="scene-outro" class="clip" data-start="14.73" data-duration="2.77" data-track-index="1">
+        <div class="fill"></div>
+        <div id="outro-inner" class="fill">
+          <svg id="outro-logo" viewBox="0 0 512 512" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="logoGOutro" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#C2502E"/>
+                <stop offset="1" stop-color="#E9A23B"/>
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" fill="url(#logoGOutro)"/>
+            <path d="M256 86 C326 86 382 142 382 212 C382 296 296 360 256 446 C216 360 130 296 130 212 C130 142 186 86 256 86 Z" fill="#FBF3E4"/>
+            <text x="256" y="252" font-family="Bricolage Grotesque, Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#C2502E" text-anchor="middle">&iquest;?</text>
+          </svg>
+          <div id="outro-name">Hola<span>Ruta</span></div>
+          <div id="outro-tagline">Reise-Spanisch f&uuml;r echte Situationen.</div>
+          <div id="outro-url">holaruta.com</div>
+        </div>
+      </section>
+
+      <!-- Audio: music bed on track 10, SFX on 11+ -->
+      <audio id="bgm" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+             data-start="0" data-duration="17.5" data-track-index="10" data-volume="0.32"></audio>
+      <audio id="sfx-flip" src="assets/sfx/casino/card-slide-1.ogg"
+             data-start="7.64" data-duration="0.6" data-track-index="11" data-volume="0.65"></audio>
+      <audio id="sfx-ctx" src="assets/sfx/interface/drop_001.ogg"
+             data-start="8.74" data-duration="0.11" data-track-index="12" data-volume="0.5"></audio>
+      <audio id="sfx-tap" src="assets/sfx/ui/click1.ogg"
+             data-start="11.46" data-duration="0.09" data-track-index="13" data-volume="0.6"></audio>
+      <audio id="sfx-logo" src="assets/sfx/interface/bong_001.ogg"
+             data-start="15.29" data-duration="0.12" data-track-index="14" data-volume="0.45"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* Music bed: quick fade-in, fade-out under the outro hold. */
+      tl.fromTo("#bgm", { volume: 0 }, { volume: 0.32, duration: 0.3, ease: "none" }, 0);
+      tl.to("#bgm", { volume: 0, duration: 1.2, ease: "power1.in" }, 16.3);
+
+      /* ---- Scene 1 — Hook (beat grid ~109.96 BPM) ---- */
+      tl.fromTo("#hook-logo", { y: 18 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.3);
+      tl.to("#hook-eyebrow", { opacity: 1, duration: 0.45, ease: "power2.out" }, 1.09); // beat-grid: 1.09s
+      tl.fromTo("#hook-line1", { y: 44 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, 1.64); // beat-grid: 1.64s
+      tl.fromTo("#hook-line2", { y: 44 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, 2.73); // beat-grid: 2.73s
+      /* Soft crossfade hook -> app (4.39–4.89) */
+      tl.to("#hook-inner", { opacity: 0, duration: 0.5, ease: "power1.inOut" }, 4.39);
+      tl.to("#app-inner", { opacity: 1, duration: 0.5, ease: "power1.inOut" }, 4.39);
+
+      /* ---- Scene 2 — Chips, tap Geld, card, facts ---- */
+      // half-beat stagger (0.27s): the set lands together, then holds
+      tl.fromTo("#chip-bus", { y: 18 }, { y: 0, opacity: 1, duration: 0.3, ease: "power2.out" }, 4.91);
+      tl.fromTo("#chip-essen", { y: 18 }, { y: 0, opacity: 1, duration: 0.3, ease: "power2.out" }, 5.18);
+      tl.fromTo("#chip-geld", { y: 18 }, { y: 0, opacity: 1, duration: 0.3, ease: "power2.out" }, 5.45);
+      tl.fromTo("#chip-notfall", { y: 18 }, { y: 0, opacity: 1, duration: 0.3, ease: "power2.out" }, 5.72);
+      /* Simulated tap on "Geld" at 6.00 (beat) — fires as the last chip settles */
+      tl.fromTo("#tap-ring-chip", { scale: 0.55, opacity: 0.9 }, { scale: 1.25, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, 6.0);
+      tl.to("#chip-geld-active", { opacity: 1, duration: 0.22, ease: "power1.out" }, 6.05);
+      /* Card front rises straight out of the tap; settled 6.40.
+         Ruht bei y=190: solange das Kontextfenster zu ist, steht die Karte mittig in
+         ihrer Zone statt oben mit einem Loch darunter. */
+      tl.fromTo("#card-stage", { y: 230 }, { y: 190, opacity: 1, duration: 0.35, ease: "power3.out" }, 6.05);
+      /* Card flip at 7.64 (beat) — front held 1.24s, the reading floor for a 4-word line */
+      tl.to("#card-3d", { rotationY: 180, duration: 0.5, ease: "power2.inOut" }, 7.64);
+
+      /* ---- Kontextfenster — beat-locked: 8.74s (strong cue) ---- */
+      /* Der 🧭-Knopf auf der Kartenrückseite schaltet auf "offen" (Terrakotta), Panel klappt auf */
+      tl.to("#ctx-btn-on", { opacity: 1, duration: 0.2, ease: "power1.out" }, 8.74);
+      tl.to("#ctx-icon-on", { opacity: 1, duration: 0.2, ease: "power1.out" }, 8.74);
+      /* Karte rutscht nach oben und macht Platz — wie der Reflow in der echten App */
+      tl.to("#card-stage", { y: 0, duration: 0.45, ease: "power3.inOut" }, 8.74);
+      tl.fromTo("#ctx-panel", { y: 24, scale: 0.98 }, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: "power3.out" }, 8.86);
+
+      /* ---- Scene 3 — Rating row, tap Gut ---- */
+      /* Rating row — beat-locked: 10.93s (strong cue); Panel 1.67s gelesen */
+      tl.fromTo("#rating-row", { y: 22 }, { y: 0, opacity: 1, duration: 0.32, ease: "power2.out" }, 10.93);
+      /* Simulated tap on "Gut" at 11.46 (beat), SFX click */
+      tl.fromTo("#tap-ring-gut", { scale: 0.55, opacity: 0.9 }, { scale: 1.25, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, 11.46);
+      tl.to("#btn-gut-fill", { opacity: 1, duration: 0.2, ease: "power1.out" }, 11.51);
+      tl.to("#btn-gut-on", { opacity: 1, duration: 0.2, ease: "power1.out" }, 11.51);
+      /* Soft crossfade app -> Zahlen-Seite (12.02–12.52) */
+      tl.to("#app-inner", { opacity: 0, duration: 0.5, ease: "power1.inOut" }, 12.02);
+      tl.to("#stats-inner", { opacity: 1, duration: 0.5, ease: "power1.inOut" }, 12.02);
+
+      /* ---- Scene 4 — Zahlen: eigene Seite ---- */
+      tl.to("#stats-eyebrow", { opacity: 1, duration: 0.4, ease: "power2.out" }, 12.28);
+      // beat-grid: 12.55 / 13.11 (strong cue) / 13.64 — je eine Zeile pro Beat, alle bleiben stehen
+      tl.fromTo("#stat-1", { y: 26 }, { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" }, 12.55);
+      tl.fromTo("#stat-2", { y: 26 }, { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" }, 13.11); // beat-locked: 13.11s
+      tl.fromTo("#stat-3", { y: 26 }, { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" }, 13.64);
+      /* Soft crossfade Zahlen -> Outro (14.73–15.23) */
+      tl.to("#stats-inner", { opacity: 0, duration: 0.5, ease: "power1.inOut" }, 14.73);
+      tl.to("#outro-inner", { opacity: 1, duration: 0.5, ease: "power1.inOut" }, 14.73);
+
+      /* ---- Scene 5 — Outro ---- */
+      tl.fromTo("#outro-logo", { scale: 0.7 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.4)" }, 15.29); // beat-grid: 15.29s
+      tl.fromTo("#outro-name", { y: 26 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 15.84); // beat-grid: 15.84s
+      tl.to("#outro-tagline", { opacity: 1, duration: 0.4, ease: "power2.out" }, 16.13);
+      tl.to("#outro-url", { opacity: 1, duration: 0.35, ease: "power2.out" }, 16.38); // beat-grid: 16.38s
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
