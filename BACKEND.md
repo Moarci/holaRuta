@@ -438,13 +438,14 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
 **17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `screen_view` · `action` ·
 `session_start` · `session_complete` · `card_rated` · `feature_start` · `feature_complete` ·
 `search` · `share` · `activation` · `onboarding_step` · `onboarding_complete` · `error` ·
-`consent_change` · `pwa_installed`. Bewusst
+`consent_change` · `pwa_prompt` · `pwa_installed`. Bewusst
 nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Allowlist
 (`analytics.js: EVENTS`) ist erweiterbar. `session_start` deckt **alle** Lern-Startpfade ab
 (zentral aus `beginRound`); `feature_start`/`feature_complete` **alle** Lernspiele (zentral aus
 `onClick` bzw. `setGameStats`). `session_complete` trägt neben den Buckets exakte Ints
 (`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe; `share`/`activation`
-speisen Virality- und Aktivierungs-KPIs. Das daraus abgeleitete **Investor-Cockpit** (North Star,
+speisen Virality- und Aktivierungs-KPIs (`activation.day_n` = Tage seit Erstnutzung → Time-to-Value);
+`pwa_prompt`/`pwa_installed` bilden den Install-Funnel. Das daraus abgeleitete **Investor-Cockpit** (North Star,
 Retention-Kohorten, K-Faktor, Growth Accounting, Interaktionen pro Person/Sitzung/Tag, B2B je
 Edition) ist in [docs/INVESTOR-KPIS.md](docs/INVESTOR-KPIS.md) definiert.
 Envelope (zusätzlich `edition` + grobe `platform`-Klasse):
@@ -474,7 +475,9 @@ Vollständige Feldliste: [docs/TELEMETRIE.md](docs/TELEMETRIE.md). Der Referenz-
 - Einwilligung deckt Snapshot **und** Events (ein Schalter); Widerruf stoppt sofort und verwirft die
   lokale `clientId` + Queue. **Löschung per `clientId`** muss serverseitig möglich sein (DSGVO Art. 17).
 - IP nicht persistieren (nur transient fürs Rate-Limit); **kein** Werbe-Tracking, **keine** Dritt-Tracker.
-- **Sampling** optional (`SC.config.analytics.sampleRate`) zur Datenminimierung bei Reichweite.
+- **Sampling** optional (`SC.config.analytics.sampleRate`, 0…1) zur Datenminimierung bei Reichweite —
+  clientseitig verdrahtet, **deterministisch pro Gerät** (FNV-1a über die pseudonyme `clientId`),
+  damit Funnels/Sessions nicht zerreißen; gilt für Event-Strom und Snapshot.
 
 **17.6.5 Akzeptanzkriterien (DoD)**
 - Ohne Endpunkt **oder** ohne Consent: **0** `request`/`sendBeacon` und **0** gepufferte Events (Test).

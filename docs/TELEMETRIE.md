@@ -1,6 +1,6 @@
 # HolaRuta — Telemetrie: Was wird geloggt, wo und wie?
 
-> **Stand:** 2026-06-30 · **Code:** [`analytics.js`](../analytics.js) · **Spec/Server:** [BACKEND.md §17](../BACKEND.md) · **Demo-Collector:** [`tools/mock-events-server.js`](../tools/mock-events-server.js)
+> **Stand:** 2026-07-22 · **Code:** [`analytics.js`](../analytics.js) · **Spec/Server:** [BACKEND.md §17](../BACKEND.md) · **Demo-Collector:** [`tools/mock-events-server.js`](../tools/mock-events-server.js)
 >
 > Diese Datei ist die **einzige Quelle der Wahrheit**, welche Daten die App – **nur mit
 > ausdrücklicher Zustimmung** – an einen konfigurierten Telemetrie-Endpunkt sendet. Sie
@@ -91,12 +91,13 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
 | **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – **nur Länge & Trefferzahl**, **NIE** der Suchtext |
 | **`share`** | `content`:slug | `app.js` · `onClick` (`SHARE_ACTIONS`-Map bei `share-*`) | etwas geteilt (Virality-Funnel) – **nur** WAS (`content`: stats/card/tips/module …), **nie** Empfänger/Inhalt. Ersetzt das frühere generische `action`-Event für `share-*` |
-| **`activation`** | `milestone`:slug | `app.js` · `finishRound()` | Aktivierungs-„Aha" – heute `milestone:first_session` (allererste je abgeschlossene Runde) |
+| **`activation`** | `milestone`:slug · `day_n`:int | `app.js` · `finishRound()` | Aktivierungs-„Aha" – heute `milestone:first_session` (allererste je abgeschlossene Runde). `day_n` = **Tage seit der ersten (zugestimmten) Nutzung** (Time-to-Value; lokal gestempelter Erst-Tag, es reist nur die Differenz, ≤ 365) |
 | **`onboarding_step`** | `step`:`intro`/`profile`/`trip` · `n`:int | `app.js` · `beginOnboarding`/`onboardSlidesToProfile`/`advanceOnboardingProfile` | Onboarding-Schritt erreicht (Aktivierungs-Funnel). Greift nur mit Consent **während** des Onboardings (z. B. Editionen) |
 | **`onboarding_complete`** | – | `app.js` · `finishOnboarding` | Onboarding abgeschlossen |
 | **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen |
 | **`consent_change`** | `on`:bool | `app.js` · `setAnalyticsConsent` | Zustimmung erteilt (nur `on:true`; ein Opt-out wird bewusst **nicht** gesendet) |
-| **`pwa_installed`** | – | `app.js` · `window 'appinstalled'` | App als PWA installiert |
+| **`pwa_prompt`** | `outcome`:`accepted`/`dismissed` | `app.js` · `installApp()` | Ausgang des **nativen** Install-Dialogs (Android/Chromium) – zusammen mit `pwa_installed` der Install-Funnel. „Kein Dialog verfügbar" wird bewusst nicht gesendet |
+| **`pwa_installed`** | – | `app.js` · `window 'appinstalled'` | App als PWA installiert (alle Wege, auch iOS/Menü) |
 
 > **Quelle der Allowlist:** `EVENTS` in [`analytics.js`](../analytics.js). Jedes nicht gelistete Feld
 > und jeder Freitext (Leerzeichen/Satzzeichen) wird vom Sanitizer **verworfen** – Slug-Regex
@@ -111,8 +112,9 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies, **keine** Drittanbieter-Tracker, **keine** Werbung.
 - **Snapshot:** keine exakten Zähler – Mengen reisen nur als **grobe Buckets** (k-anonymity-freundlich).
   **Event-Strom:** zusätzlich **exakte Ganzzahlen** in `session_complete` (`answered_n`/`correct_n`/`xp_n`/`secs`)
-  für die Interaktions-Tiefe – bewusst feiner, aber weiterhin **ohne** PII/Freitext/Karteninhalt und mit
-  gedeckelter `secs` (≤ 1 h) gegen Fingerprinting.
+  für die Interaktions-Tiefe sowie `activation.day_n` (Tage seit Erstnutzung, ≤ 365) für die Time-to-Value –
+  bewusst feiner, aber weiterhin **ohne** PII/Freitext/Karteninhalt und mit gedeckelter `secs` (≤ 1 h)
+  bzw. `day_n` gegen Fingerprinting. Es reist nie ein Datum, nur die Differenz in Tagen.
 - Hochfrequente Lern-Aktionen (`flip`/`rate`/`skip`/`speak`) erzeugen **kein** generisches `action`-Event (Rauschen/Queue-Schutz).
 
 ---
@@ -122,11 +124,13 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | Aspekt | Detail |
 |---|---|
 | **Gate** | sendet nur bei `SC.config.analytics.enabled` + `endpoint` **UND** aktiver Statistik (**Opt-out**: `settings.analyticsConsent !== false`, d.h. an, solange der Nutzer im Profil nicht ausdrücklich „Aus" wählt — auch für Bestandsprofile ohne gespeicherte Wahl). Sonst **0** Netzwerk-Calls **und** 0 Pufferung. |
+| **Sampling** | optional `SC.config.analytics.sampleRate` (0…1): Anteil der **Geräte**, die überhaupt senden — **deterministisch** über die gehashte `clientId` (FNV-1a), damit ein Gerät stabil „drin" oder „draußen" ist und Funnels/Sessions nicht zerreißen. Fehlend/ungültig = 1 (alle). Gilt für Event-Strom **und** Snapshot. |
 | **clientId** | pseudonym, zufällig, **resetbar** (Profil-Knopf „Statistik-Id zurücksetzen"); bei Opt-out gelöscht. LS-Key `spanischcard.analyticscid.v1`. |
 | **sessionId** | pro App-Start, rotiert nach 30 min Inaktivität; nur im Speicher. |
-| **Lokale Keys** | `…analyticssent.v1` (Snapshot-Tag), `…analyticsqueue.v1` (Event-Ring), `…analyticscid.v1` (clientId) – **keiner** in `store.KNOWN_KEYS`, reisen also **nicht** im Backup. |
+| **Erstnutzungs-Tag** | LS-Key `…analyticsfirst.v1`: der **Tag** des ersten (zugestimmten) Events, nur lokal — daraus wird `activation.day_n` (Tage-Differenz, ≤ 365) berechnet; das Datum selbst reist **nie**. Bei Reset/Opt-out gelöscht. |
+| **Lokale Keys** | `…analyticssent.v1` (Snapshot-Tag), `…analyticsqueue.v1` (Event-Ring), `…analyticscid.v1` (clientId), `…analyticsfirst.v1` (Erstnutzungs-Tag) – **keiner** in `store.KNOWN_KEYS`, reisen also **nicht** im Backup. |
 | **Queue** | localStorage-**Ring**, max **200** Events (älteste werden verworfen). |
-| **Versand** | Batches ≤ **50** via `SC.net.request` (POST); beim Verstecken/Schließen via `navigator.sendBeacon`. Flush alle ~15 s + bei `visibilitychange→hidden`/`pagehide`. Nebenläufigkeits-sicher (Entfernen per `seq`). |
+| **Versand** | Batches ≤ **50** via `SC.net.request` (POST); beim Verstecken/Schließen via `navigator.sendBeacon` — dabei wird die **ganze** Queue in ≤ 50er-Batches gesendet (max. 4 Beacon-POSTs), nicht mehr nur ein Batch. Flush alle ~15 s + bei `visibilitychange→hidden`/`pagehide`. Nebenläufigkeits-sicher (Entfernen per `seq`). |
 | **Fehlertoleranz** | Fire-and-forget; jeder Fehler wird geschluckt – Telemetrie blockiert die UI nie. |
 
 ---
@@ -207,7 +211,7 @@ node build.js --edition=<id>
 | **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen) |
 | **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **Suche-ohne-Treffer-Quote** |
 | **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Reiseziel-Adoption** + Tagesziel |
-| **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off) |
+| **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off), **Time-to-Value** (Tage bis zur 1. Lernrunde aus `activation.day_n`, Median + same-day-Quote), **PWA-Install-Funnel** (Prompt→angenommen→installiert, Akzeptanzquote) |
 | **Zeit** | Aktivität nach **Uhrzeit** (UTC) und **Wochentag** |
 | **Segmente** | **Plattformen** & **Editionen** (distinkte Nutzer) |
 | **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen) |
@@ -267,15 +271,22 @@ loggt eintreffende Events nur im Terminal.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - Unit-Tests grün (`analytics.test.js`, `telemetry-aggregate.test.js`, `telemetry-map.test.js`); Doku hier + BACKEND.md + README.
 
+### ✅ Neu (2026-07-22): Sampling, Install-Funnel, Time-to-Value, Beacon-Vollflush, Server-Härtung
+- **Sampling:** `SC.config.analytics.sampleRate` (0…1) clientseitig verdrahtet — deterministisch pro Gerät (FNV-1a über die `clientId`), gilt für Events UND Snapshot (§5).
+- **PWA-Install-Funnel:** neues Event `pwa_prompt` (`outcome`: accepted/dismissed) + bestehendes `pwa_installed` → `investor.pwa` (Akzeptanzquote) im Cockpit + KPI-CSV.
+- **Time-to-Value:** `activation.day_n` (Tage von der ersten zugestimmten Nutzung bis zur 1. Lernrunde, lokal gestempelt, ≤ 365) → `investor.timeToValue` (Median, same-day-Quote, Verteilung) im Cockpit + KPI-CSV.
+- **Beacon-Vollflush:** beim Verstecken/Schließen reist jetzt die **ganze** Queue (≤ 4 Batches) statt nur ein Batch — der frühere Restpuffer-Verlust ist behoben.
+- **Server-Härtung:** `POST /v1/events` übernimmt `props` nur noch **gedeckelt** (≤ 16 Felder, nur bool/endliche Zahl/String ≤ 80) — vorher konnte der auth-freie Endpunkt bis zu 64 KB beliebiges JSON pro Event in den Store schreiben.
+
 ### ⚠️ Bekannte Grenzen (bewusst)
 - **`/v1/admin/stats`-Fetch ist paginiert, aber gedeckelt** (30 Seiten × 1000 Zeilen/Tabelle ≈ 30k Zeilen) gegen die 15s-Vercel-Function-Laufzeit — bei sehr hohem Volumen müsste das auf serverseitige Aggregation (SQL) umgestellt werden.
 - **UTC-„heute":** Tages-Buckets nutzen den UTC-Tag des Servers vs. die lokale `day` des Clients → minimale Unschärfe an Tagesgrenzen.
 - **Onboarding-Funnel & Snapshot-Kennzahlen** liefern nur Daten von Nutzern **mit aktivem Consent** (der Consent-Schalter liegt hinter dem Onboarding → Funnel primär für Editionen mit vor-aktiviertem Consent aussagekräftig).
-- **Beacon-Flush** beim Schließen sendet höchstens **einen** Batch (≤ 50 Events); ein sehr großer Restpuffer kann beim harten Schließen verloren gehen.
+- **`activation.day_n`** misst ab der ersten **zugestimmten** Nutzung (Erstnutzungs-Stempel entsteht erst mit dem ersten getrackten Event) — für Bestandsnutzer, die die Statistik später einschalten, beginnt die Uhr entsprechend später.
 - **`mock-events-server.js`** und `telemetry-server.js` überlappen (bewusst: einfacher Smoke vs. voll).
 
 ### 🔧 TODO — Produktion
-- [ ] Optional **Sampling** (`SC.config.analytics.sampleRate`) client- und/oder serverseitig verdrahten.
+- [x] Optional **Sampling** (`SC.config.analytics.sampleRate`) clientseitig verdrahtet (deterministisch pro Gerät); serverseitiges Zusatz-Sampling weiterhin offen.
 - [ ] Bei wachsendem Volumen: `/v1/admin/stats` von Paginierung + In-Memory-`aggregate()` auf serverseitige SQL-Aggregation umstellen.
 
 ### 🧪 TODO — Tests/Qualität

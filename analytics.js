@@ -137,6 +137,28 @@
   // Nutzer-Zustimmung). Nur dann zeigt die UI überhaupt den Consent-Schalter.
   function available() { return !!(cfg() && cfg().enabled && apiBase() && typeof fetch === "function"); }
 
+  // ---------- Sampling (SC.config.analytics.sampleRate, BACKEND.md §17.7) ----------
+  // Anteil der GERÄTE, die überhaupt senden – Datenminimierung bei Reichweite.
+  // Deterministisch über die pseudonyme clientId gehasht (FNV-1a): ein Gerät ist
+  // stabil „drin" oder „draußen". Ein Zufall PRO EVENT würde dagegen Funnels und
+  // Sessions zerreißen (halbe Journeys). Fehlend/ungültig = 1 (alle senden).
+  function samplePct(id) {
+    var s = str(id);
+    var h = 0x811c9dc5; // FNV-1a 32 bit
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
+    return (h % 10000) / 100; // 0 … 99.99
+  }
+  function sampleRate() {
+    var r = cfg() && cfg().sampleRate;
+    return (typeof r === "number" && isFinite(r) && r >= 0 && r <= 1) ? r : 1;
+  }
+  function sampled() {
+    var r = sampleRate();
+    if (r >= 1) return true;
+    if (r <= 0) return false;
+    return samplePct(clientId()) < r * 100;
+  }
+
   function lastSent() { try { return localStorage.getItem(SENT_KEY) || ""; } catch (e) { return ""; } }
   function markSent(day) { try { localStorage.setItem(SENT_KEY, day); } catch (e) { /* egal */ } }
 
@@ -147,7 +169,7 @@
   // erneut. Gibt ein Promise { sent } zurück (auch für die Tests).
   function maybeSend(gamestats, meta) {
     var m = isObj(meta) ? meta : {};
-    if (!available() || m.consent !== true) return Promise.resolve({ sent: false });
+    if (!available() || m.consent !== true || !sampled()) return Promise.resolve({ sent: false });
     var snap = buildUsageSnapshot(gamestats, m);
     if (lastSent() === snap.day) return Promise.resolve({ sent: false });
     return SC.net.request(apiBase(), "POST", "/v1/usage", snap, { timeout: 8000 })
@@ -168,7 +190,8 @@
   var EVENTS_PATH = "/v1/events";
   var QUEUE_KEY = "spanischcard.analyticsqueue.v1"; // gepufferte Events (Ring)
   var CLIENT_KEY = "spanischcard.analyticscid.v1";  // pseudonyme, resetbare clientId
-  // Alle drei bewusst NICHT in store.KNOWN_KEYS -> reisen nicht im Backup mit.
+  var FIRST_KEY = "spanischcard.analyticsfirst.v1"; // Tag des ersten (zugestimmten) Events – Time-to-Value
+  // Alle vier bewusst NICHT in store.KNOWN_KEYS -> reisen nicht im Backup mit.
   var QUEUE_CAP = 200;                 // höchstens so viele Events puffern (Ring)
   var BATCH_MAX = 50;                  // pro POST höchstens so viele
   var SESSION_GAP_MS = 30 * 60 * 1000; // >30 min Inaktivität -> neue Session
@@ -190,6 +213,23 @@
     try { id = localStorage.getItem(CLIENT_KEY); } catch (e) { id = null; }
     if (!id) { id = randomId(); try { localStorage.setItem(CLIENT_KEY, id); } catch (e2) { /* egal */ } }
     return id;
+  }
+
+  // Time-to-Value: der TAG des allerersten getrackten Events wird lokal gestempelt
+  // (nur mit aktivem Gate, also nie ohne Zustimmung). daysSinceFirstUse() liefert
+  // daraus die Ganzzahl „Tage seit Erstnutzung" für activation.day_n – es reist
+  // NIE das Datum selbst, nur die Differenz, gedeckelt gegen Ausreißer/Fingerprints.
+  function stampFirstUse(now) {
+    try { if (!localStorage.getItem(FIRST_KEY)) localStorage.setItem(FIRST_KEY, dayKey(now)); } catch (e) { /* egal */ }
+  }
+  function daysSinceFirstUse(now) {
+    var first = "";
+    try { first = localStorage.getItem(FIRST_KEY) || ""; } catch (e) { return undefined; }
+    var f = first.split("-"), c = dayKey(typeof now === "number" ? now : Date.now()).split("-");
+    if (f.length !== 3) return undefined;
+    var d = Math.round((Date.UTC(+c[0], +c[1] - 1, +c[2]) - Date.UTC(+f[0], +f[1] - 1, +f[2])) / 86400000);
+    if (!isFinite(d) || d < 0) return undefined;
+    return Math.min(d, 365);
   }
 
   // Sitzungs-pseudonym: pro App-Start neu, rotiert nach Inaktivität. Nur im Speicher.
@@ -255,13 +295,16 @@
     // NIE der Empfänger/Inhalt. (channel kann später ergänzt werden, wenn der
     // Client den Wel-Weg kennt – bewusst NICHT gelistet, solange nicht gesendet.)
     share:            { content: "slug" },
-    // Aktivierungs-„Aha": milestone (z.B. first_session). (day_n bewusst NICHT
-    // gelistet, solange der Client keine „Tage seit Erst-Open" mitsendet.)
-    activation:       { milestone: "slug" },
+    // Aktivierungs-„Aha": milestone (z.B. first_session) + day_n = Tage zwischen
+    // erster (zugestimmter) Nutzung und dem Meilenstein (Time-to-Value, ≤365).
+    activation:       { milestone: "slug", day_n: "int" },
     onboarding_step:  { step: "slug", n: "int" },
     onboarding_complete: {},
     error:            { type: "slug", msg: "text", src: "text", line: "int" },
     consent_change:   { on: "bool" },
+    // Install-Funnel: pwa_prompt = Ausgang des NATIVEN Install-Dialogs
+    // (accepted/dismissed), pwa_installed = tatsächlich installiert (alle Wege).
+    pwa_prompt:       { outcome: "slug" },
     pwa_installed:    {},
   };
   // Erweiterbar: weitere Event-Namen lassen sich hier ergänzen + an der passenden
@@ -323,10 +366,11 @@
   // Erfasst ein Event: bauen + sanitisieren + in die Ring-Queue. Tut NICHTS ohne
   // Endpunkt UND Zustimmung und NUR für bekannte Event-Namen. Wirft nie.
   function track(name, props, opts) {
-    if (!available() || ctx.consent !== true) return;
+    if (!available() || ctx.consent !== true || !sampled()) return;
     if (!EVENTS[str(name)]) return;
     var o = isObj(opts) ? opts : {};
     var now = typeof o.now === "number" ? o.now : Date.now();
+    stampFirstUse(now); // Time-to-Value-Anker: Tag des ersten (zugestimmten) Events
     var ev = buildEvent(name, props, {
       now: now,
       clientId: clientId(),
@@ -364,14 +408,24 @@
     if (!available() || ctx.consent !== true || !queue.length) return Promise.resolve({ sent: 0 });
     var batch = queue.slice(0, BATCH_MAX);
     // Beim Verstecken/Schließen: zuverlässig via sendBeacon (synchron, übersteht das
-    // Entladen). Best-effort, auch wenn gerade ein regulärer Flush läuft.
+    // Entladen). Best-effort, auch wenn gerade ein regulärer Flush läuft. Es wird die
+    // GANZE Queue in ≤50er-Batches gesendet (max. QUEUE_CAP/BATCH_MAX = 4 POSTs) –
+    // vorher ging beim harten Schließen alles jenseits des ersten Batches verloren.
+    // Lehnt der Browser einen Beacon ab (Budget voll), bleibt der Rest gepuffert.
     if (o.beacon && typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      var ok = false;
-      try {
-        var blob = new Blob([JSON.stringify({ events: batch })], { type: "application/json" });
-        ok = navigator.sendBeacon(apiBase() + EVENTS_PATH, blob);
-      } catch (e) { ok = false; }
-      if (ok) { removeSent(batch); return Promise.resolve({ sent: batch.length, beacon: true }); }
+      var beaconSent = 0;
+      while (queue.length) {
+        var b = queue.slice(0, BATCH_MAX);
+        var ok = false;
+        try {
+          var blob = new Blob([JSON.stringify({ events: b })], { type: "application/json" });
+          ok = navigator.sendBeacon(apiBase() + EVENTS_PATH, blob);
+        } catch (e) { ok = false; }
+        if (!ok) break;
+        removeSent(b);
+        beaconSent += b.length;
+      }
+      if (beaconSent) return Promise.resolve({ sent: beaconSent, beacon: true });
       // Beacon abgelehnt -> regulärer Pfad unten
     }
     // Regulärer Pfad: nur EIN gleichzeitiger Netz-Flush.
@@ -385,9 +439,11 @@
       }, function () { flushing = false; return { sent: 0 }; });
   }
 
-  // Pseudonyme clientId verwerfen und Puffer leeren (Reset / Consent-aus).
+  // Pseudonyme clientId + Erstnutzungs-Tag verwerfen und Puffer leeren
+  // (Reset / Consent-aus): danach ist NICHTS Wiedererkennbares mehr gespeichert.
   function resetClientId() {
     try { localStorage.removeItem(CLIENT_KEY); } catch (e) { /* egal */ }
+    try { localStorage.removeItem(FIRST_KEY); } catch (e) { /* egal */ }
     queue = []; saveQueue(); sess = null;
   }
 
@@ -401,11 +457,14 @@
     track: track,
     flush: flush,
     resetClientId: resetClientId,
+    daysSinceFirstUse: daysSinceFirstUse,
     QUEUE_KEY: QUEUE_KEY,
     CLIENT_KEY: CLIENT_KEY,
+    FIRST_KEY: FIRST_KEY,
     // Reiner Kern (für Tests + serverseitige Wiederverwendung)
     dayKey: dayKey,
     bucket: bucket,
+    samplePct: samplePct,
     featuresUsed: featuresUsed,
     buildUsageSnapshot: buildUsageSnapshot,
     buildEvent: buildEvent,

@@ -44,6 +44,9 @@
     // im Profil einen anonymen, gebucketeten Tages-Snapshot (keine PII, keine
     // Karten-IDs, keine stabile ID). Eine Edition kann sie vorkonfigurieren:
     //   analytics: { enabled: true, endpoint: "https://…" }
+    // Optional sampleRate (0…1): Anteil der Geräte, die überhaupt senden –
+    // deterministisch pro Gerät (Datenminimierung bei Reichweite). Fehlend = 1.
+    //   analytics: { enabled: true, endpoint: "https://…", sampleRate: 0.25 }
     analytics: null,
     // Account-First (Login-Gate am Start). null = aus (Standard: offline/anonym wie
     // bisher – keine Account-Pflicht). Eine vernetzte Edition (launch) schaltet es

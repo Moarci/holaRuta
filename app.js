@@ -1275,7 +1275,12 @@
     // Aktivierung: die allererste je abgeschlossene Lernrunde ist der „Aha"-Moment.
     // snap.everStudied wurde in beginRound() VOR dem Runden-Update gelesen -> ist hier
     // noch der Stand vor dieser Runde. Einmalig pro Nutzer, ohne extra Speicher.
-    if (!snap.everStudied && answered > 0) trackEvent("activation", { milestone: "first_session" });
+    // day_n = Tage seit der ersten (zugestimmten) Nutzung (Time-to-Value) – nur die
+    // Ganzzahl, nie ein Datum; ohne Erstnutzungs-Stempel bleibt das Feld einfach weg.
+    if (!snap.everStudied && answered > 0) {
+      const dayN = window.SC.analytics && window.SC.analytics.daysSinceFirstUse ? window.SC.analytics.daysSinceFirstUse() : undefined;
+      trackEvent("activation", { milestone: "first_session", day_n: dayN });
+    }
   }
 
   // ----- Trip-Ziel (Countdown + Tagesziel) -----
@@ -6853,9 +6858,14 @@
   // „App installieren" (Android/Chromium): nativen Installations-Dialog zeigen.
   // Erfolg/Abbruch löst über den setOnChange-Callback in install.js ein Re-Render
   // aus (bei Erfolg verschwindet die Karte, weil die App dann standalone läuft).
+  // Der Ausgang speist den Install-Funnel (pwa_prompt -> pwa_installed);
+  // "unavailable" (kein Dialog gezeigt) ist bewusst kein Funnel-Schritt.
   function installApp() {
     const inst = window.SC && window.SC.install;
-    if (inst) inst.promptInstall();
+    if (!inst) return;
+    Promise.resolve(inst.promptInstall()).then((outcome) => {
+      if (outcome === "accepted" || outcome === "dismissed") trackEvent("pwa_prompt", { outcome: outcome });
+    }).catch(() => { /* Telemetrie darf die App nie stören */ });
   }
 
   function saveCard(input) {

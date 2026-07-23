@@ -1036,6 +1036,19 @@ function render(s){
     desc:"Die Schritte INNERHALB des Onboardings. Zählt nur Personen, deren Statistik-Zustimmung schon während des Onboardings aktiv war.",
     body: funnelChart(s.funnel, "greift nur bei Consent WÄHREND des Onboardings (z. B. Editionen mit vor-aktiviertem Consent)") });
   html += '</div>';
+
+  // Time-to-Value + PWA-Install-Funnel (aggregate(): investor.timeToValue / investor.pwa)
+  var ttv = inv.timeToValue||{}, pwa = inv.pwa||{};
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Time-to-Value", small:"(Tage bis zur ersten Lernrunde)",
+    desc:"Wie schnell neue Personen den „Aha“-Moment erreichen: 0 = noch am selben Tag. Je weiter oben die Masse, desto besser sitzt der Einstieg.",
+    body: (ttv.count? hbars((ttv.histogram||[]).map(function(h){return {label:h.bucket+" Tage",count:h.count};}),{color:"var(--ok)"}) : empty("Noch keine Aktivierungen mit day_n","entsteht mit dem ersten activation-Event neuer Clients")),
+    foot: ttv.count? ('Median <b>'+esc(fmtN(ttv.medianDays||0))+'</b> Tage · '+esc(pct(ttv.sameDayPct||0))+' noch am selben Tag · Basis '+esc(fmtN(ttv.count))+' Aktivierungen') : '' });
+  html += panelHtml({ title:"PWA-Installation", small:"(Prompt → angenommen → installiert)",
+    desc:"Der Install-Funnel: Wie oft wurde der native Installations-Dialog gezeigt, wie oft angenommen — und wie viele Installationen kamen insgesamt an (inkl. iOS/Menü, daher ggf. mehr als angenommen).",
+    body: ((pwa.prompts||pwa.installs)? hbars([{label:"Prompt gezeigt",count:pwa.prompts||0},{label:"Angenommen",count:pwa.accepted||0,color:"var(--ok)"},{label:"Installiert",count:pwa.installs||0,color:"var(--brand)"}]) : empty("Noch keine Install-Prompts","entsteht mit dem ersten pwa_prompt/pwa_installed")),
+    foot: (pwa.prompts? 'Akzeptanz <b>'+esc(pct(pwa.acceptPct||0))+'</b> ('+esc(fmtN(pwa.accepted||0))+' von '+esc(fmtN(pwa.prompts||0))+' Prompts)' : '') });
+  html += '</div>';
   html += '</section>';
 
   // ===================== 4 · RETENTION =====================================

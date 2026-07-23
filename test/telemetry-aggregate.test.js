@@ -378,3 +378,39 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
   assert.equal(al.length, 1);
   assert.deepEqual(al[0], { version: "9.9.9", errors: 2, events: 20, ratePct: 10 });
 });
+
+test("aggregate: PWA-Install-Funnel + Time-to-Value (investor.pwa / investor.timeToValue)", () => {
+  const ev = fixtureEvents().concat([
+    { event: "pwa_prompt", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 400000, props: { outcome: "accepted" } },
+    { event: "pwa_prompt", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 1000, props: { outcome: "dismissed" } },
+    { event: "pwa_installed", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 500000, props: {} },
+    { event: "activation", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 2000, props: { milestone: "first_session", day_n: 0 } },
+    { event: "activation", day: TODAY, clientId: "C", sessionId: "s4", ts: T0 + 2000, props: { milestone: "first_session", day_n: 5 } },
+  ]);
+  const s = aggregate(ev, USAGE, { now: NOW });
+
+  // Install-Funnel: 2 Prompts (1 angenommen, 1 abgelehnt), 1 Installation.
+  assert.deepEqual(s.investor.pwa, { prompts: 2, accepted: 1, dismissed: 1, installs: 1, acceptPct: 50 });
+
+  // Time-to-Value aus activation.day_n: [0, 5] -> Median 3 (gerundet), 50 % am selben Tag.
+  const ttv = s.investor.timeToValue;
+  assert.equal(ttv.count, 2);
+  assert.equal(ttv.medianDays, 3);
+  assert.equal(ttv.sameDayPct, 50);
+  const hist = new Map(ttv.histogram.map((r) => [r.bucket, r.count]));
+  assert.equal(hist.get("0"), 1, "same-day Aktivierung");
+  assert.equal(hist.get("4-7"), 1, "day_n=5");
+  assert.equal(ttv.histogram[0].bucket, "0", "der wichtigste Bucket (same-day) fuehrt immer an");
+
+  // day_n speist NUR first_session; kaputte Werte werden ignoriert.
+  const s2 = aggregate([{ event: "activation", day: TODAY, clientId: "X", sessionId: "sx", ts: T0, props: { milestone: "first_session", day_n: -3 } }], [], { now: NOW });
+  assert.equal(s2.investor.timeToValue.count, 0, "negative day_n verworfen");
+
+  // KPI-CSV: echte Werte mit Daten, ehrliches n/a ohne Datenbasis.
+  const csv = toKpiCsv(s);
+  assert.ok(csv.indexOf("PWA-Install-Akzeptanz %,50") >= 0, csv);
+  assert.ok(csv.indexOf("Median Tage bis 1. Runde,3") >= 0, csv);
+  const csv0 = toKpiCsv(aggregate([], [], { now: NOW }));
+  assert.ok(csv0.indexOf("PWA-Install-Akzeptanz %,n/a") >= 0, "ohne Prompts keine erfundene 0");
+  assert.ok(csv0.indexOf("Median Tage bis 1. Runde,n/a") >= 0, "ohne Aktivierungen keine erfundene 0");
+});

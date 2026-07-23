@@ -121,6 +121,8 @@ function aggregate(events, usage, opts) {
   var sharers = new Set();             // clientId, die geteilt haben
   var shareContentCounts = new Map();  // content -> Anzahl (was wird geteilt)
   var secsList = [];                   // exakte Rundendauern (session_complete.secs)
+  var pwaAccepted = 0, pwaDismissed = 0, pwaInstalls = 0; // Install-Funnel (pwa_prompt -> pwa_installed)
+  var ttvDays = [];                    // activation.day_n: Tage bis zur 1. Runde (Time-to-Value)
   var editionSessions = new Map();     // edition -> Set(sessionId)
   var editionActivated = new Map();    // edition -> Set(clientId mit session_complete)
   var editionActive7 = new Map();      // edition -> Set(clientId) aktiv in letzten 7 Tagen
@@ -189,8 +191,20 @@ function aggregate(events, usage, opts) {
         if (p.content) inc(shareContentCounts, String(p.content));
         break;
       // Aktivierungs-„Aha": bestätigt die Aktivierung (auch falls das session_complete
-      // außerhalb des Fensters lag). Fixe Schlüssel -> Set unbedenklich.
-      case "activation": if (cid && p.milestone === "first_session") activatedClients.add(cid); break;
+      // außerhalb des Fensters lag). Fixe Schlüssel -> Set unbedenklich. day_n (Tage
+      // seit Erstnutzung, exakter Int vom Client) speist die Time-to-Value-Verteilung.
+      case "activation":
+        if (p.milestone === "first_session") {
+          if (cid) activatedClients.add(cid);
+          if (typeof p.day_n === "number" && isFinite(p.day_n) && p.day_n >= 0) ttvDays.push(p.day_n);
+        }
+        break;
+      // Install-Funnel: Ausgang des nativen Install-Dialogs bzw. vollzogene Installation.
+      case "pwa_prompt":
+        if (p.outcome === "accepted") pwaAccepted++;
+        else if (p.outcome === "dismissed") pwaDismissed++;
+        break;
+      case "pwa_installed": pwaInstalls++; break;
       case "search": searchTotal++; if (p.results === "0") searchZero++; break;
       case "onboarding_step": if (p.step && cid) addToSet(onboardSteps, String(p.step), cid); break;
       case "onboarding_complete": if (cid) onboardComplete.add(cid); break;
@@ -491,6 +505,26 @@ function aggregate(events, usage, opts) {
   });
   featureFunnel.sort(function (a, b) { return b.starts - a.starts || b.completes - a.completes; });
 
+  // --- PWA-Install-Funnel: Prompt gezeigt -> angenommen -> installiert ---
+  // "installiert" zählt ALLE Wege (appinstalled-Event feuert auch bei iOS/Menü),
+  // kann also größer als "angenommen" sein.
+  var pwaPrompts = pwaAccepted + pwaDismissed;
+  var pwa = {
+    prompts: pwaPrompts, accepted: pwaAccepted, dismissed: pwaDismissed, installs: pwaInstalls,
+    acceptPct: pwaPrompts ? Math.round((pwaAccepted / pwaPrompts) * 100) : 0,
+  };
+
+  // --- Time-to-Value: Tage von der ersten Nutzung bis zur ersten Lernrunde ---
+  // "0" (noch am selben Tag aktiviert) ist der wichtigste Bucket und führt die
+  // Verteilung immer an, auch wenn er leer ist.
+  var ttvZero = ttvDays.filter(function (d) { return d === 0; }).length;
+  var timeToValue = {
+    count: ttvDays.length,
+    medianDays: median(ttvDays),
+    sameDayPct: ttvDays.length ? Math.round((ttvZero / ttvDays.length) * 100) : 0,
+    histogram: [{ bucket: "0", count: ttvZero }].concat(histogram(ttvDays.filter(function (d) { return d > 0; }), [1, 3, 7])),
+  };
+
   // --- B2B: KPIs je Edition ---
   var editionKPIs = [];
   editionClients.forEach(function (set, edi) {
@@ -581,7 +615,9 @@ function aggregate(events, usage, opts) {
       virality: virality,          // Shares, Share-Installs, K-Faktor
       interactions: interactions,  // Interaktionen pro Person/Sitzung/aktivem Tag
       timeOnTask: timeOnTask,      // präzise Lern-Zeit je Runde (secs)
+      timeToValue: timeToValue,    // Tage bis zur 1. Runde (activation.day_n)
       featureFunnel: featureFunnel,// Start↔Abschluss-Quote je Lernspiel
+      pwa: pwa,                    // Install-Funnel (pwa_prompt -> pwa_installed)
       editions: editionKPIs,       // B2B: KPIs je Edition
     },
     learning: {
@@ -655,6 +691,9 @@ function toKpiCsv(stats) {
     ["Runden-Abschluss %", g(i, "rounds.completionPct", 0)],
     ["Ø Interaktionen/Sitzung", g(i, "interactions.perSession.avg", 0)],
     ["Ø Lernzeit/Runde s", g(i, "timeOnTask.avgSec", 0)],
+    // Ohne Datenbasis "n/a" statt einer erfundenen 0 (gleiche Logik wie ret()).
+    ["Median Tage bis 1. Runde", g(i, "timeToValue.count", 0) ? g(i, "timeToValue.medianDays", 0) : "n/a"],
+    ["PWA-Install-Akzeptanz %", g(i, "pwa.prompts", 0) ? g(i, "pwa.acceptPct", 0) : "n/a"],
     ["Bounce %", g(i, "quality.bouncePct", 0)],
     ["Fehler/Sitzung", g(i, "quality.errorsPerSession", 0)],
   ];
