@@ -428,7 +428,10 @@ Nutzer-ID das Gerät.
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies.
 - **Keine** Verknüpfung mit Sync/Social-Konten (ohne Token, eigene pseudonyme `clientId`).
 - **Kein** Klick-für-Klick-Mitschnitt von Inhalten — Events tragen Enums/Buckets plus einzelne
-  nicht-identifizierende Ganzzahlen (Interaktionszähler/Rundendauer), aber **keine** Inhalte (s. §17.6).
+  nicht-identifizierende Ganzzahlen (Interaktionszähler/Rundendauer). **Katalog-Karten-REFERENZEN**
+  (Slugs der mitgelieferten Karten, z. B. `b02`) sind seit 2026-07-23 erlaubt — Karten-**Inhalte**
+  reisen weiterhin nie, **eigene** Nutzerkarten nie (nur der Platzhalter `"custom"`), und der
+  Suchbegriff reist **ausschließlich** bei Suchen **ohne** Treffer, PII-bereinigt und gekappt (s. §17.6).
 
 ### 17.6 Interaktions-Events — „was machen sie genau?" (Vollausbau, opt-in)
 
@@ -450,21 +453,31 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
   Consent-aus verwirft `clientId` + Puffer.
 - **Allowlist-Sanitizer (Default deny):** jedes Event hat eine feste Prop-Allowlist; Werte werden in
   **Enum/Slug/Zahl/Bucket** gezwungen. Freitext (Leerzeichen/Satzzeichen) fällt **strukturell** durch
-  → **kein Suchtext, keine Kartentexte/-IDs, keine Namen**. Fehler-Texte werden PII-bereinigt
-  (E-Mail/lange Ziffernfolgen raus) und auf 80 Zeichen gekappt.
+  → **keine Kartentexte, keine Namen**; Karten-Referenzen nur als Katalog-Slugs (eigene Karten:
+  `"custom"`), Suchbegriff nur bei 0 Treffern und nur durch den PII-Bereiniger. Fehler-Texte (und der
+  Fehlsuch-Begriff) werden PII-bereinigt (E-Mail/lange Ziffernfolgen raus) und auf 80 Zeichen gekappt.
 - **Lokale Pufferung & Batching:** Ring-Queue (≤ 200 Events) im `localStorage`; Versand gebündelt
   (≤ 50/Batch) periodisch und beim Verstecken/Schließen via `navigator.sendBeacon` (zuverlässig).
 
 **17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `screen_view` · `action` ·
 `session_start` · `session_complete` · `card_rated` · `feature_start` · `feature_complete` ·
-`search` · `share` · `activation` · `onboarding_step` · `onboarding_complete` · `error` ·
-`consent_change` · `pwa_installed`. Bewusst
+`search` · `share` · `activation` · `placement_result` · `onboarding_step` · `onboarding_complete` ·
+`error` · `consent_change` · `pwa_prompt` · `pwa_installed`. Bewusst
 nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Allowlist
 (`analytics.js: EVENTS`) ist erweiterbar. `session_start` deckt **alle** Lern-Startpfade ab
 (zentral aus `beginRound`); `feature_start`/`feature_complete` **alle** Lernspiele (zentral aus
 `onClick` bzw. `setGameStats`). `session_complete` trägt neben den Buckets exakte Ints
-(`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe; `share`/`activation`
-speisen Virality- und Aktivierungs-KPIs. Das daraus abgeleitete **Investor-Cockpit** (North Star,
+(`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe sowie den Lernmodus
+(`mode`: flip/type/listen) und `speak_n`/`context_n` — TTS-/Kontext-Nutzung auf Karten als
+**Runden-Summen** statt Einzel-Events (Queue-Schutz); `card_rated` trägt seit 2026-07-23 die
+**Katalog-Karten-Referenz** `card` (Slug, z. B. `b02`; eigene Nutzerkarten nur als `"custom"`) plus
+`spoke`/`ctx` (bool: TTS/Kontext auf dieser Karte benutzt) für karten-genaue Content-Qualität;
+`search` trägt `q` — den PII-bereinigten, gekappten Suchbegriff **nur bei 0 Treffern**
+(bei Treffern weiterhin nie Suchtext); `share`/`activation`
+speisen Virality- und Aktivierungs-KPIs (`activation.day_n` = Tage seit Erstnutzung → Time-to-Value;
+Meilensteine `first_session` + `streak_3/7/30` → Habit-Funnel); `pwa_prompt`/`pwa_installed`/
+`app_open.standalone` bilden den Install-Funnel bis „benutzt"; `placement_result` trägt nur das
+grobe Einstufungs-Niveau. Das daraus abgeleitete **Investor-Cockpit** (North Star,
 Retention-Kohorten, K-Faktor, Growth Accounting, Interaktionen pro Person/Sitzung/Tag, B2B je
 Edition) ist in [docs/INVESTOR-KPIS.md](docs/INVESTOR-KPIS.md) definiert.
 Envelope (zusätzlich `edition` + grobe `platform`-Klasse):
@@ -494,7 +507,9 @@ Vollständige Feldliste: [docs/TELEMETRIE.md](docs/TELEMETRIE.md). Der Referenz-
 - Einwilligung deckt Snapshot **und** Events (ein Schalter); Widerruf stoppt sofort und verwirft die
   lokale `clientId` + Queue. **Löschung per `clientId`** muss serverseitig möglich sein (DSGVO Art. 17).
 - IP nicht persistieren (nur transient fürs Rate-Limit); **kein** Werbe-Tracking, **keine** Dritt-Tracker.
-- **Sampling** optional (`SC.config.analytics.sampleRate`) zur Datenminimierung bei Reichweite.
+- **Sampling** optional (`SC.config.analytics.sampleRate`, 0…1) zur Datenminimierung bei Reichweite —
+  clientseitig verdrahtet, **deterministisch pro Gerät** (FNV-1a über die pseudonyme `clientId`),
+  damit Funnels/Sessions nicht zerreißen; gilt für Event-Strom und Snapshot.
 
 **17.6.5 Akzeptanzkriterien (DoD)**
 - Ohne Endpunkt **oder** ohne Consent: **0** `request`/`sendBeacon` und **0** gepufferte Events (Test).

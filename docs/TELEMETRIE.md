@@ -1,6 +1,6 @@
 # HolaRuta — Telemetrie: Was wird geloggt, wo und wie?
 
-> **Stand:** 2026-06-30 · **Code:** [`analytics.js`](../analytics.js) · **Spec/Server:** [BACKEND.md §17](../BACKEND.md) · **Demo-Collector:** [`tools/mock-events-server.js`](../tools/mock-events-server.js)
+> **Stand:** 2026-07-23 · **Code:** [`analytics.js`](../analytics.js) · **Spec/Server:** [BACKEND.md §17](../BACKEND.md) · **Demo-Collector:** [`tools/mock-events-server.js`](../tools/mock-events-server.js)
 >
 > Diese Datei ist die **einzige Quelle der Wahrheit**, welche Daten die App – **nur mit
 > ausdrücklicher Zustimmung** – an einen konfigurierten Telemetrie-Endpunkt sendet. Sie
@@ -15,8 +15,10 @@ HolaRuta sendet **standardmäßig nichts**. Erst wenn (1) eine Edition einen End
 „Nutzungsstatistik teilen" auf **An** stellt, gehen zwei Dinge raus: ein **anonymer Tages-Snapshot**
 und ein **pseudonymer Interaktions-Event-Strom**. Der Snapshot ist rein gebucketet; der Event-Strom
 trägt grobe Enums/Buckets **plus** einzelne **exakte, nicht-identifizierende Ganzzahlen** (Interaktions-
-zähler & Rundendauer, für die Investor-Analytik) – aber **kein** Suchtext, **keine** Kartentexte/-IDs,
-**keine** Namen, **keine** Freitexte, **keine** stabile Identität.
+zähler & Rundendauer, für die Investor-Analytik) – aber **keine** Namen, **keine** Freitexte,
+**keine** stabile Identität. Karten-Referenzen reisen **nur für Katalog-Karten** (mitgelieferte
+Inhalte; **eigene** Nutzerkarten nie — nur der Platzhalter `"custom"`), und der Suchbegriff reist
+**ausschließlich bei Suchen ohne Treffer** — vorher PII-bereinigt und gekappt (bei Treffern **nie**).
 
 ---
 
@@ -81,22 +83,24 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 | Event | `props` | Wo erfasst (Datei · Funktion) | Bedeutung |
 |---|---|---|---|
-| **`app_open`** | `returning`:bool · `load_ms`:Bucket`[200,500,1000,3000]` · `src`:slug | `app.js` · `setupAnalyticsEvents` (Boot) | App geöffnet; `returning` = es gab schon mal einen Lerntag; `src` = Akquise-Quelle (`task`/`onboard-link`/`module-link`/`edition`/`direct`) aus den Start-URL-Parametern (nur Enum, **nie** die URL) |
+| **`app_open`** | `returning`:bool · `load_ms`:Bucket`[200,500,1000,3000]` · `src`:slug · `standalone`:bool | `app.js` · `setupAnalyticsEvents` (Boot) | App geöffnet; `returning` = es gab schon mal einen Lerntag; `src` = Akquise-Quelle (`task`/`onboard-link`/`module-link`/`edition`/`direct`) aus den Start-URL-Parametern (nur Enum, **nie** die URL); `standalone` = läuft gerade als **installierte PWA** (App-Fenster statt Browser-Tab) |
 | **`screen_view`** | `screen`:slug · `tab`:slug | `app.js` · `render()` → `trackScreenView` | Ansicht gewechselt (nur bei echtem Wechsel; `tab` nur auf Home) |
 | **`action`** | `action`:slug · `mode` · `dir` · `level` · `tab` · `scope` | `app.js` · `onClick` (Aktions-Dispatch) | jeder Button-Klick mit `data-action`; **ausgenommen** die Hochfrequenz-Aktionen `flip`/`rate`/`skip`/`speak` (separat erfasst) |
 | **`session_start`** | `scope`:slug · `origin`:slug · `mode` · `cards`:Bucket`[5,10,20,40]` | `app.js` · `beginRound()` | Lernrunde gestartet – deckt **alle 6** Startpfade ab (Kategorie/Alles, Preset, Pre-Trip-Tag, Ruta del día, Favoriten, Einzelkarte). `scope` = `"all"`/Kategorie-Slug |
-| **`session_complete`** | `answered`/`accuracy`/`xp`/`again`:Buckets · **`answered_n`/`correct_n`/`xp_n`/`secs`**:int | `app.js` · `finishRound()` | Lernrunde beendet. Buckets (grob) **plus** exakte Ints für die Investor-Interaktions-Tiefe pro Sitzung; `secs` = Dauer **dieser** Runde (auf 1 h gedeckelt) |
-| **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug | `app.js` · `rate()` | eine Karte bewertet – **nur** Bewertung/Modus/Stufe/**Kategorie**, **nie** Karten-Id/-Text |
+| **`session_complete`** | `answered`/`accuracy`/`xp`/`again`:Buckets · `mode`:slug · **`answered_n`/`correct_n`/`xp_n`/`secs`/`speak_n`/`context_n`**:int | `app.js` · `beginRound()`/`finishRound()` | Lernrunde beendet. Buckets (grob) **plus** exakte Ints für die Investor-Interaktions-Tiefe pro Sitzung; `secs` = Dauer **dieser** Runde (auf 1 h gedeckelt); `mode` = Lernmodus (`flip`/`type`/`listen`); `speak_n`/`context_n` = TTS-Nutzungen bzw. Kontext-Aufrufe auf Karten als **Runden-Summen** (**kein** Einzel-Event je Tastendruck — Queue-Schutz) |
+| **`card_rated`** | `rating`:`again`/`good`/`easy` · `mode` · `level` · `cat`:Kategorie-slug · `card`:Katalog-slug oder `"custom"` · `spoke`/`ctx`:bool | `app.js` · `rate()` | eine Karte bewertet – seit 2026-07-23 mit **Katalog-Karten-Referenz** (`card`, z. B. `b02`; **eigene** Nutzerkarten reisen **nur** als Platzhalter `"custom"`, **nie** Id/Text) plus `spoke`/`ctx` = TTS bzw. Kontext auf **dieser** Karte benutzt — Basis für die karten-genaue Content-Qualität |
 | **`feature_start`** | `feature`:slug · `mode`:slug | `app.js` · `onClick` (`FEATURE_STARTS`-Map bei `start-*`); **Battle** zentral in `startBattle()` (deckt alle Einstiegspfade ab) | Lernspiel-Runde **gestartet** – Gegenstück zu `feature_complete` (ergibt die Abschlussquote). `feature` gleich benannt wie unten |
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
-| **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – **nur Länge & Trefferzahl**, **NIE** der Suchtext |
+| **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` · `q`:text (**nur bei 0 Treffern**, `cleanText`-bereinigt, gekappt) | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – bei Treffern reisen **nur Länge & Trefferzahl**, **nie** der Suchtext; **ausschließlich** bei Suchen **ohne** Treffer reist zusätzlich der PII-bereinigte Suchbegriff (`q`) — die Content-Wunschliste der Nutzer |
 | **`share`** | `content`:slug | `app.js` · `onClick` (`SHARE_ACTIONS`-Map bei `share-*`) | etwas geteilt (Virality-Funnel) – **nur** WAS (`content`: stats/card/tips/module …), **nie** Empfänger/Inhalt. Ersetzt das frühere generische `action`-Event für `share-*` |
-| **`activation`** | `milestone`:slug | `app.js` · `finishRound()` | Aktivierungs-„Aha" – heute `milestone:first_session` (allererste je abgeschlossene Runde) |
+| **`activation`** | `milestone`:slug · `day_n`:int | `app.js` · `finishRound()` / `recordStudyEvent()` | Aktivierungs-/Habit-Meilensteine: `first_session` (allererste je abgeschlossene Runde) sowie `streak_3`/`streak_7`/`streak_30` (genau beim **Erreichen** von 3/7/30 Serientagen; nach einem Serien-Riss darf der Meilenstein erneut feuern). `day_n` = **Tage seit der ersten (zugestimmten) Nutzung** (Time-to-Value bzw. Zeit-bis-Gewohnheit; lokal gestempelter Erst-Tag, es reist nur die Differenz, ≤ 365) |
 | **`onboarding_step`** | `step`:`intro`/`profile`/`trip` · `n`:int | `app.js` · `beginOnboarding`/`onboardSlidesToProfile`/`advanceOnboardingProfile` | Onboarding-Schritt erreicht (Aktivierungs-Funnel). Greift nur mit Consent **während** des Onboardings (z. B. Editionen) |
 | **`onboarding_complete`** | – | `app.js` · `finishOnboarding` | Onboarding abgeschlossen |
-| **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen |
+| **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int · `screen`:slug | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen; `screen` = aktuelle Ansicht (WO krachte es – nur der Slug). **Gedeckelt auf 10 error-Events je Session** (Schutz vor Fehler-Schleifen, die die Queue fluten würden) |
 | **`consent_change`** | `on`:bool | `app.js` · `setAnalyticsConsent` | Zustimmung erteilt (nur `on:true`; ein Opt-out wird bewusst **nicht** gesendet) |
-| **`pwa_installed`** | – | `app.js` · `window 'appinstalled'` | App als PWA installiert |
+| **`placement_result`** | `level`:slug (`A1`/`A2`/`B1` …) | `app.js` · `finishPlacement()` | Einstufungstest abgeschlossen – **nur das grobe Niveau**, keine Punkte/Antworten/Rückblicke. Start/Abschluss des Tests reisen zusätzlich als `feature_start`/`feature_complete` (`feature:placement`) → Abschlussquote im Lernspiel-Funnel |
+| **`pwa_prompt`** | `outcome`:`accepted`/`dismissed` | `app.js` · `installApp()` | Ausgang des **nativen** Install-Dialogs (Android/Chromium) – zusammen mit `pwa_installed` der Install-Funnel. „Kein Dialog verfügbar" wird bewusst nicht gesendet |
+| **`pwa_installed`** | – | `app.js` · `window 'appinstalled'` | App als PWA installiert (alle Wege, auch iOS/Menü) |
 
 > **Quelle der Allowlist:** `EVENTS` in [`analytics.js`](../analytics.js). Jedes nicht gelistete Feld
 > und jeder Freitext (Leerzeichen/Satzzeichen) wird vom Sanitizer **verworfen** – Slug-Regex
@@ -106,14 +110,18 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 ## 4. Was bewusst **NICHT** geloggt wird
 
-- **Kein** Suchtext (`state.searchQuery`), **keine** Kartentexte oder **Karten-IDs**, **keine** eigenen Karten/Favoriten-Inhalte.
+- **Keine** Inhalte oder IDs **eigener** Nutzerkarten/Favoriten — selbst erstellte Karten reisen in `card_rated` **nur** als Platzhalter `"custom"`, nie mit Id oder Text.
+- **Kein** Suchtext bei Suchen **mit** Treffern (`state.searchQuery` reist dann nie). Nur bei Suchen **ohne** Treffer reist der Suchbegriff — vorher PII-bereinigt (E-Mail → `@`, lange Ziffern → `#`) und hart gekappt.
+- **Katalog-Karten-IDs** (Slugs der mitgelieferten Lernkarten, z. B. `b02`) sind seit **2026-07-23 erlaubt** — das sind Inhalts-Referenzen der App, keine Personendaten. Warum: karten-genaue Content-Qualität („Schwierigste Karten" statt nur „schwierigste Themen").
 - **Keine** Namen/E-Mails/PII; Fehler-Texte werden bereinigt (E-Mail → `@`, lange Ziffern → `#`) und auf 80 Zeichen gekappt.
 - **Keine** Geolokalisierung, **keine** Device-Fingerprints, **keine** Cookies, **keine** Drittanbieter-Tracker, **keine** Werbung.
 - **Snapshot:** keine exakten Zähler – Mengen reisen nur als **grobe Buckets** (k-anonymity-freundlich).
   **Event-Strom:** zusätzlich **exakte Ganzzahlen** in `session_complete` (`answered_n`/`correct_n`/`xp_n`/`secs`)
-  für die Interaktions-Tiefe – bewusst feiner, aber weiterhin **ohne** PII/Freitext/Karteninhalt und mit
-  gedeckelter `secs` (≤ 1 h) gegen Fingerprinting.
-- Hochfrequente Lern-Aktionen (`flip`/`rate`/`skip`/`speak`) erzeugen **kein** generisches `action`-Event (Rauschen/Queue-Schutz).
+  für die Interaktions-Tiefe sowie `activation.day_n` (Tage seit Erstnutzung, ≤ 365) für die Time-to-Value –
+  bewusst feiner, aber weiterhin **ohne** PII/Freitext/Karteninhalt und mit gedeckelter `secs` (≤ 1 h)
+  bzw. `day_n` gegen Fingerprinting. Es reist nie ein Datum, nur die Differenz in Tagen.
+- Hochfrequente Lern-Aktionen (`flip`/`rate`/`skip`/`speak`) erzeugen weiterhin **kein** generisches `action`-Event (Rauschen/Queue-Schutz); Sprachausgabe (`speak`) und Kontext-Aufrufe auf Karten reisen stattdessen als **Runden-Summen** in `session_complete` (`speak_n`/`context_n`).
+- **`error`-Events sind pro Session auf 10 gedeckelt** – eine JS-Fehler-Schleife kann die Ring-Queue nicht fluten und die wertvollen Events (Sessions/Funnels) nicht verdrängen.
 
 ---
 
@@ -122,11 +130,13 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | Aspekt | Detail |
 |---|---|
 | **Gate** | sendet nur bei `SC.config.analytics.enabled` + `endpoint` **UND** aktiver Statistik (**Opt-out**: `settings.analyticsConsent !== false`, d.h. an, solange der Nutzer im Profil nicht ausdrücklich „Aus" wählt — auch für Bestandsprofile ohne gespeicherte Wahl). Sonst **0** Netzwerk-Calls **und** 0 Pufferung. |
+| **Sampling** | optional `SC.config.analytics.sampleRate` (0…1): Anteil der **Geräte**, die überhaupt senden — **deterministisch** über die gehashte `clientId` (FNV-1a), damit ein Gerät stabil „drin" oder „draußen" ist und Funnels/Sessions nicht zerreißen. Fehlend/ungültig = 1 (alle). Gilt für Event-Strom **und** Snapshot. |
 | **clientId** | pseudonym, zufällig, **resetbar** (Profil-Knopf „Statistik-Id zurücksetzen"); bei Opt-out gelöscht. LS-Key `spanischcard.analyticscid.v1`. |
 | **sessionId** | pro App-Start, rotiert nach 30 min Inaktivität; nur im Speicher. |
-| **Lokale Keys** | `…analyticssent.v1` (Snapshot-Tag), `…analyticsqueue.v1` (Event-Ring), `…analyticscid.v1` (clientId) – **keiner** in `store.KNOWN_KEYS`, reisen also **nicht** im Backup. |
+| **Erstnutzungs-Tag** | LS-Key `…analyticsfirst.v1`: der **Tag** des ersten (zugestimmten) Events, nur lokal — daraus wird `activation.day_n` (Tage-Differenz, ≤ 365) berechnet; das Datum selbst reist **nie**. Bei Reset/Opt-out gelöscht. |
+| **Lokale Keys** | `…analyticssent.v1` (Snapshot-Tag), `…analyticsqueue.v1` (Event-Ring), `…analyticscid.v1` (clientId), `…analyticsfirst.v1` (Erstnutzungs-Tag) – **keiner** in `store.KNOWN_KEYS`, reisen also **nicht** im Backup. |
 | **Queue** | localStorage-**Ring**, max **200** Events (älteste werden verworfen). |
-| **Versand** | Batches ≤ **50** via `SC.net.request` (POST); beim Verstecken/Schließen via `navigator.sendBeacon`. Flush alle ~15 s + bei `visibilitychange→hidden`/`pagehide`. Nebenläufigkeits-sicher (Entfernen per `seq`). |
+| **Versand** | Batches ≤ **50** via `SC.net.request` (POST); beim Verstecken/Schließen via `navigator.sendBeacon` — dabei wird die **ganze** Queue in ≤ 50er-Batches gesendet (max. 4 Beacon-POSTs), nicht mehr nur ein Batch. Flush alle ~15 s + bei `visibilitychange→hidden`/`pagehide`. Nebenläufigkeits-sicher (Entfernen per `seq`). |
 | **Fehlertoleranz** | Fire-and-forget; jeder Fehler wird geschluckt – Telemetrie blockiert die UI nie. |
 
 ---
@@ -199,18 +209,18 @@ node build.js --edition=<id>
 |---|---|
 | **📈 Investor-Cockpit** (oben) | **North Star** (Weekly Active Learners + Trend), **DAU/WAU/MAU**, **Stickiness**, **Aktivierungsrate** + Funnel, **Retention-Kohorten-Heatmap** (Erst-Tag × Tag-N), **Growth Accounting** + **Quick Ratio**, **K-Faktor**/Virality, **Interaktionen pro Person/Sitzung/aktivem Tag**, **Ø Lernzeit/Runde**, **Start↔Abschluss je Lernspiel**, **B2B-KPIs je Edition**. Vollständige Definitionen: [`docs/INVESTOR-KPIS.md`](./INVESTOR-KPIS.md), Feld `investor` in `aggregate()` |
 | **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T, mit **Trend** vs. Vorwoche ▲/▼), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate**, **Stickiness** (Ø DAU/MAU); Balken „aktive Nutzer/Tag" |
-| **Akquise & Teilen** | **Akquise-Quelle** (`app_open.src`: task/onboarding-link/edition/direct), **Teilen**-Aktionen |
+| **Akquise & Teilen** | **Akquise-Quelle** (`app_open.src`: task/onboarding-link/edition/direct), **Aktivierungsquote je Quelle** (welcher Kanal bringt Lernende, nicht nur Installs), **Teilen**-Aktionen |
 | **Snapshot-Verteilungen** | **Feature-Adoption**, **Streak**, **Karten/Tag**, **Bewertungen gesamt** (Lebenszeit) |
-| **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer" |
+| **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer", **Habit-Meilensteine** (erste Runde → 3 → 7 → 30 Serientage, distinkte Personen) |
 | **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
-| **Engagement** | meistgenutzte Bildschirme, Top-Aktionen |
-| **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen) |
-| **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **Suche-ohne-Treffer-Quote** |
-| **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Reiseziel-Adoption** + Tagesziel |
-| **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off) |
+| **Engagement** | meistgenutzte Bildschirme, Top-Aktionen, **Modul-Nutzung & Regelmäßigkeit** (Stammnutzer = Starts an ≥ 3 verschiedenen Tagen), **Screen-Reichweite** (Personen je Screen, Top 15) |
+| **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen), **Runden & Genauigkeit je Modus**, **Sprachausgabe/Kontext-Nutzung je Runde** |
+| **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **schwierigste KARTEN** (karten-genau, `learning.difficultCards`, ab 5 Bewertungen, inkl. TTS-/Kontext-Anteil je Karte), **Suche-ohne-Treffer-Quote**, **Fehlsuch-Begriffe** (`search.misses`, Top 20) |
+| **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Einstufungs-Verteilung** (Niveau aus `placement_result`), **Reiseziel-Adoption** + Tagesziel |
+| **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off), **Time-to-Value** (Tage bis zur 1. Lernrunde aus `activation.day_n`, Median + same-day-Quote), **PWA-Install-Funnel** (Prompt→angenommen→installiert→**benutzt**: Standalone-Anteil der Starts), **Runden-Abschluss je Startpfad** (`session_start.origin` ↔ `session_complete` über die sessionId – welcher Einstieg verliert Lernende?) |
 | **Zeit** | Aktivität nach **Uhrzeit** (UTC) und **Wochentag** |
 | **Segmente** | **Plattformen** & **Editionen** (distinkte Nutzer) |
-| **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen) |
+| **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen), **Fehler je Screen** (WO kracht es), **Startzeit-Verteilung** (`app_open.load_ms`) |
 | **Meta** | App-Versionen, Sprachen, Lern-Tracks; aus dem anonymen Snapshot: Feature-Adoption, Karten/Tag |
 
 > **„Wie viele Leute"** = distinkte `clientId` (nur aus dem Event-Strom; der Tages-Snapshot ist
@@ -267,19 +277,51 @@ loggt eintreffende Events nur im Terminal.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - Unit-Tests grün (`analytics.test.js`, `telemetry-aggregate.test.js`, `telemetry-map.test.js`); Doku hier + BACKEND.md + README.
 
+### ✅ Neu (2026-07-23, Welle 5): Rahmen-Anpassung — karten-genaue Qualität + Such-Lücken
+- **Privacy-Rahmen bewusst gelockert** (Betreiber-Entscheidung 2026-07-23): Katalog-Karten-Referenzen sind jetzt erlaubt (Inhalts-Referenzen der App, keine Personendaten); **eigene** Nutzerkarten reisen weiterhin **nie** (nur `"custom"`-Platzhalter), Suchtext bei Treffern weiterhin **nie**.
+- **`card_rated`** trägt jetzt `card` (Katalog-Slug, z. B. `b02`, oder `"custom"`) plus `spoke`/`ctx` (TTS/Kontext auf dieser Karte benutzt) → `learning.difficultCards` (Top 15 ab 5 Bewertungen) + `learning.cardToolUse` in `aggregate()` → neues Panel „Schwierigste Karten" + erweitertes Panel „Sprachausgabe & Kontexte".
+- **`search`** trägt jetzt `q` — den PII-bereinigten (E-Mail → `@`, lange Ziffern → `#`, gekappt) Suchbegriff, **nur bei 0 Treffern** → `search.misses` (Top 20) → neues Panel „Suche ohne Treffer" (Content-Wunschliste).
+- **`datenschutz.html` §8** entsprechend aktualisiert (Rechtstext: Katalog-Karten-Kennungen ja, eigene Karten nie, Suchbegriff nur bei 0 Treffern bereinigt); Doku hier (§0/§3.1/§4/§7) und BACKEND.md §17 angepasst.
+
+### ✅ Neu (2026-07-23, Welle 4): Modus-, TTS-/Kontext- und Modul-Nutzungs-Auswertung
+- **`session_complete`** trägt jetzt `mode` (flip/type/listen) sowie `speak_n`/`context_n` — TTS-Nutzungen und Kontext-Aufrufe auf Karten als **Runden-Summen** (kein Event je Tastendruck; `speak` bleibt in den Hochfrequenz-Ausnahmen, §4).
+- **`learning.modeRounds`** (abgeschlossene Runden + Genauigkeit je Lernmodus; `learning.modes` zählt weiter **begonnene** Runden aus `session_start`) und **`learning.tools`** (TTS/Kontext: Gesamt, Runden mit Nutzung, Ø je Runde, Anteil der Runden) in `aggregate()` → erweitertes „Lernmodus"-Panel + neues Panel „Sprachausgabe & Kontexte".
+- **`engagement.modules`** (Modul-Starts aus `feature_start`: Starts, Personen, **Stammnutzer** = Starts an ≥ 3 verschiedenen Tagen) und **`engagement.screenReach`** (Reichweite + Regelmäßigkeit je Screen, Top 15) → zwei neue Engagement-Panels.
+- **KPI-CSV** (`toKpiCsv`) um die Zeile „Runden mit Sprachausgabe %" erweitert.
+
+### ✅ Neu (2026-07-23, Welle 3): Habit-Funnel, Einstufung, Standalone-Nutzung, Startpfad-Abschluss, Startzeit
+- **Habit-Meilensteine:** `activation` mit `streak_3`/`streak_7`/`streak_30` (genau beim Erreichen, mit `day_n`) → **Habit-Funnel** im Retention-Bereich (erste Runde → 3 → 7 → 30 Serientage, distinkte Personen) + KPI-CSV-Zeile.
+- **Einstufungstest:** `feature_start`/`feature_complete` (`placement`) + neues Event `placement_result` (`level`, NUR das grobe Niveau) → Abschlussquote im Lernspiel-Funnel + **Niveau-Verteilungs-Panel** im Lernen-Bereich.
+- **Standalone-Nutzung:** `app_open.standalone` (läuft als installierte PWA) → der Install-Funnel bekommt die vierte Stufe „**benutzt**" (`investor.pwa.standaloneOpenPct`) + KPI-CSV-Zeile.
+- **Runden-Abschluss je Startpfad** (reine **Aufarbeitung**, kein neues Feld): `session_start.origin` ↔ `session_complete` über die sessionId gepaart (LIFO) → `investor.rounds.byOrigin` + Panel — zeigt, welcher Einstieg Lernende mitten in der Runde verliert.
+- **Startzeit-Verteilung** (reine Aufarbeitung): `app_open.load_ms` wurde erhoben, aber nie ausgewertet → `perf.loadMs` + Panel im Technik-Bereich.
+
+### ✅ Neu (2026-07-23): Fehlerflut-Deckel, Fehler-Screen-Kontext, Aktivierung je Quelle, Server-Routen-Tests
+- **Fehlerflut-Schutz:** `error`-Events sind clientseitig auf **10 je Session** gedeckelt — eine JS-Fehler-Schleife kann die 200er-Ring-Queue nicht mehr fluten und Sessions/Funnel-Events verdrängen.
+- **Fehler-Kontext:** `error.screen` (aktuelle Ansicht als Slug) + Auswertung **„Fehler je Screen"** im Monitoring-Panel — beantwortet „WO kracht es?" statt nur „was".
+- **Aktivierung je Akquise-Quelle:** `investor.activation.bySource` (Neu-Nutzer, Aktivierte, Quote je Erst-Quelle) + Dashboard-Block im Akquise-Panel — trennt Kanäle, die **Lernende** bringen, von teurer Fehlakquise.
+- **Integrationstests der Server-Routen** (vorher nur manuell): `test/telemetry-server-routes.test.js` fährt den Self-Host-Collector als echten Prozess hoch (PORT=0 → ephemerer Port, wird jetzt geloggt) und prüft Ingest/400/401/`?days`/CSV; `test/api-telemetry-routes.test.js` testet die Produktions-Handler (`events.js`/`usage.js`) mit gestubbter Supabase-Schicht: Methoden-Gate, Größenlimits, props-Sanitizer (inkl. `__proto__`), 429, 500-bei-Insert-Fehler, DSGVO-DELETE.
+
+### ✅ Neu (2026-07-22): Sampling, Install-Funnel, Time-to-Value, Beacon-Vollflush, Server-Härtung
+- **Sampling:** `SC.config.analytics.sampleRate` (0…1) clientseitig verdrahtet — deterministisch pro Gerät (FNV-1a über die `clientId`), gilt für Events UND Snapshot (§5).
+- **PWA-Install-Funnel:** neues Event `pwa_prompt` (`outcome`: accepted/dismissed) + bestehendes `pwa_installed` → `investor.pwa` (Akzeptanzquote) im Cockpit + KPI-CSV.
+- **Time-to-Value:** `activation.day_n` (Tage von der ersten zugestimmten Nutzung bis zur 1. Lernrunde, lokal gestempelt, ≤ 365) → `investor.timeToValue` (Median, same-day-Quote, Verteilung) im Cockpit + KPI-CSV.
+- **Beacon-Vollflush:** beim Verstecken/Schließen reist jetzt die **ganze** Queue (≤ 4 Batches) statt nur ein Batch — der frühere Restpuffer-Verlust ist behoben.
+- **Server-Härtung:** `POST /v1/events` übernimmt `props` nur noch **gedeckelt** (≤ 16 Felder, nur bool/endliche Zahl/String ≤ 80) — vorher konnte der auth-freie Endpunkt bis zu 64 KB beliebiges JSON pro Event in den Store schreiben.
+
 ### ⚠️ Bekannte Grenzen (bewusst)
 - **`/v1/admin/stats`-Fetch ist paginiert, aber gedeckelt** (30 Seiten × 1000 Zeilen/Tabelle ≈ 30k Zeilen) gegen die 15s-Vercel-Function-Laufzeit — bei sehr hohem Volumen müsste das auf serverseitige Aggregation (SQL) umgestellt werden.
 - **UTC-„heute":** Tages-Buckets nutzen den UTC-Tag des Servers vs. die lokale `day` des Clients → minimale Unschärfe an Tagesgrenzen.
 - **Onboarding-Funnel & Snapshot-Kennzahlen** liefern nur Daten von Nutzern **mit aktivem Consent** (der Consent-Schalter liegt hinter dem Onboarding → Funnel primär für Editionen mit vor-aktiviertem Consent aussagekräftig).
-- **Beacon-Flush** beim Schließen sendet höchstens **einen** Batch (≤ 50 Events); ein sehr großer Restpuffer kann beim harten Schließen verloren gehen.
+- **`activation.day_n`** misst ab der ersten **zugestimmten** Nutzung (Erstnutzungs-Stempel entsteht erst mit dem ersten getrackten Event) — für Bestandsnutzer, die die Statistik später einschalten, beginnt die Uhr entsprechend später.
 - **`mock-events-server.js`** und `telemetry-server.js` überlappen (bewusst: einfacher Smoke vs. voll).
 
 ### 🔧 TODO — Produktion
-- [ ] Optional **Sampling** (`SC.config.analytics.sampleRate`) client- und/oder serverseitig verdrahten.
+- [x] Optional **Sampling** (`SC.config.analytics.sampleRate`) clientseitig verdrahtet (deterministisch pro Gerät); serverseitiges Zusatz-Sampling weiterhin offen.
 - [ ] Bei wachsendem Volumen: `/v1/admin/stats` von Paginierung + In-Memory-`aggregate()` auf serverseitige SQL-Aggregation umstellen.
 
 ### 🧪 TODO — Tests/Qualität
-- [ ] **Integrationstest** der Server-Routen (Token-401, `?days=`, `/v1/admin/stats.csv`, 400 bei kaputtem POST) — aktuell manuell/live verifiziert.
+- [x] **Integrationstest** der Server-Routen — `test/telemetry-server-routes.test.js` (Self-Host end-to-end: Token-401, `?days=`, CSV, 400 bei kaputtem POST) + `test/api-telemetry-routes.test.js` (Produktions-Ingest mit Supabase-Stub). Offen bleibt nur `/v1/admin/stats` selbst (braucht einen Supabase-Lese-Stub über `telemetry-map.js`).
 - [ ] Optional Controller-Smoke, der belegt, dass die App-Hooks ohne Fehler feuern (DOM-Stub vorhanden).
 
 ### 📈 Produkt-/Investor-Metriken

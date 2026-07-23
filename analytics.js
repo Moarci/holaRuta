@@ -17,8 +17,13 @@
  *    Wechsel auf OPT-OUT ist dort `settings.analyticsConsent !== false` an, d.h. nur
  *    ein ausdrückliches „Aus" im Profil schaltet ab.
  *  - Datenminimierung: der Snapshot trägt NUR grobe, gebucketete Aggregate –
- *    KEINE PII, KEINE Karten-IDs, KEIN Suchtext, KEINE stabile Nutzer-ID. Alles
- *    wird aus dem schon vorhandenen gamestats abgeleitet; nichts Neues wird erfasst.
+ *    KEINE PII, KEINE stabile Nutzer-ID. Im Event-Strom sind seit der Rahmen-
+ *    Entscheidung 2026-07-23 zwei eng umrissene Ausnahmen erlaubt: Katalog-
+ *    Karten-IDs (Inhalts-Slugs, keine Personendaten; eigene Nutzerkarten nur
+ *    als "custom") und der PII-bereinigte Suchbegriff NUR bei 0 Treffern
+ *    (siehe EVENTS-Allowlist). Alles Weitere (Namen/E-Mails/Kartentexte)
+ *    bleibt verboten. Der Snapshot selbst wird komplett aus dem schon
+ *    vorhandenen gamestats abgeleitet; nichts Neues wird erfasst.
  *    Buckets sind bewusst grob (k-anonymity-freundlich): viele Nutzer teilen sich
  *    denselben Bereich, ein einzelner ist nicht herausrechenbar.
  *  - Reiner Kern: buildUsageSnapshot/bucket/featuresUsed sind seiteneffektfrei
@@ -137,6 +142,28 @@
   // Nutzer-Zustimmung). Nur dann zeigt die UI überhaupt den Consent-Schalter.
   function available() { return !!(cfg() && cfg().enabled && apiBase() && typeof fetch === "function"); }
 
+  // ---------- Sampling (SC.config.analytics.sampleRate, BACKEND.md §17.7) ----------
+  // Anteil der GERÄTE, die überhaupt senden – Datenminimierung bei Reichweite.
+  // Deterministisch über die pseudonyme clientId gehasht (FNV-1a): ein Gerät ist
+  // stabil „drin" oder „draußen". Ein Zufall PRO EVENT würde dagegen Funnels und
+  // Sessions zerreißen (halbe Journeys). Fehlend/ungültig = 1 (alle senden).
+  function samplePct(id) {
+    var s = str(id);
+    var h = 0x811c9dc5; // FNV-1a 32 bit
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
+    return (h % 10000) / 100; // 0 … 99.99
+  }
+  function sampleRate() {
+    var r = cfg() && cfg().sampleRate;
+    return (typeof r === "number" && isFinite(r) && r >= 0 && r <= 1) ? r : 1;
+  }
+  function sampled() {
+    var r = sampleRate();
+    if (r >= 1) return true;
+    if (r <= 0) return false;
+    return samplePct(clientId()) < r * 100;
+  }
+
   function lastSent() { try { return localStorage.getItem(SENT_KEY) || ""; } catch (e) { return ""; } }
   function markSent(day) { try { localStorage.setItem(SENT_KEY, day); } catch (e) { /* egal */ } }
 
@@ -147,7 +174,7 @@
   // erneut. Gibt ein Promise { sent } zurück (auch für die Tests).
   function maybeSend(gamestats, meta) {
     var m = isObj(meta) ? meta : {};
-    if (!available() || m.consent !== true) return Promise.resolve({ sent: false });
+    if (!available() || m.consent !== true || !sampled()) return Promise.resolve({ sent: false });
     var snap = buildUsageSnapshot(gamestats, m);
     if (lastSent() === snap.day) return Promise.resolve({ sent: false });
     return SC.net.request(apiBase(), "POST", "/v1/usage", snap, { timeout: 8000 })
@@ -168,10 +195,12 @@
   var EVENTS_PATH = "/v1/events";
   var QUEUE_KEY = "spanischcard.analyticsqueue.v1"; // gepufferte Events (Ring)
   var CLIENT_KEY = "spanischcard.analyticscid.v1";  // pseudonyme, resetbare clientId
-  // Alle drei bewusst NICHT in store.KNOWN_KEYS -> reisen nicht im Backup mit.
+  var FIRST_KEY = "spanischcard.analyticsfirst.v1"; // Tag des ersten (zugestimmten) Events – Time-to-Value
+  // Alle vier bewusst NICHT in store.KNOWN_KEYS -> reisen nicht im Backup mit.
   var QUEUE_CAP = 200;                 // höchstens so viele Events puffern (Ring)
   var BATCH_MAX = 50;                  // pro POST höchstens so viele
   var SESSION_GAP_MS = 30 * 60 * 1000; // >30 min Inaktivität -> neue Session
+  var ERROR_CAP = 10;                  // höchstens so viele error-Events je Session
 
   // Pseudonyme Id (kein Klarname, keine Krypto-Anforderung – nur Wiedererkennung).
   function randomId() {
@@ -190,6 +219,23 @@
     try { id = localStorage.getItem(CLIENT_KEY); } catch (e) { id = null; }
     if (!id) { id = randomId(); try { localStorage.setItem(CLIENT_KEY, id); } catch (e2) { /* egal */ } }
     return id;
+  }
+
+  // Time-to-Value: der TAG des allerersten getrackten Events wird lokal gestempelt
+  // (nur mit aktivem Gate, also nie ohne Zustimmung). daysSinceFirstUse() liefert
+  // daraus die Ganzzahl „Tage seit Erstnutzung" für activation.day_n – es reist
+  // NIE das Datum selbst, nur die Differenz, gedeckelt gegen Ausreißer/Fingerprints.
+  function stampFirstUse(now) {
+    try { if (!localStorage.getItem(FIRST_KEY)) localStorage.setItem(FIRST_KEY, dayKey(now)); } catch (e) { /* egal */ }
+  }
+  function daysSinceFirstUse(now) {
+    var first = "";
+    try { first = localStorage.getItem(FIRST_KEY) || ""; } catch (e) { return undefined; }
+    var f = first.split("-"), c = dayKey(typeof now === "number" ? now : Date.now()).split("-");
+    if (f.length !== 3) return undefined;
+    var d = Math.round((Date.UTC(+c[0], +c[1] - 1, +c[2]) - Date.UTC(+f[0], +f[1] - 1, +f[2])) / 86400000);
+    if (!isFinite(d) || d < 0) return undefined;
+    return Math.min(d, 365);
   }
 
   // Sitzungs-pseudonym: pro App-Start neu, rotiert nach Inaktivität. Nur im Speicher.
@@ -239,7 +285,9 @@
     // var = aktive A/B-Variante der Landing. Beide reine Slugs aus den `src=`/`var=`-
     // Query-Params der Landing-Links – die Landing selbst trackt NICHTS, sie reicht nur
     // den Slug durch. So wird der Landing→App-Funnel pro CTA/Variante messbar.
-    app_open:         { returning: "bool", load_ms: "bucket", src: "slug", cta_src: "slug", var: "slug" },
+    // standalone = läuft die App als installierte PWA (Gegenstück zum Install-
+    // Funnel: nicht nur „installiert", sondern „wird installiert BENUTZT").
+    app_open:         { returning: "bool", load_ms: "bucket", src: "slug", cta_src: "slug", var: "slug", standalone: "bool" },
     screen_view:      { screen: "slug", tab: "slug" },
     action:           { action: "slug", mode: "slug", dir: "slug", level: "slug", tab: "slug", scope: "slug" },
     session_start:    { scope: "slug", origin: "slug", mode: "slug", cards: "bucket" },
@@ -248,25 +296,51 @@
     // Interaktions-Tiefe PRO SITZUNG (opt-in, pseudonym – weiterhin KEIN Freitext,
     // KEINE Karten-IDs/-Inhalte). „secs" = Dauer DIESER Lernrunde (nicht die 30-min-
     // sessionId-Spanne) und wird aufrufer-seitig gegen Fingerprinting gedeckelt.
+    // mode = Lernmodus der Runde (flip/type/listen). speak_n/context_n sind
+    // RUNDEN-SUMMEN (wie oft TTS bzw. Kontext-Panel auf Karten DIESER Runde):
+    // bewusst KEIN Hochfrequenz-Event-Spam – die Aktionen speak/flip/rate/skip sind
+    // in app.js als NOISY_ACTIONS vom generischen action-Event ausgenommen und
+    // reisen stattdessen als Summen hier.
     session_complete: { answered: "bucket", accuracy: "bucket", xp: "bucket", again: "bucket", mastered: "int",
-                        answered_n: "int", correct_n: "int", xp_n: "int", secs: "int" },
-    card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug" },
+                        answered_n: "int", correct_n: "int", xp_n: "int", secs: "int",
+                        mode: "slug", speak_n: "int", context_n: "int" },
+    // card = Katalog-Karten-ID (kurzer Inhalts-Slug wie "b02" – Referenz auf
+    // App-Inhalte, keine Personendaten; bewusste Rahmen-Entscheidung 2026-07-23).
+    // EIGENE Nutzerkarten (custom: true) reisen NIE mit ihrer Id/ihrem Inhalt,
+    // sondern nur als Platzhalter "custom". spoke/ctx = wurde auf DIESER Karte
+    // vor der Bewertung TTS bzw. das Kontext-Panel benutzt (karten-genaue
+    // Werkzeug-Nutzung, ohne zusätzliche Einzel-Events).
+    card_rated:       { rating: "slug", mode: "slug", level: "slug", cat: "slug",
+                        card: "slug", spoke: "bool", ctx: "bool" },
     // Start↔Abschluss je Lernspiel: feature_start am Rundenstart, feature_complete am
     // Rundenende – zusammen ergeben sie die Abschlussquote (Funnel je Spiel).
     feature_start:    { feature: "slug", mode: "slug" },
     feature_complete: { feature: "slug", perfect: "bool" },
-    search:           { qlen: "bucket", results: "bucket" },
+    // q = der Suchbegriff, NUR bei Suchen mit 0 Treffern gesetzt (Content-
+    // Lücken-Analyse: „was fehlt im Katalog?" – Rahmen-Entscheidung 2026-07-23).
+    // Der "text"-Sanitizer (cleanText) entfernt E-Mails/lange Ziffernfolgen und
+    // kappt hart auf 80 Zeichen. Bei Treffern reist weiterhin NIE der Suchtext,
+    // nur die groben qlen/results-Buckets.
+    search:           { qlen: "bucket", results: "bucket", q: "text" },
     // Virality-Funnel: content = WAS geteilt wird (stats/card/tips/module …),
     // NIE der Empfänger/Inhalt. (channel kann später ergänzt werden, wenn der
     // Client den Wel-Weg kennt – bewusst NICHT gelistet, solange nicht gesendet.)
     share:            { content: "slug" },
-    // Aktivierungs-„Aha": milestone (z.B. first_session). (day_n bewusst NICHT
-    // gelistet, solange der Client keine „Tage seit Erst-Open" mitsendet.)
-    activation:       { milestone: "slug" },
+    // Aktivierungs-/Habit-Meilensteine: first_session (allererste Runde) sowie
+    // streak_3/streak_7/streak_30 (Serientage erreicht – Gewohnheitsbildung).
+    // day_n = Tage zwischen erster (zugestimmter) Nutzung und dem Meilenstein
+    // (Time-to-Value bzw. Zeit-bis-Gewohnheit, ≤365).
+    activation:       { milestone: "slug", day_n: "int" },
+    // Einstufungstest abgeschlossen: NUR das grobe Niveau (A1/A2/B1 …), nie
+    // Antworten/Punkte. Start/Abschluss reisen als feature_start/-complete.
+    placement_result: { level: "slug" },
     onboarding_step:  { step: "slug", n: "int" },
     onboarding_complete: {},
-    error:            { type: "slug", msg: "text", src: "text", line: "int" },
+    error:            { type: "slug", msg: "text", src: "text", line: "int", screen: "slug" },
     consent_change:   { on: "bool" },
+    // Install-Funnel: pwa_prompt = Ausgang des NATIVEN Install-Dialogs
+    // (accepted/dismissed), pwa_installed = tatsächlich installiert (alle Wege).
+    pwa_prompt:       { outcome: "slug" },
     pwa_installed:    {},
   };
   // Erweiterbar: weitere Event-Namen lassen sich hier ergänzen + an der passenden
@@ -328,10 +402,19 @@
   // Erfasst ein Event: bauen + sanitisieren + in die Ring-Queue. Tut NICHTS ohne
   // Endpunkt UND Zustimmung und NUR für bekannte Event-Namen. Wirft nie.
   function track(name, props, opts) {
-    if (!available() || ctx.consent !== true) return;
+    if (!available() || ctx.consent !== true || !sampled()) return;
     if (!EVENTS[str(name)]) return;
     var o = isObj(opts) ? opts : {};
     var now = typeof o.now === "number" ? o.now : Date.now();
+    // Fehler-Schleifen (z.B. ein Error pro Render-Frame) würden die Ring-Queue
+    // fluten und die WERTVOLLEN Events (Sessions, Funnels) verdrängen: error-Events
+    // pro Session hart deckeln. Der Zähler lebt auf der Session und rotiert mit ihr.
+    if (str(name) === "error") {
+      sessionId(now); // sess sicherstellen (rotiert ggf. nach Inaktivität)
+      sess.errs = (sess.errs || 0) + 1;
+      if (sess.errs > ERROR_CAP) return;
+    }
+    stampFirstUse(now); // Time-to-Value-Anker: Tag des ersten (zugestimmten) Events
     var ev = buildEvent(name, props, {
       now: now,
       clientId: clientId(),
@@ -369,14 +452,24 @@
     if (!available() || ctx.consent !== true || !queue.length) return Promise.resolve({ sent: 0 });
     var batch = queue.slice(0, BATCH_MAX);
     // Beim Verstecken/Schließen: zuverlässig via sendBeacon (synchron, übersteht das
-    // Entladen). Best-effort, auch wenn gerade ein regulärer Flush läuft.
+    // Entladen). Best-effort, auch wenn gerade ein regulärer Flush läuft. Es wird die
+    // GANZE Queue in ≤50er-Batches gesendet (max. QUEUE_CAP/BATCH_MAX = 4 POSTs) –
+    // vorher ging beim harten Schließen alles jenseits des ersten Batches verloren.
+    // Lehnt der Browser einen Beacon ab (Budget voll), bleibt der Rest gepuffert.
     if (o.beacon && typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      var ok = false;
-      try {
-        var blob = new Blob([JSON.stringify({ events: batch })], { type: "application/json" });
-        ok = navigator.sendBeacon(apiBase() + EVENTS_PATH, blob);
-      } catch (e) { ok = false; }
-      if (ok) { removeSent(batch); return Promise.resolve({ sent: batch.length, beacon: true }); }
+      var beaconSent = 0;
+      while (queue.length) {
+        var b = queue.slice(0, BATCH_MAX);
+        var ok = false;
+        try {
+          var blob = new Blob([JSON.stringify({ events: b })], { type: "application/json" });
+          ok = navigator.sendBeacon(apiBase() + EVENTS_PATH, blob);
+        } catch (e) { ok = false; }
+        if (!ok) break;
+        removeSent(b);
+        beaconSent += b.length;
+      }
+      if (beaconSent) return Promise.resolve({ sent: beaconSent, beacon: true });
       // Beacon abgelehnt -> regulärer Pfad unten
     }
     // Regulärer Pfad: nur EIN gleichzeitiger Netz-Flush.
@@ -390,9 +483,11 @@
       }, function () { flushing = false; return { sent: 0 }; });
   }
 
-  // Pseudonyme clientId verwerfen und Puffer leeren (Reset / Consent-aus).
+  // Pseudonyme clientId + Erstnutzungs-Tag verwerfen und Puffer leeren
+  // (Reset / Consent-aus): danach ist NICHTS Wiedererkennbares mehr gespeichert.
   function resetClientId() {
     try { localStorage.removeItem(CLIENT_KEY); } catch (e) { /* egal */ }
+    try { localStorage.removeItem(FIRST_KEY); } catch (e) { /* egal */ }
     queue = []; saveQueue(); sess = null;
   }
 
@@ -406,11 +501,14 @@
     track: track,
     flush: flush,
     resetClientId: resetClientId,
+    daysSinceFirstUse: daysSinceFirstUse,
     QUEUE_KEY: QUEUE_KEY,
     CLIENT_KEY: CLIENT_KEY,
+    FIRST_KEY: FIRST_KEY,
     // Reiner Kern (für Tests + serverseitige Wiederverwendung)
     dayKey: dayKey,
     bucket: bucket,
+    samplePct: samplePct,
     featuresUsed: featuresUsed,
     buildUsageSnapshot: buildUsageSnapshot,
     buildEvent: buildEvent,

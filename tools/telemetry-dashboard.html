@@ -1005,8 +1005,10 @@ function render(s){
              {label:"Abgewandert",count:growth.churned||0,color:"var(--no)"}]),
     foot:'Zugänge vs. <span style="color:var(--no)">Abwanderung</span> · Quick Ratio <b>'+esc(fmtN(qr))+'</b> (&gt; 1 = Wachstum)' });
   html += panelHtml({ title:"Akquise-Quelle", small:"(distinkte Personen nach erster Quelle)",
-    desc:"Woher der Erstkontakt kam. Wächst der Anteil außerhalb von „direct“, greifen die Kanäle (Links, Editionen, geteilte Module).",
+    desc:"Woher der Erstkontakt kam — und welcher Kanal LERNENDE bringt, nicht nur Installs: Quellen mit vielen Nutzern, aber niedriger Aktivierungsquote sind teure Fehlakquise.",
     body: hbars(((s.engagement&&s.engagement.acquisition)||[]).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--brand)"})
+      + '<h4>Aktivierungsquote je Quelle</h4>'
+      + ((((inv.activation||{}).bySource)||[]).length? hbars(inv.activation.bySource.map(function(a){return {label:a.src+" · "+fmtN(a.activated)+" von "+fmtN(a.users),count:a.pct};}),{color:"var(--ok)",fmt:function(d){return d.count+" %";}}) : empty("Keine neuen Personen im Fenster","entsteht mit dem ersten app_open neuer Nutzer"))
       + '<h4>Neu vs. wiederkehrend (App-Starts)</h4>'
       + hbars([{label:"Neue Starts",count:u.newOpens,color:"var(--ok)"},{label:"Wiederkehrend",count:u.returningOpens,color:"var(--brand)"}]) });
   html += '</div>';
@@ -1055,6 +1057,26 @@ function render(s){
     desc:"Die Schritte INNERHALB des Onboardings. Zählt nur Personen, deren Statistik-Zustimmung schon während des Onboardings aktiv war.",
     body: funnelChart(s.funnel, "greift nur bei Consent WÄHREND des Onboardings (z. B. Editionen mit vor-aktiviertem Consent)") });
   html += '</div>';
+
+  // Time-to-Value + PWA-Install-Funnel (aggregate(): investor.timeToValue / investor.pwa)
+  var ttv = inv.timeToValue||{}, pwa = inv.pwa||{};
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Time-to-Value", small:"(Tage bis zur ersten Lernrunde)",
+    desc:"Wie schnell neue Personen den „Aha“-Moment erreichen: 0 = noch am selben Tag. Je weiter oben die Masse, desto besser sitzt der Einstieg.",
+    body: (ttv.count? hbars((ttv.histogram||[]).map(function(h){return {label:h.bucket+" Tage",count:h.count};}),{color:"var(--ok)"}) : empty("Noch keine Aktivierungen mit day_n","entsteht mit dem ersten activation-Event neuer Clients")),
+    foot: ttv.count? ('Median <b>'+esc(fmtN(ttv.medianDays||0))+'</b> Tage · '+esc(pct(ttv.sameDayPct||0))+' noch am selben Tag · Basis '+esc(fmtN(ttv.count))+' Aktivierungen') : '' });
+  html += panelHtml({ title:"PWA-Installation", small:"(Prompt → angenommen → installiert → benutzt)",
+    desc:"Der Install-Funnel: Wie oft wurde der native Installations-Dialog gezeigt, wie oft angenommen — und wie viele Installationen kamen insgesamt an (inkl. iOS/Menü, daher ggf. mehr als angenommen). „Benutzt“ misst App-Starts im installierten App-Fenster.",
+    body: ((pwa.prompts||pwa.installs||pwa.standaloneOpens)? hbars([{label:"Prompt gezeigt",count:pwa.prompts||0},{label:"Angenommen",count:pwa.accepted||0,color:"var(--ok)"},{label:"Installiert",count:pwa.installs||0,color:"var(--brand)"},{label:"Standalone-Starts",count:pwa.standaloneOpens||0,color:"var(--easy)"}]) : empty("Noch keine Install-Prompts","entsteht mit dem ersten pwa_prompt/pwa_installed")),
+    foot: ((pwa.prompts? 'Akzeptanz <b>'+esc(pct(pwa.acceptPct||0))+'</b> ('+esc(fmtN(pwa.accepted||0))+' von '+esc(fmtN(pwa.prompts||0))+' Prompts)' : '')
+      + (pwa.opens? (pwa.prompts? ' · ' : '')+'<b>'+esc(pct(pwa.standaloneOpenPct||0))+'</b> der App-Starts laufen standalone' : '')) });
+  html += '</div>';
+
+  // Abschlussquote je Startpfad (aggregate(): investor.rounds.byOrigin)
+  var byOrigin = (inv.rounds&&inv.rounds.byOrigin)||[];
+  html += panelHtml({ style:"margin-top:16px", title:"Runden-Abschluss je Startpfad", small:"(session_start.origin ↔ session_complete)",
+    desc:"Welcher Einstieg (Ruta del día, Kategorie, Favoriten, Pre-Trip …) begonnene Runden auch zu Ende bringt. Der Pfad mit der niedrigsten Quote verliert die meisten Lernenden mitten in der Runde.",
+    body: (byOrigin.length? hbars(byOrigin.map(function(o){return {label:o.origin+" · "+fmtN(o.completes)+" von "+fmtN(o.starts),count:o.pct};}),{color:"var(--warn)",fmt:function(d){return d.count+" %";}}) : empty("Keine Runden im Fenster","entsteht mit dem ersten session_start")) });
   html += '</section>';
 
   // ===================== 4 · RETENTION =====================================
@@ -1093,6 +1115,9 @@ function render(s){
       }),{color:"var(--ok)",fmt:function(d){ return d.na ? "n/a" : d.count+" %"; }})
       + '<h4>Aktive Tage je Person</h4>'
       + hbars((u.activeDaysHistogram||[]).map(function(d){return {label:d.bucket+(d.bucket==="1"?" Tag":" Tage"),count:d.count};}),{color:"var(--brand)"}) });
+  html += panelHtml({ title:"Habit-Meilensteine", small:"(distinkte Personen · activation-Events)",
+    desc:"Gewohnheitsbildung als Funnel: erste Lernrunde → 3 → 7 → 30 Serientage. Gewohnheit ist der eigentliche Retention-Treiber — je flacher der Abfall, desto stärker die Habit-Schleife.",
+    body: funnelChart((inv.habit&&inv.habit.funnel)||[], "entsteht mit der ersten abgeschlossenen Lernrunde") });
   html += panelHtml({ title:"Streak-Verteilung", small:"(Tages-Snapshot)",
     desc:"Wie lange die aktuelle tägliche Lernserie der Nutzer ist. Lange Streaks sind das stärkste Halte-Signal, das die App kennt.",
     body: hbars(sortBuckets(s.meta.snapshotStreak).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--warn)",emptyWhat:"Keine Streak-Daten",emptyWhy:"entsteht mit dem ersten Tages-Snapshot mit laufender Serie"}) });
@@ -1159,6 +1184,16 @@ function render(s){
     desc:"Die häufigsten Einzel-Aktionen (Buttons, Abläufe) über alle Bildschirme hinweg.",
     body: hbars((s.engagement&&s.engagement.actions)||[]) });
   html += '</div>';
+
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Modul-Nutzung &amp; Regelmäßigkeit", small:"(feature_start · Stammnutzer)",
+    desc:"Welche Lernmodule gestartet werden und wie viele Personen regelmäßig wiederkommen — Stammnutzer sind das Signal, dass ein Modul wirklich in den Alltag passt.",
+    body: ((s.engagement&&s.engagement.modules&&s.engagement.modules.length)? hbars(s.engagement.modules.map(function(m){return {label:m.module+" · "+fmtN(m.users)+" Personen · "+fmtN(m.regulars)+" Stamm", count:m.starts};}),{color:"var(--brand)"}) : empty("Keine Modul-Daten","entsteht mit dem ersten feature_start")),
+    foot:'Stammnutzer = an ≥ 3 verschiedenen Tagen gestartet' });
+  html += panelHtml({ title:"Screen-Reichweite", small:"(distinkte Personen · Top 15)",
+    desc:"Wie viele verschiedene Personen einen Bildschirm erreichen — Reichweite statt Klickvolumen, zeigt, welche Bereiche wirklich in der Breite ankommen.",
+    body: ((s.engagement&&s.engagement.screenReach&&s.engagement.screenReach.length)? hbars(s.engagement.screenReach.map(function(r){return {label:r.screen+" · "+fmtN(r.users)+" Personen", count:r.views};}),{color:"var(--easy)"}) : empty("Keine Screen-Daten","entsteht mit dem ersten screen_view")) });
+  html += '</div>';
   html += '</section>';
 
   // ====================== 6 · LERNEN =======================================
@@ -1193,13 +1228,41 @@ function render(s){
   html += '</div>';
 
   html += '<div class="grid">';
+  html += panelHtml({ title:"Schwierigste Karten", small:"(karten-genau · ab 5 Bewertungen)",
+    desc:"Einzelne Katalog-Karten mit der höchsten „Nochmal“-Quote — die direkte Arbeitsliste für die Überarbeitung einzelner Karten, nicht nur ganzer Themen. Top 15, nur Katalog-Karten (eigene Nutzerkarten reisen nie).",
+    body: (le.difficultCards&&le.difficultCards.length? hbars(le.difficultCards.map(function(d){return {label:d.card+" · "+fmtN(d.total)+" Bew.",count:d.againPct};}),{color:"var(--no)",fmt:function(d){return d.count+" %";}}) : empty("Noch keine karten-genauen Daten","entsteht mit dem ersten card_rated mit card-Feld")),
+    foot: (le.difficultCards&&le.difficultCards.length? 'TTS/Kontext je Karte in den Daten — z. B. '+le.difficultCards.slice(0,3).map(function(d){return esc(d.card)+': '+esc(pct(d.spokePct||0))+' TTS / '+esc(pct(d.ctxPct||0))+' Kontext';}).join(' · ') : "") });
+  html += panelHtml({ title:"Suche ohne Treffer", small:"(PII-bereinigte Begriffe · Top 20)",
+    desc:"Wonach gesucht wird, ohne dass die App etwas findet — das ist die Content-Wunschliste der Nutzer. Begriffe reisen nur bei 0 Treffern und werden vorher clientseitig von E-Mails/Ziffernfolgen bereinigt.",
+    body: '<h4>Gesuchte Begriffe ohne Treffer</h4>'
+      + ((s.search&&s.search.misses&&s.search.misses.length)? hbars(s.search.misses.map(function(m){return {label:m.key,count:m.count};}),{color:"var(--warn)"}) : empty("Keine Fehlsuchen mit Begriff","entsteht mit der ersten Suche ohne Treffer")) });
+  html += '</div>';
+
+  html += '<div class="grid">';
   html += panelHtml({ title:"Lernmodus", small:"(je Sitzung)",
-    desc:"In welchem Modus gelernt wird (Wiederholen, Neues, Spiele) — zeigt, welche Lernwege wirklich tragen.",
-    body: hbars((le.modes||[]).map(function(m){return {label:m.key,count:m.count};}),{color:"var(--ok)"}) });
+    desc:"In welchem Modus gelernt wird (Wiederholen, Neues, Spiele) — zeigt, welche Lernwege wirklich tragen. Oben begonnene Runden, unten abgeschlossene Runden mit Trefferquote je Modus.",
+    body: hbars((le.modes||[]).map(function(m){return {label:m.key,count:m.count};}),{color:"var(--ok)"})
+      + '<h4>Abgeschlossene Runden &amp; Genauigkeit</h4>'
+      + ((le.modeRounds&&le.modeRounds.length)? hbars(le.modeRounds.map(function(m){return {label:m.mode+" · "+fmtN(m.rounds)+" Runden", count:(m.accuracyPct==null?0:m.accuracyPct)};}),{color:"var(--brand)",fmt:function(d){return d.count+" %";}}) : empty("Keine abgeschlossenen Runden","entsteht mit dem ersten session_complete mit mode-Feld")) });
   html += panelHtml({ title:"Lernfortschritt", small:"(% gemeisterte Karten)",
     desc:"Verteilung des Karten-Fortschritts über alle Nutzer. Wandert die Masse nach rechts, lernt die Basis wirklich dazu.",
     body: (le.mastery&&le.mastery.length? hbars(sortBuckets(le.mastery).map(function(m){return {label:m.key+" %",count:m.count};}),{color:"var(--ok)"}) : empty("Keine Snapshots","entsteht mit dem ersten Tages-Snapshot")) });
+  html += panelHtml({ title:"Einstufungstest", small:"(Niveau-Verteilung · placement_result)",
+    desc:"Auf welchem Niveau neue Lernende einsteigen (A1/A2/B1 …). Steuert, welche Inhalte und Startpfade Priorität verdienen — die Abschlussquote des Tests steht im Lernspiel-Funnel (placement).",
+    body: (le.placementLevels&&le.placementLevels.length? hbars(le.placementLevels.map(function(p2){return {label:p2.key,count:p2.count};}),{color:"var(--brand)"}) : empty("Noch keine Einstufungen","entsteht mit dem ersten abgeschlossenen Einstufungstest")) });
   html += '</div>';
+
+  var lt = le.tools || {};
+  html += panelHtml({ title:"Sprachausgabe &amp; Kontexte", small:"(auf Karten, je Lernrunde)",
+    desc:"Wie oft Vorlesen (TTS) und Kontext-Beispiele beim Kartenlernen wirklich benutzt werden — zeigt, ob die Hör- und Kontext-Funktionen den Lernwert tragen oder ungenutzt bleiben.",
+    body: (lt.rounds? hbars([
+        {label:"Runden mit Sprachausgabe",count:(lt.tts&&lt.tts.rounds)||0,color:"var(--brand)"},
+        {label:"TTS-Nutzungen gesamt",count:(lt.tts&&lt.tts.total)||0,color:"var(--brand)"},
+        {label:"Runden mit Kontext",count:(lt.context&&lt.context.rounds)||0,color:"var(--ok)"},
+        {label:"Kontext-Aufrufe gesamt",count:(lt.context&&lt.context.total)||0,color:"var(--ok)"}
+      ]) : empty("Keine Nutzungsdaten","entsteht mit dem ersten session_complete mit speak_n/context_n")),
+    foot: ((lt.rounds? 'Ø '+esc(fmtN((lt.tts&&lt.tts.perRound)||0))+' TTS / '+esc(fmtN((lt.context&&lt.context.perRound)||0))+' Kontext je Runde · '+esc(pct((lt.tts&&lt.tts.roundSharePct)||0))+' bzw. '+esc(pct((lt.context&&lt.context.roundSharePct)||0))+' der Runden' : "")
+      + ((le.cardToolUse&&le.cardToolUse.ratings)? (lt.rounds?' · ':'')+'je Bewertung: '+esc(pct(le.cardToolUse.spokePct||0))+' TTS, '+esc(pct(le.cardToolUse.ctxPct||0))+' Kontext' : "")) });
 
   html += panelHtml({ title:"Tagesziel", small:"("+esc(pct((s.trip&&s.trip.withGoalPct)||0))+" haben ein Reiseziel)",
     desc:"Wie ambitioniert die selbst gesetzten Tagesziele sind — nur von Personen mit gesetztem Reiseziel.",
@@ -1253,13 +1316,17 @@ function render(s){
 
   html += '<div class="grid">';
   html += panelHtml({ title:"Fehler", small:"(Monitoring)",
-    desc:"Die häufigsten Fehlermeldungen und ihre Verteilung über App-Versionen. Häufen sich Fehler in genau EINER Version, ist es ein Release-Problem — siehe Regressions-Alarm im Überblick.",
+    desc:"Die häufigsten Fehlermeldungen, ihre Verteilung über App-Versionen und die Ansicht, auf der es krachte. Häufen sich Fehler in genau EINER Version, ist es ein Release-Problem — siehe Regressions-Alarm im Überblick.",
     body: (s.errors.length? hbars(s.errors.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler im Fenster",""))
       + '<h4>Fehler je App-Version</h4>'
-      + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler","")) });
+      + ((s.errorsByVersion&&s.errorsByVersion.length)? hbars(s.errorsByVersion.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Fehler",""))
+      + '<h4>Fehler je Screen</h4>'
+      + ((s.errorsByScreen&&s.errorsByScreen.length)? hbars(s.errorsByScreen.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Screen-Daten","entsteht mit dem ersten error-Event mit screen-Feld")) });
   html += panelHtml({ title:"App-Versionen",
     desc:"Wie schnell Updates die Nutzerschaft erreichen. Alte Versionen mit vielen Nutzern verlängern die Zeit, die ein Bugfix bis zur Wirkung braucht.",
-    body: hbars(s.meta.appVersions) });
+    body: hbars(s.meta.appVersions)
+      + '<h4>Startzeit (app_open.load_ms)</h4>'
+      + ((s.perf&&s.perf.loadMs&&s.perf.loadMs.length)? hbars(sortBuckets(s.perf.loadMs).map(function(l){return {label:l.key+" ms",count:l.count};}),{color:"var(--easy)"}) : empty("Keine Startzeit-Daten","entsteht mit dem ersten app_open")) });
   html += '</div>';
   html += '</section>';
 
