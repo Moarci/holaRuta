@@ -488,6 +488,14 @@ var STEP_LABELS = {
   returning: "Wiedergekommen"
 };
 function stepLabel(k){ return STEP_LABELS[k] || String(k==null?"":k); }
+// Landing-CTA-Quellen (engagement.ctaSources) in Klartext – wie STEP_LABELS unbekannte
+// Slugs unübersetzt durchreichen (z. B. neue B2B-Abschnitte).
+var CTA_LABELS = {
+  hero: "Hero (oben)", nav: "Kopfzeile", final: "Abschluss-CTA", footer: "Fußzeile",
+  install: "Installieren-Abschnitt", kontakt: "Kontakt (B2B)", cursos: "Kurse (B2B)",
+  biz: "Business (B2B)", aud: "Zielgruppen-Chip", cta: "sonstiger CTA"
+};
+function ctaLabel(k){ return CTA_LABELS[k] || String(k==null?"":k); }
 
 // Textfassung einer Zeitreihe für Screenreader. Ein <svg> voller <title> auf
 // nicht-fokussierbaren Punkten ist per Tastatur unerreichbar — die Kernaussage
@@ -1003,6 +1011,17 @@ function render(s){
       + ((((inv.activation||{}).bySource)||[]).length? hbars(inv.activation.bySource.map(function(a){return {label:a.src+" · "+fmtN(a.activated)+" von "+fmtN(a.users),count:a.pct};}),{color:"var(--ok)",fmt:function(d){return d.count+" %";}}) : empty("Keine neuen Personen im Fenster","entsteht mit dem ersten app_open neuer Nutzer"))
       + '<h4>Neu vs. wiederkehrend (App-Starts)</h4>'
       + hbars([{label:"Neue Starts",count:u.newOpens,color:"var(--ok)"},{label:"Wiederkehrend",count:u.returningOpens,color:"var(--brand)"}]) });
+  html += '</div>';
+
+  // --- CRO: Landing-CTA-Conversion + A/B-Varianten ---
+  html += '<div class="grid">';
+  html += panelHtml({ title:"Landing-CTA-Conversion", small:"(welcher Abschnitt bringt Onboarding-Starts · distinkte Personen)",
+    desc:"Über welchen Landing-CTA (Hero, Kopf-/Fußzeile, Abschluss, Installieren, B2B …) Besucher ins Onboarding starten. Grundlage, um den stärksten Abschnitt zu erkennen und schwache gezielt zu verbessern.",
+    body: hbars(((s.engagement&&s.engagement.ctaSources)||[]).map(function(a){return {label:ctaLabel(a.key),count:a.count};}),{color:"var(--brand)",emptyWhy:"entsteht, sobald Besucher über einen Landing-CTA (&src=) starten"}) });
+  var vf = (s.engagement&&s.engagement.variantFunnel)||[];
+  html += panelHtml({ title:"A/B-Test", small:"(je Landing-Variante: Aktivierung = erste Lernrunde · Onboarding beendet)",
+    desc:"Falls ein Landing-Experiment läuft (&var=): je Variante, wie viele der zugeordneten Personen aktivieren (erste Lernrunde) bzw. das Onboarding beenden. Vergleicht Varianten an echter Value-Realisierung, nicht nur an Klicks.",
+    body: hbars(vf.map(function(v){return {label:v.variant+" · aktiviert "+v.actPct+" % ("+v.activated+"/"+v.users+") · Onboarding "+v.pct+" %", count:v.users};}),{color:"var(--ok)",emptyWhy:"entsteht, sobald ein Landing-Experiment (&var=) läuft"}) });
   html += '</div>';
 
   html += '<div class="grid">';

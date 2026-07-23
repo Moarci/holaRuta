@@ -187,8 +187,13 @@ test("sanitizeProps: behält nur die Allowlist, verwirft Freitext & unbekannte K
   assert.deepEqual(analytics.sanitizeProps("feature_complete", { feature: "precios", perfect: true, score: 42 }), { feature: "precios", perfect: true });
   // onboarding_step: Schritt-Slug + Index, sonst nichts.
   assert.deepEqual(analytics.sanitizeProps("onboarding_step", { step: "profile", n: 1, name: "Marcel" }), { step: "profile", n: 1 });
-  // app_open: returning/load_ms/src – keine URL o. Ä.
-  assert.deepEqual(analytics.sanitizeProps("app_open", { returning: true, load_ms: "1-200", src: "task", url: "x?y=1" }), { returning: true, load_ms: "1-200", src: "task" });
+  // app_open: returning/load_ms/src/cta_src/var – Landing-Attribution als reine Slugs, keine URL o. Ä.
+  assert.deepEqual(
+    analytics.sanitizeProps("app_open", { returning: true, load_ms: "1-200", src: "onboard-link", cta_src: "hero", var: "h1b", url: "x?y=1" }),
+    { returning: true, load_ms: "1-200", src: "onboard-link", cta_src: "hero", var: "h1b" }
+  );
+  // cta_src/var sind Slugs: Freitext (mit Leerzeichen) fällt strukturell durch, leere Werte werden verworfen.
+  assert.deepEqual(analytics.sanitizeProps("app_open", { cta_src: "hero button", var: "" }), {}, "Freitext/Leerslug in Landing-Attribution wird verworfen");
   // unbekanntes Event -> keine Props.
   assert.deepEqual(analytics.sanitizeProps("whatever", { a: 1 }), {});
 });
