@@ -13,11 +13,11 @@
  */
 "use strict";
 
-import { BASE_URL, absoluteUrl } from "./config.mjs";
+import { APP_URL, absoluteUrl } from "./config.mjs";
 import { plain, truncate, slugify, stripParenthetical } from "./text-utils.mjs";
 
 const LOCALE = "es";
-const APP_LINK = { url: `${BASE_URL}/?edition=ingles-pro`, label: "Abrir HolaRuta · Inglés" };
+const APP_LINK = { url: `${APP_URL}/?edition=ingles-pro`, label: "Abrir HolaRuta · Inglés" };
 const HUB_SLUG = "ingles-para-hosteleria-y-turismo";
 const HUB_LABEL = "Inglés para hostelería y turismo";
 const PILLAR_SLUG = "que-es-holaruta-ingles";

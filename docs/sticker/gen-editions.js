@@ -10,7 +10,11 @@ const fs = require("fs");
 const path = require("path");
 const { svg } = require(path.join(__dirname, "..", "..", "qr.js"));
 
-const BASE = "https://holaruta.com/";
+// App liegt seit dem Host-Rewrite in vercel.json auf app.holaruta.com, nicht
+// mehr auf der nackten Domain (die liefert jetzt die Landing Page) - der QR
+// muss also dorthin zeigen, sonst landen Gäste beim Scannen auf der Landing
+// Page statt in der App-Edition.
+const BASE = "https://app.holaruta.com/";
 
 // Hostel-/Reise-taugliche Co-Branding-Editionen. accent/brandInk gespiegelt aus
 // editions/registry.js; `tint` ist ein aufgehellter Partner-Ton für den Verlauf;

@@ -15,7 +15,7 @@
  */
 "use strict";
 
-import { BASE_URL, absoluteUrl } from "./config.mjs";
+import { APP_URL, absoluteUrl } from "./config.mjs";
 import { loc, plain, truncate } from "./text-utils.mjs";
 
 // pagePath/buildTitle sind in content-model.mjs nicht exportiert (nur intern) –
@@ -36,8 +36,8 @@ const HUB_SLUGS = {
 };
 
 const APP_LINK = {
-  de: { url: `${BASE_URL}/`, label: "HolaRuta-App öffnen" },
-  en: { url: `${BASE_URL}/`, label: "Open the HolaRuta app" },
+  de: { url: `${APP_URL}/`, label: "HolaRuta-App öffnen" },
+  en: { url: `${APP_URL}/`, label: "Open the HolaRuta app" },
 };
 
 // ---------------------------------------------------------------------------

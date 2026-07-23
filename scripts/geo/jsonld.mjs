@@ -12,7 +12,7 @@
  */
 "use strict";
 
-import { BASE_URL, BRAND, CONTENT_DATE, OG_LOCALE } from "./config.mjs";
+import { APP_URL, BASE_URL, BRAND, CONTENT_DATE, OG_LOCALE } from "./config.mjs";
 import { plain } from "./text-utils.mjs";
 
 const ORG_ID = `${BASE_URL}/#organization`;
@@ -59,7 +59,7 @@ export function softwareAppNode(locale = "de", page = null) {
     "@type": "SoftwareApplication",
     "@id": `${BASE_URL}/#app`,
     name: BRAND.name,
-    url: `${BASE_URL}/`,
+    url: `${APP_URL}/`,
     applicationCategory: "EducationalApplication",
     operatingSystem: "Web, Android, iOS",
     inLanguage: OG_LOCALE[locale] || "de_DE",

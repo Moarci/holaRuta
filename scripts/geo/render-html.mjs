@@ -14,7 +14,7 @@
  */
 "use strict";
 
-import { BASE_URL, BRAND, OG_LOCALE } from "./config.mjs";
+import { APP_URL, BASE_URL, BRAND, OG_LOCALE } from "./config.mjs";
 import { buildJsonLd, toJsonLdScript } from "./jsonld.mjs";
 import { escapeHtml } from "./text-utils.mjs";
 
@@ -202,7 +202,7 @@ export function renderPage(page) {
   const root = rootPrefix(page.path);
   const head = renderHead(page, root);
   const hubLink = page.internalLinks?.hub;
-  const appUrl = page.internalLinks?.app?.url || `${BASE_URL}/`;
+  const appUrl = page.internalLinks?.app?.url || `${APP_URL}/`;
   const appLabel = page.internalLinks?.app?.label || BRAND.name;
 
   const crumbs = hubLink
