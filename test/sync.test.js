@@ -580,6 +580,14 @@ test("mergeTasks: gleich lange Inhalte bei Id-Kollision -> erste Variante bleibt
   assert.equal(m[0].x, 1, "erste (x:1) bleibt bei gleicher JSON-Länge; nicht durch y:2 ersetzt");
 });
 
+test("mergeTasks: Einträge ohne code und null-Einträge werden verworfen (Guard braucht ||, nicht &&)", () => {
+  // Mutant `!t || !t.code` -> `&&`: ein truthy Eintrag OHNE code fiele durch den Guard
+  // und landete unter dem Key undefined im Ergebnis; bei t=null würfe `!t.code`.
+  const m = sync.mergeTasks([{ x: 1 }, null, { code: "A" }], [undefined, { code: "B" }, {}]);
+  assert.deepEqual(m.map(function (t) { return t.code; }), ["A", "B"],
+    "nur Einträge mit code überleben den Merge");
+});
+
 test("logout: ruft den Server-Logout NUR bei enabled UND eingeloggt (Guard braucht &&, nicht ||)", async () => {
   // Mutant `enabled() && loggedIn()` -> `||`: dann würde req() schon feuern, wenn nur
   // eines zutrifft. Hier: enabled=true, aber NICHT eingeloggt -> kein Server-Call.

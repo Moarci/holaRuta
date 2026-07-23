@@ -110,6 +110,9 @@ export const IGNORE = [
   { file: "sync.js", line: 129, op: "logical", grund:
     "mergeGamestats: `else if (isObj(va) && isObj(vb))` vs `||`. Die per || zusätzlich erreichten Fälle (genau einer " +
     "ist ein Objekt) liefern über deepUnion(va,vb) denselben Wert wie der else-Zweig (a!==undefined ? a : b = va) → äquivalent." },
+  { file: "sync.js", line: 179, op: "number", grund:
+    "mergeData: `for (k in l) keys[k] = 1` vs `= 0`. Wie sync.js:98 (mergeGamestats): keys dient NUR als " +
+    "Schlüsselmenge (`for (k in keys)`); der Wert wird nie gelesen, der Schlüssel bleibt enumerierbar → äquivalent." },
   // store.js
   { file: "store.js", line: 497, op: "relational", grund:
     "sanitizeAssessmentHistory: `for (… i < v.length …)` vs `<=`. Die Extra-Iteration ruft sanitizeAssessmentEntry(v[v.length]=undefined) " +
@@ -145,7 +148,8 @@ export const IGNORE = [
     "opts.timeout hängender fetch abgebrochen wird; 0 vs 12000 ist ausschließlich durch einen real " +
     ">12 s hängenden fetch unterscheidbar (flakige Langzeitmessung, die die Suite bewusst meidet). " +
     "Die Timeout-MECHANIK selbst ist über die opts.timeout-Tests (1 ms/10 ms) abgedeckt → äquivalent." },
-  { file: "net.js", line: 142, op: "logical", grund:
+  // Zeile 142 → 150 nachgezogen (locale-Parameter in confirm/googleConfirm hat net.js verlängert).
+  { file: "net.js", line: 150, op: "logical", grund:
     "oauthStateStart-Guard `typeof crypto===\"undefined\" || !crypto.getRandomValues || typeof " +
     "sessionStorage===\"undefined\"` (|| → &&). Umgeht die Mutation eine Teilbedingung, läuft der " +
     "nachfolgende crypto.getRandomValues(...)-Zugriff bei fehlender Quelle in DENSELBEN try/catch → " +
