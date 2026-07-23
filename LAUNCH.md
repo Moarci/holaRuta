@@ -22,6 +22,12 @@ den der Nutzer eintippt (`app.js` → `sync.confirm(email, code)` → `verifyOtp
 - [ ] Auth → Providers → **Email** aktivieren, „Confirm email"/OTP an.
 - [ ] E-Mail-Vorlage „Magic Link" so anpassen, dass sie den **Code** enthält: `{{ .Token }}`
       (statt nur `{{ .ConfirmationURL }}`). Ohne das bekommt der Nutzer keinen Code zum Eintippen.
+- [ ] Vorlage **dreisprachig** machen (ES/DE/EN): Supabase kennt nur EIN Template pro Projekt,
+      keine Per-Request-Sprache — spanischsprachige Locals-Nutzer bekämen sonst eine rein
+      deutsche/englische Code-Mail. Je ein Einzeiler um `{{ .Token }}` pro Sprache, Betreff z. B.
+      „HolaRuta: tu código · dein Code · your code". (Später: der Client schickt die UI-Sprache
+      beim Confirm mit → `profile.locale`; damit kann ein Supabase **Send Email Hook** echte
+      Per-User-Sprache liefern.)
 - [ ] SMTP/Resend als Absender hinterlegen (sonst gilt das Supabase-Test-Sendelimit).
 - [ ] `shouldCreateUser` ist an (Default) — neue Nutzer werden beim ersten OTP angelegt.
 

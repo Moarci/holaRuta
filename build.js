@@ -257,6 +257,10 @@ function buildDist() {
     // Nutzungsbedingungen (Account-First -> Vertragsbeziehung). Von datenschutz.html
     // und dem Google-OAuth-Consent-Screen verlinkt; muss in dist/ erreichbar sein.
     "nutzungsbedingungen.html",
+    // Spanische Rechtstexte für den Locals-Track (es-en): die spanische
+    // Login-Legal-Zeile verlinkt privacidad.html, diese wiederum terminos.html.
+    "privacidad.html",
+    "terminos.html",
     "og-image.png",
     "og-image-square.png",
     // HelloAbroad-Edition (DE-EN): eigene Social-Vorschau für die Marketing-Landing.

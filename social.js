@@ -161,7 +161,9 @@
   }
   function confirm(email, token) {
     if (!enabled()) return Promise.reject(new Error("social disabled"));
-    return SC.net.confirm(apiBase(), email, token);
+    // UI-Sprache mitgeben -> landet in profile.locale, gleiches Muster wie
+    // sync.confirm() (eine Identität, ein Server – siehe Kopfkommentar).
+    return SC.net.confirm(apiBase(), email, token, SC.i18n && SC.i18n.getLang());
   }
   function logout() { SC.net.logout(); }
 

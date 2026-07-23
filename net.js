@@ -105,8 +105,13 @@
         throw err;
       });
   }
-  function confirm(base, email, token) {
-    return request(base, "POST", "/v1/auth/confirm", { email: email, token: token })
+  // `locale` (optional, "de"/"en"/"es"): aktuelle UI-Sprache, wird beim Confirm im
+  // profile gespeichert – damit Betreiber-Mails später in der richtigen Sprache
+  // rausgehen können (wichtig für den Locals-Track). Nur mitschicken, wenn gesetzt.
+  function confirm(base, email, token, locale) {
+    var body = { email: email, token: token };
+    if (locale) body.locale = locale;
+    return request(base, "POST", "/v1/auth/confirm", body)
       .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("confirm failed"); });
   }
 
@@ -122,8 +127,11 @@
   }
   // Von der Callback-Seite genutzt: das Supabase-Access-Token (aus dem Implicit-
   // Redirect-Fragment) gegen unseren Opaque-Session-Token tauschen und speichern.
-  function googleConfirm(base, supabaseToken) {
-    return request(base, "POST", "/v1/auth/google/confirm", { supabaseToken: supabaseToken })
+  // `locale` optional wie bei confirm(): UI-Sprache für das profile mitgeben.
+  function googleConfirm(base, supabaseToken, locale) {
+    var body = { supabaseToken: supabaseToken };
+    if (locale) body.locale = locale;
+    return request(base, "POST", "/v1/auth/google/confirm", body)
       .then(function (r) { if (r.ok && r.body && r.body.accessToken) { setToken(r.body.accessToken); return r.body; } throw new Error("google confirm failed"); });
   }
 

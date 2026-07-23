@@ -183,6 +183,19 @@ test("confirm: POST /v1/auth/confirm, accessToken wird gespeichert", async () =>
   assert.equal(r.accessToken, "acc-xyz");
 });
 
+test("confirm: mit locale -> locale im Body; ohne -> Feld fehlt (kein locale:undefined)", async () => {
+  reset();
+  stubFetch(() => res(200, JSON.stringify({ accessToken: "acc-1", account: { email: "a@b" } })));
+  await net.confirm("http://api", "a@b", "123456", "es");
+  assert.deepEqual(JSON.parse(last.opts.body), { email: "a@b", token: "123456", locale: "es" });
+
+  reset();
+  stubFetch(() => res(200, JSON.stringify({ accessToken: "acc-2", account: { email: "a@b" } })));
+  await net.confirm("http://api", "a@b", "123456");
+  assert.deepEqual(JSON.parse(last.opts.body), { email: "a@b", token: "123456" },
+    "ohne locale bleibt der Body wie bisher");
+});
+
 test("confirm: ohne accessToken -> wirft (kein stilles Anmelden)", async () => {
   reset();
   stubFetch(() => res(400, JSON.stringify({ error: "bad token" })));
@@ -329,6 +342,19 @@ test("googleConfirm: tauscht Supabase-Token gegen Session-Token und speichert es
   assert.equal(r.accessToken, "hr-google-1");
   assert.equal(net.getToken(), "hr-google-1", "Token landet in localStorage");
   assert.equal(net.loggedIn(), true);
+});
+
+test("googleConfirm: mit locale -> locale im Body; ohne -> Feld fehlt", async () => {
+  reset();
+  stubFetch(() => res(200, JSON.stringify({ accessToken: "hr-g-2", account: { email: "g@x" } })));
+  await net.googleConfirm("http://api", "supabase-jwt", "es");
+  assert.deepEqual(JSON.parse(last.opts.body), { supabaseToken: "supabase-jwt", locale: "es" });
+
+  reset();
+  stubFetch(() => res(200, JSON.stringify({ accessToken: "hr-g-3", account: { email: "g@x" } })));
+  await net.googleConfirm("http://api", "supabase-jwt", "");
+  assert.deepEqual(JSON.parse(last.opts.body), { supabaseToken: "supabase-jwt" },
+    "leere locale wird nicht mitgeschickt");
 });
 
 test("googleConfirm: ohne accessToken -> wirft, kein Token (kein stilles Anmelden)", async () => {

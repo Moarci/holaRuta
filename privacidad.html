@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Política de privacidad – HolaRuta</title>
+  <style>
+    :root { color-scheme: light dark; --ink:#2d1b12; --bg:#fbf6f0; --brand:#c8642d; --muted:#6b5647; --line:rgba(45,27,18,0.14); }
+    @media (prefers-color-scheme: dark) { :root { --ink:#f3e7dd; --bg:#1b120c; --muted:#b7a495; --line:rgba(243,231,221,0.16); } }
+    * { box-sizing: border-box; }
+    body { max-width: 46rem; margin: 0 auto; padding: 24px 18px 72px; font: 16px/1.65 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+    h1 { font-size: 1.65rem; line-height: 1.2; margin: 0.2em 0 0.6em; }
+    h2 { font-size: 1.15rem; margin: 2em 0 0.4em; padding-top: 0.4em; border-top: 1px solid var(--line); }
+    h3 { font-size: 1rem; margin: 1.2em 0 0.3em; }
+    p, li { margin: 0.5em 0; }
+    ul { padding-left: 1.2em; }
+    a { color: var(--brand); }
+    code { background: var(--line); padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+    table { border-collapse: collapse; width: 100%; margin: 0.6em 0; font-size: 0.92rem; display: block; overflow-x: auto; }
+    th, td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+    th { background: rgba(200,100,45,0.10); }
+    .note { border: 1px solid var(--brand); background: rgba(200,100,45,0.12); padding: 12px 14px; border-radius: 10px; font-size: 0.92rem; }
+    .ph { background: rgba(200,100,45,0.20); padding: 0 4px; border-radius: 4px; font-weight: 700; }
+    .muted { color: var(--muted); }
+    footer { margin-top: 2.5em; padding-top: 1em; border-top: 1px solid var(--line); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <p class="note"><strong>Nota para la puesta en marcha.</strong> Esta política está adaptada a los
+  tratamientos de datos reales de HolaRuta y estructurada conforme al RGPD/TDDDG. Todos los campos
+  <span class="ph">[marcados entre corchetes]</span> son específicos del operador y deben rellenarse
+  antes de la publicación (responsable, contacto, concreción de los encargados del tratamiento,
+  garantías para terceros países, autoridad de control competente, fecha de versión). No sustituye
+  una revisión jurídica individual; antes de activar la obligación de cuenta debe recibir la
+  aprobación final. Esta es la traducción al español de la
+  <a href="/datenschutz.html">Datenschutzerklärung</a> alemana, que es la versión de referencia.</p>
+
+  <h1>Política de privacidad</h1>
+  <p class="muted">Versión: <span class="ph">[mes AAAA]</span> · Esta política se aplica a la
+  web-app HolaRuta (PWA instalable) en <span class="ph">[holaruta.com / otros dominios]</span>.</p>
+
+  <h2>1. Responsable del tratamiento</h2>
+  <p>El responsable del tratamiento de datos personales en el sentido del art. 4 n.º 7 del RGPD es:</p>
+  <p><span class="ph">[Nombre / Empresa]</span><br />
+     <span class="ph">[Calle, C.P. Ciudad, País]</span><br />
+     Correo electrónico: <span class="ph">[datenschutz@…]</span></p>
+  <p class="muted">Delegado/a de protección de datos (si se ha designado): <span class="ph">[nombre, contacto – en caso contrario, eliminar esta línea]</span>.</p>
+
+  <h2>2. Resumen y principio de minimización de datos</h2>
+  <p>HolaRuta está construida «local primero»: tu progreso de aprendizaje nace y vive en principio
+  exclusivamente en tu navegador (almacenamiento local de tu dispositivo). Los datos personales
+  solo salen de tu dispositivo, en esencia, cuando inicias sesión (entonces cuenta y sincronización
+  en la nube, secciones 4–5), usas voluntariamente las funciones sociales (sección 6) o dejas
+  activa la estadística de uso anónima, que viene activada por defecto y puede desactivarse en
+  cualquier momento con un clic (sección 8). No utilizamos rastreadores publicitarios ni de
+  terceros.</p>
+
+  <h2>3. Alojamiento, entrega y registros del servidor</h2>
+  <p>La app y sus interfaces de programación (API) se operan con nuestro proveedor de alojamiento
+  <span class="ph">[Vercel Inc.]</span>. Al acceder se tratan datos de conexión técnicamente
+  necesarios (en particular dirección IP, fecha/hora, recurso solicitado, código de estado,
+  user-agent). Para prevenir abusos (limitación de frecuencia de los endpoints de inicio de sesión
+  y sincronización) la dirección IP se evalúa brevemente.</p>
+  <p><strong>Base jurídica:</strong> art. 6, apdo. 1, letra f del RGPD (interés legítimo en un
+  funcionamiento seguro y estable y en la prevención de abusos).</p>
+
+  <h2>4. Cuenta e inicio de sesión</h2>
+  <p>Para usar las funciones con sesión iniciada creas una cuenta. Hay dos vías disponibles:</p>
+  <ul>
+    <li><strong>Inicio de sesión con Google (OAuth):</strong> Google nos transmite tu
+      <strong>dirección de correo electrónico</strong> y tu <strong>nombre visible</strong>. Además
+      se aplica la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">política de privacidad de Google</a>.</li>
+    <li><strong>Inicio de sesión por código de correo:</strong> introduces tu <strong>dirección de
+      correo electrónico</strong> y confirmas un código de un solo uso que te enviamos por correo.
+      No se guarda ninguna contraseña.</li>
+  </ul>
+  <p>En tu perfil de cuenta se guardan: la dirección de correo electrónico, con Google además el
+  nombre visible, así como un identificador técnico de sesión (token de inicio de sesión). Para
+  proteger el proceso de inicio de sesión usamos un valor de seguridad único y de corta duración en
+  el almacenamiento local de tu navegador (protección CSRF); se elimina al concluir el inicio de
+  sesión.</p>
+  <p><strong>Base jurídica:</strong> art. 6, apdo. 1, letra b del RGPD (prestación de la cuenta y de
+  las funciones con sesión iniciada a petición tuya).</p>
+
+  <h2>5. Progreso de aprendizaje, sincronización en la nube y almacenamiento local</h2>
+  <p>Para que tu progreso quede guardado y esté disponible en todos tus dispositivos, para las
+  personas con sesión iniciada guardamos en la cuenta los siguientes datos de aprendizaje y los
+  sincronizamos con el dispositivo: estado de aprendizaje de las tarjetas, tarjetas creadas por ti,
+  favoritos, tareas suscritas, estadísticas de juego/aprendizaje (p. ej. XP, rachas) así como
+  ajustes de la app y del perfil (entre otros, un nombre elegido por ti y una forma de tratamiento
+  gramatical elegida para dirigirnos a ti correctamente). Sin sesión iniciada, estos datos
+  permanecen exclusivamente en tu dispositivo.</p>
+  <p>El almacenamiento local (localStorage/IndexedDB) se usa para el funcionamiento básico y para
+  guardar tu progreso; este acceso es <strong>estrictamente necesario</strong> para prestar el
+  servicio que solicitas (§ 25, apdo. 2, n.º 2 de la ley alemana TDDDG) y no requiere consentimiento
+  adicional. Sobre el almacenamiento local para la estadística de uso, véase la sección 8; allí
+  puede desactivarse en cualquier momento.</p>
+  <p><strong>Base jurídica:</strong> art. 6, apdo. 1, letra b del RGPD (contrato/uso del servicio);
+  para el almacenamiento local, adicionalmente § 25, apdo. 2, n.º 2 TDDDG.</p>
+
+  <h2>6. Funciones sociales (lista de amigos y ranking diario)</h2>
+  <p>Si usas las funciones sociales voluntarias, puedes conectarte con otras personas mediante
+  códigos de amistad y publicar una instantánea diaria. Puedes compartir el código de amistad como
+  enlace de invitación o código QR; el enlace contiene el mismo código y solo surte efecto cuando
+  la persona invitada acepta la invitación expresamente. Para el ranking entre tus amistades
+  confirmadas se hacen visibles tu <strong>nombre visible</strong> y cifras agregadas (p. ej.
+  tarjetas aprendidas, racha, repasos). Si no usas estas funciones, no se publica ningún dato de
+  este tipo.</p>
+  <p><strong>Base jurídica:</strong> art. 6, apdo. 1, letra b del RGPD (función prestada a petición
+  tuya); la participación es voluntaria y configurable en cualquier momento.</p>
+
+  <h2>7. Contexto docente/organizativo (solo en ediciones para escuelas/socios)</h2>
+  <p>En ediciones proporcionadas específicamente para ello, el profesorado puede gestionar clases y
+  tareas (p. ej. códigos de clase, asignación de tareas, estados de realización). En ese caso
+  tratamos los datos correspondientes por encargo de la institución respectiva. <span class="ph">[Si
+  procede: encargo del tratamiento conforme al art. 28 del RGPD con la institución; en caso
+  contrario, eliminar esta sección.]</span></p>
+
+  <h2>8. Estadística de uso anónima (desactivable en cualquier momento)</h2>
+  <p>Para mejorar el producto y diagnosticar errores enviamos una estadística diaria anónima y
+  agregada, así como un flujo de datos de interacción seudonimizado. Esta estadística está
+  <strong>activada por defecto</strong> y puede desactivarse en la app en cualquier momento con un
+  clic (<em>Ajustes → Compartir estadística de uso → Desactivado</em>). Desde el momento de la
+  desactivación, ningún dato estadístico vuelve a salir de tu dispositivo; el identificador
+  seudónimo y el búfer local se eliminan al hacerlo. <strong>No</strong> se transmiten textos de
+  búsqueda, contenidos/IDs de tarjetas ni nombres; además, el identificador estadístico seudónimo
+  puede restablecerse en cualquier momento. Conservación de los datos de eventos:
+  <span class="ph">[90 días]</span>.</p>
+  <p><strong>Base jurídica:</strong> art. 6, apdo. 1, letra f del RGPD (interés legítimo en la
+  mejora y el correcto funcionamiento de la app). Puedes oponerte a este tratamiento en cualquier
+  momento con efecto futuro (art. 21 del RGPD): basta el interruptor en la app.
+  <span class="ph">[Revisión jurídica necesaria: es controvertido si guardar el identificador
+  estadístico seudónimo en el almacenamiento local sin consentimiento es lícito según § 25,
+  apdo. 2, n.º 2 TDDDG. Aclarar con asesoría legal antes del lanzamiento; de lo contrario, volver
+  al consentimiento (art. 6, apdo. 1, letra a del RGPD, § 25, apdo. 1 TDDDG) o dejar de persistir
+  el identificador.]</span></p>
+
+  <h2>9. Contenidos externos: imágenes culturales de Wikimedia</h2>
+  <p>Algunos contenidos de aprendizaje incorporan imágenes de <strong>Wikimedia</strong>
+  (<code>upload.wikimedia.org</code>, <code>commons.wikimedia.org</code>). Al cargar estas imágenes
+  se transmite tu dirección IP a la Wikimedia Foundation. En el funcionamiento normal no se
+  producen otras conexiones externas.</p>
+  <p><strong>Base jurídica:</strong> art. 6, apdo. 1, letra f del RGPD (interés legítimo en mostrar
+  imágenes adecuadas de fuentes abiertas).</p>
+
+  <h2>10. Destinatarios y encargados del tratamiento</h2>
+  <p>Utilizamos proveedores de servicios cuidadosamente seleccionados con los que — en la medida
+  necesaria — existen contratos de encargo del tratamiento conforme al art. 28 del RGPD:</p>
+  <table>
+    <tr><th>Destinatario</th><th>Finalidad</th><th>Categorías de datos</th></tr>
+    <tr><td><span class="ph">[Supabase Inc.]</span></td><td>Cuenta, autenticación, base de datos y sincronización en la nube (región UE)</td><td>Correo, nombre visible, sesión, datos de aprendizaje/perfil</td></tr>
+    <tr><td><span class="ph">[Vercel Inc.]</span></td><td>Alojamiento de la app y la API, entrega, registros del servidor</td><td>Datos de conexión/registro, IP</td></tr>
+    <tr><td>Google <span class="ph">[Ireland Ltd./LLC]</span></td><td>Inicio de sesión con Google (OAuth)</td><td>Correo, nombre visible</td></tr>
+    <tr><td><span class="ph">[servicio de envío de correo, p. ej. Resend]</span></td><td>Envío de los códigos de inicio de sesión/enlaces mágicos</td><td>Dirección de correo electrónico</td></tr>
+    <tr><td>Wikimedia Foundation</td><td>Entrega de las imágenes culturales incorporadas</td><td>Dirección IP (responsable independiente)</td></tr>
+  </table>
+  <p>No se ceden datos con fines publicitarios ni se venden datos.</p>
+
+  <h2>11. Transferencias a terceros países</h2>
+  <p>Algunos proveedores están establecidos o tratan datos en países fuera de la UE/del EEE (en
+  particular EE. UU.). En la medida en que se transfieran datos personales a un tercer país, nos
+  basamos en garantías adecuadas conforme a los arts. 44 y ss. del RGPD — en particular el
+  EU-US Data Privacy Framework (si el destinatario está certificado) y/o las cláusulas
+  contractuales tipo de la Comisión Europea (art. 46, apdo. 2, letra c del RGPD).
+  <span class="ph">[Completar la garantía concreta por proveedor; copia/justificante a
+  petición.]</span></p>
+
+  <h2>12. Plazos de conservación</h2>
+  <ul>
+    <li><strong>Datos de cuenta y de aprendizaje:</strong> hasta que elimines tu cuenta (véase la sección 13).</li>
+    <li><strong>Identificador de inicio de sesión/sesión:</strong> hasta el cierre de sesión o la revocación de la sesión.</li>
+    <li><strong>Eventos de la estadística de uso:</strong> <span class="ph">[90 días]</span>, después eliminación automática.</li>
+    <li><strong>Registros del servidor:</strong> <span class="ph">[conservación según el proveedor de alojamiento, por lo general a corto plazo]</span>.</li>
+  </ul>
+
+  <h2>13. Tus derechos</h2>
+  <p>Conforme al RGPD te asisten los siguientes derechos: acceso (art. 15), rectificación (art. 16),
+  supresión (art. 17), limitación del tratamiento (art. 18), portabilidad de los datos (art. 20)
+  así como oposición a los tratamientos basados en intereses legítimos (art. 21). Puedes retirar un
+  consentimiento otorgado en cualquier momento con efecto futuro (art. 7, apdo. 3).</p>
+  <p>Especialmente cómodo: puedes <strong>eliminar tu cuenta directamente en la app</strong>, junto
+  con todos los datos asociados, y también <strong>exportar</strong> allí tus datos. Para cualquier
+  otra consulta puedes escribirnos a <span class="ph">[datenschutz@…]</span>.</p>
+
+  <h2>14. Derecho a reclamar ante una autoridad de control</h2>
+  <p>Sin perjuicio de otros recursos, tienes derecho a presentar una reclamación ante una autoridad
+  de control de protección de datos (art. 77 del RGPD), en particular en el Estado miembro de tu
+  residencia habitual o del presunto incumplimiento. Autoridad competente para nosotros:
+  <span class="ph">[autoridad de control competente según la sede del responsable]</span>.</p>
+
+  <h2>15. Sin decisiones automatizadas</h2>
+  <p>No se realizan decisiones basadas únicamente en un tratamiento automatizado, incluida la
+  elaboración de perfiles, con efectos jurídicos o similares significativos en el sentido del
+  art. 22 del RGPD.</p>
+
+  <h2>16. Cambios en esta política</h2>
+  <p>Adaptaremos esta política de privacidad cuando cambien los tratamientos o el marco legal. Se
+  aplica la versión publicada aquí en cada momento; los cambios sustanciales se anunciarán en la
+  app.</p>
+
+  <footer>
+    <p><a href="/">← Volver a HolaRuta</a> · <a href="/terminos.html">Términos de uso</a> ·
+       <a href="/datenschutz.html">Deutsche Fassung (Original)</a></p>
+  </footer>
+</body>
+</html>

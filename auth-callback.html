@@ -61,7 +61,11 @@
       var got = qs.get("s") || "";
       if (!token || !(window.SC && window.SC.net && window.SC.net.googleConfirm)) { fail(); return; }
       if (!window.SC.net.oauthStateCheck(got)) { fail("Sicherheitsprüfung fehlgeschlagen — bitte erneut anmelden."); return; }
-      window.SC.net.googleConfirm(origin, token).then(function () {
+      // UI-Sprache (?l=, von app.js accountGoogle angehängt) an googleConfirm
+      // durchreichen -> profile.locale. Whitelist, weil der Wert aus der URL kommt.
+      var locale = qs.get("l") || "";
+      if (["de", "en", "es"].indexOf(locale) < 0) locale = "";
+      window.SC.net.googleConfirm(origin, token, locale).then(function () {
         // Token liegt jetzt in localStorage (spanischcard.synctoken.v1) -> App startet eingeloggt.
         try { window.location.replace("/"); } catch (e) { window.location.href = "/"; }
       }, function () { fail(); });
