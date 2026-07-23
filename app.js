@@ -1974,6 +1974,14 @@
         g.dailyStreak = gap === 1 ? (g.dailyStreak || 0) + 1 : 1; // genau gestern -> +1, sonst neu
         g.lastStudyDate = today;
         g.longestStreak = Math.max(g.longestStreak || 0, g.dailyStreak);
+        // Habit-Meilensteine: genau beim ERREICHEN von 3/7/30 Serientagen einmal
+        // melden (der Tageswechsel-Guard außen herum begrenzt auf 1x/Tag; nach
+        // einem Serien-Riss darf der Meilenstein erneut feuern – Gewohnheit neu
+        // aufgebaut ist ein echtes Signal). day_n = Tage seit Erstnutzung.
+        if (g.dailyStreak === 3 || g.dailyStreak === 7 || g.dailyStreak === 30) {
+          const dayN = window.SC.analytics && window.SC.analytics.daysSinceFirstUse ? window.SC.analytics.daysSinceFirstUse() : undefined;
+          trackEvent("activation", { milestone: "streak_" + g.dailyStreak, day_n: dayN });
+        }
       }
     }
 
@@ -4713,6 +4721,10 @@
   function startPlacementTest() {
     const p = state.placement;
     if (!p) return;
+    // Einstufungstest gestartet (deckt alle Einstiege ab: Profil-Knopf UND
+    // Onboarding) – mit feature_complete in finishPlacement ergibt das die
+    // Abschlussquote im Lernspiel-Funnel.
+    trackEvent("feature_start", { feature: "placement" });
     p.phase = "running"; p.asked = []; p.answers = [];
     p.difficulty = placement.START_DIFFICULTY; p.mcAsked = 0; p.grammarAsked = 0; p.freeIdx = 0;
     p.startedAt = Date.now();
@@ -4789,6 +4801,11 @@
     const result = placement.summarize(asked, p.answers);
     p.result = result;
     p.phase = "done";
+    // Einstufungstest fertig: Abschluss (Funnel-Gegenstück zum feature_start in
+    // startPlacementTest) + NUR das grobe Niveau (A1/A2/B1 …) – keine Antworten,
+    // keine Punkte, kein Frage-Rückblick.
+    trackEvent("feature_complete", { feature: "placement" });
+    trackEvent("placement_result", { level: String(result.level || "") });
     // Ergebnis lokal sichern (geräteweit, reist im Backup mit → Lehrer-Ansicht).
     // „placement" = letztes Ergebnis (Schnellzugriff), „placementHistory" = alle
     // Durchläufe für den Verlauf/Fortschritt im Profil (neueste zuletzt, gedeckelt).
@@ -8748,7 +8765,10 @@
     // App-Start + grobe Ladezeit (einmal pro Start).
     let loadMs = 0;
     try { loadMs = Math.max(0, Math.round((window.performance && performance.now && performance.now()) || 0)); } catch (e) { /* egal */ }
-    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc() });
+    // standalone = läuft gerade als installierte PWA (App-Fenster statt Browser-Tab):
+    // misst, ob Installationen auch BENUTZT werden (Gegenstück zum Install-Funnel).
+    const standalone = !!(window.SC.install && window.SC.install.isInstalled && window.SC.install.isInstalled());
+    trackEvent("app_open", { returning: !!(gamestats && gamestats.lastStudyDate), load_ms: abucket(loadMs, [200, 500, 1000, 3000]), src: detectAcquisitionSrc(), standalone: standalone });
 
     // Fehler-Monitoring (vorher gar nicht vorhanden). Nur Diagnose-Text, PII-bereinigt.
     // `screen` = aktuelle Ansicht als Kontext (WO krachte es?) – nur der Screen-Slug,

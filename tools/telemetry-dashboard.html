@@ -1046,11 +1046,18 @@ function render(s){
     desc:"Wie schnell neue Personen den „Aha“-Moment erreichen: 0 = noch am selben Tag. Je weiter oben die Masse, desto besser sitzt der Einstieg.",
     body: (ttv.count? hbars((ttv.histogram||[]).map(function(h){return {label:h.bucket+" Tage",count:h.count};}),{color:"var(--ok)"}) : empty("Noch keine Aktivierungen mit day_n","entsteht mit dem ersten activation-Event neuer Clients")),
     foot: ttv.count? ('Median <b>'+esc(fmtN(ttv.medianDays||0))+'</b> Tage · '+esc(pct(ttv.sameDayPct||0))+' noch am selben Tag · Basis '+esc(fmtN(ttv.count))+' Aktivierungen') : '' });
-  html += panelHtml({ title:"PWA-Installation", small:"(Prompt → angenommen → installiert)",
-    desc:"Der Install-Funnel: Wie oft wurde der native Installations-Dialog gezeigt, wie oft angenommen — und wie viele Installationen kamen insgesamt an (inkl. iOS/Menü, daher ggf. mehr als angenommen).",
-    body: ((pwa.prompts||pwa.installs)? hbars([{label:"Prompt gezeigt",count:pwa.prompts||0},{label:"Angenommen",count:pwa.accepted||0,color:"var(--ok)"},{label:"Installiert",count:pwa.installs||0,color:"var(--brand)"}]) : empty("Noch keine Install-Prompts","entsteht mit dem ersten pwa_prompt/pwa_installed")),
-    foot: (pwa.prompts? 'Akzeptanz <b>'+esc(pct(pwa.acceptPct||0))+'</b> ('+esc(fmtN(pwa.accepted||0))+' von '+esc(fmtN(pwa.prompts||0))+' Prompts)' : '') });
+  html += panelHtml({ title:"PWA-Installation", small:"(Prompt → angenommen → installiert → benutzt)",
+    desc:"Der Install-Funnel: Wie oft wurde der native Installations-Dialog gezeigt, wie oft angenommen — und wie viele Installationen kamen insgesamt an (inkl. iOS/Menü, daher ggf. mehr als angenommen). „Benutzt“ misst App-Starts im installierten App-Fenster.",
+    body: ((pwa.prompts||pwa.installs||pwa.standaloneOpens)? hbars([{label:"Prompt gezeigt",count:pwa.prompts||0},{label:"Angenommen",count:pwa.accepted||0,color:"var(--ok)"},{label:"Installiert",count:pwa.installs||0,color:"var(--brand)"},{label:"Standalone-Starts",count:pwa.standaloneOpens||0,color:"var(--easy)"}]) : empty("Noch keine Install-Prompts","entsteht mit dem ersten pwa_prompt/pwa_installed")),
+    foot: ((pwa.prompts? 'Akzeptanz <b>'+esc(pct(pwa.acceptPct||0))+'</b> ('+esc(fmtN(pwa.accepted||0))+' von '+esc(fmtN(pwa.prompts||0))+' Prompts)' : '')
+      + (pwa.opens? (pwa.prompts? ' · ' : '')+'<b>'+esc(pct(pwa.standaloneOpenPct||0))+'</b> der App-Starts laufen standalone' : '')) });
   html += '</div>';
+
+  // Abschlussquote je Startpfad (aggregate(): investor.rounds.byOrigin)
+  var byOrigin = (inv.rounds&&inv.rounds.byOrigin)||[];
+  html += panelHtml({ style:"margin-top:16px", title:"Runden-Abschluss je Startpfad", small:"(session_start.origin ↔ session_complete)",
+    desc:"Welcher Einstieg (Ruta del día, Kategorie, Favoriten, Pre-Trip …) begonnene Runden auch zu Ende bringt. Der Pfad mit der niedrigsten Quote verliert die meisten Lernenden mitten in der Runde.",
+    body: (byOrigin.length? hbars(byOrigin.map(function(o){return {label:o.origin+" · "+fmtN(o.completes)+" von "+fmtN(o.starts),count:o.pct};}),{color:"var(--warn)",fmt:function(d){return d.count+" %";}}) : empty("Keine Runden im Fenster","entsteht mit dem ersten session_start")) });
   html += '</section>';
 
   // ===================== 4 · RETENTION =====================================
@@ -1089,6 +1096,9 @@ function render(s){
       }),{color:"var(--ok)",fmt:function(d){ return d.na ? "n/a" : d.count+" %"; }})
       + '<h4>Aktive Tage je Person</h4>'
       + hbars((u.activeDaysHistogram||[]).map(function(d){return {label:d.bucket+(d.bucket==="1"?" Tag":" Tage"),count:d.count};}),{color:"var(--brand)"}) });
+  html += panelHtml({ title:"Habit-Meilensteine", small:"(distinkte Personen · activation-Events)",
+    desc:"Gewohnheitsbildung als Funnel: erste Lernrunde → 3 → 7 → 30 Serientage. Gewohnheit ist der eigentliche Retention-Treiber — je flacher der Abfall, desto stärker die Habit-Schleife.",
+    body: funnelChart((inv.habit&&inv.habit.funnel)||[], "entsteht mit der ersten abgeschlossenen Lernrunde") });
   html += panelHtml({ title:"Streak-Verteilung", small:"(Tages-Snapshot)",
     desc:"Wie lange die aktuelle tägliche Lernserie der Nutzer ist. Lange Streaks sind das stärkste Halte-Signal, das die App kennt.",
     body: hbars(sortBuckets(s.meta.snapshotStreak).map(function(a){return {label:a.key,count:a.count};}),{color:"var(--warn)",emptyWhat:"Keine Streak-Daten",emptyWhy:"entsteht mit dem ersten Tages-Snapshot mit laufender Serie"}) });
@@ -1195,6 +1205,9 @@ function render(s){
   html += panelHtml({ title:"Lernfortschritt", small:"(% gemeisterte Karten)",
     desc:"Verteilung des Karten-Fortschritts über alle Nutzer. Wandert die Masse nach rechts, lernt die Basis wirklich dazu.",
     body: (le.mastery&&le.mastery.length? hbars(sortBuckets(le.mastery).map(function(m){return {label:m.key+" %",count:m.count};}),{color:"var(--ok)"}) : empty("Keine Snapshots","entsteht mit dem ersten Tages-Snapshot")) });
+  html += panelHtml({ title:"Einstufungstest", small:"(Niveau-Verteilung · placement_result)",
+    desc:"Auf welchem Niveau neue Lernende einsteigen (A1/A2/B1 …). Steuert, welche Inhalte und Startpfade Priorität verdienen — die Abschlussquote des Tests steht im Lernspiel-Funnel (placement).",
+    body: (le.placementLevels&&le.placementLevels.length? hbars(le.placementLevels.map(function(p2){return {label:p2.key,count:p2.count};}),{color:"var(--brand)"}) : empty("Noch keine Einstufungen","entsteht mit dem ersten abgeschlossenen Einstufungstest")) });
   html += '</div>';
 
   html += panelHtml({ title:"Tagesziel", small:"("+esc(pct((s.trip&&s.trip.withGoalPct)||0))+" haben ein Reiseziel)",
@@ -1257,7 +1270,9 @@ function render(s){
       + ((s.errorsByScreen&&s.errorsByScreen.length)? hbars(s.errorsByScreen.map(function(e){return {label:e.key,count:e.count};}),{color:"var(--no)"}) : empty("Keine Screen-Daten","entsteht mit dem ersten error-Event mit screen-Feld")) });
   html += panelHtml({ title:"App-Versionen",
     desc:"Wie schnell Updates die Nutzerschaft erreichen. Alte Versionen mit vielen Nutzern verlängern die Zeit, die ein Bugfix bis zur Wirkung braucht.",
-    body: hbars(s.meta.appVersions) });
+    body: hbars(s.meta.appVersions)
+      + '<h4>Startzeit (app_open.load_ms)</h4>'
+      + ((s.perf&&s.perf.loadMs&&s.perf.loadMs.length)? hbars(sortBuckets(s.perf.loadMs).map(function(l){return {label:l.key+" ms",count:l.count};}),{color:"var(--easy)"}) : empty("Keine Startzeit-Daten","entsteht mit dem ersten app_open")) });
   html += '</div>';
   html += '</section>';
 

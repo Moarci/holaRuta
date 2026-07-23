@@ -476,3 +476,25 @@ test("sanitizeProps: error traegt den Screen-Kontext (nur Slug, keine Inhalte)",
   assert.ok(!("dom" in out), "nur die Allowlist");
   assert.equal(analytics.sanitizeProps("error", { type: "error", screen: "hola que tal" }).screen, undefined, "Freitext faellt strukturell durch");
 });
+
+test("sanitizeProps: app_open.standalone + placement_result (nur Niveau, keine Antworten)", () => {
+  assert.deepEqual(
+    analytics.sanitizeProps("app_open", { returning: true, load_ms: "1-200", src: "direct", standalone: true, ua: "Mozilla x" }),
+    { returning: true, load_ms: "1-200", src: "direct", standalone: true }
+  );
+  assert.deepEqual(
+    analytics.sanitizeProps("placement_result", { level: "B1", finalScore: 0.87, answers: ["a", "b"], review: { q1: "x" } }),
+    { level: "B1" },
+    "nur das grobe Niveau reist - keine Punkte, keine Antworten"
+  );
+  // Streak-Meilensteine laufen ueber das bestehende activation-Event.
+  assert.deepEqual(analytics.sanitizeProps("activation", { milestone: "streak_7", day_n: 12 }), { milestone: "streak_7", day_n: 12 });
+});
+
+// Die Meilenstein-Instrumentierung lebt in app.js (Streak-Update): genau beim
+// Erreichen von 3/7/30 Serientagen, INNERHALB des Tageswechsel-Guards (1x/Tag).
+test("app.js meldet Streak-Meilensteine 3/7/30 aus dem Streak-Update", () => {
+  const src = require("fs").readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  assert.ok(/g\.dailyStreak === 3 \|\| g\.dailyStreak === 7 \|\| g\.dailyStreak === 30/.test(src), "Meilenstein-Pruefung existiert");
+  assert.ok(/milestone: "streak_" \+ g\.dailyStreak/.test(src), "activation-Event mit streak_-Meilenstein");
+});

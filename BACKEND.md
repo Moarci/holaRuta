@@ -437,15 +437,17 @@ Der **Tages-Snapshot** (§17.2) beantwortet „wie viele & grob was". Für **Wei
 
 **17.6.2 Event-Taxonomie (heute gesendet)** — `app_open` · `screen_view` · `action` ·
 `session_start` · `session_complete` · `card_rated` · `feature_start` · `feature_complete` ·
-`search` · `share` · `activation` · `onboarding_step` · `onboarding_complete` · `error` ·
-`consent_change` · `pwa_prompt` · `pwa_installed`. Bewusst
+`search` · `share` · `activation` · `placement_result` · `onboarding_step` · `onboarding_complete` ·
+`error` · `consent_change` · `pwa_prompt` · `pwa_installed`. Bewusst
 nur Events, die der Client tatsächlich sendet (Spec == Implementierung); die Allowlist
 (`analytics.js: EVENTS`) ist erweiterbar. `session_start` deckt **alle** Lern-Startpfade ab
 (zentral aus `beginRound`); `feature_start`/`feature_complete` **alle** Lernspiele (zentral aus
 `onClick` bzw. `setGameStats`). `session_complete` trägt neben den Buckets exakte Ints
 (`answered_n`/`correct_n`/`xp_n`/`secs`) für die Investor-Interaktions-Tiefe; `share`/`activation`
-speisen Virality- und Aktivierungs-KPIs (`activation.day_n` = Tage seit Erstnutzung → Time-to-Value);
-`pwa_prompt`/`pwa_installed` bilden den Install-Funnel. Das daraus abgeleitete **Investor-Cockpit** (North Star,
+speisen Virality- und Aktivierungs-KPIs (`activation.day_n` = Tage seit Erstnutzung → Time-to-Value;
+Meilensteine `first_session` + `streak_3/7/30` → Habit-Funnel); `pwa_prompt`/`pwa_installed`/
+`app_open.standalone` bilden den Install-Funnel bis „benutzt"; `placement_result` trägt nur das
+grobe Einstufungs-Niveau. Das daraus abgeleitete **Investor-Cockpit** (North Star,
 Retention-Kohorten, K-Faktor, Growth Accounting, Interaktionen pro Person/Sitzung/Tag, B2B je
 Edition) ist in [docs/INVESTOR-KPIS.md](docs/INVESTOR-KPIS.md) definiert.
 Envelope (zusätzlich `edition` + grobe `platform`-Klasse):

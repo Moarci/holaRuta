@@ -81,7 +81,7 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 
 | Event | `props` | Wo erfasst (Datei · Funktion) | Bedeutung |
 |---|---|---|---|
-| **`app_open`** | `returning`:bool · `load_ms`:Bucket`[200,500,1000,3000]` · `src`:slug | `app.js` · `setupAnalyticsEvents` (Boot) | App geöffnet; `returning` = es gab schon mal einen Lerntag; `src` = Akquise-Quelle (`task`/`onboard-link`/`module-link`/`edition`/`direct`) aus den Start-URL-Parametern (nur Enum, **nie** die URL) |
+| **`app_open`** | `returning`:bool · `load_ms`:Bucket`[200,500,1000,3000]` · `src`:slug · `standalone`:bool | `app.js` · `setupAnalyticsEvents` (Boot) | App geöffnet; `returning` = es gab schon mal einen Lerntag; `src` = Akquise-Quelle (`task`/`onboard-link`/`module-link`/`edition`/`direct`) aus den Start-URL-Parametern (nur Enum, **nie** die URL); `standalone` = läuft gerade als **installierte PWA** (App-Fenster statt Browser-Tab) |
 | **`screen_view`** | `screen`:slug · `tab`:slug | `app.js` · `render()` → `trackScreenView` | Ansicht gewechselt (nur bei echtem Wechsel; `tab` nur auf Home) |
 | **`action`** | `action`:slug · `mode` · `dir` · `level` · `tab` · `scope` | `app.js` · `onClick` (Aktions-Dispatch) | jeder Button-Klick mit `data-action`; **ausgenommen** die Hochfrequenz-Aktionen `flip`/`rate`/`skip`/`speak` (separat erfasst) |
 | **`session_start`** | `scope`:slug · `origin`:slug · `mode` · `cards`:Bucket`[5,10,20,40]` | `app.js` · `beginRound()` | Lernrunde gestartet – deckt **alle 6** Startpfade ab (Kategorie/Alles, Preset, Pre-Trip-Tag, Ruta del día, Favoriten, Einzelkarte). `scope` = `"all"`/Kategorie-Slug |
@@ -91,11 +91,12 @@ Jedes Event hat einen festen **Envelope** (gebaut von `buildEvent()`):
 | **`feature_complete`** | `feature`:slug · `perfect`:bool | `app.js` · `setGameStats`-Diff (`trackFeatureCompletions`) | Lernspiel-Runde fertig; zentral über die `*Played`-Zähler. `feature` ∈ `precios, dialogos, definiciones, yesto, frases, conjug, battle` |
 | **`search`** | `qlen`:Bucket`[3,6,12,24]` · `results`:Bucket`[1,5,20]` | `app.js` · `updateSearchResults` (gedrosselt ~1/s) | Suche benutzt – **nur Länge & Trefferzahl**, **NIE** der Suchtext |
 | **`share`** | `content`:slug | `app.js` · `onClick` (`SHARE_ACTIONS`-Map bei `share-*`) | etwas geteilt (Virality-Funnel) – **nur** WAS (`content`: stats/card/tips/module …), **nie** Empfänger/Inhalt. Ersetzt das frühere generische `action`-Event für `share-*` |
-| **`activation`** | `milestone`:slug · `day_n`:int | `app.js` · `finishRound()` | Aktivierungs-„Aha" – heute `milestone:first_session` (allererste je abgeschlossene Runde). `day_n` = **Tage seit der ersten (zugestimmten) Nutzung** (Time-to-Value; lokal gestempelter Erst-Tag, es reist nur die Differenz, ≤ 365) |
+| **`activation`** | `milestone`:slug · `day_n`:int | `app.js` · `finishRound()` / `recordStudyEvent()` | Aktivierungs-/Habit-Meilensteine: `first_session` (allererste je abgeschlossene Runde) sowie `streak_3`/`streak_7`/`streak_30` (genau beim **Erreichen** von 3/7/30 Serientagen; nach einem Serien-Riss darf der Meilenstein erneut feuern). `day_n` = **Tage seit der ersten (zugestimmten) Nutzung** (Time-to-Value bzw. Zeit-bis-Gewohnheit; lokal gestempelter Erst-Tag, es reist nur die Differenz, ≤ 365) |
 | **`onboarding_step`** | `step`:`intro`/`profile`/`trip` · `n`:int | `app.js` · `beginOnboarding`/`onboardSlidesToProfile`/`advanceOnboardingProfile` | Onboarding-Schritt erreicht (Aktivierungs-Funnel). Greift nur mit Consent **während** des Onboardings (z. B. Editionen) |
 | **`onboarding_complete`** | – | `app.js` · `finishOnboarding` | Onboarding abgeschlossen |
 | **`error`** | `type`:`error`/`promise` · `msg`:text (PII-bereinigt ≤80) · `src` · `line`:int · `screen`:slug | `app.js` · `window.onerror` / `unhandledrejection` | JS-Fehler fürs Monitoring; `msg` ohne E-Mails/lange Ziffernfolgen; `screen` = aktuelle Ansicht (WO krachte es – nur der Slug). **Gedeckelt auf 10 error-Events je Session** (Schutz vor Fehler-Schleifen, die die Queue fluten würden) |
 | **`consent_change`** | `on`:bool | `app.js` · `setAnalyticsConsent` | Zustimmung erteilt (nur `on:true`; ein Opt-out wird bewusst **nicht** gesendet) |
+| **`placement_result`** | `level`:slug (`A1`/`A2`/`B1` …) | `app.js` · `finishPlacement()` | Einstufungstest abgeschlossen – **nur das grobe Niveau**, keine Punkte/Antworten/Rückblicke. Start/Abschluss des Tests reisen zusätzlich als `feature_start`/`feature_complete` (`feature:placement`) → Abschlussquote im Lernspiel-Funnel |
 | **`pwa_prompt`** | `outcome`:`accepted`/`dismissed` | `app.js` · `installApp()` | Ausgang des **nativen** Install-Dialogs (Android/Chromium) – zusammen mit `pwa_installed` der Install-Funnel. „Kein Dialog verfügbar" wird bewusst nicht gesendet |
 | **`pwa_installed`** | – | `app.js` · `window 'appinstalled'` | App als PWA installiert (alle Wege, auch iOS/Menü) |
 
@@ -206,16 +207,16 @@ node build.js --edition=<id>
 | **Nutzer** | distinkte (pseudonyme `clientId`), **DAU heute**, **WAU** (7 T, mit **Trend** vs. Vorwoche ▲/▼), **MAU** (30 T), neu vs. wiederkehrend, **Wiederkehrrate**, **Stickiness** (Ø DAU/MAU); Balken „aktive Nutzer/Tag" |
 | **Akquise & Teilen** | **Akquise-Quelle** (`app_open.src`: task/onboarding-link/edition/direct), **Aktivierungsquote je Quelle** (welcher Kanal bringt Lernende, nicht nur Installs), **Teilen**-Aktionen |
 | **Snapshot-Verteilungen** | **Feature-Adoption**, **Streak**, **Karten/Tag**, **Bewertungen gesamt** (Lebenszeit) |
-| **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer" |
+| **Bindung & Retention** | **D1/D7/D30-Retention** (Kohorte nach Erst-Tag), Verteilung „aktive Tage je Nutzer", **Habit-Meilensteine** (erste Runde → 3 → 7 → 30 Serientage, distinkte Personen) |
 | **Sitzungen** | Anzahl, **Ø & Median Sitzungsdauer** (aus den `ts`-Spannen je `sessionId`), Dauer-Histogramm, Sitzungen/Tag, Ø Events/Sitzung |
 | **Engagement** | meistgenutzte Bildschirme, Top-Aktionen |
 | **Lernen** | Lernspiel-Abschlüsse (+ perfekt-Quote), Karten-Bewertungen, Runden-Genauigkeit, **Lernmodus** (flip/type/listen) |
 | **Content-Qualität** | **schwierigste Themen** („Nochmal"-Quote je Kategorie), **Suche-ohne-Treffer-Quote** |
-| **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Reiseziel-Adoption** + Tagesziel |
-| **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off), **Time-to-Value** (Tage bis zur 1. Lernrunde aus `activation.day_n`, Median + same-day-Quote), **PWA-Install-Funnel** (Prompt→angenommen→installiert, Akzeptanzquote) |
+| **Lernfortschritt** | **Mastery-Verteilung** (% gemeisterte Karten), **Einstufungs-Verteilung** (Niveau aus `placement_result`), **Reiseziel-Adoption** + Tagesziel |
+| **Aktivierung** | **Onboarding-Funnel** (intro→profile→trip→complete, Drop-off), **Time-to-Value** (Tage bis zur 1. Lernrunde aus `activation.day_n`, Median + same-day-Quote), **PWA-Install-Funnel** (Prompt→angenommen→installiert→**benutzt**: Standalone-Anteil der Starts), **Runden-Abschluss je Startpfad** (`session_start.origin` ↔ `session_complete` über die sessionId – welcher Einstieg verliert Lernende?) |
 | **Zeit** | Aktivität nach **Uhrzeit** (UTC) und **Wochentag** |
 | **Segmente** | **Plattformen** & **Editionen** (distinkte Nutzer) |
-| **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen), **Fehler je Screen** (WO kracht es) |
+| **Monitoring** | JS-Fehler (Top), **Fehler je App-Version** (Regressionen), **Fehler je Screen** (WO kracht es), **Startzeit-Verteilung** (`app_open.load_ms`) |
 | **Meta** | App-Versionen, Sprachen, Lern-Tracks; aus dem anonymen Snapshot: Feature-Adoption, Karten/Tag |
 
 > **„Wie viele Leute"** = distinkte `clientId` (nur aus dem Event-Strom; der Tages-Snapshot ist
@@ -271,6 +272,13 @@ loggt eintreffende Events nur im Terminal.
 - Self-Host-Collector (`tools/telemetry-server.js`) mit Persistenz, Dashboard, Zeitfenster, CSV/JSON-Export, optionaler Token, Retention-Pruning — für lokales Ausprobieren/Editionen ohne eigenes Backend.
 - **Injection-sicher:** alle mit Event-Daten geschlüsselten Zähler nutzen `Map`/`Set` (keine Objekt-Property-Writes) → keine „remote property injection"/Prototype-Pollution (per Test mit `__proto__`-Payload belegt).
 - Unit-Tests grün (`analytics.test.js`, `telemetry-aggregate.test.js`, `telemetry-map.test.js`); Doku hier + BACKEND.md + README.
+
+### ✅ Neu (2026-07-23, Welle 3): Habit-Funnel, Einstufung, Standalone-Nutzung, Startpfad-Abschluss, Startzeit
+- **Habit-Meilensteine:** `activation` mit `streak_3`/`streak_7`/`streak_30` (genau beim Erreichen, mit `day_n`) → **Habit-Funnel** im Retention-Bereich (erste Runde → 3 → 7 → 30 Serientage, distinkte Personen) + KPI-CSV-Zeile.
+- **Einstufungstest:** `feature_start`/`feature_complete` (`placement`) + neues Event `placement_result` (`level`, NUR das grobe Niveau) → Abschlussquote im Lernspiel-Funnel + **Niveau-Verteilungs-Panel** im Lernen-Bereich.
+- **Standalone-Nutzung:** `app_open.standalone` (läuft als installierte PWA) → der Install-Funnel bekommt die vierte Stufe „**benutzt**" (`investor.pwa.standaloneOpenPct`) + KPI-CSV-Zeile.
+- **Runden-Abschluss je Startpfad** (reine **Aufarbeitung**, kein neues Feld): `session_start.origin` ↔ `session_complete` über die sessionId gepaart (LIFO) → `investor.rounds.byOrigin` + Panel — zeigt, welcher Einstieg Lernende mitten in der Runde verliert.
+- **Startzeit-Verteilung** (reine Aufarbeitung): `app_open.load_ms` wurde erhoben, aber nie ausgewertet → `perf.loadMs` + Panel im Technik-Bereich.
 
 ### ✅ Neu (2026-07-23): Fehlerflut-Deckel, Fehler-Screen-Kontext, Aktivierung je Quelle, Server-Routen-Tests
 - **Fehlerflut-Schutz:** `error`-Events sind clientseitig auf **10 je Session** gedeckelt — eine JS-Fehler-Schleife kann die 200er-Ring-Queue nicht mehr fluten und Sessions/Funnel-Events verdrängen.

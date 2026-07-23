@@ -123,7 +123,13 @@ function aggregate(events, usage, opts) {
   var shareContentCounts = new Map();  // content -> Anzahl (was wird geteilt)
   var secsList = [];                   // exakte Rundendauern (session_complete.secs)
   var pwaAccepted = 0, pwaDismissed = 0, pwaInstalls = 0; // Install-Funnel (pwa_prompt -> pwa_installed)
+  var standaloneOpens = 0;             // App-Starts im installierten App-Fenster (app_open.standalone)
   var ttvDays = [];                    // activation.day_n: Tage bis zur 1. Runde (Time-to-Value)
+  var loadMsDist = new Map();          // app_open.load_ms: Startzeit-Verteilung (Bucket)
+  var habit3 = new Set(), habit7 = new Set(), habit30 = new Set(); // Habit-Meilensteine (distinkte clientId)
+  var placementLevels = new Map();     // placement_result.level: Einstufungs-Verteilung
+  var roundStartsBySess = new Map();   // sessionId -> [{ts, origin}] (Abschluss je Startpfad)
+  var roundCompletesBySess = new Map();// sessionId -> [ts]
   var editionSessions = new Map();     // edition -> Set(sessionId)
   var editionActivated = new Map();    // edition -> Set(clientId mit session_complete)
   var editionActive7 = new Map();      // edition -> Set(clientId) aktiv in letzten 7 Tagen
@@ -167,6 +173,8 @@ function aggregate(events, usage, opts) {
       case "app_open":
         (p.returning ? openReturning++ : openNew++);
         if (p.src && cid) { var fo = clientFirstOpen.get(cid); if (!fo || ts < fo.ts) clientFirstOpen.set(cid, { ts: ts, src: String(p.src) }); }
+        if (p.standalone === true) standaloneOpens++;
+        if (p.load_ms) inc(loadMsDist, String(p.load_ms));
         break;
       case "screen_view": if (p.screen) inc(screenCounts, String(p.screen)); break;
       case "action": if (p.action) inc(actionCounts, String(p.action)); break;
@@ -176,11 +184,15 @@ function aggregate(events, usage, opts) {
         else if (p.rating === "easy") ratingCounts.easy++;
         if (p.cat) { var cat = String(p.cat); var cs = catStats.get(cat); if (!cs) { cs = { total: 0, again: 0 }; catStats.set(cat, cs); } cs.total++; if (p.rating === "again") cs.again++; }
         break;
-      case "session_start": if (p.mode) inc(modeCount, String(p.mode)); break;
+      case "session_start":
+        if (p.mode) inc(modeCount, String(p.mode));
+        if (sid) { var rs = roundStartsBySess.get(sid); if (!rs) { rs = []; roundStartsBySess.set(sid, rs); } rs.push({ ts: ts, origin: String(p.origin || "?") }); }
+        break;
       case "session_complete":
         if (p.accuracy) inc(accuracyDist, String(p.accuracy));
         if (cid) { activatedClients.add(cid); addToSet(editionActivated, edi, cid); } // Aktivierung
         if (typeof p.secs === "number" && p.secs > 0) secsList.push(p.secs);          // exakte Time-on-Task
+        if (sid) { var rc = roundCompletesBySess.get(sid); if (!rc) { rc = []; roundCompletesBySess.set(sid, rc); } rc.push(ts); }
         break;
       case "feature_start": if (p.feature) inc(featureStarts, String(p.feature)); break;
       case "feature_complete":
@@ -198,8 +210,11 @@ function aggregate(events, usage, opts) {
         if (p.milestone === "first_session") {
           if (cid) activatedClients.add(cid);
           if (typeof p.day_n === "number" && isFinite(p.day_n) && p.day_n >= 0) ttvDays.push(p.day_n);
-        }
+        } else if (cid && p.milestone === "streak_3") habit3.add(cid);   // Habit-Funnel:
+        else if (cid && p.milestone === "streak_7") habit7.add(cid);     // distinkte Personen
+        else if (cid && p.milestone === "streak_30") habit30.add(cid);   // je Meilenstein
         break;
+      case "placement_result": if (p.level) inc(placementLevels, String(p.level)); break;
       // Install-Funnel: Ausgang des nativen Install-Dialogs bzw. vollzogene Installation.
       case "pwa_prompt":
         if (p.outcome === "accepted") pwaAccepted++;
@@ -376,7 +391,32 @@ function aggregate(events, usage, opts) {
   // --- Runden-Abschlussquote: begonnene vs. abgeschlossene Lernrunden (aus den Event-Zählern) ---
   var roundsStarted = eventCounts.get("session_start") || 0;
   var roundsCompleted = eventCounts.get("session_complete") || 0;
-  var rounds = { started: roundsStarted, completed: roundsCompleted, completionPct: roundsStarted ? Math.min(100, Math.round((roundsCompleted / roundsStarted) * 100)) : 0 };
+
+  // Abschlussquote JE STARTPFAD (origin): session_start und session_complete tragen
+  // dieselbe sessionId; jeder Abschluss wird dem jüngsten davor liegenden, noch
+  // offenen Start zugeordnet (LIFO in ts-Reihenfolge). Rein aus BEREITS erhobenen
+  // Feldern (Datensparsamkeit: kein neues Feld nötig) – zeigt, welcher Einstieg
+  // (Ruta, Kategorie, Favoriten …) Lernende verliert.
+  var originStats = new Map(); // origin -> { starts, completes }
+  roundStartsBySess.forEach(function (starts, sid) {
+    starts.sort(function (a, b) { return a.ts - b.ts; });
+    starts.forEach(function (st) { var o = originStats.get(st.origin); if (!o) { o = { starts: 0, completes: 0 }; originStats.set(st.origin, o); } o.starts++; });
+    var comps = (roundCompletesBySess.get(sid) || []).slice().sort(function (a, b) { return a - b; });
+    var open = [], si = 0;
+    comps.forEach(function (cts) {
+      while (si < starts.length && starts[si].ts <= cts) { open.push(starts[si]); si++; }
+      var st = open.pop() || (si < starts.length ? starts[si++] : null); // Uhr-Skew -> nächster Start
+      if (st) originStats.get(st.origin).completes++;
+    });
+  });
+  var roundsByOrigin = [];
+  originStats.forEach(function (o, origin) {
+    var comp = Math.min(o.completes, o.starts);
+    roundsByOrigin.push({ origin: origin, starts: o.starts, completes: comp, pct: o.starts ? Math.round((comp / o.starts) * 100) : 0 });
+  });
+  roundsByOrigin.sort(function (a, b) { return b.starts - a.starts || (a.origin < b.origin ? -1 : 1); });
+
+  var rounds = { started: roundsStarted, completed: roundsCompleted, completionPct: roundsStarted ? Math.min(100, Math.round((roundsCompleted / roundsStarted) * 100)) : 0, byOrigin: roundsByOrigin };
 
   // --- Retention-Kohorten-Heatmap (Erst-Tag × Tag-N; nur eligible zählt) ---
   // Kohorten basieren auf dem LEBENSLANGEN Erst-Tag (clientFirstDayAll), beschränkt auf
@@ -527,13 +567,29 @@ function aggregate(events, usage, opts) {
   });
   featureFunnel.sort(function (a, b) { return b.starts - a.starts || b.completes - a.completes; });
 
-  // --- PWA-Install-Funnel: Prompt gezeigt -> angenommen -> installiert ---
+  // --- PWA-Install-Funnel: Prompt gezeigt -> angenommen -> installiert -> BENUTZT ---
   // "installiert" zählt ALLE Wege (appinstalled-Event feuert auch bei iOS/Menü),
-  // kann also größer als "angenommen" sein.
+  // kann also größer als "angenommen" sein. standaloneOpenPct = Anteil der App-Starts
+  // im installierten App-Fenster: erst das belegt, dass Installationen genutzt werden.
   var pwaPrompts = pwaAccepted + pwaDismissed;
+  var openTotal = openNew + openReturning;
   var pwa = {
     prompts: pwaPrompts, accepted: pwaAccepted, dismissed: pwaDismissed, installs: pwaInstalls,
     acceptPct: pwaPrompts ? Math.round((pwaAccepted / pwaPrompts) * 100) : 0,
+    opens: openTotal, standaloneOpens: standaloneOpens,
+    standaloneOpenPct: openTotal ? Math.round((standaloneOpens / openTotal) * 100) : 0,
+  };
+
+  // --- Habit-Funnel: erste Runde -> 3 -> 7 -> 30 Serientage (distinkte Personen) ---
+  // Gewohnheitsbildung ist der eigentliche Retention-Treiber; die Meilensteine
+  // kommen als activation-Events direkt vom Streak-Zähler des Clients.
+  var habit = {
+    funnel: [
+      { step: "first_session", count: activatedClients.size },
+      { step: "streak_3", count: habit3.size },
+      { step: "streak_7", count: habit7.size },
+      { step: "streak_30", count: habit30.size },
+    ],
   };
 
   // --- Time-to-Value: Tage von der ersten Nutzung bis zur ersten Lernrunde ---
@@ -639,7 +695,8 @@ function aggregate(events, usage, opts) {
       timeOnTask: timeOnTask,      // präzise Lern-Zeit je Runde (secs)
       timeToValue: timeToValue,    // Tage bis zur 1. Runde (activation.day_n)
       featureFunnel: featureFunnel,// Start↔Abschluss-Quote je Lernspiel
-      pwa: pwa,                    // Install-Funnel (pwa_prompt -> pwa_installed)
+      pwa: pwa,                    // Install-Funnel + Standalone-Nutzung
+      habit: habit,                // Habit-Funnel (Streak-Meilensteine)
       editions: editionKPIs,       // B2B: KPIs je Edition
     },
     learning: {
@@ -648,6 +705,7 @@ function aggregate(events, usage, opts) {
       modes: topCounts(modeCount),
       difficult: difficult,
       mastery: topCounts(masteryDist),
+      placementLevels: topCounts(placementLevels), // Einstufungs-Verteilung (A1/A2/B1 …)
       features: (function () {
         var arr = [];
         featureCompletes.forEach(function (c, f) { arr.push({ feature: f, count: c.count, perfectPct: c.count ? Math.round((c.perfect / c.count) * 100) : 0 }); });
@@ -665,6 +723,7 @@ function aggregate(events, usage, opts) {
     errors: topCounts(errorCounts, 15),
     errorsByVersion: topCounts(errorsByVersion, 8),
     errorsByScreen: topCounts(errorsByScreen, 8),
+    perf: { loadMs: topCounts(loadMsDist) }, // Startzeit-Verteilung (app_open.load_ms, ms-Buckets)
     segments: { editions: clientsByKey(editionClients), platforms: clientsByKey(platformClients) },
     meta: {
       appVersions: topCounts(appVersions, 8),
@@ -717,6 +776,8 @@ function toKpiCsv(stats) {
     // Ohne Datenbasis "n/a" statt einer erfundenen 0 (gleiche Logik wie ret()).
     ["Median Tage bis 1. Runde", g(i, "timeToValue.count", 0) ? g(i, "timeToValue.medianDays", 0) : "n/a"],
     ["PWA-Install-Akzeptanz %", g(i, "pwa.prompts", 0) ? g(i, "pwa.acceptPct", 0) : "n/a"],
+    ["Standalone-Starts %", g(i, "pwa.opens", 0) ? g(i, "pwa.standaloneOpenPct", 0) : "n/a"],
+    ["Habit: 7-Tage-Serie (Personen)", ((g(i, "habit.funnel", []) || []).filter(function (f) { return f && f.step === "streak_7"; })[0] || { count: 0 }).count],
     ["Bounce %", g(i, "quality.bouncePct", 0)],
     ["Fehler/Sitzung", g(i, "quality.errorsPerSession", 0)],
   ];

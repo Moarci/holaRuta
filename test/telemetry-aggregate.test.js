@@ -357,7 +357,11 @@ test("aggregate: Investor-Block – NSM, Aktivierung, Growth, Virality, Interakt
     { event: "session_start", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 1000, props: {} },
     { event: "session_complete", day: TODAY, clientId: "Z", sessionId: "z1", ts: T0 + 2000, props: { secs: 60 } },
   ], [], { now: NOW }).investor.rounds;
-  assert.deepEqual(r, { started: 2, completed: 1, completionPct: 50 });
+  assert.equal(r.started, 2);
+  assert.equal(r.completed, 1);
+  assert.equal(r.completionPct, 50);
+  // byOrigin: beide Starts ohne origin-Feld -> "?"-Pfad, 1 Abschluss LIFO-zugeordnet.
+  assert.deepEqual(r.byOrigin, [{ origin: "?", starts: 2, completes: 1, pct: 50 }]);
   // Qualität: keine Fehler im Fixture -> 0/Sitzung; Bounce = 2 von 3 Nutzern nur 1 Tag aktiv (B,C) = 67 %.
   assert.equal(inv.quality.errors, 0);
   assert.equal(inv.quality.errorsPerSession, 0);
@@ -390,7 +394,11 @@ test("aggregate: PWA-Install-Funnel + Time-to-Value (investor.pwa / investor.tim
   const s = aggregate(ev, USAGE, { now: NOW });
 
   // Install-Funnel: 2 Prompts (1 angenommen, 1 abgelehnt), 1 Installation.
-  assert.deepEqual(s.investor.pwa, { prompts: 2, accepted: 1, dismissed: 1, installs: 1, acceptPct: 50 });
+  assert.deepEqual(s.investor.pwa, {
+    prompts: 2, accepted: 1, dismissed: 1, installs: 1, acceptPct: 50,
+    // Fixture: 3 app_open (A heute, B heute, A gestern), keins davon standalone.
+    opens: 3, standaloneOpens: 0, standaloneOpenPct: 0,
+  });
 
   // Time-to-Value aus activation.day_n: [0, 5] -> Median 3 (gerundet), 50 % am selben Tag.
   const ttv = s.investor.timeToValue;
@@ -446,4 +454,59 @@ test("aggregate: Fehler je Screen (WO kracht es?)", () => {
   assert.equal(scr.get("home"), 1);
   // Das Fixture-error-Event ohne screen-Feld taucht hier nicht auf (kein "undefined"-Key).
   assert.ok(!scr.has("undefined") && !scr.has(""), "nur Events mit screen-Feld");
+});
+
+test("aggregate: Runden-Abschluss je Startpfad (sessionId-Paarung, LIFO)", () => {
+  const ev = [
+    // s1: Runde 1 (ruta) abgeschlossen, Runde 2 (category) abgebrochen.
+    { event: "session_start", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { origin: "ruta", mode: "flip" } },
+    { event: "session_complete", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 60000, props: {} },
+    { event: "session_start", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 120000, props: { origin: "category" } },
+    // s2: Start ohne Abschluss (ruta).
+    { event: "session_start", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { origin: "ruta" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  const by = new Map(s.investor.rounds.byOrigin.map((r) => [r.origin, r]));
+  assert.deepEqual(by.get("ruta"), { origin: "ruta", starts: 2, completes: 1, pct: 50 });
+  assert.deepEqual(by.get("category"), { origin: "category", starts: 1, completes: 0, pct: 0 });
+  assert.equal(s.investor.rounds.byOrigin[0].origin, "ruta", "meistgenutzter Startpfad zuerst");
+  // Globale Zaehler bleiben unveraendert konsistent.
+  assert.equal(s.investor.rounds.started, 3);
+  assert.equal(s.investor.rounds.completed, 1);
+});
+
+test("aggregate: Habit-Funnel, Einstufung, Startzeit-Verteilung, Standalone-Anteil", () => {
+  const ev = [
+    { event: "app_open", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { returning: false, load_ms: "201-500", standalone: true } },
+    { event: "app_open", day: TODAY, clientId: "B", sessionId: "s2", ts: T0, props: { returning: true, load_ms: "1-200", standalone: false } },
+    { event: "activation", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { milestone: "first_session", day_n: 0 } },
+    { event: "activation", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 1, props: { milestone: "streak_3", day_n: 3 } },
+    { event: "activation", day: TODAY, clientId: "A", sessionId: "s1", ts: T0 + 2, props: { milestone: "streak_7" } },
+    { event: "activation", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 3, props: { milestone: "streak_3" } },
+    { event: "activation", day: TODAY, clientId: "B", sessionId: "s2", ts: T0 + 4, props: { milestone: "streak_3" } }, // Duplikat -> distinkt gezaehlt
+    { event: "placement_result", day: TODAY, clientId: "A", sessionId: "s1", ts: T0, props: { level: "A2" } },
+    { event: "placement_result", day: TODAY, clientId: "C", sessionId: "s3", ts: T0, props: { level: "A2" } },
+  ];
+  const s = aggregate(ev, [], { now: NOW });
+  // Habit-Funnel: 1 aktiviert (A), 2x streak_3 (A,B distinkt), 1x streak_7 (A), 0x streak_30.
+  assert.deepEqual(s.investor.habit.funnel.map((f) => f.count), [1, 2, 1, 0]);
+  assert.deepEqual(s.investor.habit.funnel.map((f) => f.step), ["first_session", "streak_3", "streak_7", "streak_30"]);
+  // streak_-day_n verfaelscht die Time-to-Value NICHT (nur first_session zaehlt).
+  assert.equal(s.investor.timeToValue.count, 1);
+  // Einstufung: Niveau-Verteilung.
+  assert.deepEqual(s.learning.placementLevels, [{ key: "A2", count: 2 }]);
+  // Startzeit-Verteilung aus app_open.load_ms.
+  const lm = new Map(s.perf.loadMs.map((r) => [r.key, r.count]));
+  assert.equal(lm.get("201-500"), 1);
+  assert.equal(lm.get("1-200"), 1);
+  // Standalone-Anteil der App-Starts (installierte PWA wird BENUTZT).
+  assert.equal(s.investor.pwa.opens, 2);
+  assert.equal(s.investor.pwa.standaloneOpens, 1);
+  assert.equal(s.investor.pwa.standaloneOpenPct, 50);
+  // KPI-CSV: neue Zeilen.
+  const csv = toKpiCsv(s);
+  assert.ok(csv.indexOf("Standalone-Starts %,50") >= 0, csv);
+  assert.ok(csv.indexOf("Habit: 7-Tage-Serie (Personen),1") >= 0, csv);
+  const csv0 = toKpiCsv(aggregate([], [], { now: NOW }));
+  assert.ok(csv0.indexOf("Standalone-Starts %,n/a") >= 0, "ohne App-Starts ehrliches n/a");
 });

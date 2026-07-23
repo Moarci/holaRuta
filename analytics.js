@@ -275,7 +275,9 @@
   // NICHT Gelistete wird verworfen (Default deny). „bucket"-Felder erwartet der Kern
   // bereits als Bucket-STRING (Aufrufer nutzt SC.analytics.bucket).
   var EVENTS = {
-    app_open:         { returning: "bool", load_ms: "bucket", src: "slug" },
+    // standalone = läuft die App als installierte PWA (Gegenstück zum Install-
+    // Funnel: nicht nur „installiert", sondern „wird installiert BENUTZT").
+    app_open:         { returning: "bool", load_ms: "bucket", src: "slug", standalone: "bool" },
     screen_view:      { screen: "slug", tab: "slug" },
     action:           { action: "slug", mode: "slug", dir: "slug", level: "slug", tab: "slug", scope: "slug" },
     session_start:    { scope: "slug", origin: "slug", mode: "slug", cards: "bucket" },
@@ -296,9 +298,14 @@
     // NIE der Empfänger/Inhalt. (channel kann später ergänzt werden, wenn der
     // Client den Wel-Weg kennt – bewusst NICHT gelistet, solange nicht gesendet.)
     share:            { content: "slug" },
-    // Aktivierungs-„Aha": milestone (z.B. first_session) + day_n = Tage zwischen
-    // erster (zugestimmter) Nutzung und dem Meilenstein (Time-to-Value, ≤365).
+    // Aktivierungs-/Habit-Meilensteine: first_session (allererste Runde) sowie
+    // streak_3/streak_7/streak_30 (Serientage erreicht – Gewohnheitsbildung).
+    // day_n = Tage zwischen erster (zugestimmter) Nutzung und dem Meilenstein
+    // (Time-to-Value bzw. Zeit-bis-Gewohnheit, ≤365).
     activation:       { milestone: "slug", day_n: "int" },
+    // Einstufungstest abgeschlossen: NUR das grobe Niveau (A1/A2/B1 …), nie
+    // Antworten/Punkte. Start/Abschluss reisen als feature_start/-complete.
+    placement_result: { level: "slug" },
     onboarding_step:  { step: "slug", n: "int" },
     onboarding_complete: {},
     error:            { type: "slug", msg: "text", src: "text", line: "int", screen: "slug" },
