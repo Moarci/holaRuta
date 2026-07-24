@@ -1665,7 +1665,7 @@
           "en": "foreigner, tourist (often American)"
         },
         {
-          "es": "¿qué bolá?",
+          "es": "¿Qué bolá?",
           "de": "Was geht? / Wie läuft's?",
           "en": "What's up? / How's it going?"
         }
@@ -1866,7 +1866,7 @@
       "languageEn": "Dominican Spanish is fast and heavily marked by the Caribbean accent, with the 's' swallowed at the end of a syllable (e.g. 'lo niño' instead of 'los niños'). The 'r' often becomes 'i' or 'l' (e.g. 'puelta' instead of 'puerta'), and many words are heavily shortened. There are numerous Taíno and African loanwords.",
       "words": [
         {
-          "es": "¿qué lo que?",
+          "es": "¿Qué lo que?",
           "de": "Was geht? (Begrüßung, oft 'klo ke')",
           "en": "What's up? (greeting, often 'klo ke')"
         },
@@ -2334,7 +2334,7 @@
           "en": "great, brilliant"
         },
         {
-          "es": "¡qué nota!",
+          "es": "¡Qué nota!",
           "de": "wie geil! / klasse!",
           "en": "how awesome! / brilliant!"
         },
@@ -3234,7 +3234,7 @@
           "en": "boy/girl, young person"
         },
         {
-          "es": "¡qué macana!",
+          "es": "¡Qué macana!",
           "de": "wie ärgerlich! / so ein Mist!",
           "en": "how annoying! / what a pain!"
         },
@@ -3701,7 +3701,7 @@
           "en": "cool, brilliant"
         },
         {
-          "es": "¿qué onda?",
+          "es": "¿Qué onda?",
           "de": "Was geht? / Wie läuft's?",
           "en": "What's up? / How's it going?"
         }

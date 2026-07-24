@@ -221,7 +221,7 @@
     onboardSlide4Body: "Decenas de situaciones de la vida real, sin conexión, sin registro y gratis.",
     onboardWelcomeTitle: "Bienvenido a HolaRuta",
     onboardWelcomeTitleEdition: "¡Bienvenido!",
-    onboardWelcomeIntro: "Cuéntanos cómo te llamamos —nombre y género. Puedes cambiarlo cuando quieras en tu perfil.",
+    onboardWelcomeIntro: "Cuéntanos cómo debemos llamarte —nombre y género. Puedes cambiarlo cuando quieras en tu perfil.",
     onboardNext: "Siguiente",
     onboardProfileInvalid: "Escribe tu nombre y elige un género.",
     onboardNameInvalid: "Escribe tu nombre.",

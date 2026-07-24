@@ -2381,7 +2381,7 @@
     { id: "loc-b2ab10", cat: "b2-abstracto", lvl: 4, es: "responsabilidad", en: "responsibility", tip: "ris-pon-si-BÍ-li-ti" },
     { id: "loc-b2ab11", cat: "b2-abstracto", lvl: 4, es: "ventaja", en: "advantage", tip: "ad-VÁN-tech" },
     { id: "loc-b2ab12", cat: "b2-abstracto", lvl: 4, es: "desventaja", en: "disadvantage", tip: "dis-ad-VÁN-tech" },
-    { id: "loc-b2ab13", cat: "b2-abstracto", lvl: 4, es: "comportamiento, conducta", en: "behaviour", tip: "bi-JÉI-vior" },
+    { id: "loc-b2ab13", cat: "b2-abstracto", lvl: 4, es: "comportamiento, conducta", en: "behavior", tip: "bi-JÉI-vior" },
     { id: "loc-b2ab14", cat: "b2-abstracto", lvl: 4, es: "actitud", en: "attitude", tip: "Á-ti-tiud" },
     { id: "loc-b2ab15", cat: "b2-abstracto", lvl: 4, es: "capacidad, habilidad", en: "ability", tip: "a-BÍ-li-ti" },
     { id: "loc-b2ab16", cat: "b2-abstracto", lvl: 4, es: "esfuerzo", en: "effort", tip: "É-fort" },

@@ -140,7 +140,7 @@
       explanationDe: "Fremde höflich → usted: „¿Sabe usted dónde está…?“" },
     { id: "as_re_a2b", block: "reaction", skill: "reaction", level: "A2", type: "mc",
       promptDe: "Im Zimmer gibt es kein warmes Wasser. Wie meldest du das an der Rezeption?",
-      options: ["No hay agua caliente en mi habitación.", "Quiero agua caliente fría.", "El agua caliente es bueno.", "¿Hay agua caliente mañana?"],
+      options: ["No hay agua caliente en mi habitación.", "Quiero agua caliente fría.", "El agua caliente es buena.", "¿Hay agua caliente mañana?"],
       correctIndex: 0, expectedTimeSec: 12,
       explanationDe: "„No hay agua caliente“ = Es gibt kein warmes Wasser – klar das Problem benennen." },
     { id: "as_re_a2c", block: "reaction", skill: "reaction", level: "A2", type: "mc",

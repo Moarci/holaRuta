@@ -410,7 +410,7 @@
       ],
       es: [
         "Mucho café se vende barato. Comprar en una *cooperativa* o con *comercio justo* deja más dinero al *campesino*.",
-        "El café de *especialidad* cuesta más porque la *calidad* y el trabajo son altos: paga un *precio* justo.",
+        "El café de *especialidad* cuesta más porque la *calidad* es alta y hay mucho trabajo detrás: paga un *precio* justo.",
       ],
       vocab: [
         { es: "cooperativa", de: "die Genossenschaft", en: "cooperative", take: true },

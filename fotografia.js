@@ -357,7 +357,7 @@
         { es: "¿Puedo tomarte una foto?", de: "Darf ich ein Foto von dir machen?", en: "May I take a photo of you?" },
         { es: "¿Se pueden tomar fotos aquí?", de: "Darf man hier fotografieren?", en: "Are photos allowed here?" },
         { es: "¿Está bien si grabo un video?", de: "Ist es in Ordnung, wenn ich ein Video mache?", en: "Is it okay if I record a video?" },
-        { es: "¿Me la puedes mandar por favor?", de: "Kannst du sie mir bitte schicken?", en: "Can you send it to me, please?" },
+        { es: "¿Me la puedes mandar, por favor?", de: "Kannst du sie mir bitte schicken?", en: "Can you send it to me, please?" },
         { es: "¿Me etiquetas en la foto?", de: "Markierst du mich auf dem Foto?", en: "Could you tag me in the photo?" },
       ],
     },

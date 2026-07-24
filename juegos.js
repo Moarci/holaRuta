@@ -697,7 +697,7 @@
         { es: "Reparte tú.", de: "Du gibst (die Karten).", en: "You deal." },
         { es: "Baraja las cartas.", de: "Misch die Karten.", en: "Shuffle the cards." },
         { es: "Roba una carta.", de: "Zieh eine Karte.", en: "Draw a card." },
-        { es: "Paso / Me paso.", de: "Ich passe.", en: "I pass." },
+        { es: "Paso / Yo paso.", de: "Ich passe.", en: "I pass." },
         { es: "¿Cuántas cartas repartimos?", de: "Wie viele Karten geben wir?", en: "How many cards do we deal?" },
       ],
     },

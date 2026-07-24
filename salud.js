@@ -354,7 +354,7 @@
       items: [
         { es: "¿Tienen clases de yoga aquí?", de: "Bietet ihr hier Yoga-Kurse an?", en: "Do you have yoga classes here?" },
         { es: "¿Hay un gimnasio cerca?", de: "Gibt es ein Fitnessstudio in der Nähe?", en: "Is there a gym nearby?" },
-        { es: "¿Venden pase por un día?", de: "Verkauft ihr einen Tagespass?", en: "Do you sell a day pass?" },
+        { es: "¿Venden un pase por un día?", de: "Verkauft ihr einen Tagespass?", en: "Do you sell a day pass?" },
         { es: "¿Cuánto cuesta la entrada por un día?", de: "Wie viel kostet der Tageseintritt?", en: "How much is it for one day?" },
         { es: "¿Puedo entrenar hoy sin ser socio?", de: "Kann ich heute trainieren, ohne Mitglied zu sein?", en: "Can I train today without being a member?" },
       ],
