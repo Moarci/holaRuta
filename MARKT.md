@@ -278,20 +278,20 @@ glaubwürdiges Angebot für genau einen ersten Pilotkunden.
 
 | Paket | Preis/Jahr | Für | Enthält |
 |---|---|---|---|
-| Pilot | 0–199 USD | Einstieg, 1–2 Klassen | 4–6 Wochen Test + Feedbackgespräch |
-| School Starter | 499 USD | kleine Einzelschule | App + School-Pack + Lehrer-PDF, kein Custom-Branding |
-| School Plus / Edition | 999–1.499 USD | ECOS, Centro Catalina | Stadt-/Schulpaket, Hostel Mode im Unterricht, Challenges, kleine Co-Branding-Seite, Lehrer-Material |
-| Network | 2.500–5.000 USD | mehrere Standorte | mehrere Stadtpakete, Partner-Branding, mehr Support |
-| Custom / White-Label | ab 5.000 USD + Setup | später | volle Anpassung |
+| Pilot | 0–199 € | Einstieg, 1–2 Klassen | 4–6 Wochen Test + Feedbackgespräch |
+| School Starter | 499 € | kleine Einzelschule | App + School-Pack + Lehrer-PDF, kein Custom-Branding |
+| School Plus / Edition | 999–1.499 € | ECOS, Centro Catalina | Stadt-/Schulpaket, Hostel Mode im Unterricht, Challenges, kleine Co-Branding-Seite, Lehrer-Material |
+| Network | 2.500–5.000 € | mehrere Standorte | mehrere Stadtpakete, Partner-Branding, mehr Support |
+| Custom / White-Label | ab 5.000 € + Setup | später | volle Anpassung |
 
-**Gruppenreisen:** Destination Pack 500–1.500 USD · Jahres-Partnerlizenz 5.000–15.000 USD ·
-Per-Seat 0,50–2,00 USD/Reisendem (erst bei Volumen).
+**Gruppenreisen:** Destination Pack 500–1.500 € · Jahres-Partnerlizenz 5.000–15.000 € ·
+Per-Seat 0,50–2,00 €/Reisendem (erst bei Volumen).
 
-**Hostels:** Einzel-Hostel meist **0 USD** (Partnerschaft/Co-Branding/Lead-Gen) · Hostel-Kette
-(Selina & Co.) wie Gruppenreise-Netzwerk: „Hostel Edition" 2.500–10.000 USD/Jahr.
+**Hostels:** Einzel-Hostel meist **0 €** (Partnerschaft/Co-Branding/Lead-Gen) · Hostel-Kette
+(Selina & Co.) wie Gruppenreise-Netzwerk: „Hostel Edition" 2.500–10.000 €/Jahr.
 
 **B2C (optional):** Free (Basis-Karten, Kontext, einige Kategorien) vs. Pro (Hostel Mode, Hören,
-Badges, Offline-/Destination-Packs, Länderkunde) — 9–19 USD einmalig oder 2,99–4,99 USD/Monat.
+Badges, Offline-/Destination-Packs, Länderkunde) — 9–19 € einmalig oder 2,99–4,99 €/Monat.
 Braucht Reichweite + App-Store-Vertrauen + das fehlende Kauf-/Account-Backend → nachrangig.
 
 > **Ehrlich:** Co-Branded-, Network- und Per-Seat-Modelle sind erst nach Roadmap-Stufe 2/3 tragfähig.
@@ -303,11 +303,11 @@ Braucht Reichweite + App-Store-Vertrauen + das fehlende Kauf-/Account-Backend �
 
 | Szenario | Annahme | Jahresumsatz |
 |---|---|---|
-| **Konservativ** | 5 × 499 + 3 × 999 USD | ~5.500 USD |
-| **Realistisch gut** | 10 × 499 + 10 × 999 + 2 × 2.500 USD | ~20.000 USD |
-| **Stark** | 25 × 999 + 5 × 3.000 + 3 × 5.000 USD | ~55.000 USD |
+| **Konservativ** | 5 × 499 + 3 × 999 € | ~5.500 € |
+| **Realistisch gut** | 10 × 499 + 10 × 999 + 2 × 2.500 € | ~20.000 € |
+| **Stark** | 25 × 999 + 5 × 3.000 + 3 × 5.000 € | ~55.000 € |
 
-**Aufbaupfad:** Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ USD. Nebenbei eher 3–10k, aktiv verkauft
+**Aufbaupfad:** Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ €. Nebenbei eher 3–10k, aktiv verkauft
 eher 10–30k. Über 100k kurzfristig unrealistisch — der Markt ist speziell und Schulen kaufen
 langsamer als Endkunden.
 
@@ -383,7 +383,7 @@ kein offizieller Prozess, erstmal nur Feedback (Nutzen, Verständlichkeit, Spaß
 > HolaRuta ergänzt den ECOS-Unterricht als mobile Reise-Spanisch-App: Schüler üben vor, während und
 > nach dem Kurs echte Situationen aus Cartagena — mit Kontextbeispielen, Rollenspielen,
 > Partner-Battle und Real-Life-Challenges. Angebot: kostenloser 4-Wochen-Pilot mit 1–2 Gruppen,
-> danach 499 USD im ersten Jahr / 999 USD ab dem zweiten.
+> danach 499 € im ersten Jahr / 999 € ab dem zweiten.
 
 **Gruppenreise (WeRoad Colombia Pack):**
 

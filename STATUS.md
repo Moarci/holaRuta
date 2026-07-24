@@ -93,7 +93,7 @@ situativ statt kursförmig · offline-PWA · privacy by design) ist scharf und g
 3. **Stufe 3** (Accounts/Sync/Per-Seat) — bewusst aufgeschoben bis zum zahlenden Kunden ([BACKEND.md](BACKEND.md)).
 
 ### Umsatzrealität (aus [MARKT.md](MARKT.md), plausibel)
-Aufbaupfad Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ USD. >100k kurzfristig unrealistisch — Markt ist
+Aufbaupfad Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ €. >100k kurzfristig unrealistisch — Markt ist
 speziell, Schulen kaufen langsam.
 
 ---
@@ -123,7 +123,7 @@ speziell, Schulen kaufen langsam.
       holaruta.com (Vercel-Hosting, IONOS-Registrar), holaruta.de als Weiterleitung.
 - [ ] **Niveau-Kuration:** benannte Starter-Sets („Pre-Arrival 100" / „Survival 50") statt nur freiem
       Filter ([MARKT.md §6a](MARKT.md), [BAUPLAN.md](BAUPLAN.md)).
-- [ ] **Erste bezahlte Lizenz** (School Starter 499 USD bzw. Destination-Pack) auf Basis des Piloten.
+- [ ] **Erste bezahlte Lizenz** (School Starter 499 € bzw. Destination-Pack) auf Basis des Piloten.
 - [ ] **Stufe 3 nur bei zahlendem Referenzkunden** anstoßen (Accounts/Sync/Per-Seat, [BACKEND.md](BACKEND.md)).
 
 ### Definition of „durchgebrochen"
