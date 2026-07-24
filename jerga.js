@@ -239,7 +239,7 @@
         { es: "¡Qué pena!", de: "Wie peinlich! / Entschuldige! (sehr häufig in CO)", en: "How embarrassing! / Sorry! (very common in CO)" },
         { es: "dar papaya", de: "sich angreifbar machen, leichtsinnig sein", en: "to make yourself an easy target, be careless" },
         { es: "estar pilas / ponerse pilas", de: "aufpassen / sich ranhalten", en: "to be alert / get a move on" },
-        { es: "un parado / una vuelta", de: "eine Sache / ein Plan", en: "a thing / an errand-plan" },
+        { es: "una vaina / una vuelta", de: "eine Sache / ein Plan", en: "a thing / an errand-plan" },
         { es: "paila", de: "Mist, das war's (etwas ist schiefgegangen)", en: "damn, that's it (something went wrong)" },
         { es: "berraco/a", de: "krass / hart im Nehmen (kontextabhängig)", en: "tough / impressive (context-dependent)" },
       ],
@@ -265,7 +265,7 @@
       titleEn: "Address & politeness",
       items: [
         { es: "sumercé", de: "höfliches „Sie/du“ (Bogotá & Boyacá, sehr herzlich)", en: "polite „you“ (Bogotá & Boyacá, very warm)" },
-        { es: "llave / llavería", de: "enger Kumpel, wörtlich „mein Schlüssel“", en: "close buddy, literally „my key“" },
+        { es: "llave", de: "enger Kumpel, wörtlich „mein Schlüssel“", en: "close buddy, literally „my key“" },
         { es: "mijo / mija", de: "Kurzform von „mi hijo/a“: Schätzchen, Kleiner", en: "short for „mi hijo/a“: dear, kiddo" },
         { es: "el cucho / la cucha", de: "der/die Alte (auch liebevoll für die Eltern)", en: "old man / old lady (also affectionate for parents)" },
         { es: "¿Me regala …?", de: "Könnten Sie mir … geben/reichen? (höflich, sehr CO)", en: "Could you give me …? (polite, very CO)" },
