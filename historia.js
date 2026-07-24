@@ -169,7 +169,7 @@
       level: "B2",
       es: [
         "Durante casi tres siglos, España *gobernó* sus colonias americanas desde ciudades como Lima y Bogotá. El continente se dividió en grandes virreinatos, *mandados* por un virrey que representaba directamente al rey español y tenía un poder casi total.",
-        "El verdadero motor de todo era la plata. Del cerro Rico de Potosí, en la actual Bolivia, salió durante dos siglos gran parte de la plata del mundo. Se *extraía* con trabajo *forzado*, un sistema llamado mita, que costó la *vida* a muchísimos indígenas y a africanos *esclavizados*. Ese metal financió guerras y palacios al otro lado del *océano*.",
+        "El verdadero motor de todo era la plata. Del Cerro Rico de Potosí, en la actual Bolivia, salió durante dos siglos gran parte de la plata del mundo. Se *extraía* con trabajo *forzado*, un sistema llamado mita, que costó la *vida* a muchísimos indígenas y a africanos *esclavizados*. Ese metal financió guerras y palacios al otro lado del *océano*.",
         "La sociedad colonial estaba *dividida* de forma muy estricta según el origen de cada persona: arriba, los nacidos en España; después, los criollos (hijos de españoles nacidos en América); y abajo, los indígenas, los mestizos y los *esclavos*. Justamente esa profunda *desigualdad* —criollos ricos y cultos, pero sin poder político— encendería más tarde la lucha por la *libertad*.",
       ],
       vocab: [
