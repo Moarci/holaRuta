@@ -162,7 +162,7 @@
     { id: "z18", cat: "zahlen", lvl: 2, de: "18", en: "18", es: "dieciocho", tip: "die-si-O-cho" },
     { id: "z19", cat: "zahlen", lvl: 2, de: "19", en: "19", es: "diecinueve", tip: "die-si-NUE-we" },
     { id: "z20", cat: "zahlen", lvl: 1, de: "20", en: "20", es: "veinte", tip: "WEIN-te" },
-    { id: "z21", cat: "zahlen", lvl: 2, de: "21", en: "21", es: "veintiuno", tip: "wein-ti-U-no (vor Nomen: veintiún)", tipEn: "wein-ti-U-no (before a noun: veintiún)" },
+    { id: "z21", cat: "zahlen", lvl: 2, de: "21", en: "21", es: "veintiuno", tip: "wein-ti-U-no (vor Nomen: veintiún)", tipEn: "vein-ti-U-no (before a noun: veintiún)" },
     { id: "z22", cat: "zahlen", lvl: 2, de: "22", en: "22", es: "veintidós", tip: "wein-ti-DOS", alt: ["veintidos"] },
     { id: "z23", cat: "zahlen", lvl: 2, de: "23", en: "23", es: "veintitrés", tip: "wein-ti-TRES", alt: ["veintitres"] },
     { id: "z24", cat: "zahlen", lvl: 2, de: "24", en: "24", es: "veinticuatro", tip: "wein-ti-KUA-tro" },
@@ -203,7 +203,7 @@
     { id: "z600", cat: "zahlen", lvl: 2, de: "600", en: "600", es: "seiscientos", tip: "seis-si-EN-tos" },
     { id: "z700", cat: "zahlen", lvl: 2, de: "700", en: "700", es: "setecientos", tip: "se-te-si-EN-tos (unregelmäßig!)", tipEn: "se-te-si-EN-tos (irregular!)" },
     { id: "z800", cat: "zahlen", lvl: 2, de: "800", en: "800", es: "ochocientos", tip: "o-cho-si-EN-tos" },
-    { id: "z900", cat: "zahlen", lvl: 2, de: "900", en: "900", es: "novecientos", tip: "no-we-si-EN-tos (unregelmäßig!)", tipEn: "no-we-si-EN-tos (irregular!)" },
+    { id: "z900", cat: "zahlen", lvl: 2, de: "900", en: "900", es: "novecientos", tip: "no-we-si-EN-tos (unregelmäßig!)", tipEn: "no-ve-si-EN-tos (irregular!)" },
     { id: "z999", cat: "zahlen", lvl: 3, de: "999", en: "999", es: "novecientos noventa y nueve", tip: "no-we-si-EN-tos no-WEN-ta i NUE-we" },
 
     // ----- Tausender -----
@@ -711,7 +711,7 @@
     { id: "dir04", cat: "rumbo", lvl: 1, de: "die Ecke", en: "the corner", es: "la esquina", tip: "la es-KI-na", enPron: "de KOR-ner" },
     { id: "dir05", cat: "rumbo", lvl: 1, de: "der Häuserblock", en: "the block", es: "la cuadra", tip: "la KUA-dra (LatAm; in Spanien: manzana)", tipEn: "la KUA-dra (LatAm; in Spain: manzana)", enPron: "de blok" },
     { id: "dir06", cat: "rumbo", lvl: 1, de: "die Straße", en: "the street", es: "la calle", tip: "la KA-ye", enPron: "de striet" },
-    { id: "dir07", cat: "rumbo", lvl: 2, de: "die Hauptstraße / Allee", en: "the main road / avenue", es: "la avenida", tip: "la a-we-NI-da (oft abgekürzt: Av.)", tipEn: "la a-we-NI-da (often shortened to: Av.)", enPron: "de mejn roud / Ä-we-nju" },
+    { id: "dir07", cat: "rumbo", lvl: 2, de: "die Hauptstraße / Allee", en: "the main road / avenue", es: "la avenida", tip: "la a-we-NI-da (oft abgekürzt: Av.)", tipEn: "la a-ve-NI-da (often shortened to: Av.)", enPron: "de mejn roud / Ä-we-nju" },
     { id: "dir08", cat: "rumbo", lvl: 1, de: "nah / in der Nähe", en: "near / nearby", es: "cerca", tip: "SER-ka", enPron: "nier / NIER-bai" },
     { id: "dir09", cat: "rumbo", lvl: 1, de: "weit weg", en: "far away", es: "lejos", tip: "LE-hos", enPron: "far e-WEJ" },
     { id: "dir10", cat: "rumbo", lvl: 1, de: "hier", en: "here", es: "aquí / acá", tip: "a-KI – 'acá' ist in LatAm sehr verbreitet", tipEn: "a-KI – 'acá' is very common in LatAm", alt: ["aquí", "acá"], enPron: "hier" },
@@ -775,7 +775,7 @@
     { id: "dir56", cat: "rumbo", lvl: 2, de: "Biege rechts ab (Variante)", en: "Turn right (variant)", es: "Gira a la derecha", tip: "HI-ra a la de-RE-cha (Mexiko: voltea)", tipEn: "HI-ra a la de-RE-cha (Mexico: voltea)", enPron: "törn rait" },
     { id: "dir57", cat: "rumbo", lvl: 2, de: "Geh die Straße hinauf", en: "Go up this street", es: "Sube por esta calle", tip: "SU-be por ES-ta KA-ye", enPron: "gou ap diss striet" },
     { id: "dir58", cat: "rumbo", lvl: 2, de: "Geh die Straße hinunter", en: "Go down this street", es: "Baja por esta calle", tip: "BA-ha por ES-ta KA-ye", enPron: "gou daun diss striet" },
-    { id: "dir59", cat: "rumbo", lvl: 3, de: "Geh zurück", en: "Go back", es: "Regrésate / Devuélvete", tip: "re-GRE-sa-te / de-WUEL-we-te (sehr LatAm)", tipEn: "re-GRE-sa-te / de-WUEL-we-te (very LatAm)", enPron: "gou bäk" },
+    { id: "dir59", cat: "rumbo", lvl: 3, de: "Geh zurück", en: "Go back", es: "Regrésate / Devuélvete", tip: "re-GRE-sa-te / de-WUEL-we-te (sehr LatAm)", tipEn: "re-GRE-sa-te / de-VUEL-ve-te (very LatAm)", enPron: "gou bäk" },
     { id: "dir60", cat: "rumbo", lvl: 2, de: "Geh an der Ampel vorbei", en: "Go past the traffic light", es: "Pasa el semáforo", tip: "PA-sa el se-MA-fo-ro", enPron: "gou past de TRÄ-fik lait" },
 
     // -- Mehr Fragen nach dem Weg --
@@ -791,11 +791,11 @@
     // de-Seite: Alternativen mit " / " (jede zählt beim Tippen), Verb in Klammern
     // als Hinweis – Klammerzusätze sind beim Antwort-Matcher optional.
     // -- ir (gehen/fahren) – DAS Reiseverb, komplett unregelmäßig --
-    { id: "vb01", cat: "verbos", lvl: 1, de: "ich gehe / ich fahre (ir)", en: "I go (ir)", es: "voy", tip: "woi – ir ist komplett unregelmäßig", tipEn: "woi – ir is completely irregular" },
+    { id: "vb01", cat: "verbos", lvl: 1, de: "ich gehe / ich fahre (ir)", en: "I go (ir)", es: "voy", tip: "woi – ir ist komplett unregelmäßig", tipEn: "voi – ir is completely irregular" },
     { id: "vb02", cat: "verbos", lvl: 1, de: "du gehst / du fährst (ir)", en: "you go (ir)", es: "vas", tip: "was" },
-    { id: "vb03", cat: "verbos", lvl: 1, de: "er geht / sie geht / Sie gehen (ir)", en: "he/she goes / you go (ir)", es: "va", tip: "wa – auch für usted (höfliches Sie)", tipEn: "wa – also for usted (formal you)" },
-    { id: "vb04", cat: "verbos", lvl: 1, de: "wir gehen / wir fahren (ir)", en: "we go (ir)", es: "vamos", tip: "WA-mos – ¡Vamos! heißt auch 'Los geht's!'", tipEn: "WA-mos – ¡Vamos! also means 'Let's go!'" },
-    { id: "vb05", cat: "verbos", lvl: 1, de: "sie gehen / ihr geht (ir)", en: "they go / you all go (ir)", es: "van", tip: "wan – ustedes/ellos teilen sich die Form", tipEn: "wan – ustedes/ellos share the form" },
+    { id: "vb03", cat: "verbos", lvl: 1, de: "er geht / sie geht / Sie gehen (ir)", en: "he/she goes / you go (ir)", es: "va", tip: "wa – auch für usted (höfliches Sie)", tipEn: "va – also for usted (formal you)" },
+    { id: "vb04", cat: "verbos", lvl: 1, de: "wir gehen / wir fahren (ir)", en: "we go (ir)", es: "vamos", tip: "WA-mos – ¡Vamos! heißt auch 'Los geht's!'", tipEn: "VA-mos – ¡Vamos! also means 'Let's go!'" },
+    { id: "vb05", cat: "verbos", lvl: 1, de: "sie gehen / ihr geht (ir)", en: "they go / you all go (ir)", es: "van", tip: "wan – ustedes/ellos teilen sich die Form", tipEn: "van – ustedes/ellos share the form" },
     // -- doblar (abbiegen) – Muster für ALLE regelmäßigen -ar-Verben --
     { id: "vb06", cat: "verbos", lvl: 1, de: "ich biege ab (doblar)", en: "I turn (doblar)", es: "doblo", tip: "DO-blo – -ar: -o/-as/-a/-amos/-an" },
     { id: "vb07", cat: "verbos", lvl: 1, de: "du biegst ab (doblar)", en: "you turn (doblar)", es: "doblas", tip: "DO-blas" },
@@ -812,7 +812,7 @@
     { id: "vb16", cat: "verbos", lvl: 2, de: "ich esse (comer)", en: "I eat (comer)", es: "como", tip: "KO-mo – -er: -o/-es/-e/-emos/-en" },
     { id: "vb17", cat: "verbos", lvl: 2, de: "du isst (comer)", en: "you eat (comer)", es: "comes", tip: "KO-mes" },
     { id: "vb18", cat: "verbos", lvl: 2, de: "wir essen (comer)", en: "we eat (comer)", es: "comemos", tip: "ko-ME-mos" },
-    { id: "vb19", cat: "verbos", lvl: 2, de: "ich wohne / ich lebe (vivir)", en: "I live (vivir)", es: "vivo", tip: "WI-wo – -ir: wie -er, nur wir = -imos", tipEn: "WI-wo – -ir: like -er, only we = -imos" },
+    { id: "vb19", cat: "verbos", lvl: 2, de: "ich wohne / ich lebe (vivir)", en: "I live (vivir)", es: "vivo", tip: "WI-wo – -ir: wie -er, nur wir = -imos", tipEn: "VI-vo – -ir: like -er, only we = -imos" },
     { id: "vb20", cat: "verbos", lvl: 2, de: "du wohnst / du lebst (vivir)", en: "you live (vivir)", es: "vives", tip: "WI-wes" },
     // -- estar (sein: Ort & Zustand) – der Wegbeschreibungs-Klassiker --
     { id: "vb21", cat: "verbos", lvl: 2, de: "ich bin (estar – Ort/Zustand)", en: "I am (estar – location/state)", es: "estoy", tip: "es-TOI – Estoy en el centro" },
@@ -850,12 +850,12 @@
     { id: "tp01", cat: "tiempos", lvl: 1, de: "Ich kam gestern an", en: "I arrived yesterday", es: "Llegué ayer", tip: "ye-GE a-YER – llegar, ich-Form Vergangenheit (-é)" },
     { id: "tp02", cat: "tiempos", lvl: 1, de: "Ich nahm den Bus", en: "I took the bus", es: "Tomé el bus", tip: "to-ME – abgeschlossene -ar-Vergangenheit: ich = -é" },
     { id: "tp03", cat: "tiempos", lvl: 2, de: "Wir kauften die Tickets", en: "We bought the tickets", es: "Compramos los boletos", tip: "kom-PRA-mos – wir-Form klingt wie die Gegenwart", tipEn: "kom-PRA-mos – the we-form sounds like the present" },
-    { id: "tp04", cat: "tiempos", lvl: 2, de: "Ich war in Cusco", en: "I was in Cusco", es: "Estuve en Cusco", tip: "es-TU-we – estar ist in der Vergangenheit unregelmäßig", tipEn: "es-TU-we – estar is irregular in the past" },
+    { id: "tp04", cat: "tiempos", lvl: 2, de: "Ich war in Cusco", en: "I was in Cusco", es: "Estuve en Cusco", tip: "es-TU-we – estar ist in der Vergangenheit unregelmäßig", tipEn: "es-TU-ve – estar is irregular in the past" },
     { id: "tp05", cat: "tiempos", lvl: 2, de: "Wir gingen zum Strand", en: "We went to the beach", es: "Fuimos a la playa", tip: "FUI-mos – ir & ser teilen fui/fuiste/fue …" },
     { id: "tp06", cat: "tiempos", lvl: 2, de: "Es hat mir gefallen", en: "I liked it", es: "Me gustó", tip: "me gus-TO – gustar, er/es-Form (-ó)" },
     { id: "tp07", cat: "tiempos", lvl: 3, de: "Was hast du gemacht?", en: "What did you do?", es: "¿Qué hiciste?", tip: "i-SIS-te – hacer ist unregelmäßig", tipEn: "i-SIS-te – hacer is irregular" },
     { id: "tp08", cat: "tiempos", lvl: 2, de: "Ich habe meinen Pass verloren", en: "I've lost my passport", es: "Perdí mi pasaporte", tip: "per-DI – Notfall in der Vergangenheit (-er/-ir: ich = -í)", tipEn: "per-DI – an emergency in the past (-er/-ir: I = -í)" },
-    { id: "tp09", cat: "tiempos", lvl: 2, de: "Es hat gestern geregnet", en: "It rained yesterday", es: "Ayer llovió", tip: "yo-WIO – ein einmaliges Ereignis (anders als 'llovía')", tipEn: "yo-WIO – a one-off event (unlike 'llovía')" },
+    { id: "tp09", cat: "tiempos", lvl: 2, de: "Es hat gestern geregnet", en: "It rained yesterday", es: "Ayer llovió", tip: "yo-WIO – ein einmaliges Ereignis (anders als 'llovía')", tipEn: "yo-VIO – a one-off event (unlike 'llovía')" },
     // ---- Vergangenheit: Pretérito perfecto (gerade eben / Erfahrung) ----
     { id: "tp10", cat: "tiempos", lvl: 2, de: "Ich habe schon gegessen", en: "I've already eaten", es: "Ya he comido", tip: "ya e ko-MI-do – haber (he) + Partizip (-ido)" },
     { id: "tp11", cat: "tiempos", lvl: 2, de: "Hast du Machu Picchu gesehen?", en: "Have you seen Machu Picchu?", es: "¿Has visto Machu Picchu?", tip: "as WIS-to – visto = unregelmäßiges Partizip von ver" },
@@ -869,10 +869,10 @@
     { id: "tp17", cat: "tiempos", lvl: 1, de: "Wann fährt der nächste Bus?", en: "When does the next bus leave?", es: "¿A qué hora sale el próximo bus?", tip: "SA-le – Gegenwart fürs Feste (Fahrplan)" },
     { id: "tp18", cat: "tiempos", lvl: 1, de: "Heute bleibe ich im Hostel", en: "Today I'm staying at the hostel", es: "Hoy me quedo en el hostal", tip: "me KE-do – Gegenwart für das, was jetzt gilt", tipEn: "me KE-do – present for what's true now" },
     // ---- Zukunft: Futuro próximo (ir a + Infinitiv) ----
-    { id: "tp19", cat: "tiempos", lvl: 1, de: "Ich werde den Bus nehmen", en: "I'm going to take the bus", es: "Voy a tomar el bus", tip: "woi a to-MAR – ir a + Infinitiv: der einfache Zukunfts-Trick", tipEn: "woi a to-MAR – ir a + infinitive: the easy future trick" },
+    { id: "tp19", cat: "tiempos", lvl: 1, de: "Ich werde den Bus nehmen", en: "I'm going to take the bus", es: "Voy a tomar el bus", tip: "woi a to-MAR – ir a + Infinitiv: der einfache Zukunfts-Trick", tipEn: "voi a to-MAR – ir a + infinitive: the easy future trick" },
     { id: "tp20", cat: "tiempos", lvl: 1, de: "Wir werden morgen losfahren", en: "We'll set off tomorrow", es: "Vamos a salir mañana", tip: "WA-mos a sa-LIR" },
     { id: "tp21", cat: "tiempos", lvl: 2, de: "Was wirst du machen?", en: "What will you do?", es: "¿Qué vas a hacer?", tip: "ke was a a-SER" },
-    { id: "tp22", cat: "tiempos", lvl: 1, de: "Es wird regnen", en: "It's going to rain", es: "Va a llover", tip: "wa a yo-WER – über das Wetter sprechen", tipEn: "wa a yo-WER – talking about the weather" },
+    { id: "tp22", cat: "tiempos", lvl: 1, de: "Es wird regnen", en: "It's going to rain", es: "Va a llover", tip: "wa a yo-WER – über das Wetter sprechen", tipEn: "va a yo-VER – talking about the weather" },
     { id: "tp23", cat: "tiempos", lvl: 2, de: "Ich werde eine Reservierung machen", en: "I'm going to make a reservation", es: "Voy a hacer una reserva", tip: "woi a a-SER U-na re-SER-wa" },
     // ---- Zukunft: Futuro simple ----
     { id: "tp24", cat: "tiempos", lvl: 2, de: "Ich werde morgen ankommen", en: "I'll arrive tomorrow", es: "Llegaré mañana", tip: "ye-ga-RE – Infinitiv + -é" },
@@ -883,12 +883,12 @@
     { id: "tp28", cat: "tiempos", lvl: 3, de: "Könnten Sie mir helfen?", en: "Could you help me?", es: "¿Podría ayudarme?", tip: "po-DRI-a a-yu-DAR-me – höflicher als '¿Puede?'", tipEn: "po-DRI-a a-yu-DAR-me – more polite than '¿Puede?'" },
     // ---- Zeiten gemischt (Signalwörter erkennen) ----
     { id: "tp29", cat: "tiempos", lvl: 2, de: "Gestern war ich müde, heute geht's mir gut", en: "Yesterday I was tired, today I'm fine", es: "Ayer estaba cansado, hoy estoy bien", tip: "es-TA-ba … es-TOI – ayer vs. hoy" },
-    { id: "tp30", cat: "tiempos", lvl: 1, de: "Morgen fahre ich nach Lima", en: "Tomorrow I'm going to Lima", es: "Mañana voy a Lima", tip: "ma-NYA-na woi – fürs Nahe reicht oft die Gegenwart", tipEn: "ma-NYA-na woi – for the near future the present often does" },
+    { id: "tp30", cat: "tiempos", lvl: 1, de: "Morgen fahre ich nach Lima", en: "Tomorrow I'm going to Lima", es: "Mañana voy a Lima", tip: "ma-NYA-na woi – fürs Nahe reicht oft die Gegenwart", tipEn: "ma-NYA-na voi – for the near future the present often does" },
     // ---- Verlaufsform: estar + Gerundio (gerade jetzt) ----
     { id: "tp31", cat: "tiempos", lvl: 1, de: "Ich esse gerade", en: "I'm eating right now", es: "Estoy comiendo", tip: "es-TOI ko-MIEN-do – estar + Gerundio = genau jetzt", tipEn: "es-TOI ko-MIEN-do – estar + gerund = right now" },
     { id: "tp32", cat: "tiempos", lvl: 2, de: "Was machst du gerade?", en: "What are you doing right now?", es: "¿Qué estás haciendo?", tip: "es-TAS a-SIEN-do – haciendo von hacer" },
     { id: "tp33", cat: "tiempos", lvl: 2, de: "Wir warten gerade auf den Bus", en: "We're waiting for the bus right now", es: "Estamos esperando el bus", tip: "es-TA-mos es-pe-RAN-do" },
-    { id: "tp34", cat: "tiempos", lvl: 1, de: "Es regnet gerade", en: "It's raining right now", es: "Está lloviendo", tip: "es-TA yo-WIEN-do – das Wetter im Moment", tipEn: "es-TA yo-WIEN-do – the weather at this moment" },
+    { id: "tp34", cat: "tiempos", lvl: 1, de: "Es regnet gerade", en: "It's raining right now", es: "Está lloviendo", tip: "es-TA yo-WIEN-do – das Wetter im Moment", tipEn: "es-TA yo-VIEN-do – the weather at this moment" },
     { id: "tp35", cat: "tiempos", lvl: 2, de: "Ich suche gerade ein Hostel", en: "I'm looking for a hostel right now", es: "Estoy buscando un hostal", tip: "es-TOI bus-KAN-do" },
     // ---- Imperativo: Bitten & Anweisungen ----
     { id: "tp36", cat: "tiempos", lvl: 2, de: "Sagen Sie mir / Erzählen Sie", en: "Tell me", es: "Dígame", tip: "DI-ga-me – höfliche Aufforderung (usted) von decir" },
@@ -907,9 +907,9 @@
     { id: "tp47", cat: "tiempos", lvl: 2, de: "Es gab kein warmes Wasser", en: "There was no hot water", es: "No había agua caliente", tip: "a-BI-a – había = es gab (Vergangenheit)" },
     { id: "tp48", cat: "tiempos", lvl: 3, de: "Wird es einen Nachtbus geben?", en: "Will there be a night bus?", es: "¿Habrá un bus nocturno?", tip: "a-BRA – habrá = es wird geben (Zukunft)", tipEn: "a-BRA – habrá = there will be (future)" },
     // ---- Mehr unregelmäßige Vergangenheit (Indefinido) ----
-    { id: "tp49", cat: "tiempos", lvl: 2, de: "Ich hatte ein Problem", en: "I had a problem", es: "Tuve un problema", tip: "TU-we – tener wird in der Vergangenheit zu tuve", tipEn: "TU-we – tener becomes tuve in the past" },
+    { id: "tp49", cat: "tiempos", lvl: 2, de: "Ich hatte ein Problem", en: "I had a problem", es: "Tuve un problema", tip: "TU-we – tener wird in der Vergangenheit zu tuve", tipEn: "TU-ve – tener becomes tuve in the past" },
     { id: "tp50", cat: "tiempos", lvl: 3, de: "Ich konnte nicht schlafen", en: "I couldn't sleep", es: "No pude dormir", tip: "PU-de dor-MIR – poder → pude" },
-    { id: "tp51", cat: "tiempos", lvl: 3, de: "Er hat mir gesagt, dass es teuer ist", en: "He told me it's expensive", es: "Me dijo que es caro", tip: "me DI-cho (j wie ch in Bach) – decir → dijo", tipEn: "me DI-cho (j like ch in loch) – decir → dijo" },
+    { id: "tp51", cat: "tiempos", lvl: 3, de: "Er hat mir gesagt, dass es teuer ist", en: "He told me it's expensive", es: "Me dijo que es caro", tip: "me DI-cho (j wie ch in Bach) – decir → dijo", tipEn: "me DI-ho (a rough 'h', like Scottish 'loch') – decir → dijo" },
     { id: "tp52", cat: "tiempos", lvl: 2, de: "Wann bist du gekommen?", en: "When did you come?", es: "¿Cuándo viniste?", tip: "wi-NIS-te – venir → viniste" },
     { id: "tp53", cat: "tiempos", lvl: 2, de: "Ich gab dem Fahrer das Geld", en: "I gave the driver the money", es: "Le di el dinero al chofer", tip: "le di – dar → di (ganz kurz)" },
     // ---- Mehr Perfekt mit unregelmäßigem Partizip ----
@@ -931,7 +931,7 @@
     { id: "tp66", cat: "tiempos", lvl: 3, de: "Sie sollten ein Taxi nehmen", en: "You should take a taxi", es: "Debería tomar un taxi", tip: "de-be-RI-a – debería = sollte (höflicher Rat)" },
     // ---- Vergangenheits-Trick: he + Partizip (regelmäßig, Gegenstück zu „voy a + Infinitiv") ----
     { id: "tp67", cat: "tiempos", lvl: 2, de: "Ich habe die Rechnung bezahlt", en: "I've paid the bill", es: "He pagado la cuenta", tip: "e pa-GA-do la KUEN-ta – he + Partizip, der einfache Vergangenheits-Trick (pagar → pagado)", tipEn: "e pa-GA-do la KUEN-ta – he + participle, the easy past trick (pagar → pagado)" },
-    { id: "tp68", cat: "tiempos", lvl: 2, de: "Wir haben zwei Nächte gebucht", en: "We've booked two nights", es: "Hemos reservado dos noches", tip: "E-mos re-ser-WA-do – nur haber wird gebeugt (reservar → reservado)", tipEn: "E-mos re-ser-WA-do – only haber changes (reservar → reservado)" },
+    { id: "tp68", cat: "tiempos", lvl: 2, de: "Wir haben zwei Nächte gebucht", en: "We've booked two nights", es: "Hemos reservado dos noches", tip: "E-mos re-ser-WA-do – nur haber wird gebeugt (reservar → reservado)", tipEn: "E-mos re-ser-VA-do – only haber changes (reservar → reservado)" },
     // ---- Vergangenheits-Trick mit Gerundium: estaba + Gerundio (was gerade lief) ----
     { id: "tp69", cat: "tiempos", lvl: 2, de: "Ich wartete gerade auf den Bus", en: "I was waiting for the bus", es: "Estaba esperando el bus", tip: "es-TA-ba es-pe-RAN-do – estaba + Gerundio = was gerade lief (Vergangenheit)", tipEn: "es-TA-ba es-pe-RAN-do – estaba + gerund = what was going on (past)" },
     { id: "tp70", cat: "tiempos", lvl: 2, de: "Wir suchten gerade den Busbahnhof", en: "We were looking for the bus station", es: "Estábamos buscando la terminal", tip: "es-TA-ba-mos bus-KAN-do – nur estar wandert in die Vergangenheit, das Gerundio bleibt", tipEn: "es-TA-ba-mos bus-KAN-do – only estar moves to the past, the gerund stays" },
@@ -1003,7 +1003,7 @@
     { id: "co03", cat: "colombia", lvl: 2, de: "Wie viel kostet die Fahrt zum Hostel?", en: "How much is the ride to the hostel?", es: "¿Cuánto cuesta la carrera hasta el hostal?", tip: "carrera = Taxifahrt", tipEn: "carrera = the taxi ride" },
     { id: "co04", cat: "colombia", lvl: 2, de: "Können wir vorher den Festpreis vereinbaren?", en: "Can we agree the fixed price first?", es: "¿Podemos acordar la tarifa antes?", tip: "ta-RI-fa = Tarif/Preis", tipEn: "ta-RI-fa = fare/price" },
     { id: "co05", cat: "colombia", lvl: 1, de: "Können Sie mich an der Ecke absetzen?", en: "Can you drop me at the corner?", es: "¿Me deja en la esquina?", tip: "es-KI-na = Ecke", tipEn: "es-KI-na = corner" },
-    { id: "co06", cat: "colombia", lvl: 2, de: "Geht es über eine App oder bar?", en: "Is it via an app or cash?", es: "¿Es por aplicación o en efectivo?", tip: "e-fek-TI-wo = bar", tipEn: "e-fek-TI-wo = in cash" },
+    { id: "co06", cat: "colombia", lvl: 2, de: "Geht es über eine App oder bar?", en: "Is it via an app or cash?", es: "¿Es por aplicación o en efectivo?", tip: "e-fek-TI-wo = bar", tipEn: "e-fek-TI-vo = in cash" },
     // ----- Unterkunft & Gastfamilie -----
     { id: "co07", cat: "colombia", lvl: 1, de: "Ich habe eine Reservierung auf den Namen Marcel.", en: "I have a reservation under the name Marcel.", es: "Tengo una reserva a nombre de Marcel.", tip: "a nombre de = auf den Namen", tipEn: "a nombre de = under the name" },
     { id: "co08", cat: "colombia", lvl: 2, de: "Gibt es einen Ventilator oder Klimaanlage?", en: "Is there a fan or air conditioning?", es: "¿Hay ventilador o aire acondicionado?", tip: "ventilador = Ventilator", tipEn: "ventilador = fan" },
@@ -1024,7 +1024,7 @@
     { id: "co21", cat: "colombia", lvl: 2, de: "Empfiehlst du mir Guatapé?", en: "Do you recommend Guatapé to me?", es: "¿Me recomiendas Guatapé?", tip: "Guatapé = bunter Ausflugsort", tipEn: "Guatapé = colourful day-trip town" },
     { id: "co22", cat: "colombia", lvl: 1, de: "Alles klar, Kumpel?", en: "All good, mate?", es: "¿Bien o qué, parce?", tip: "parce = Kumpel (paisa-Slang)", tipEn: "parce = mate (paisa slang)" },
     { id: "co23", cat: "colombia", lvl: 1, de: "Wie cool!", en: "How cool!", es: "¡Qué nota!", tip: "auch: ¡qué bacano!", tipEn: "also: ¡qué bacano!" },
-    { id: "co24", cat: "colombia", lvl: 2, de: "Medellín ist die Stadt des ewigen Frühlings.", en: "Medellín is the city of eternal spring.", es: "Medellín es la ciudad de la eterna primavera.", tip: "pri-ma-WE-ra = Frühling", tipEn: "pri-ma-WE-ra = spring" },
+    { id: "co24", cat: "colombia", lvl: 2, de: "Medellín ist die Stadt des ewigen Frühlings.", en: "Medellín is the city of eternal spring.", es: "Medellín es la ciudad de la eterna primavera.", tip: "pri-ma-WE-ra = Frühling", tipEn: "pri-ma-VE-ra = spring" },
     // ----- Bogotá & Anden -----
     { id: "co25", cat: "colombia", lvl: 1, de: "Hier ist es kalt.", en: "It's cold here.", es: "Aquí hace frío.", tip: "FRI-o = Kälte/kalt", tipEn: "FRI-o = cold" },
     { id: "co26", cat: "colombia", lvl: 2, de: "Mir ist von der Höhe schwindelig.", en: "I feel dizzy from the altitude.", es: "Me siento mareado/a por la altura.", tip: "ma-re-A-do = schwindelig", tipEn: "ma-re-A-do = dizzy", alt: ["me siento mareado por la altura", "me siento mareada por la altura"] },
@@ -1045,15 +1045,15 @@
     { id: "co39", cat: "colombia", lvl: 2, de: "Was ist in einer Bandeja Paisa?", en: "What's in a bandeja paisa?", es: "¿Qué lleva una bandeja paisa?", tip: "bandeja paisa = großer Teller aus Antioquia", tipEn: "bandeja paisa = big platter from Antioquia" },
     { id: "co40", cat: "colombia", lvl: 1, de: "Einen schwarzen Kaffee, bitte.", en: "A black coffee, please.", es: "Un tinto, por favor.", tip: "tinto = schwarzer Kaffee (Kolumbien)", tipEn: "tinto = black coffee (Colombia)" },
     { id: "co41", cat: "colombia", lvl: 2, de: "Mit Wasser oder mit Milch?", en: "With water or with milk?", es: "¿En agua o en leche?", tip: "typische Saft-Frage in Kolumbien", tipEn: "the typical juice question in Colombia" },
-    { id: "co42", cat: "colombia", lvl: 1, de: "Einen frischen Saft, bitte.", en: "A fresh juice, please.", es: "Un jugo natural, por favor.", tip: "CHU-go = Saft", tipEn: "CHU-go = juice" },
+    { id: "co42", cat: "colombia", lvl: 1, de: "Einen frischen Saft, bitte.", en: "A fresh juice, please.", es: "Un jugo natural, por favor.", tip: "CHU-go = Saft", tipEn: "HU-go = juice" },
     { id: "co43", cat: "colombia", lvl: 2, de: "Könnte ich ein kaltes Bier haben?", en: "Could I have a cold beer?", es: "¿Me regala una cerveza fría?", tip: "regalar = höfliches 'geben' (Kolumbien)", tipEn: "regalar = polite 'to give' (Colombia)" },
     { id: "co44", cat: "colombia", lvl: 3, de: "Ist der Aguardiente sehr stark?", en: "Is the aguardiente very strong?", es: "¿El aguardiente es muy fuerte?", tip: "Spitzname: guaro", tipEn: "nickname: guaro" },
     { id: "co45", cat: "colombia", lvl: 2, de: "Ich hätte gern einen Patacón.", en: "I'd like a patacón.", es: "Quiero un patacón.", tip: "patacón = frittierte Kochbanane", tipEn: "patacón = fried plantain" },
     { id: "co46", cat: "colombia", lvl: 2, de: "Gibt es etwas Vegetarisches?", en: "Is there anything vegetarian?", es: "¿Hay algo vegetariano?", tip: "we-che-ta-ri-A-no" },
     // ----- Geld & Preise -----
     { id: "co47", cat: "colombia", lvl: 2, de: "Was kostet das Pfund?", en: "How much is it per pound?", es: "¿A cómo está la libra?", tip: "a cómo está = wie teuer (auf dem Markt)", tipEn: "a cómo está = how much (at the market)" },
-    { id: "co48", cat: "colombia", lvl: 2, de: "Akzeptieren Sie Karte oder nur bar?", en: "Do you accept card or only cash?", es: "¿Aceptan tarjeta o solo efectivo?", tip: "tar-CHE-ta = Karte", tipEn: "tar-CHE-ta = card" },
-    { id: "co49", cat: "colombia", lvl: 2, de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", es: "¿Hay un cajero cerca?", tip: "ka-CHE-ro = Geldautomat", tipEn: "ka-CHE-ro = ATM" },
+    { id: "co48", cat: "colombia", lvl: 2, de: "Akzeptieren Sie Karte oder nur bar?", en: "Do you accept card or only cash?", es: "¿Aceptan tarjeta o solo efectivo?", tip: "tar-CHE-ta = Karte", tipEn: "tar-HE-ta = card" },
+    { id: "co49", cat: "colombia", lvl: 2, de: "Gibt es einen Geldautomaten in der Nähe?", en: "Is there an ATM nearby?", es: "¿Hay un cajero cerca?", tip: "ka-CHE-ro = Geldautomat", tipEn: "ka-HE-ro = ATM" },
     { id: "co50", cat: "colombia", lvl: 2, de: "Bekomme ich bitte mein Wechselgeld?", en: "Can you give me the change, please?", es: "¿Me da el vuelto, por favor?", tip: "vuelto = Wechselgeld (Kolumbien)", tipEn: "vuelto = change (Colombia)" },
     { id: "co51", cat: "colombia", lvl: 3, de: "Ist die Bedienung schon inbegriffen?", en: "Is the service charge already included?", es: "¿El servicio ya está incluido?", tip: "propina = Trinkgeld", tipEn: "propina = tip" },
     // ----- Transport vor Ort -----
@@ -1081,7 +1081,7 @@
     // ----- Sicherheit & Allgemeines -----
     { id: "co71", cat: "colombia", lvl: 2, de: "Ist es sicher, hier nachts zu laufen?", en: "Is it safe to walk here at night?", es: "¿Es seguro caminar aquí de noche?", tip: "se-GU-ro = sicher", tipEn: "se-GU-ro = safe" },
     { id: "co72", cat: "colombia", lvl: 2, de: "Können Sie ein gutes Viertel empfehlen?", en: "Can you recommend a good neighbourhood?", es: "¿Me recomienda un buen barrio?", tip: "BA-rrio = Viertel", tipEn: "BA-rrio = neighbourhood" },
-    { id: "co73", cat: "colombia", lvl: 3, de: "Gibt es gerade ein Fest in der Stadt?", en: "Is there a festival in town right now?", es: "¿Hay algún festival en la ciudad?", tip: "fes-ti-WAL = Fest/Festival", tipEn: "fes-ti-WAL = festival" },
+    { id: "co73", cat: "colombia", lvl: 3, de: "Gibt es gerade ein Fest in der Stadt?", en: "Is there a festival in town right now?", es: "¿Hay algún festival en la ciudad?", tip: "fes-ti-WAL = Fest/Festival", tipEn: "fes-ti-VAL = festival" },
     { id: "co74", cat: "colombia", lvl: 2, de: "Wie lange dauert die Fahrt nach Cali?", en: "How long is the trip to Cali?", es: "¿Cuánto dura el viaje a Cali?", tip: "Cali = Welthauptstadt der Salsa", tipEn: "Cali = world capital of salsa" },
     { id: "co75", cat: "colombia", lvl: 1, de: "Ich liebe Kolumbien!", en: "I love Colombia!", es: "¡Me encanta Colombia!", tip: "en-KAN-ta = gefällt sehr", tipEn: "en-KAN-ta = I love it" },
 
@@ -1093,7 +1093,7 @@
     { id: "co80", cat: "colombia", lvl: 2, de: "Macht ihr eine Kaffeetour auf der Finca?", en: "Do you run a coffee tour on the farm?", es: "¿Hacen un tour de café en la finca?", tip: "finca = Kaffeehof/Landgut", tipEn: "finca = coffee farm/estate" },
     { id: "co81", cat: "colombia", lvl: 3, de: "Können wir den Kaffee selbst pflücken?", en: "Can we pick the coffee ourselves?", es: "¿Podemos recoger el café nosotros mismos?", tip: "recoger = pflücken/ernten", tipEn: "recoger = to pick/harvest" },
     { id: "co82", cat: "colombia", lvl: 3, de: "Wie wird der Kaffee hier geröstet?", en: "How is the coffee roasted here?", es: "¿Cómo se tuesta el café aquí?", tip: "tos-TAR = rösten", tipEn: "tos-TAR = to roast" },
-    { id: "co83", cat: "colombia", lvl: 2, de: "Ich hätte gern einen milden Kaffee.", en: "I'd like a mild coffee, please.", es: "Quiero un café suave, por favor.", tip: "SUA-we = mild/sanft", tipEn: "SUA-we = mild/smooth" },
+    { id: "co83", cat: "colombia", lvl: 2, de: "Ich hätte gern einen milden Kaffee.", en: "I'd like a mild coffee, please.", es: "Quiero un café suave, por favor.", tip: "SUA-we = mild/sanft", tipEn: "SUA-ve = mild/smooth" },
     { id: "co84", cat: "colombia", lvl: 2, de: "Was kostet die Kaffeeverkostung?", en: "How much is the coffee tasting?", es: "¿Cuánto cuesta la cata de café?", tip: "cata = Verkostung", tipEn: "cata = tasting" },
     { id: "co85", cat: "colombia", lvl: 2, de: "Wo gibt es einen guten Aussichtspunkt?", en: "Where's a good viewpoint?", es: "¿Dónde hay un buen mirador?", tip: "mi-ra-DOR = Aussichtspunkt", tipEn: "mi-ra-DOR = viewpoint" },
     { id: "co86", cat: "colombia", lvl: 3, de: "Kann man hier Kolibris sehen?", en: "Can you see hummingbirds around here?", es: "¿Se pueden ver colibríes por aquí?", tip: "co-li-BRI = Kolibri", tipEn: "co-li-BRI = hummingbird" },
@@ -2386,7 +2386,7 @@
     { id: "pe34", cat: "peru", lvl: 3, de: "Die Wanderung zum Regenbogenberg ist anstrengend.", en: "The hike to Rainbow Mountain is exhausting.", es: "La caminata a la Montaña de Colores es agotadora.", tip: "Vinicunca, auf über 5.000 m", tipEn: "Vinicunca, at over 5,000 m" },
     { id: "pe35", cat: "peru", lvl: 2, de: "Kann ich hier ein Pferd mieten?", en: "Can I rent a horse here?", es: "¿Puedo alquilar un caballo aquí?", tip: "ka-BA-yo = Pferd; üblich am Regenbogenberg", tipEn: "ka-BA-yo = horse; common at Rainbow Mountain" },
     // ----- Essen & Trinken -----
-    { id: "pe36", cat: "peru", lvl: 1, de: "Einen Ceviche, bitte.", en: "A ceviche, please.", es: "Un ceviche, por favor.", tip: "se-WI-che = roher Fisch in Limette", tipEn: "se-WI-che = raw fish cured in lime" },
+    { id: "pe36", cat: "peru", lvl: 1, de: "Einen Ceviche, bitte.", en: "A ceviche, please.", es: "Un ceviche, por favor.", tip: "se-WI-che = roher Fisch in Limette", tipEn: "se-VI-che = raw fish cured in lime" },
     { id: "pe37", cat: "peru", lvl: 2, de: "Ich möchte ein Lomo Saltado probieren.", en: "I'd like to try a lomo saltado.", es: "Quiero probar un lomo saltado.", tip: "Rindfleisch-Pfanne, peruanisch-chinesisch", tipEn: "stir-fried beef, Peruvian-Chinese fusion" },
     { id: "pe38", cat: "peru", lvl: 2, de: "Einen Pisco Sour, bitte.", en: "A pisco sour, please.", es: "Un pisco sour, por favor.", tip: "Nationalcocktail aus Traubenschnaps", tipEn: "the national cocktail made from grape brandy" },
     { id: "pe39", cat: "peru", lvl: 3, de: "Was ist Cuy?", en: "What is cuy?", es: "¿Qué es el cuy?", tip: "cuy = Meerschweinchen, Anden-Spezialität", tipEn: "cuy = guinea pig, an Andean specialty" },
@@ -2531,7 +2531,7 @@
     // ===================== GUATEMALA (Destination-Pack, WeRoad „Antigua · Atitlán · Semuc · Tikal") =====================
     // Antigua · Lago de Atitlán · Chichicastenango · Lanquín/Semuc Champey · Flores/Tikal · Acatenango/Fuego
     { id: "gt01", cat: "guatemala", lvl: 1, de: "Wo finde ich ein Taxi zur Antigua?", en: "Where can I find a taxi to Antigua?", es: "¿Dónde encuentro un taxi para Antigua?", tip: "an-TI-gua = die Kolonialstadt", tipEn: "an-TI-gua = the colonial town" },
-    { id: "gt02", cat: "guatemala", lvl: 1, de: "Bringen Sie mich bitte nach Antigua.", en: "Take me to Antigua, please.", es: "Lléveme a Antigua, por favor.", tip: "LYE-we-me = bringen Sie mich", tipEn: "LYE-we-me = take me" },
+    { id: "gt02", cat: "guatemala", lvl: 1, de: "Bringen Sie mich bitte nach Antigua.", en: "Take me to Antigua, please.", es: "Lléveme a Antigua, por favor.", tip: "LYE-we-me = bringen Sie mich", tipEn: "YE-ve-me = take me" },
     { id: "gt03", cat: "guatemala", lvl: 2, de: "Wie viel kostet die Fahrt vom Flughafen?", en: "How much is the ride from the airport?", es: "¿Cuánto cuesta el viaje desde el aeropuerto?", tip: "Preis vorher vereinbaren", tipEn: "Agree the price beforehand" },
     { id: "gt04", cat: "guatemala", lvl: 1, de: "Guten Morgen! (auf Maya-Kʼicheʼ)", en: "Good morning! (in Maya Kʼicheʼ)", es: "¡Saqʼarik! Buenos días.", tip: "sa-kʼa-RIK = Guten Morgen (Kʼicheʼ)", tipEn: "sa-kʼa-RIK = good morning (Kʼicheʼ)" },
     { id: "gt05", cat: "guatemala", lvl: 1, de: "Wie geht's, Alter? (sehr guatemaltekisch)", en: "How's it going, mate? (very Guatemalan)", es: "¿Qué onda, vos?", tip: "„vos“ statt „tú“ ist hier normal; „¿qué onda?“ = was geht?", tipEn: "'vos' instead of 'tú' is normal here; '¿qué onda?' = what's up?" },
@@ -2547,12 +2547,12 @@
     { id: "gt15", cat: "guatemala", lvl: 2, de: "Wo legt die Lancha nach San Juan an?", en: "Where does the boat to San Juan dock?", es: "¿Dónde atraca la lancha para San Juan?", tip: "San Juan = Webereien und Murals", tipEn: "San Juan = weaving co-ops and murals" },
     { id: "gt16", cat: "guatemala", lvl: 2, de: "Ich hätte gern ein Pepián.", en: "I'd like a pepián.", es: "Quisiera un pepián, por favor.", tip: "pe-pi-ÁN = würziger Eintopf", tipEn: "pe-pi-ÁN = spicy national stew" },
     { id: "gt17", cat: "guatemala", lvl: 1, de: "Gibt es Tamales heute?", en: "Are there tamales today?", es: "¿Hay tamales hoy?", tip: "ta-MA-les = in Blättern gedämpft", tipEn: "ta-MA-les = steamed in leaves" },
-    { id: "gt18", cat: "guatemala", lvl: 1, de: "Zwei Tostadas mit Bohnen, bitte.", en: "Two tostadas with beans, please.", es: "Dos tostadas con frijoles, por favor.", tip: "fri-JO-les = (schwarze) Bohnen", tipEn: "fri-JO-les = (black) beans" },
+    { id: "gt18", cat: "guatemala", lvl: 1, de: "Zwei Tostadas mit Bohnen, bitte.", en: "Two tostadas with beans, please.", es: "Dos tostadas con frijoles, por favor.", tip: "fri-JO-les = (schwarze) Bohnen", tipEn: "fri-HO-les = (black) beans" },
     { id: "gt19", cat: "guatemala", lvl: 2, de: "Was ist Güisquil eigentlich?", en: "What exactly is güisquil?", es: "¿Qué es el güisquil?", tip: "güisquil = Chayote-Kürbis", tipEn: "güisquil = chayote squash" },
     { id: "gt20", cat: "guatemala", lvl: 1, de: "Einen Kaffee aus der Region, bitte.", en: "A local coffee, please.", es: "Un café de la región, por favor.", tip: "Guatemala ist Top-Kaffeeland", tipEn: "Guatemala is a top coffee country" },
     { id: "gt21", cat: "guatemala", lvl: 2, de: "Schmeckt mega! Bringen Sie noch Tortillas?", en: "Delicious! Could you bring more tortillas?", es: "¡Qué rico! ¿Me trae más tortillas?", tip: "Maistortillas gehören zu allem", tipEn: "Corn tortillas come with everything" },
     { id: "gt22", cat: "guatemala", lvl: 1, de: "Wann ist der Markt in Chichicastenango?", en: "When is the market in Chichicastenango?", es: "¿Qué día es el mercado en Chichicastenango?", tip: "Donnerstag und Sonntag", tipEn: "Thursdays and Sundays" },
-    { id: "gt23", cat: "guatemala", lvl: 2, de: "Sind diese Textilien handgewebt?", en: "Are these textiles handwoven?", es: "¿Estos tejidos son hechos a mano?", tip: "te-JI-dos = Webstoffe/Textilien", tipEn: "te-JI-dos = woven textiles" },
+    { id: "gt23", cat: "guatemala", lvl: 2, de: "Sind diese Textilien handgewebt?", en: "Are these textiles handwoven?", es: "¿Estos tejidos son hechos a mano?", tip: "te-JI-dos = Webstoffe/Textilien", tipEn: "te-HI-dos = woven textiles" },
     { id: "gt24", cat: "guatemala", lvl: 2, de: "Was bedeutet das Muster auf diesem Huipil?", en: "What does the pattern on this huipil mean?", es: "¿Qué significa el diseño de este huipil?", tip: "huipil = besticktes Maya-Oberteil", tipEn: "huipil = embroidered Maya blouse" },
     { id: "gt25", cat: "guatemala", lvl: 1, de: "Darf ich ein Foto vom Stand machen?", en: "May I take a photo of your stall?", es: "¿Puedo tomar una foto del puesto?", tip: "Erst fragen, dann fotografieren", tipEn: "Always ask before photographing" },
     { id: "gt26", cat: "guatemala", lvl: 2, de: "Wie weit ist es zu den Ruinen von Tikal?", en: "How far is it to the Tikal ruins?", es: "¿Qué tan lejos están las ruinas de Tikal?", tip: "ti-KAL = Maya-Stadt im Petén", tipEn: "ti-KAL = Maya city in the Petén" },
@@ -2617,7 +2617,7 @@
     // ===================== CHILE (Destination-Pack, WeRoad „dalle Ande a Valparaíso" + „Patagonia 360°") =====================
     // Santiago · Valparaíso · Atacama (Valle de la Luna, El Tatio, Lagunen) · Patagonien/Torres del Paine · Chiloé
     { id: "cl01", cat: "chile", lvl: 1, de: "Wo finde ich ein Taxi nach Santiago-Zentrum?", en: "Where can I find a taxi to the centre of Santiago?", es: "¿Dónde encuentro un taxi al centro de Santiago?", tip: "Offizielle Taxis am Flughafen SCL nehmen", tipEn: "Use official taxis at SCL airport" },
-    { id: "cl02", cat: "chile", lvl: 1, de: "Bringen Sie mich bitte zu meinem Hostel.", en: "Take me to my hostel, please.", es: "Lléveme a mi hostal, por favor.", tip: "LYE-we-me = bringen Sie mich", tipEn: "LYE-we-me = take me" },
+    { id: "cl02", cat: "chile", lvl: 1, de: "Bringen Sie mich bitte zu meinem Hostel.", en: "Take me to my hostel, please.", es: "Lléveme a mi hostal, por favor.", tip: "LYE-we-me = bringen Sie mich", tipEn: "YE-ve-me = take me" },
     { id: "cl03", cat: "chile", lvl: 2, de: "Wie viel kostet die Fahrt vom Flughafen?", en: "How much is the ride from the airport?", es: "¿Cuánto cuesta el viaje desde el aeropuerto?", tip: "Vorher Festpreis vereinbaren oder App nutzen", tipEn: "Agree a fixed price first or use an app" },
     { id: "cl04", cat: "chile", lvl: 1, de: "Hallo! Wie geht's? (sehr chilenisch)", en: "Hi! How's it going? (very Chilean)", es: "¡Hola! ¿Cómo estái?", tip: "„estái“ statt „estás“ – typisch chilenisch", tipEn: "'estái' instead of 'estás' – typically Chilean" },
     { id: "cl05", cat: "chile", lvl: 2, de: "Alles klar bei dir? Kapierst du? (Slang)", en: "All good with you? Get it? (slang)", es: "¿Todo bien? ¿Cachái?", tip: "ka-CHAI = „kapierst du / weißt du?“ – das Chile-Wort schlechthin", tipEn: "ka-CHAI = 'get it? / you know?' – the iconic Chilean filler" },
@@ -2707,7 +2707,7 @@
     { id: "cq04", cat: "coqueteo", lvl: 1, de: "Du hast ein sehr schönes Lächeln.", en: "You have a really lovely smile.", es: "Tienes una sonrisa muy linda.", tip: "TYE-nes una son-RI-sa muy LIN-da", tipEn: "TYE-nes una son-RI-sa muy LIN-da" },
     { id: "cq05", cat: "coqueteo", lvl: 2, de: "Hättest du Lust, etwas trinken zu gehen?", en: "Would you like to go out for a drink?", es: "¿Te gustaría salir a tomar algo?", tip: "te gus-ta-RI-a sa-LIR a to-MAR AL-go", tipEn: "te gus-ta-RI-a sa-LIR a to-MAR AL-go" },
     { id: "cq06", cat: "coqueteo", lvl: 2, de: "Ist es okay, wenn ich dich küsse?", en: "Is it okay if I kiss you?", es: "¿Está bien si te doy un beso?", tip: "es-TA byen si te doy un BE-so", tipEn: "es-TA byen si te doy un BE-so" },
-    { id: "cq07", cat: "coqueteo", lvl: 1, de: "Gibst du mir dein WhatsApp?", en: "Can I have your WhatsApp?", es: "¿Me das tu WhatsApp?", tip: "me das tu uats-AP", tipEn: "me das tu uats-AP" },
+    { id: "cq07", cat: "coqueteo", lvl: 1, de: "Gibst du mir dein WhatsApp?", en: "Can I have your WhatsApp?", es: "¿Me das tu WhatsApp?", tip: "me das tu uats-AP", tipEn: "me das tu wats-AP" },
     { id: "cq08", cat: "coqueteo", lvl: 2, de: "Ganz unverbindlich.", en: "No pressure / no strings.", es: "Sin compromiso.", tip: "sin kom-pro-MI-so", tipEn: "sin kom-pro-MI-so" },
     { id: "cq09", cat: "coqueteo", lvl: 1, de: "Ich bin vergeben.", en: "I'm with someone.", es: "Estoy con alguien.", tip: "es-TOY kon AL-gyen", tipEn: "es-TOY kon AL-gyen" },
     { id: "cq10", cat: "coqueteo", lvl: 1, de: "Nein danke, ich habe kein Interesse.", en: "No thanks, I'm not interested.", es: "No, gracias, no me interesa.", tip: "no GRA-syas, no me in-te-RE-sa", tipEn: "no GRA-syas, no me in-te-RE-sa" },
@@ -4026,7 +4026,7 @@
       note: "Auch «el cabello». Beim Friseur: «un corte de pelo» = ein Haarschnitt.", noteEn: "Also «el cabello». At the hairdresser's: «un corte de pelo» = a haircut." },
     { id: "bp_cabeza",   es: "la cabeza",    de: "Kopf", en: "Head",         x: 37,   y: 6,    tip: "la ka-BE-sa",
       note: "Kopfschmerzen? Sag «Me duele la cabeza».", noteEn: "Headache? Say «Me duele la cabeza»." },
-    { id: "bp_ojo",      es: "el ojo",       de: "Auge", en: "Eye",         x: 58,   y: 8.6,  tip: "el O-cho (j wie ch in Bach)", tipEn: "el O-cho (j like ch in loch)",
+    { id: "bp_ojo",      es: "el ojo",       de: "Auge", en: "Eye",         x: 58,   y: 8.6,  tip: "el O-cho (j wie ch in Bach)", tipEn: "el O-ho (a rough 'h', like Scottish 'loch')",
       note: "Mehrzahl «los ojos». «Me duelen los ojos» = meine Augen tun weh.", noteEn: "Plural «los ojos». «Me duelen los ojos» = my eyes hurt." },
     { id: "bp_oreja",    es: "la oreja",     de: "Ohr", en: "Ear",          x: 67,   y: 10.5, tip: "la o-RE-cha",
       note: "Das Außenohr. Beim Arzt für Ohrenschmerzen: «Me duele el oído» (Innenohr).", noteEn: "The outer ear. At the doctor's for earache: «Me duele el oído» (inner ear)." },
