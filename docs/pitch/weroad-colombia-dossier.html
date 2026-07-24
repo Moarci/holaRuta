@@ -599,7 +599,7 @@
           <div class="dz-overview-score">
             <span>Einstiegskosten</span>
             <strong>0</strong>
-            <small>USD für den Piloten</small>
+            <small>€ für den Piloten</small>
           </div>
         </div>
         <div class="dz-stat-strip">
@@ -1032,19 +1032,19 @@
             <span class="wr-price-badge">Hier starten</span>
             <svg class="wr-ico"><use href="#i-sprout"></use></svg>
             <h3>Pilot</h3>
-            <div class="wr-amount">0&nbsp;USD</div>
+            <div class="wr-amount">0&nbsp;€</div>
             <p>1 Kolumbien-Gruppe, 4–6 Wochen, Feedback statt Kaufentscheidung</p>
           </div>
           <div class="wr-price-card">
             <svg class="wr-ico"><use href="#i-package"></use></svg>
             <h3>Colombia Edition<br><small style="font-weight:600;color:var(--muted)">Destination Pack, einmalig</small></h3>
-            <div class="wr-amount">590–990&nbsp;USD</div>
+            <div class="wr-amount">590–990&nbsp;€</div>
             <p>Kolumbien-Paket (89 Karten), Coordinator-Material und Co-Branding-Setup</p>
           </div>
           <div class="wr-price-card">
             <svg class="wr-ico"><use href="#i-handshake"></use></svg>
             <h3>Jahres-Partnerlizenz<br><small style="font-weight:600;color:var(--muted)">laufend</small></h3>
-            <div class="wr-amount">1.800–4.800&nbsp;USD/Jahr</div>
+            <div class="wr-amount">1.800–4.800&nbsp;€/Jahr</div>
             <p>Beliebig viele Kolumbien-Abfahrten, inklusive Updates und Support</p>
           </div>
         </div>
@@ -1074,8 +1074,8 @@
                 <p>Reisende pro Jahr auf der Kolumbien-Route insgesamt.</p>
               </div>
               <div>
-                <span class="dz-result-num" id="calcPerTraveler">27&nbsp;USD</span>
-                <p>ungefähre Jahres-Partnerlizenz je Reisendem (Richtwert-Mittelwert 3.300&nbsp;USD/Jahr).</p>
+                <span class="dz-result-num" id="calcPerTraveler">27&nbsp;€</span>
+                <p>ungefähre Jahres-Partnerlizenz je Reisendem (Richtwert-Mittelwert 3.300&nbsp;€/Jahr).</p>
               </div>
             </div>
           </div>
@@ -1327,7 +1327,7 @@
     qs("#calcSizeOut").textContent = size;
     qs("#calcTravelers").textContent = travelers;
     var perTraveler = travelers > 0 ? (LICENSE_MID / travelers) : 0;
-    qs("#calcPerTraveler").textContent = perTraveler.toLocaleString("de-DE", { maximumFractionDigits: perTraveler < 10 ? 1 : 0 }) + " USD";
+    qs("#calcPerTraveler").textContent = perTraveler.toLocaleString("de-DE", { maximumFractionDigits: perTraveler < 10 ? 1 : 0 }) + " €";
   }
   [calcGroups, calcSize].forEach(function (el) { el.addEventListener("input", updateCalc); });
   updateCalc();
