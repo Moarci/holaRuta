@@ -112,7 +112,7 @@
       explanationDe: "„necesito“ = ich brauche (yo-Form)." },
     { id: "pt_cj_002", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",
       promptDe: "Du fragst einen anderen Reisenden: Reist du allein? Was passt?",
-      options: ["¿Viajo solo?", "¿Viajas solo?", "¿Viajan solo?", "¿Viajamos solos?"],
+      options: ["¿Viajo solo?", "¿Viajas solo?", "¿Viajan solos?", "¿Viajamos solos?"],
       correctIndex: 1, expectedTimeSec: 11,
       explanationDe: "„viajas“ = du reist (tú-Form). Bei Frauen: ¿Viajas sola?" },
     { id: "pt_cj_003", block: "conjugation", skill: "conjugation", level: "A1", type: "mc",

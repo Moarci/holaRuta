@@ -358,7 +358,7 @@
       level: "B2",
       es: [
         "Durante la Guerra Fría, Centroamérica se convirtió en un *campo* de batalla. En Guatemala, un golpe apoyado por la CIA *derrocó* en 1954 a un gobierno elegido. Después vino una guerra civil de 36 años, en la que el ejército *destruyó* pueblos mayas enteros: un genocidio con unos 200.000 muertos.",
-        "En El Salvador, la guerrilla de izquierda luchó contra el ejército. En 1980, el arzobispo Óscar Romero, que defendía a los *pobres*, fue *asesinado* mientras daba misa. En Nicaragua, los sandinistas *derribaron* en 1979 al dictador Somoza, y entonces Estados Unidos pagó a los rebeldes „contras“ para luchar contra el nuevo gobierno.",
+        "En El Salvador, la guerrilla de izquierda luchó contra el ejército. En 1980, el arzobispo Óscar Romero, que defendía a los *pobres*, fue *asesinado* mientras decía misa. En Nicaragua, los sandinistas *derribaron* en 1979 al dictador Somoza, y entonces Estados Unidos pagó a los rebeldes „contras“ para luchar contra el nuevo gobierno.",
         "Murieron cientos de miles de personas y millones *huyeron*. Desde 1987, un plan de *paz* del presidente costarricense Óscar Arias abrió el camino, y hacia 1996 callaron las armas. Costa Rica fue la gran excepción: había *eliminado* su ejército ya en 1948.",
       ],
       vocab: [
@@ -489,7 +489,7 @@
       level: "B2",
       es: [
         "Como arzobispo de San Salvador, Óscar Romero *denunció* con valentía la violencia del ejército contra la gente más pobre. Cada domingo, miles de personas escuchaban sus *sermones* por la radio.",
-        "Un día después de *pedir* a los soldados que dejaran de matar, fue *asesinado* mientras daba misa, en 1980. Su muerte fue la *chispa* que encendió la guerra civil. En 2018, la Iglesia lo declaró *santo*.",
+        "Un día después de *pedir* a los soldados que dejaran de matar, fue *asesinado* mientras decía misa, en 1980. Su muerte fue la *chispa* que encendió la guerra civil. En 2018, la Iglesia lo declaró *santo*.",
       ],
       vocab: [
         { es: "denunció", de: "prangerte an (denunciar)", en: "denounced (denunciar)", take: true },

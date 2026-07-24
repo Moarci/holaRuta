@@ -415,7 +415,7 @@
       ],
       es: [
         "El tango es, sobre todo, *caminar*: pasos lentos y *firmes* en pareja, pecho con pecho. La conexión sale del *torso*, no de los brazos.",
-        "De la caminata nace „la *cruz“*, cuando se cruzan los pies. Todo es lento y *preciso*, con *pausas* que también son baile.",
+        "De la caminata nace „la *cruz*“, cuando se cruzan los pies. Todo es lento y *preciso*, con *pausas* que también son baile.",
         "Mantén el cuerpo *derecho*, las rodillas cerca y los pies bajos. El tango no salta: se desliza con elegancia y tensión.",
       ],
       vocab: [

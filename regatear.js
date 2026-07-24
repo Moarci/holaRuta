@@ -332,7 +332,7 @@
       dialogue: [
         { speaker: "A", de: "Hallo, Freund! Hast du Flip-Flops?", en: "Hi, mate! Have you got flip-flops?", es: "¡Hola, amigo! ¿Tienes chancletas?" },
         { speaker: "B", de: "Klar! Diese hier sind sehr gut, achtzig das Paar.", en: "Sure! These are really good, eighty a pair.", es: "¡Claro! Estas son muy buenas, ochenta el par." },
-        { speaker: "A", de: "Oh, das ist ein bisschen teuer. Geht es günstiger?", en: "Ooh, that's a bit pricey. Couldn't you make it cheaper?", es: "Uy, está un poco caro. ¿No me lo deja más barato?" },
+        { speaker: "A", de: "Oh, das ist ein bisschen teuer. Geht es günstiger?", en: "Ooh, that's a bit pricey. Couldn't you make it cheaper?", es: "Uy, está un poco caro. ¿No me lo dejas más barato?" },
         { speaker: "B", de: "Es ist gute Qualität, mein Freund. Sechzig?", en: "It's good quality, my friend. Sixty?", es: "Es buena calidad, amigo. ¿Sesenta?" },
         { speaker: "A", de: "Was ist der tiefste Preis, wenn ich bar zahle?", en: "What's the lowest price if I pay cash?", es: "¿Cuánto es lo menos, si pago en efectivo?" },
         { speaker: "B", de: "Wie viel willst du denn geben?", en: "So how much do you want to give?", es: "¿Cuánto quieres dar?" },
@@ -343,7 +343,7 @@
         { speaker: "A", de: "Abgemacht, ich nehme sie. Vielen Dank!", en: "Done, I'll take them. Thank you very much!", es: "Trato hecho, me las llevo. ¡Muchas gracias!" },
         { speaker: "B", de: "Danke dir, viel Spaß damit!", en: "Thank you, enjoy them!", es: "Gracias a ti, ¡que las disfrutes!" },
       ],
-      usefulPhrases: ["¿Tienes chancletas?", "Está un poco caro.", "¿No me lo deja más barato?", "¿Cuánto es lo menos?", "Es lo que tengo.", "Lo voy a pensar, gracias.", "En cuarenta y cinco nos arreglamos."],
+      usefulPhrases: ["¿Tienes chancletas?", "Está un poco caro.", "¿No me lo dejas más barato?", "¿Cuánto es lo menos?", "Es lo que tengo.", "Lo voy a pensar, gracias.", "En cuarenta y cinco nos arreglamos."],
     },
     {
       id: "rg03",

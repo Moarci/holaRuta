@@ -223,7 +223,7 @@
       ],
       es: [
         "Observa a los *animales* de lejos: no los *toques* ni los *alimentes*. Quédate en el *sendero*.",
-        "Antes de una *foto* a una persona, pide *permiso* con „¿Puedo tomar una foto?“.",
+        "Antes de tomarle una *foto* a una persona, pide *permiso* con „¿Puedo tomar una foto?“.",
       ],
       vocab: [
         { es: "animales", de: "die Tiere (animal)", en: "animals (animal)", take: true },
