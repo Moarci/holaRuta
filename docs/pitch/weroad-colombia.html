@@ -42,11 +42,20 @@
     --brand: #FB5A47;
     --brand-ink: #D33A2C;
     --ok: #3F7355;
+    --no: #B5302A;
+    --easy: #2F6B70;
+    --ink-soft: #6E5A4C;
+    --faint: #7C6453;
+    --line-strong: rgba(45, 27, 18, 0.22);
     --r: 20px;
     --r-sm: 12px;
+    --r-md: 16px;
+    --r-lg: 26px;
     --font: "Instrument Sans", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     --font-display: "Bricolage Grotesque", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
     --shadow-card: 0 2px 0 rgba(45, 27, 18, 0.08), 0 18px 40px -26px rgba(45, 27, 18, 0.5);
+    --shadow: 0 2px 0 rgba(45, 27, 18, 0.10);
+    --shadow-lg: 0 12px 0 -6px rgba(45, 27, 18, 0.14);
     --maxw: 1080px;
     --gutter: clamp(20px, 5vw, 56px);
     --rainbow: linear-gradient(90deg,
@@ -65,7 +74,14 @@
       --brand: #FF8266;
       --brand-ink: #FFA48C;
       --ok: #6FA083;
+      --no: #D9776D;
+      --easy: #5CA6AC;
+      --ink-soft: #D9C7B4;
+      --faint: #A8917D;
+      --line-strong: rgba(251, 243, 228, 0.22);
       --shadow-card: 0 2px 0 rgba(0, 0, 0, 0.3), 0 18px 40px -26px rgba(0, 0, 0, 0.7);
+      --shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 12px 0 -6px rgba(0, 0, 0, 0.4);
     }
   }
 
@@ -236,6 +252,87 @@
   .wr-mc-q { font-size: 0.92rem; color: var(--muted); margin: 0 0 6px; }
   .wr-mc-a { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: var(--ink); margin: 0 0 8px; line-height: 1.25; }
   .wr-mc-tip { font-size: 0.84rem; color: var(--brand-ink); font-style: italic; margin: 0; }
+
+  /* ---------- Beispielkarte: 1:1-Nachbau der echten Lernkarte
+     (.flip/.face/.cardbtn/.lvl-badge/.ratebar aus styles.css, gleiche
+     Klassennamen wie in der App und auf landing-reiseanbieter.html) ---------- */
+  .wr-democard { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; }
+  .flip { perspective: 1400px; cursor: pointer; -webkit-user-select: none; user-select: none; max-width: 320px; margin: 0 auto; }
+  .flip__inner {
+    position: relative; width: 100%; min-height: 240px; transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .flip.is-flipped .flip__inner { transform: rotateY(180deg); }
+  @media (prefers-reduced-motion: reduce) { .flip__inner { transition: none; } }
+  .face {
+    position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+    border-radius: var(--r-lg); padding: 42px 24px 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; box-shadow: var(--shadow-lg);
+  }
+  .face--front { background: var(--card); border: 1.5px solid var(--line); }
+  .face--back { transform: rotateY(180deg); color: var(--cream); background: var(--from, var(--brand-ink)); }
+  .face__cat {
+    position: absolute; top: 14px; left: 18px; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint);
+  }
+  .face--back .face__cat { color: rgba(251, 243, 228, 0.72); }
+  .face__word { font-size: 1.4rem; font-weight: 700; line-height: 1.28; letter-spacing: -0.01em; }
+  .face--back .face__word { font-family: var(--font-display); font-weight: 800; font-size: 1.55rem; line-height: 1.18; }
+  .face__tip {
+    margin-top: 12px; font-size: 0.88rem; font-style: italic; color: rgba(251, 243, 228, 0.9);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .face__tip .wr-ico { color: inherit; font-size: 0.9rem; }
+  .face__hint { position: absolute; bottom: 14px; font-size: 0.74rem; color: var(--faint); }
+  .cardbtn {
+    position: absolute; bottom: 12px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    display: grid; place-items: center; padding: 0;
+    border: 1.5px solid var(--line-strong); background: var(--card); color: var(--ink); box-shadow: var(--shadow);
+  }
+  .cardbtn .wr-ico { color: inherit; font-size: 1rem; }
+  .cardbtn--speak { right: 12px; }
+  .cardbtn--ctx { left: 12px; }
+  .cardbtn.is-on, .face--back .cardbtn {
+    border-color: rgba(251, 243, 228, 0.55); color: var(--cream); background: rgba(36, 21, 16, 0.22);
+  }
+  .cardbtn--ctx.is-open { background: var(--cream); border-color: var(--cream); color: var(--brand-ink); }
+
+  .lvl-badge {
+    position: absolute; top: 14px; right: 16px; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.04em;
+    padding: 4px 10px; border-radius: 999px; line-height: 1.2; color: var(--muted);
+    border: 1.5px solid currentColor; background: transparent;
+  }
+  .lvl-badge--on { color: var(--cream); border-color: rgba(251, 243, 228, 0.55); background: rgba(251, 243, 228, 0.18); }
+
+  .context-panel {
+    margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: 14px 16px; font-size: 0.86rem;
+  }
+  .context-panel__title { margin: 0 0 8px; font-size: 0.82rem; font-family: var(--font-display); font-weight: 800; }
+  .context-panel__label {
+    font-size: 0.66rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--brand-ink); margin: 8px 0 2px;
+  }
+  .context-panel__label:first-of-type { margin-top: 0; }
+  .context-panel__text { margin: 0; color: var(--ink); line-height: 1.5; }
+
+  .controls { margin-top: 16px; }
+  .rateprompt { text-align: center; margin-bottom: 10px; }
+  .rateprompt__es { display: block; font-family: var(--font-display); font-weight: 700; font-style: italic; font-size: 0.98rem; color: var(--ink-soft); }
+  .rateprompt__de { display: block; font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-top: 2px; }
+  .ratebar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .feel {
+    display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; padding: 11px 6px 9px;
+    background: var(--card); color: var(--ink); border: 1.5px solid var(--line); border-bottom-width: 4px;
+    border-radius: var(--r-md); box-shadow: var(--shadow);
+  }
+  .feel__emoji svg { width: 22px; height: 22px; }
+  .feel__txt { font-weight: 700; font-size: 0.82rem; }
+  .feel--again { border-bottom-color: var(--no); color: var(--no); }
+  .feel--good { border-bottom-color: var(--ok); color: var(--ok); }
+  .feel--easy { border-bottom-color: var(--easy); color: var(--easy); }
+  .feel.is-chosen { background: color-mix(in srgb, currentColor 14%, var(--card)); }
 
   .wr-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
   .wr-flow-step {
@@ -411,6 +508,12 @@
   <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
   <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></symbol>
+  <symbol id="i-audiolines" viewBox="0 0 24 24"><path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/></symbol>
+  <symbol id="i-meh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="8" x2="16" y1="15" y2="15"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></symbol>
+  <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></symbol>
+  <symbol id="i-laugh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M18 13a6 6 0 0 1-6 5 6 6 0 0 1-6-5h12Z"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></symbol>
 </svg>
 
 <div class="wr-topstripe"></div>
@@ -549,12 +652,49 @@
       <p class="wr-sublead">Drei echte Ausschnitte aus dem Kolumbien-Paket: eine Karte, ein Pre-Trip-Tag,
         eine Battle-Runde. Nicht nachgestellt, sondern 1:1 aus <code>data.js</code>.</p>
       <div class="wr-examples">
-        <div class="wr-mockcard">
+        <div class="wr-democard">
           <div class="wr-mc-label"><span class="wr-mc-tag">Beispielkarte</span>
-            <span class="wr-mc-meta">co13 · Kolumbien-Paket · Level 2</span></div>
-          <p class="wr-mc-q">Frage (Deutsch): Wann fährt das Boot zu den Islas del Rosario?</p>
-          <p class="wr-mc-a">„¿A qué hora sale la lancha a las Islas del Rosario?"</p>
-          <p class="wr-mc-tip">Aussprache-Tipp: LAN-cha = (Motor-)Boot</p>
+            <span class="wr-mc-meta">co13 · Kolumbien-Paket · Level 2 · dieselbe Karte wie in der App</span></div>
+          <div class="flip" role="button" tabindex="0" aria-pressed="false" aria-label="Beispielkarte umdrehen">
+            <div class="flip__inner">
+              <div class="face face--front">
+                <span class="face__cat">CARTAGENA</span>
+                <span class="lvl-badge">A2 · Mittel</span>
+                <div class="face__word" lang="de">Wann fährt das Boot zu den Islas del Rosario?</div>
+                <span class="face__hint">Zum Umdrehen tippen</span>
+              </div>
+              <div class="face face--back" style="--from:#2F6B70">
+                <span class="face__cat">CARTAGENA</span>
+                <span class="lvl-badge lvl-badge--on">A2 · Mittel</span>
+                <button class="cardbtn cardbtn--ctx" type="button" aria-label="Reise-Kontext anzeigen" aria-expanded="false">
+                  <svg class="wr-ico"><use href="#i-info"></use></svg></button>
+                <button class="cardbtn cardbtn--speak" type="button" data-spk="¿A qué hora sale la lancha a las Islas del Rosario?" aria-label="Antwort vorlesen">
+                  <svg class="wr-ico"><use href="#i-volume"></use></svg></button>
+                <div class="face__word" lang="es">¿A qué hora sale la lancha a las Islas del Rosario?</div>
+                <div class="face__tip"><svg class="wr-ico"><use href="#i-audiolines"></use></svg> LAN-cha = (Motor-)Boot</div>
+              </div>
+            </div>
+          </div>
+          <div class="context-panel" hidden>
+            <h4 class="context-panel__title">So nutzt du es unterwegs</h4>
+            <div class="context-panel__label">Situation</div>
+            <p class="context-panel__text">Am Hafen Muelle de la Bodeguita beim Buchen einer Inseltour.</p>
+            <div class="context-panel__label">Reisetipp</div>
+            <p class="context-panel__text">lancha = Motorboot; nach der Rückfahrt fragen: „¿A qué hora regresa?"</p>
+          </div>
+          <div class="controls">
+            <div class="rateprompt"><span class="rateprompt__es">¿Cómo fue?</span><span class="rateprompt__de">Wie war's?</span></div>
+            <div class="ratebar" role="group" aria-label="Selbsteinschätzung">
+              <button class="feel feel--again" type="button" data-rating="again">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-meh"></use></svg></span><span class="feel__txt">Otra vez</span></button>
+              <button class="feel feel--good" type="button" data-rating="good">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-smile"></use></svg></span><span class="feel__txt">Vale</span></button>
+              <button class="feel feel--easy" type="button" data-rating="easy">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-laugh"></use></svg></span><span class="feel__txt">¡Fácil!</span></button>
+            </div>
+          </div>
+          <p class="wr-mc-tip" style="margin-top:12px;text-align:center">Umdrehen, vorlesen lassen, bewerten:
+            genau dieselben Bausteine wie im echten Lernmodus.</p>
         </div>
         <div class="wr-mockcard">
           <div class="wr-mc-label"><span class="wr-mc-tag">Pre-Trip-Tag</span>
@@ -970,12 +1110,49 @@
       <p class="wr-sublead">Three real excerpts from the Colombia pack: a card, a pre-trip day, a battle
         round. Not staged, pulled straight from <code>data.js</code>.</p>
       <div class="wr-examples">
-        <div class="wr-mockcard">
+        <div class="wr-democard">
           <div class="wr-mc-label"><span class="wr-mc-tag">Example card</span>
-            <span class="wr-mc-meta">co13 · Colombia pack · Level 2</span></div>
-          <p class="wr-mc-q">Prompt (English): When does the boat to the Islas del Rosario leave?</p>
-          <p class="wr-mc-a">"¿A qué hora sale la lancha a las Islas del Rosario?"</p>
-          <p class="wr-mc-tip">Pronunciation tip: LAN-cha = (motor) boat</p>
+            <span class="wr-mc-meta">co13 · Colombia pack · Level 2 · the exact same card as in the app</span></div>
+          <div class="flip" role="button" tabindex="0" aria-pressed="false" aria-label="Flip example card">
+            <div class="flip__inner">
+              <div class="face face--front">
+                <span class="face__cat">CARTAGENA</span>
+                <span class="lvl-badge">A2 · Intermediate</span>
+                <div class="face__word" lang="en">When does the boat to the Islas del Rosario leave?</div>
+                <span class="face__hint">Tap to flip</span>
+              </div>
+              <div class="face face--back" style="--from:#2F6B70">
+                <span class="face__cat">CARTAGENA</span>
+                <span class="lvl-badge lvl-badge--on">A2 · Intermediate</span>
+                <button class="cardbtn cardbtn--ctx" type="button" aria-label="Show travel context" aria-expanded="false">
+                  <svg class="wr-ico"><use href="#i-info"></use></svg></button>
+                <button class="cardbtn cardbtn--speak" type="button" data-spk="¿A qué hora sale la lancha a las Islas del Rosario?" aria-label="Read answer aloud">
+                  <svg class="wr-ico"><use href="#i-volume"></use></svg></button>
+                <div class="face__word" lang="es">¿A qué hora sale la lancha a las Islas del Rosario?</div>
+                <div class="face__tip"><svg class="wr-ico"><use href="#i-audiolines"></use></svg> LAN-cha = (motor) boat</div>
+              </div>
+            </div>
+          </div>
+          <div class="context-panel" hidden>
+            <h4 class="context-panel__title">How you'd use this on the road</h4>
+            <div class="context-panel__label">Situation</div>
+            <p class="context-panel__text">At the Muelle de la Bodeguita pier, when booking an island tour.</p>
+            <div class="context-panel__label">Travel tip</div>
+            <p class="context-panel__text">lancha = motorboat; ask about the return trip: "¿A qué hora regresa?"</p>
+          </div>
+          <div class="controls">
+            <div class="rateprompt"><span class="rateprompt__es">¿Cómo fue?</span><span class="rateprompt__de">How was it?</span></div>
+            <div class="ratebar" role="group" aria-label="Self-rating">
+              <button class="feel feel--again" type="button" data-rating="again">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-meh"></use></svg></span><span class="feel__txt">Otra vez</span></button>
+              <button class="feel feel--good" type="button" data-rating="good">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-smile"></use></svg></span><span class="feel__txt">Vale</span></button>
+              <button class="feel feel--easy" type="button" data-rating="easy">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-laugh"></use></svg></span><span class="feel__txt">¡Fácil!</span></button>
+            </div>
+          </div>
+          <p class="wr-mc-tip" style="margin-top:12px;text-align:center">Flip it, hear it read aloud, rate it:
+            the exact same building blocks as in the real study mode.</p>
         </div>
         <div class="wr-mockcard">
           <div class="wr-mc-label"><span class="wr-mc-tag">Pre-trip day</span>
@@ -1393,12 +1570,49 @@
       <p class="wr-sublead">Tres fragmentos reales del paquete de Colombia: una tarjeta, un día pre-viaje,
         una ronda de battle. No son un montaje, salen tal cual de <code>data.js</code>.</p>
       <div class="wr-examples">
-        <div class="wr-mockcard">
+        <div class="wr-democard">
           <div class="wr-mc-label"><span class="wr-mc-tag">Tarjeta de ejemplo</span>
-            <span class="wr-mc-meta">co13 · paquete Colombia · nivel 2</span></div>
-          <p class="wr-mc-q">Pregunta mostrada: ¿A qué hora sale el bote a las Islas del Rosario?</p>
-          <p class="wr-mc-a">«¿A qué hora sale la lancha a las Islas del Rosario?»</p>
-          <p class="wr-mc-tip">Ayuda de pronunciación: LAN-cha</p>
+            <span class="wr-mc-meta">co13 · paquete Colombia · nivel 2 · la misma tarjeta que en la app (interfaz en inglés)</span></div>
+          <div class="flip" role="button" tabindex="0" aria-pressed="false" aria-label="Girar la tarjeta de ejemplo">
+            <div class="flip__inner">
+              <div class="face face--front">
+                <span class="face__cat">CARTAGENA</span>
+                <span class="lvl-badge">A2 · Intermedio</span>
+                <div class="face__word" lang="en">When does the boat to the Islas del Rosario leave?</div>
+                <span class="face__hint">Toca para girar</span>
+              </div>
+              <div class="face face--back" style="--from:#2F6B70">
+                <span class="face__cat">CARTAGENA</span>
+                <span class="lvl-badge lvl-badge--on">A2 · Intermedio</span>
+                <button class="cardbtn cardbtn--ctx" type="button" aria-label="Mostrar contexto de viaje" aria-expanded="false">
+                  <svg class="wr-ico"><use href="#i-info"></use></svg></button>
+                <button class="cardbtn cardbtn--speak" type="button" data-spk="¿A qué hora sale la lancha a las Islas del Rosario?" aria-label="Escuchar la respuesta">
+                  <svg class="wr-ico"><use href="#i-volume"></use></svg></button>
+                <div class="face__word" lang="es">¿A qué hora sale la lancha a las Islas del Rosario?</div>
+                <div class="face__tip"><svg class="wr-ico"><use href="#i-audiolines"></use></svg> LAN-cha = bote a motor</div>
+              </div>
+            </div>
+          </div>
+          <div class="context-panel" hidden>
+            <h4 class="context-panel__title">Así lo usarías en la ruta</h4>
+            <div class="context-panel__label">Situación</div>
+            <p class="context-panel__text">En el muelle Muelle de la Bodeguita, al reservar un tour a las islas.</p>
+            <div class="context-panel__label">Consejo de viaje</div>
+            <p class="context-panel__text">lancha = bote a motor; para preguntar por el regreso: «¿A qué hora regresa?»</p>
+          </div>
+          <div class="controls">
+            <div class="rateprompt"><span class="rateprompt__es">¿Cómo fue?</span><span class="rateprompt__de">How was it?</span></div>
+            <div class="ratebar" role="group" aria-label="Autoevaluación">
+              <button class="feel feel--again" type="button" data-rating="again">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-meh"></use></svg></span><span class="feel__txt">Otra vez</span></button>
+              <button class="feel feel--good" type="button" data-rating="good">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-smile"></use></svg></span><span class="feel__txt">Vale</span></button>
+              <button class="feel feel--easy" type="button" data-rating="easy">
+                <span class="feel__emoji"><svg class="wr-ico"><use href="#i-laugh"></use></svg></span><span class="feel__txt">¡Fácil!</span></button>
+            </div>
+          </div>
+          <p class="wr-mc-tip" style="margin-top:12px;text-align:center">Girar, escuchar la respuesta, evaluar:
+            exactamente los mismos elementos que en el modo de estudio real.</p>
         </div>
         <div class="wr-mockcard">
           <div class="wr-mc-label"><span class="wr-mc-tag">Día pre-viaje</span>
@@ -1741,6 +1955,57 @@
   } else {
     document.querySelectorAll(".wr-reveal").forEach(function (el) { el.classList.add("is-visible"); });
   }
+
+  // Beispielkarte: Flip + Vorlesen + Reise-Kontext + Selbsteinschätzung, exakt
+  // dieselbe Interaktion wie .flip/.cardbtn/.feel in der App (vereinfachter
+  // Ausschnitt aus landing-carousel.js für eine einzelne, nicht rotierende Karte).
+  document.querySelectorAll(".wr-democard .flip").forEach(function (f) {
+    var host = f.closest(".wr-democard");
+    var ctxBtn = f.querySelector(".cardbtn--ctx");
+    var panel = host ? host.querySelector(".context-panel") : null;
+    function closeCtx() {
+      if (panel) panel.setAttribute("hidden", "");
+      if (ctxBtn) { ctxBtn.classList.remove("is-open"); ctxBtn.setAttribute("aria-expanded", "false"); }
+    }
+    function flip() {
+      var on = f.classList.toggle("is-flipped");
+      f.setAttribute("aria-pressed", on ? "true" : "false");
+      if (!on) closeCtx();
+    }
+    f.addEventListener("click", function (e) {
+      if (e.target.closest(".cardbtn")) return;
+      flip();
+    });
+    f.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
+    });
+    if (ctxBtn && panel) ctxBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var willOpen = panel.hasAttribute("hidden");
+      if (willOpen) panel.removeAttribute("hidden"); else panel.setAttribute("hidden", "");
+      ctxBtn.classList.toggle("is-open", willOpen);
+      ctxBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    });
+    var spk = f.querySelector(".cardbtn--speak");
+    if (spk) spk.addEventListener("click", function (e) {
+      e.stopPropagation();
+      try {
+        if (!("speechSynthesis" in window)) return;
+        var u = new window.SpeechSynthesisUtterance(spk.getAttribute("data-spk") || "");
+        u.lang = "es-419"; u.rate = 0.95;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+      } catch (err) {}
+    });
+  });
+  document.querySelectorAll(".wr-democard .feel").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var bar = btn.closest(".ratebar");
+      if (bar) bar.querySelectorAll(".feel").forEach(function (b) { b.classList.remove("is-chosen"); });
+      btn.classList.add("is-chosen");
+    });
+  });
 })();
 </script>
 </body>
