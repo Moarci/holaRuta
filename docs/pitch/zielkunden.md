@@ -57,5 +57,5 @@
 > ausdrücklicher Freigabe** des Partners verwenden – bis dahin neutral co-branded (Akzentfarbe +
 > Textzusatz, ohne Logo). Vgl. README §Co-Branding-Editionen.
 
-> Realistischer Aufbaupfad (MARKT.md §9): Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ USD – als Richtung, keine Prognose.
+> Realistischer Aufbaupfad (MARKT.md §9): Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ € – als Richtung, keine Prognose.
 > Der erste Meilenstein ist nicht Umsatz, sondern **1 zahlende Schule · 1 Testimonial · 1 Edition · 1 klarer Pitch** – Edition &amp; Pitch liegen vor.
