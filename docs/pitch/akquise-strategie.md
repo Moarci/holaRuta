@@ -140,7 +140,7 @@ Parallel zu den Ketten gezielt die Flaggschiff-Hostels je Hub anschreiben (hoher
 1. Erst-Nachricht (DE/EN/ES) aus [anschreiben.md §1](anschreiben.md) an Schulleitung/„admisiones“/Direktion.
 2. **Beilegen:** Lehrer-Handout → [docs/anleitungen/lehrer.html](../anleitungen/lehrer.html) + Pitch-Seite.
 3. Angebot: **kostenloser 4-Wochen-Pilot mit 1–2 Gruppen**, mit fertigen Unterrichtsideen.
-4. Nach Pilot: Feedbackgespräch → einfache Jahreslizenz (School Starter 499 USD → School Plus/Edition 999–1.499 USD, siehe [MARKT.md §8](../../MARKT.md)).
+4. Nach Pilot: Feedbackgespräch → einfache Jahreslizenz (School Starter 499 € → School Plus/Edition 999–1.499 €, siehe [MARKT.md §8](../../MARKT.md)).
 
 **Einwände & Antworten:**
 - *„Wer hat die Inhalte geprüft?“* → (nach Sign-off) „Ein:e Muttersprachler:in/Lehrkraft hat das Kern-Set gegengelesen — hier das Siegel.“ (Ohne Sign-off **nicht** pitchen.)
@@ -218,7 +218,7 @@ Führe das in einer Tabelle/Sheet. Status-Stufen bewusst einfach:
 
 > Nicht ein Umsatzziel, sondern: **1 zahlende Schule/Partner · 1 gutes Testimonial · 1 School/Destination Edition · 1 klarer Pitch.** Edition und Pitch liegen vor — es fehlen **Pilot + Testimonial**. Genau darauf zielt dieses Playbook.
 
-Realistischer Aufbaupfad (aus [MARKT.md §9](../../MARKT.md), als Richtung, keine Prognose): Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ USD.
+Realistischer Aufbaupfad (aus [MARKT.md §9](../../MARKT.md), als Richtung, keine Prognose): Jahr 1 ~10k → Jahr 2 30–50k → Jahr 3 75k+ €.
 
 ---
 
