@@ -306,6 +306,12 @@ function buildDist() {
     "docs/anleitungen/hello-abroad.html",
     "docs/anleitungen/qr-hello-abroad.svg",
     "docs/pitch/weroad-colombia.html",
+    // Ausführliches Download-Dossier, von weroad-colombia.html verlinkt – sonst
+    // 404 in Produktion (fehlte beim ursprünglichen Hinzufügen der Datei).
+    "docs/pitch/weroad-colombia-dossier.html",
+    // QR-Code-Grafik, von weroad-colombia.html eingebunden – fehlte bislang hier,
+    // war also unabhängig vom Dossier bereits in Produktion ein 404-Bild.
+    "docs/sticker/hostel-qr-weroad.svg",
     // Shareable Pfade: en/ bleibt ein Editions-Redirect; hello-abroad/ ist die
     // eigenständige DE→EN-Marketing-Landing mit App-CTA.
     "en/index.html",
