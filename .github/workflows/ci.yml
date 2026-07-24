@@ -32,9 +32,13 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 # Pro Ref serialisieren, damit parallele Läufe auf demselben Ref sich nicht überholen.
+# Ausnahme: bei PRs überholte Läufe (neuer Push auf denselben Branch) abbrechen,
+# da deren Ergebnis ohnehin verworfen wird — spart Actions-Minuten bei iterativer
+# PR-Arbeit. Für push/main und den nächtlichen Cron bleibt es bei false, damit ein
+# bereits laufender Merge-Gate-/Voller-Score-Run nie mittendrin gekillt wird.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Test-Gate: kaputter Code darf nicht gemergt/deployt werden (und würde von
@@ -59,6 +63,16 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Cached: der flüchtige `npx eslint@9.39.0`-Download unten muss sonst bei
+      # jedem Lauf das komplette Paket (inkl. Transitive Deps) neu aus der
+      # Registry ziehen. npm prüft beim Install trotzdem weiter die Integrity-
+      # Hashes — Cache-Hit spart nur den Download, keine Sicherheitsprüfung.
+      - name: Cache npm-Downloads (ESLint)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-eslint-9.39.0
+
       # Lint-Gate: fängt undefined-Variablen & offensichtliche Bugs (no-undef
       # = error, no-unused-vars = warn). ESLint ist KEINE Repo-Dependency
       # (Projekt bleibt laufzeit-dependency-frei) → flüchtig & versionsgepinnt
@@ -70,7 +84,11 @@ jobs:
       # Coverage-Report (REPORTING, non-blocking): zeigt die Test-Abdeckung im
       # Log, ohne den Job zu blockieren (|| true). Nutzt nur Node-Bordmittel
       # (--experimental-test-coverage), keine Dependency, kein package.json-Eintrag.
+      # Führt die Suite komplett ein zweites Mal aus → bewusst NICHT bei jedem
+      # PR/Push (verdoppelt sonst die Testzeit für ein reines Log-Artefakt),
+      # sondern nur nächtlich (schedule) bzw. bei manuellem Auslösen.
       - name: Coverage (Reporting, non-blocking)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: node --test --experimental-test-coverage || true
 
       # HolaRuta.html ist nicht eingecheckt. Geprüft wird nur, dass der Build
@@ -112,8 +130,8 @@ jobs:
   #     Layout-Bug aus dem Log-Report allein nicht klar wird (das Skript gibt Ist/
   #     Soll bereits als Text aus). Bräuchte actions/upload-artifact – dann SHA
   #     sauber nachschlagen (Repo pinnt Actions strikt per SHA, nicht per Tag).
-  #   • Browser-Caching (actions/cache auf ~/.cache/ms-playwright, Key = Playwright-
-  #     Version): erst, wenn CI-Dauer/-Minuten wirklich stören.
+  #   • Browser-Caching: umgesetzt (actions/cache auf ~/.cache/ms-playwright,
+  #     Key = Playwright-Version, s.u.) — war bislang der langsamste Schritt.
   e2e:
     runs-on: ubuntu-latest
     steps:
@@ -124,6 +142,27 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "22"
+
+      # Cached: erspart den flüchtigen npm-Installs von playwright/esbuild unten
+      # den Registry-Download bei jedem Lauf (Integrity-Check bleibt bestehen).
+      - name: Cache npm-Downloads (Playwright, esbuild)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-e2e-playwright-1.56.1-esbuild-0.28.1
+
+      # Cached: der Chromium-Browser-Download (~150-200 MB) ist bislang der mit
+      # Abstand langsamste Schritt dieses Jobs. Key trägt die Playwright-Version
+      # → ein Versions-Bump invalidiert den Cache automatisch, nie ein veralteter
+      # Browser-Build. System-Pakete (apt, --with-deps) werden bewusst NICHT
+      # gecacht (fragil/riskant) und laufen bei Cache-Hit trotzdem kurz nach,
+      # falls einzelne Libs auf dem Runner-Image fehlen.
+      - name: Cache Playwright-Browser
+        id: playwright-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-1.56.1
 
       - name: Install Playwright (gepinnt, nicht in package.json)
         run: npm install --no-save playwright@1.56.1
